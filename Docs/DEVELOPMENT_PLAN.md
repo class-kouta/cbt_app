@@ -82,7 +82,7 @@
 
 - デプロイ先との親和性: ReactをVercelにデプロイする場合、Vercelが内部で最適なNode.js環境を使ってビルドしてくれるため、ローカルでDockerを使ってコンテナ化する必要がありません。
 
-### `docker-compose.yml`はLaravelルートに、その他Docker関連ファイルは`docker/`に置く
+### `docker-compose.yml`はLaravelルートに、その他Docker関連ファイルは置く
 
 - **コマンド実行の容易さ:** `docker-compose.yml`をプロジェクトルートに置くことで、`docker-compose up`コマンドをすぐに実行できます。
 - **設定のシンプルさ:** `docker-compose.yml`からのボリュームマウント等のパス指定が簡単になります。
