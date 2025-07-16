@@ -68,7 +68,7 @@ app/Application/
 │   ├── TagData.php                         # タグデータ転送用
 │   └── StatisticsData.php                  # 統計データ転送用
 └── Service/
-    └── ApplicationService.php              # アプリケーション横断的サービス
+    └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
 ```
 
 **特徴：**
@@ -76,6 +76,12 @@ app/Application/
 - ドメインサービスを組み合わせてビジネス機能を提供
 - コントローラーから呼び出される
 - DTOを使用して層間でのデータ受け渡しを明確化
+
+**ApplicationServiceの責務：**
+- 複数のユースケース間でのトランザクション管理
+- 複数ドメインサービスの協調処理
+- 外部APIとの統合処理（メール通知、ログ記録など）
+- キャッシュ戦略の実装
 
 ### 3. インフラストラクチャ層 (`app/Infrastructure/`)
 
@@ -95,7 +101,7 @@ app/Infrastructure/
     │   ├── Todo.php                        # TODOモデル
     │   ├── Tag.php                         # タグモデル
     │   ├── Difficulty.php                  # 難易度モデル
-    │   └── User.php                        # ユーザーモデル（既存から移動）
+    │   └── User.php                        # ユーザーモデル（移動元: app/Models/）
     ├── Migrations/
     │   ├── create_todos_table.php          # TODOテーブル
     │   ├── create_tags_table.php           # タグテーブル
@@ -105,18 +111,17 @@ app/Infrastructure/
     │   ├── TodoFactory.php
     │   ├── TagFactory.php
     │   ├── DifficultyFactory.php
-    │   └── UserFactory.php                # 既存から移動
+    │   └── UserFactory.php                # 移動元: database/factories/
     └── Seeders/
         ├── TodoSeeder.php
         ├── TagSeeder.php
         ├── DifficultySeeder.php
-        └── DatabaseSeeder.php              # 既存から移動
+        └── DatabaseSeeder.php              # 移動元: database/seeders/
 ```
 
 **特徴：**
 - ドメイン層のリポジトリインターフェースの具体実装
 - Eloquentモデル、データベースマイグレーション、ファクトリー、シーダー
-- 既存の`app/Models/`からの移行
 - リポジトリ実装でEloquentモデルとドメインエンティティ間の変換を担当
 
 ### 4. プレゼンテーション層 (`app/Http/`)
@@ -149,7 +154,51 @@ app/Http/
 - ユースケースの呼び出し
 - リクエストをDTOに変換してアプリケーション層に渡す
 
-### 5. 設定とサービスプロバイダー
+## Laravel設定変更とファイル移行
+
+### 移行が必要なファイルと設定変更
+
+1. **Eloquentモデルの移行**
+   ```php
+   // composer.json - オートローダー設定変更
+   "autoload": {
+       "psr-4": {
+           "App\\": "app/",
+           "App\\Infrastructure\\Database\\Models\\": "app/Infrastructure/Database/Models/"
+       }
+   }
+   ```
+
+2. **データベース関連ファイルの移行**
+   ```php
+   // config/database.php - マイグレーションパス設定
+   'migrations' => 'app/Infrastructure/Database/Migrations',
+
+   // AppServiceProvider.php - ファクトリーパス設定
+   $this->app->make(Factory::class)->load(app_path('Infrastructure/Database/Factories'));
+   ```
+
+3. **必要な設定変更**
+   ```php
+   // config/app.php - サービスプロバイダー追加
+   'providers' => [
+       // ... 既存プロバイダー
+       App\Infrastructure\Providers\DomainServiceProvider::class,
+       App\Infrastructure\Providers\RepositoryServiceProvider::class,
+   ],
+   ```
+
+4. **Artisanコマンド設定**
+   ```php
+   // app/Console/Kernel.php - カスタムコマンドパス追加
+   protected function commands()
+   {
+       $this->load(__DIR__.'/Commands');
+       $this->load(app_path('Infrastructure/Console/Commands'));
+   }
+   ```
+
+### 設定とサービスプロバイダー
 
 ```
 app/Infrastructure/
@@ -178,29 +227,23 @@ app/Providers/
    - **インフラ層**: 外部システム連携・永続化
    - **プレゼンテーション層**: HTTP API・UI
 
-### Laravel既存構造との融合
+### 依存性注入の設定
 
-1. **移行が必要なファイル**
-   - `app/Models/User.php` → `app/Infrastructure/Database/Models/`
-   - `database/migrations/` 配下の全ファイル → `app/Infrastructure/Database/Migrations/`
-   - `database/factories/` 配下の全ファイル → `app/Infrastructure/Database/Factories/`
-   - `database/seeders/` 配下の全ファイル → `app/Infrastructure/Database/Seeders/`
-   - リポジトリ・ドメインサービスバインド用Provider → `app/Infrastructure/Providers/`
-   - 新規データベース関連ファイルは`app/Infrastructure/Database/`配下に作成
+```php
+// RepositoryServiceProvider.php
+public function register()
+{
+    $this->app->bind(
+        TodoRepositoryInterface::class,
+        EloquentTodoRepository::class
+    );
 
-2. **既存機能の活用**
-   - Eloquent ORM → リポジトリ実装で使用
-   - フォームリクエスト → バリデーション層として活用、DTOへの変換元
-   - リソースクラス → DTOからレスポンス変換として活用
-
-3. **依存性注入の設定**
-   ```php
-   // RepositoryServiceProvider.php
-   $this->app->bind(
-       TodoRepositoryInterface::class,
-       EloquentTodoRepository::class
-   );
-   ```
+    $this->app->bind(
+        TagRepositoryInterface::class,
+        EloquentTagRepository::class
+    );
+}
+```
 
 ### テスト戦略
 
