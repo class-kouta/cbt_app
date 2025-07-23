@@ -77,6 +77,9 @@
 
 ---
 
-### 補足: マイグレーションファイルの配置について
+### 補足: データベース関連ファイルの配置について
 
-- マイグレーションファイルは当面デフォルトの`database/migrations/`に配置して運用し、フェーズ5（DDDディレクトリ構造への移行）開始時に`app/Infrastructure/Database/Migrations/`へ移行します。
+- **マイグレーションファイル**: 当面デフォルトの`database/migrations/`に配置して運用し、フェーズ5（DDDディレクトリ構造への移行）開始時に`app/Infrastructure/Database/Migrations/`へ移行します。
+- **モデルファイル (Eloquent Models)**: 当面デフォルトの`app/Models/`に配置し、フェーズ5開始時に`app/Infrastructure/Database/Models/`へ移行します。
+- **ファクトリーファイル**: 当面デフォルトの`database/factories/`に配置し、フェーズ5開始時に`app/Infrastructure/Database/Factories/`へ移行します。
+- **シーダーファイル**: 当面デフォルトの`database/seeders/`に配置し、フェーズ5開始時に`app/Infrastructure/Database/Seeders/`へ移行します。
