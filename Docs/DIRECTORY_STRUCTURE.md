@@ -101,7 +101,7 @@ app/Infrastructure/
     │   ├── Todo.php                        # TODOモデル
     │   ├── Tag.php                         # タグモデル
     │   ├── Difficulty.php                  # 難易度モデル
-    │   └── User.php                        # ユーザーモデル（移動元: app/Models/）
+    
     ├── Migrations/
     │   ├── create_todos_table.php          # TODOテーブル
     │   ├── create_tags_table.php           # タグテーブル
@@ -111,7 +111,7 @@ app/Infrastructure/
     │   ├── TodoFactory.php
     │   ├── TagFactory.php
     │   ├── DifficultyFactory.php
-    │   └── UserFactory.php                # 移動元: database/factories/
+    
     └── Seeders/
         ├── TodoSeeder.php
         ├── TagSeeder.php
