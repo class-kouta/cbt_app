@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 必ず以下のファイルを参照して、プロジェクトに関する理解を深めてから、与えられたプロンプトに対応してください。
 @DB_SCHEMA
 @DEVELOPMENT_PLAN.md
