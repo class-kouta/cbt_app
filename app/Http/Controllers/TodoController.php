@@ -9,11 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 class TodoController extends Controller
 {
-    public function __construct(private readonly CreateTodoUseCase $createTodo)
-    {
-    }
-
-    public function store(CreateTodoRequest $request): JsonResponse
+    public function store(CreateTodoRequest $request, CreateTodoUseCase $createTodo): JsonResponse
     {
         $data = new TodoData(
             difficultyId: (int) $request->integer('difficulty_id'),
@@ -21,7 +17,7 @@ class TodoController extends Controller
             tagIds: (array) $request->input('tag_ids', [])
         );
 
-        $todo = $this->createTodo->handle($data);
+        $todo = $createTodo->handle($data);
 
         return response()->json([
             'id' => $todo->getId(),
@@ -34,4 +30,3 @@ class TodoController extends Controller
         ], 201);
     }
 }
-
