@@ -2,14 +2,13 @@
 
 namespace App\Application\DTO;
 
-class TodoData
+readonly class TodoData
 {
     public function __construct(
-        public readonly int $difficultyId,
-        public readonly string $content,
+        public int $difficultyId,
+        public string $content,
         /** @var int[] */
-        public readonly array $tagIds = []
+        public array $tagIds = []
     ) {
     }
 }
-
