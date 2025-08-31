@@ -15,7 +15,7 @@ class CreateTodoRequest extends FormRequest
     {
         return [
             'difficulty_id' => ['required', 'integer', 'min:1'],
-            'content' => ['required', 'string', 'max:10000'],
+            'content' => ['required', 'string'],
             'tag_ids' => ['sometimes', 'array'],
             'tag_ids.*' => ['integer', 'min:1', 'distinct'],
         ];

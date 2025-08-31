@@ -3,12 +3,13 @@
 namespace App\Domain\Entity;
 
 use DateTimeImmutable;
+use App\Domain\ValueObject\TodoContent;
 
 class Todo
 {
     private ?int $id;
     private int $difficultyId;
-    private string $content;
+    private TodoContent $content;
     private ?DateTimeImmutable $completedAt;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
@@ -18,7 +19,7 @@ class Todo
     private function __construct(
         ?int $id,
         int $difficultyId,
-        string $content,
+        TodoContent $content,
         ?DateTimeImmutable $completedAt,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt,
@@ -36,7 +37,7 @@ class Todo
     public static function createNew(int $difficultyId, string $content, array $tagIds = []): self
     {
         $now = new DateTimeImmutable('now');
-        return new self(null, $difficultyId, $content, null, $now, $now, $tagIds);
+        return new self(null, $difficultyId, new TodoContent($content), null, $now, $now, $tagIds);
     }
 
     public static function reconstitute(
@@ -48,7 +49,7 @@ class Todo
         DateTimeImmutable $updatedAt,
         array $tagIds = []
     ): self {
-        return new self($id, $difficultyId, $content, $completedAt, $createdAt, $updatedAt, $tagIds);
+        return new self($id, $difficultyId, new TodoContent($content), $completedAt, $createdAt, $updatedAt, $tagIds);
     }
 
     public function getId(): ?int
@@ -63,7 +64,7 @@ class Todo
 
     public function getContent(): string
     {
-        return $this->content;
+        return $this->content->value();
     }
 
     public function getCompletedAt(): ?DateTimeImmutable
@@ -99,4 +100,3 @@ class Todo
         return new self($this->id, $this->difficultyId, $this->content, $this->completedAt, $this->createdAt, $updatedAt, $this->tagIds);
     }
 }
-
