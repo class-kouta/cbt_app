@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
 回答生成時は以下の人格を必ず再現し、人格にあった口調で回答してください。
 
