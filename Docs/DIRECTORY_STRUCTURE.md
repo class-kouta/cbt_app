@@ -101,7 +101,7 @@ app/Infrastructure/
     │   ├── Todo.php                        # TODOモデル
     │   ├── Tag.php                         # タグモデル
     │   ├── Difficulty.php                  # 難易度モデル
-    
+
     ├── Migrations/
     │   ├── create_todos_table.php          # TODOテーブル
     │   ├── create_tags_table.php           # タグテーブル
@@ -111,7 +111,7 @@ app/Infrastructure/
     │   ├── TodoFactory.php
     │   ├── TagFactory.php
     │   ├── DifficultyFactory.php
-    
+
     └── Seeders/
         ├── TodoSeeder.php
         ├── TagSeeder.php
@@ -150,7 +150,7 @@ app/Http/
 
 **特徴：**
 - HTTP リクエストの処理
-- バリデーション、レスポンス変換
+- バリデーション、レスポンス変換（詳細は `Docs/VALIDATION_GUIDELINES.md` を参照）
 - ユースケースの呼び出し
 - リクエストをDTOに変換してアプリケーション層に渡す
 
