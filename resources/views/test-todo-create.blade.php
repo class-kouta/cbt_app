@@ -54,7 +54,7 @@
     </style>
 </head>
 <body>
-    <h1>Todo作成APIテスト</h1>
+    <h1>Todo</h1>
 
     <form id="todoForm">
         <div class="form-group">

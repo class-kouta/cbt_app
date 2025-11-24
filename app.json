@@ -8,13 +8,13 @@
   ],
   "env": {
     "APP_ENV": {
-      "description": "検証環境用のファイルだが、本番と限りなく同じ動作にしたいためproductionとしている",
+      "description": "検証環境だけど本番と限りなく同じ動作にしたいためproductionとしている",
       "value": "production"
     },
-    "APP_DEBUG": "false",
+    "APP_DEBUG": "true",
     "APP_KEY": {
-      "description": "Laravel Application Key",
-      "generator": "secret"
+      "description": "Review Apps用のため固定キーを設定（本番とは異なる）。本来はsecret generatorを使うべきだが、LaravelのCipher要件を満たすため明示的に指定。",
+      "value": "base64:BDBSUnUkGj92CHz0jb5yrvAkUcIbZf3azlPmBDSalos="
     },
     "DB_CONNECTION": "pgsql",
     "SESSION_DRIVER": "file"
