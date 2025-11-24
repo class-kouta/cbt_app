@@ -1,0 +1,25 @@
+{
+  "name": "todo-and-done-list",
+  "description": "Review app for todo-and-done-list application.",
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0"
+    }
+  ],
+  "env": {
+    "APP_ENV": {
+      "description": "検証環境用のファイルだが、本番と限りなく同じ動作にしたいためproductionとしている",
+      "value": "production"
+    },
+    "APP_DEBUG": "false",
+    "APP_KEY": {
+      "description": "Laravel Application Key",
+      "generator": "secret"
+    },
+    "DB_CONNECTION": "pgsql",
+    "SESSION_DRIVER": "file"
+  },
+  "scripts": {
+    "postdeploy": "php artisan migrate --force"
+  }
+}
