@@ -20,6 +20,6 @@
     "SESSION_DRIVER": "file"
   },
   "scripts": {
-    "postdeploy": "php artisan migrate --force"
+    "postdeploy": "php artisan migrate --force && php artisan db:seed --force"
   }
 }

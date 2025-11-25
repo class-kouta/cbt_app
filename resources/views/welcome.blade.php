@@ -49,7 +49,7 @@
             <!-- Cards Grid -->
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <!-- Todo Card -->
-                <a href="/test-todo-create" class="block group">
+                <a href="/todos" class="block group">
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Todo Icon -->
@@ -59,10 +59,7 @@
                                     <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900 mb-3">TODO</h2>
-                            <p class="text-base text-gray-600">
-                                TODO管理と、達成したTODOの確認ができるよ。
-                            </p>
+                            <h2 class="text-2xl font-bold text-gray-900">TODO</h2>
                         </div>
                     </div>
                 </a>
@@ -79,10 +76,7 @@
                                     <circle cx="12" cy="17" r="1" fill="currentColor"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900 mb-3">コラム法（CBT）</h2>
-                            <p class="text-base text-gray-600">
-                                認知行動療法のコラム法で、考え方のクセを見つけよう。
-                            </p>
+                            <h2 class="text-2xl font-bold text-gray-900">コラム法（CBT）</h2>
                         </div>
                     </div>
                 </a>
@@ -97,10 +91,7 @@
                                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="currentColor"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900 mb-3">コーピングリスト</h2>
-                            <p class="text-base text-gray-600">
-                                ストレスに対処する方法をリストアップして、心を整えよう。
-                            </p>
+                            <h2 class="text-2xl font-bold text-gray-900">コーピングリスト</h2>
                         </div>
                     </div>
                 </a>

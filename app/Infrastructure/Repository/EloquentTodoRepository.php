@@ -17,6 +17,11 @@ class EloquentTodoRepository implements TodoRepositoryInterface
         $model->completed_at = $todo->getCompletedAt()?->format('Y-m-d H:i:s');
         $model->save();
 
+        // タグを中間テーブルに保存
+        if (!empty($todo->getTagIds())) {
+            $model->tags()->sync($todo->getTagIds());
+        }
+
         return TodoEntity::reconstitute(
             id: (int) $model->getKey(),
             difficultyId: (int) $model->difficulty_id,

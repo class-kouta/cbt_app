@@ -6,6 +6,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test-todo-create', function () {
-    return view('test-todo-create');
+// TODOリストページ
+Route::get('/todos', function () {
+    return view('todos');
 });
