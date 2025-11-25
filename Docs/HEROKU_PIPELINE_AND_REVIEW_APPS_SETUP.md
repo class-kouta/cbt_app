@@ -187,18 +187,26 @@ heroku config:set DB_CONNECTION=pgsql --app <your-app-name>
 heroku config:set SESSION_DRIVER=file --app <your-app-name>
 ```
 
-5. **本番 PostgreSQL にマイグレーションを適用する**
+5. **本番 PostgreSQL にマイグレーションとSeederを適用する**
 
-Heroku 上のデータベースには、ローカルとは別にマイグレーションを流す必要があります。
+Heroku 上のデータベースには、ローカルとは別にマイグレーションとSeederを流す必要があります。
 `heroku run` のオプションと `php artisan` のオプションを区切るために、`--` を挟む点に注意してください。
 
 ```bash
 cd ~/services/todo_and_done_list
 
+# マイグレーションの実行
 heroku run --app <your-app-name> -- php artisan migrate --force
+
+# Seederの実行（全て）
+heroku run --app <your-app-name> -- php artisan db:seed --force
+
+# 特定のSeederのみ実行する場合
+heroku run --app <your-app-name> -- php artisan db:seed --class=DifficultySeeder --force
+heroku run --app <your-app-name> -- php artisan db:seed --class=TagSeeder --force
 ```
 
-`--force` は本番環境でのマイグレーション実行を許可するために必須です。
+`--force` は本番環境でのマイグレーション・Seeder実行を許可するために必須です。
 
 【公式ソース】
 
@@ -206,6 +214,8 @@ heroku run --app <your-app-name> -- php artisan migrate --force
   - `https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-run`
 - Laravel マイグレーション（`php artisan migrate` と `--force` オプション）
   - `https://readouble.com/laravel/10.x/ja/migrations.html`
+- Laravel Seeder（`php artisan db:seed` と `--class` オプション）
+  - `https://readouble.com/laravel/10.x/ja/seeding.html`
 
 
 ### ステップ7: 自動デプロイの設定
