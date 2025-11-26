@@ -6,6 +6,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\DifficultyController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
+use App\Http\Controllers\ColumnController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
@@ -28,4 +29,10 @@ Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
 
 // CopingTag API（一覧取得のみ）
 Route::get('/coping-tags', [CopingTagController::class, 'index']);
+
+// Column API（コラム法）
+Route::get('/columns', [ColumnController::class, 'index']);
+Route::get('/columns/{column}', [ColumnController::class, 'show']);
+Route::post('/columns', [ColumnController::class, 'store']);
+Route::delete('/columns/{column}', [ColumnController::class, 'destroy']);
 

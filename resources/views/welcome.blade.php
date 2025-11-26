@@ -65,7 +65,7 @@
                 </a>
 
                 <!-- Column Method (CBT) Card -->
-                <a href="#" class="block group">
+                <a href="/columns" class="block group">
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- CBT Icon -->

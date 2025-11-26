@@ -1,0 +1,230 @@
+@extends('layouts.app')
+
+@section('title', 'コラム法')
+
+@section('content')
+<div x-data="columnApp()" x-cloak>
+    <!-- 過去のコラムへのリンク -->
+    <div class="mb-4 text-right">
+        <a href="/columns/list" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors">
+            📚 過去のコラム →
+        </a>
+    </div>
+
+    <!-- 新規コラム作成フォーム -->
+    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg p-6 border border-indigo-100">
+        <form @submit.prevent="createColumn()">
+            <div class="space-y-5">
+                <!-- (1) 状況 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">1</span>
+                        状況
+                        <span class="text-gray-400 font-normal ml-1">気持ちが動揺したときの一場面</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.situation"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="例：会議で自分の意見を否定された"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.situation.length + '/1000'"></div>
+                </div>
+
+                <!-- (2) 気分 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">2</span>
+                        気分
+                        <span class="text-gray-400 font-normal ml-1">そのときの気持ち</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.mood"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="例：悲しい(80%) 恥ずかしい(60%)"
+                        maxlength="500"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.mood.length + '/500'"></div>
+                </div>
+
+                <!-- (3) 自動思考 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">3</span>
+                        自動思考
+                        <span class="text-gray-400 font-normal ml-1">そのとき頭に浮かんだこと</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.automatic_thought"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        placeholder="例：自分は仕事ができない人間だ"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.automatic_thought.length + '/1000'"></div>
+                </div>
+
+                <!-- (4) 根拠 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold mr-1">4</span>
+                        根拠
+                        <span class="text-gray-400 font-normal ml-1">自動思考を裏付ける具体的な事実</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.evidence"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                        placeholder="例：提案が採用されなかった"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.evidence.length + '/1000'"></div>
+                </div>
+
+                <!-- (5) 反証 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold mr-1">5</span>
+                        反証
+                        <span class="text-gray-400 font-normal ml-1">自動思考と反対の事実</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.counter_evidence"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                        placeholder="例：先月の提案は採用されて好評だった"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.counter_evidence.length + '/1000'"></div>
+                </div>
+
+                <!-- (6) 適応的思考 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">6</span>
+                        適応的思考
+                        <span class="text-gray-400 font-normal ml-1">バランスのよい考え</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.adaptive_thought"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        placeholder="例：今回は合わなかっただけで、自分には良い提案もできる"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.adaptive_thought.length + '/1000'"></div>
+                </div>
+
+                <!-- (7) いまの気分 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-500 text-white text-xs font-bold mr-1">7</span>
+                        いまの気分
+                        <span class="text-gray-400 font-normal ml-1">コラムを書き終えた後の気持ち</span>
+                    </label>
+                    <textarea
+                        x-model="newColumn.current_mood"
+                        rows="2"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                        placeholder="例：悲しい(40%) 少し楽になった"
+                        maxlength="500"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-400 text-right" x-text="newColumn.current_mood.length + '/500'"></div>
+                </div>
+
+                <!-- エラーメッセージ -->
+                <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
+
+                <!-- 送信ボタン -->
+                <div>
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="loading || !isFormValid()"
+                    >
+                        <span x-show="!loading" class="flex items-center justify-center gap-2">
+                            ✨ コラムを保存
+                        </span>
+                        <span x-show="loading" class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            保存中...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function columnApp() {
+    return {
+        newColumn: {
+            situation: '',
+            mood: '',
+            automatic_thought: '',
+            evidence: '',
+            counter_evidence: '',
+            adaptive_thought: '',
+            current_mood: ''
+        },
+        loading: false,
+        error: '',
+
+        isFormValid() {
+            return this.newColumn.situation.trim() &&
+                   this.newColumn.mood.trim() &&
+                   this.newColumn.automatic_thought.trim() &&
+                   this.newColumn.evidence.trim() &&
+                   this.newColumn.counter_evidence.trim() &&
+                   this.newColumn.adaptive_thought.trim() &&
+                   this.newColumn.current_mood.trim();
+        },
+
+        async createColumn() {
+            this.error = '';
+
+            if (!this.isFormValid()) {
+                this.error = 'すべての項目を入力してください';
+                return;
+            }
+
+            this.loading = true;
+            try {
+                const res = await fetch('/api/columns', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(this.newColumn)
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || 'エラーが発生しました');
+                }
+
+                // 保存成功したら一覧ページに遷移
+                window.location.href = '/columns/list';
+            } catch (e) {
+                this.error = e.message;
+                this.loading = false;
+            }
+        }
+    };
+}
+</script>
+@endsection

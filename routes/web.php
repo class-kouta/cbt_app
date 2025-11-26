@@ -20,3 +20,18 @@ Route::get('/todos/completed', function () {
 Route::get('/copings', function () {
     return view('copings');
 });
+
+// コラム法ページ
+Route::get('/columns', function () {
+    return view('columns');
+});
+
+// コラム一覧ページ
+Route::get('/columns/list', function () {
+    return view('columns-list');
+});
+
+// コラム詳細ページ
+Route::get('/columns/{id}', function ($id) {
+    return view('column-detail', ['columnId' => $id]);
+})->where('id', '[0-9]+');
