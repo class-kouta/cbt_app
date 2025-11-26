@@ -23,6 +23,9 @@
                     <a href="/todos/completed" class="hover:text-indigo-200 transition-colors flex items-center gap-1">
                         ✅
                     </a>
+                    <a href="/copings" class="hover:text-indigo-200 transition-colors flex items-center gap-1">
+                        🌸
+                    </a>
                 </div>
             </div>
         </div>

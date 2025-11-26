@@ -33,5 +33,28 @@
 - tag_id — bigint, 複合主キー, 外部キー → tags.id
 
 ---
+## coping_tags（コーピング専用タグ）
+- id — bigint, 主キー
+- name — varchar(50), UNIQUE, NOT NULL
+- created_at / updated_at — timestamp
+
+---
+## copings（コーピングリスト）
+- id — bigint, 主キー
+- content — text, NOT NULL（コーピング内容）
+- point — integer, DEFAULT 0（お気に入りポイント、高いほど上に表示）
+- created_at / updated_at — timestamp
+
+インデックス:
+- point, created_at（ソート用）
+
+---
+## coping_coping_tag (中間テーブル)
+- coping_id — bigint, 複合主キー, 外部キー → copings.id
+- coping_tag_id — bigint, 複合主キー, 外部キー → coping_tags.id
+
+---
 ### 補足メモ
 - `todo_tag` は複合主キー (todo_id, tag_id) で重複登録を防止します。
+- `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
+- copingsのタグはtodosのタグとは独立して管理されます。

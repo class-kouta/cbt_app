@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DifficultyController;
+use App\Http\Controllers\CopingController;
+use App\Http\Controllers\CopingTagController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
@@ -17,4 +19,13 @@ Route::get('/tags', [TagController::class, 'index']);
 
 // Difficulty API（一覧取得のみ）
 Route::get('/difficulties', [DifficultyController::class, 'index']);
+
+// Coping API
+Route::get('/copings', [CopingController::class, 'index']);
+Route::post('/copings', [CopingController::class, 'store']);
+Route::put('/copings/{coping}', [CopingController::class, 'update']);
+Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
+
+// CopingTag API（一覧取得のみ）
+Route::get('/coping-tags', [CopingTagController::class, 'index']);
 

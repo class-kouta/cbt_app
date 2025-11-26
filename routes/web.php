@@ -15,3 +15,8 @@ Route::get('/todos', function () {
 Route::get('/todos/completed', function () {
     return view('completed-todos');
 });
+
+// コーピングリストページ
+Route::get('/copings', function () {
+    return view('copings');
+});

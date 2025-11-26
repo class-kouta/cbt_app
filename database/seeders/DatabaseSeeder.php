@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DifficultySeeder::class,
             TagSeeder::class,
+            CopingTagSeeder::class,
         ]);
     }
 }

@@ -82,7 +82,7 @@
                 </a>
 
                 <!-- Coping List Card -->
-                <a href="#" class="block group md:col-span-2">
+                <a href="/copings" class="block group md:col-span-2">
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex flex-col items-center text-center">
                             <!-- Coping List Icon -->
