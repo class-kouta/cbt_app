@@ -11,11 +11,12 @@ use Illuminate\Http\JsonResponse;
 class TodoController extends Controller
 {
     /**
-     * TODO一覧を取得
+     * TODO一覧を取得（未完了のみ）
      */
     public function index(): JsonResponse
     {
         $todos = Todo::with(['difficulty', 'tags'])
+            ->whereNull('completed_at')
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($todo) {
@@ -110,5 +111,40 @@ class TodoController extends Controller
         $todo->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * 完了済みTODO一覧を取得
+     */
+    public function completed(): JsonResponse
+    {
+        $todos = Todo::with(['difficulty', 'tags'])
+            ->whereNotNull('completed_at')
+            ->orderByDesc('completed_at')
+            ->get()
+            ->map(function ($todo) {
+                return [
+                    'id' => $todo->id,
+                    'difficulty_id' => $todo->difficulty_id,
+                    'difficulty' => $todo->difficulty ? [
+                        'id' => $todo->difficulty->id,
+                        'name' => $todo->difficulty->name,
+                        'points' => $todo->difficulty->points,
+                        'color' => $todo->difficulty->color,
+                    ] : null,
+                    'content' => $todo->content,
+                    'completed_at' => $todo->completed_at?->format(DATE_ATOM),
+                    'created_at' => $todo->created_at->format(DATE_ATOM),
+                    'updated_at' => $todo->updated_at->format(DATE_ATOM),
+                    'tags' => $todo->tags->map(function ($tag) {
+                        return [
+                            'id' => $tag->id,
+                            'name' => $tag->name,
+                        ];
+                    }),
+                ];
+            });
+
+        return response()->json($todos);
     }
 }

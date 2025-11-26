@@ -119,11 +119,12 @@
                     <div class="pt-1">
                         <button
                             @click="completeTodo(todo)"
-                            class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-                            :class="todo.completed_at ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-green-400'"
+                            class="text-2xl transition-all hover:scale-110"
+                            :class="todo.completed_at ? '' : 'opacity-30 hover:opacity-70'"
                             :disabled="todo.completed_at"
+                            title="完了にする"
                         >
-                            <span x-show="todo.completed_at">✓</span>
+                            ✅
                         </button>
                     </div>
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\DifficultyController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
+Route::get('/todos/completed', [TodoController::class, 'completed']);
 Route::post('/todos', [TodoController::class, 'store']);
 Route::patch('/todos/{todo}/complete', [TodoController::class, 'complete']);
 Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);

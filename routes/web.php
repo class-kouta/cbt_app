@@ -10,3 +10,8 @@ Route::get('/', function () {
 Route::get('/todos', function () {
     return view('todos');
 });
+
+// 完了済みTODO一覧ページ
+Route::get('/todos/completed', function () {
+    return view('completed-todos');
+});

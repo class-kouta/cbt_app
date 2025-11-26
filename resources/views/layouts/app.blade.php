@@ -15,8 +15,14 @@
     <nav class="bg-indigo-600 text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="text-xl font-bold">トップに戻る</a>
+                <div class="flex items-center gap-6">
+                    <a href="/" class="text-xl font-bold hover:text-indigo-200 transition-colors">🏠 トップ</a>
+                    <a href="/todos" class="hover:text-indigo-200 transition-colors flex items-center gap-1">
+                        📝
+                    </a>
+                    <a href="/todos/completed" class="hover:text-indigo-200 transition-colors flex items-center gap-1">
+                        ✅
+                    </a>
                 </div>
             </div>
         </div>
