@@ -13,6 +13,7 @@ Route::get('/todos', [TodoController::class, 'index']);
 Route::get('/todos/completed', [TodoController::class, 'completed']);
 Route::post('/todos', [TodoController::class, 'store']);
 Route::patch('/todos/{todo}/complete', [TodoController::class, 'complete']);
+Route::patch('/todos/{todo}/uncomplete', [TodoController::class, 'uncomplete']);
 Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);
 
 // Tag API（一覧取得のみ）

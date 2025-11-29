@@ -96,6 +96,17 @@
                             </span>
                         </div>
                     </div>
+
+                    <!-- 元に戻すボタン -->
+                    <div class="flex-shrink-0">
+                        <button
+                            @click="uncompleteTodo(todo.id)"
+                            class="text-2xl hover:scale-125 transition-transform cursor-pointer"
+                            title="未完了に戻す"
+                        >
+                            ↩️
+                        </button>
+                    </div>
                 </div>
             </div>
         </template>
@@ -197,6 +208,33 @@ function completedTodosApp() {
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        },
+
+        async uncompleteTodo(todoId) {
+            if (!confirm('このTODOを未完了に戻しますか？')) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/todos/${todoId}/uncomplete`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (res.ok) {
+                    // 完了済みリストから削除
+                    this.todos = this.todos.filter(t => t.id !== todoId);
+                    // 成功メッセージ
+                    alert('TODOを未完了に戻しました！');
+                } else {
+                    alert('エラーが発生しました');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('エラーが発生しました');
+            }
         }
     };
 }

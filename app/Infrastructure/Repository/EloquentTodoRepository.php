@@ -32,5 +32,12 @@ class EloquentTodoRepository implements TodoRepositoryInterface
             tagIds: $todo->getTagIds(),
         );
     }
+
+    public function uncomplete(int $todoId): void
+    {
+        $model = TodoModel::findOrFail($todoId);
+        $model->completed_at = null;
+        $model->save();
+    }
 }
 
