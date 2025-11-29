@@ -127,6 +127,15 @@
             <p>読み込み中...</p>
         </div>
     </div>
+
+    <!-- 新規作成ボタン（フローティング） -->
+    <a
+        href="/todos"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-indigo-600 hover:to-purple-600 transition-all"
+        title="新しいTODOを作成"
+    >
+        ＋
+    </a>
 </div>
 
 <script>

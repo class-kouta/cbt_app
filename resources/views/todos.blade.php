@@ -4,6 +4,13 @@
 
 @section('content')
 <div x-data="todoApp()" x-init="init()" x-cloak>
+    <!-- 完了済みTODOへのリンク -->
+    <div class="mb-4 text-right">
+        <a href="/todos/completed" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors">
+            完了済み →
+        </a>
+    </div>
+
     <!-- 新規TODO作成フォーム -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
         <form @submit.prevent="createTodo()">
