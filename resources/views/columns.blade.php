@@ -19,7 +19,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">1</span>
-                        状況
+                        状況 <span class="text-red-500">*</span>
                         <span class="text-gray-400 font-normal ml-1">気持ちが動揺したときの一場面</span>
                     </label>
                     <textarea
