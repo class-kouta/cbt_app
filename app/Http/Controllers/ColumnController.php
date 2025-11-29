@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Application\DTO\ColumnData;
 use App\Application\UseCase\Column\CreateColumnUseCase;
 use App\Application\UseCase\Column\DeleteColumnUseCase;
+use App\Application\UseCase\Column\UpdateColumnUseCase;
 use App\Http\Requests\Column\CreateColumnRequest;
+use App\Http\Requests\Column\UpdateColumnRequest;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
 
@@ -62,12 +64,12 @@ class ColumnController extends Controller
     {
         $data = new ColumnData(
             situation: (string) $request->string('situation'),
-            mood: (string) $request->string('mood'),
-            automaticThought: (string) $request->string('automatic_thought'),
-            evidence: (string) $request->string('evidence'),
-            counterEvidence: (string) $request->string('counter_evidence'),
-            adaptiveThought: (string) $request->string('adaptive_thought'),
-            currentMood: (string) $request->string('current_mood')
+            mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
+            automaticThought: $request->has('automatic_thought') && $request->filled('automatic_thought') ? (string) $request->string('automatic_thought') : null,
+            evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
+            counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
+            adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
+            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null
         );
 
         $column = $createColumn->handle($data);
@@ -84,6 +86,37 @@ class ColumnController extends Controller
             'created_at' => $column->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $column->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
+    }
+
+    /**
+     * コラムを更新
+     */
+    public function update(UpdateColumnRequest $request, Column $column, UpdateColumnUseCase $updateColumn): JsonResponse
+    {
+        $data = new ColumnData(
+            situation: (string) $request->string('situation'),
+            mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
+            automaticThought: $request->has('automatic_thought') && $request->filled('automatic_thought') ? (string) $request->string('automatic_thought') : null,
+            evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
+            counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
+            adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
+            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null
+        );
+
+        $updatedColumn = $updateColumn->handle($column->id, $data);
+
+        return response()->json([
+            'id' => $updatedColumn->getId(),
+            'situation' => $updatedColumn->getSituation(),
+            'mood' => $updatedColumn->getMood(),
+            'automatic_thought' => $updatedColumn->getAutomaticThought(),
+            'evidence' => $updatedColumn->getEvidence(),
+            'counter_evidence' => $updatedColumn->getCounterEvidence(),
+            'adaptive_thought' => $updatedColumn->getAdaptiveThought(),
+            'current_mood' => $updatedColumn->getCurrentMood(),
+            'created_at' => $updatedColumn->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $updatedColumn->getUpdatedAt()->format(DATE_ATOM),
+        ]);
     }
 
     /**

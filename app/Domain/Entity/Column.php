@@ -8,24 +8,24 @@ class Column
 {
     private ?int $id;
     private string $situation;
-    private string $mood;
-    private string $automaticThought;
-    private string $evidence;
-    private string $counterEvidence;
-    private string $adaptiveThought;
-    private string $currentMood;
+    private ?string $mood;
+    private ?string $automaticThought;
+    private ?string $evidence;
+    private ?string $counterEvidence;
+    private ?string $adaptiveThought;
+    private ?string $currentMood;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
     private function __construct(
         ?int $id,
         string $situation,
-        string $mood,
-        string $automaticThought,
-        string $evidence,
-        string $counterEvidence,
-        string $adaptiveThought,
-        string $currentMood,
+        ?string $mood,
+        ?string $automaticThought,
+        ?string $evidence,
+        ?string $counterEvidence,
+        ?string $adaptiveThought,
+        ?string $currentMood,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -43,12 +43,12 @@ class Column
 
     public static function createNew(
         string $situation,
-        string $mood,
-        string $automaticThought,
-        string $evidence,
-        string $counterEvidence,
-        string $adaptiveThought,
-        string $currentMood
+        ?string $mood,
+        ?string $automaticThought,
+        ?string $evidence,
+        ?string $counterEvidence,
+        ?string $adaptiveThought,
+        ?string $currentMood
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
@@ -68,12 +68,12 @@ class Column
     public static function reconstitute(
         int $id,
         string $situation,
-        string $mood,
-        string $automaticThought,
-        string $evidence,
-        string $counterEvidence,
-        string $adaptiveThought,
-        string $currentMood,
+        ?string $mood,
+        ?string $automaticThought,
+        ?string $evidence,
+        ?string $counterEvidence,
+        ?string $adaptiveThought,
+        ?string $currentMood,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -101,32 +101,32 @@ class Column
         return $this->situation;
     }
 
-    public function getMood(): string
+    public function getMood(): ?string
     {
         return $this->mood;
     }
 
-    public function getAutomaticThought(): string
+    public function getAutomaticThought(): ?string
     {
         return $this->automaticThought;
     }
 
-    public function getEvidence(): string
+    public function getEvidence(): ?string
     {
         return $this->evidence;
     }
 
-    public function getCounterEvidence(): string
+    public function getCounterEvidence(): ?string
     {
         return $this->counterEvidence;
     }
 
-    public function getAdaptiveThought(): string
+    public function getAdaptiveThought(): ?string
     {
         return $this->adaptiveThought;
     }
 
-    public function getCurrentMood(): string
+    public function getCurrentMood(): ?string
     {
         return $this->currentMood;
     }

@@ -34,5 +34,6 @@ Route::get('/coping-tags', [CopingTagController::class, 'index']);
 Route::get('/columns', [ColumnController::class, 'index']);
 Route::get('/columns/{column}', [ColumnController::class, 'show']);
 Route::post('/columns', [ColumnController::class, 'store']);
+Route::put('/columns/{column}', [ColumnController::class, 'update']);
 Route::delete('/columns/{column}', [ColumnController::class, 'destroy']);
 

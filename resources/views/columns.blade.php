@@ -46,7 +46,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         placeholder="例：悲しい(80%) 恥ずかしい(60%)"
                         maxlength="500"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.mood.length + '/500'"></div>
                 </div>
@@ -64,7 +63,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         placeholder="例：自分は仕事ができない人間だ"
                         maxlength="1000"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.automatic_thought.length + '/1000'"></div>
                 </div>
@@ -82,7 +80,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                         placeholder="例：提案が採用されなかった"
                         maxlength="1000"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.evidence.length + '/1000'"></div>
                 </div>
@@ -100,7 +97,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                         placeholder="例：先月の提案は採用されて好評だった"
                         maxlength="1000"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.counter_evidence.length + '/1000'"></div>
                 </div>
@@ -118,7 +114,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：今回は合わなかっただけで、自分には良い提案もできる"
                         maxlength="1000"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.adaptive_thought.length + '/1000'"></div>
                 </div>
@@ -136,7 +131,6 @@
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
                         placeholder="例：悲しい(40%) 少し楽になった"
                         maxlength="500"
-                        required
                     ></textarea>
                     <div class="text-xs text-gray-400 text-right" x-text="newColumn.current_mood.length + '/500'"></div>
                 </div>
@@ -184,20 +178,14 @@ function columnApp() {
         error: '',
 
         isFormValid() {
-            return this.newColumn.situation.trim() &&
-                   this.newColumn.mood.trim() &&
-                   this.newColumn.automatic_thought.trim() &&
-                   this.newColumn.evidence.trim() &&
-                   this.newColumn.counter_evidence.trim() &&
-                   this.newColumn.adaptive_thought.trim() &&
-                   this.newColumn.current_mood.trim();
+            return this.newColumn.situation.trim();
         },
 
         async createColumn() {
             this.error = '';
 
             if (!this.isFormValid()) {
-                this.error = 'すべての項目を入力してください';
+                this.error = '状況を入力してください';
                 return;
             }
 

@@ -15,7 +15,13 @@
                     <!-- 日付 -->
                     <div class="text-xs text-indigo-500 font-medium mb-2" x-text="formatDate(column.created_at)"></div>
                     <!-- 状況 -->
-                    <p class="text-gray-800 line-clamp-2" x-text="column.situation"></p>
+                    <p class="text-gray-800 line-clamp-2 mb-2" x-text="column.situation"></p>
+                    <!-- 未入力項目タグ -->
+                    <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(column).length > 0">
+                        <template x-for="field in getIncompleteFields(column)" :key="field">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="'未入力: ' + field"></span>
+                        </template>
+                    </div>
                 </div>
                 <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1"></div>
             </a>
@@ -71,6 +77,25 @@ function columnListApp() {
                 month: 'long',
                 day: 'numeric'
             });
+        },
+
+        getIncompleteFields(column) {
+            const fieldNames = {
+                mood: '気分',
+                automatic_thought: '自動思考',
+                evidence: '根拠',
+                counter_evidence: '反証',
+                adaptive_thought: '適応的思考',
+                current_mood: 'いまの気分'
+            };
+            
+            const incompleteFields = [];
+            for (const [key, label] of Object.entries(fieldNames)) {
+                if (!column[key] || column[key].trim() === '') {
+                    incompleteFields.push(label);
+                }
+            }
+            return incompleteFields;
         }
     };
 }

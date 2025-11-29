@@ -4,7 +4,7 @@ namespace App\Http\Requests\Column;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateColumnRequest extends FormRequest
+class UpdateColumnRequest extends FormRequest
 {
     public function authorize(): bool
     {
