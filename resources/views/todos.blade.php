@@ -116,16 +116,15 @@
             >
                 <div class="flex items-start gap-4">
                     <!-- 完了チェックボックス -->
-                    <div class="pt-1">
-                        <button
-                            @click="completeTodo(todo)"
-                            class="text-2xl transition-all hover:scale-110"
-                            :class="todo.completed_at ? '' : 'opacity-30 hover:opacity-70'"
+                    <div class="pt-1 flex items-center">
+                        <input
+                            type="checkbox"
+                            @change="completeTodo(todo)"
+                            :checked="todo.completed_at"
                             :disabled="todo.completed_at"
+                            class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:cursor-not-allowed"
                             title="完了にする"
                         >
-                            ✅
-                        </button>
                     </div>
 
                     <!-- 内容 -->
@@ -277,6 +276,7 @@ function todoApp() {
                 });
 
                 if (res.ok) {
+                    alert('タスクを完了しました');
                     await this.loadTodos();
                 }
             } catch (e) {
