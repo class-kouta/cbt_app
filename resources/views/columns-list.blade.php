@@ -15,7 +15,7 @@
                     <!-- 日付 -->
                     <div class="text-xs text-indigo-500 font-medium mb-2" x-text="formatDate(column.created_at)"></div>
                     <!-- 状況 -->
-                    <p class="text-gray-800 line-clamp-2 mb-2" x-text="column.situation"></p>
+                    <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="column.situation"></p>
                     <!-- 未入力項目タグ -->
                     <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(column).length > 0">
                         <template x-for="field in getIncompleteFields(column)" :key="field">

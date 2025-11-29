@@ -72,7 +72,7 @@
 
                     <!-- 内容 -->
                     <div class="flex-1 min-w-0">
-                        <p class="text-gray-800 text-lg" x-text="todo.content"></p>
+                        <p class="text-gray-800 text-lg break-words overflow-wrap-anywhere" x-text="todo.content"></p>
                         <div class="flex flex-wrap gap-2 mt-3">
                             <!-- 難易度バッジ -->
                             <span

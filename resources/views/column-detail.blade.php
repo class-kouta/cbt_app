@@ -50,7 +50,7 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">1</span>
                         状況
                     </div>
-                    <p class="text-gray-800 whitespace-pre-wrap" x-text="column?.situation || '未入力'"></p>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="column?.situation || '未入力'"></p>
                 </div>
 
                 <!-- 気分 -->
@@ -59,7 +59,7 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">2</span>
                         気分
                     </div>
-                    <p class="text-gray-800 whitespace-pre-wrap" :class="!column?.mood ? 'text-gray-400' : ''" x-text="column?.mood || '未入力'"></p>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.mood ? 'text-gray-400' : ''" x-text="column?.mood || '未入力'"></p>
                 </div>
 
                 <!-- 自動思考 -->
@@ -68,7 +68,7 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">3</span>
                         自動思考
                     </div>
-                    <p class="text-gray-800 whitespace-pre-wrap" :class="!column?.automatic_thought ? 'text-gray-400' : ''" x-text="column?.automatic_thought || '未入力'"></p>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.automatic_thought ? 'text-gray-400' : ''" x-text="column?.automatic_thought || '未入力'"></p>
                 </div>
 
                 <!-- 根拠と反証 -->
@@ -79,7 +79,7 @@
                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-xs">4</span>
                             根拠
                         </div>
-                        <p class="text-gray-800 whitespace-pre-wrap" :class="!column?.evidence ? 'text-gray-400' : ''" x-text="column?.evidence || '未入力'"></p>
+                        <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.evidence ? 'text-gray-400' : ''" x-text="column?.evidence || '未入力'"></p>
                     </div>
 
                     <!-- 反証 -->
@@ -88,7 +88,7 @@
                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">5</span>
                             反証
                         </div>
-                        <p class="text-gray-800 whitespace-pre-wrap" :class="!column?.counter_evidence ? 'text-gray-400' : ''" x-text="column?.counter_evidence || '未入力'"></p>
+                        <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.counter_evidence ? 'text-gray-400' : ''" x-text="column?.counter_evidence || '未入力'"></p>
                     </div>
                 </div>
 
@@ -98,7 +98,7 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-xs">6</span>
                         適応的思考 ✨
                     </div>
-                    <p class="text-gray-800 whitespace-pre-wrap font-medium" :class="!column?.adaptive_thought ? 'text-gray-400' : ''" x-text="column?.adaptive_thought || '未入力'"></p>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere font-medium" :class="!column?.adaptive_thought ? 'text-gray-400' : ''" x-text="column?.adaptive_thought || '未入力'"></p>
                 </div>
 
                 <!-- いまの気分 -->
@@ -107,7 +107,7 @@
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white text-xs">7</span>
                         いまの気分
                     </div>
-                    <p class="text-gray-800 whitespace-pre-wrap" :class="!column?.current_mood ? 'text-gray-400' : ''" x-text="column?.current_mood || '未入力'"></p>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.current_mood ? 'text-gray-400' : ''" x-text="column?.current_mood || '未入力'"></p>
                 </div>
             </div>
         </div>

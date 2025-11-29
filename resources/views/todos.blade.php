@@ -129,9 +129,9 @@
                     </div>
 
                     <!-- 内容 -->
-                    <div class="flex-1">
+                    <div class="flex-1 min-w-0">
                         <p
-                            class="text-gray-800"
+                            class="text-gray-800 break-words overflow-wrap-anywhere"
                             :class="{ 'line-through': todo.completed_at }"
                             x-text="todo.content"
                         ></p>

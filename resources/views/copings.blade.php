@@ -106,7 +106,7 @@
                     </div>
 
                     <!-- 内容 -->
-                    <div class="flex-1">
+                    <div class="flex-1 min-w-0">
                         <!-- 編集モード -->
                         <div x-show="editingId === coping.id">
                             <textarea
@@ -151,7 +151,7 @@
 
                         <!-- 表示モード -->
                         <div x-show="editingId !== coping.id">
-                            <p class="text-gray-800" x-text="coping.content"></p>
+                            <p class="text-gray-800 break-words overflow-wrap-anywhere" x-text="coping.content"></p>
                             <div class="flex flex-wrap gap-1 mt-2">
                                 <template x-for="tag in coping.coping_tags" :key="tag.id">
                                     <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600" x-text="'#' + tag.name"></span>
