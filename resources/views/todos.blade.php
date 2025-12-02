@@ -80,22 +80,25 @@
                 </div>
 
                 <!-- クイックタスク -->
-                <div x-show="quickTasks.length > 0">
+                <div>
                     <div class="flex items-center gap-2 mb-1">
                         <label class="block text-sm font-medium text-gray-700">⚡ クイックタスク</label>
                         <a href="/quick-tasks" class="text-sm text-gray-500 hover:text-indigo-600 transition-colors">✏️ 編集</a>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <template x-for="quickTask in quickTasks" :key="quickTask.id">
-                            <button
-                                type="button"
-                                @click="applyQuickTask(quickTask)"
-                                class="inline-block px-3 py-1 rounded-full text-sm border-2 transition-all bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400"
-                                x-text="quickTask.content"
-                            ></button>
-                        </template>
+                    <div x-show="quickTasks.length > 0">
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="quickTask in quickTasks" :key="quickTask.id">
+                                <button
+                                    type="button"
+                                    @click="applyQuickTask(quickTask)"
+                                    class="inline-block px-3 py-1 rounded-full text-sm border-2 transition-all bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400"
+                                    x-text="quickTask.content"
+                                ></button>
+                            </template>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">※ タップするとフォームに入力されます</p>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">※ タップするとフォームに入力されます</p>
+                    <p x-show="quickTasks.length === 0" class="text-xs text-gray-500">クイックタスクがありません。<a href="/quick-tasks" class="text-indigo-600 hover:text-indigo-800 underline">追加する</a></p>
                 </div>
 
                 <!-- エラーメッセージ -->
