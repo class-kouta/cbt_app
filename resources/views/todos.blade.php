@@ -4,8 +4,8 @@
 
 @section('content')
 <div x-data="todoApp()" x-init="init()" x-cloak>
-    <!-- 完了済みTODOへのリンク -->
-    <div class="mb-4 text-right">
+    <!-- リンク -->
+    <div class="mb-4 flex justify-end">
         <a href="/todos/completed" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors">
             完了済み →
         </a>
@@ -77,6 +77,25 @@
                         </template>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">※ 1つ以上選択してください</p>
+                </div>
+
+                <!-- クイックタスク -->
+                <div x-show="quickTasks.length > 0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <label class="block text-sm font-medium text-gray-700">⚡ クイックタスク</label>
+                        <a href="/quick-tasks" class="text-sm text-gray-500 hover:text-indigo-600 transition-colors">✏️ 編集</a>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="quickTask in quickTasks" :key="quickTask.id">
+                            <button
+                                type="button"
+                                @click="applyQuickTask(quickTask)"
+                                class="inline-block px-3 py-1 rounded-full text-sm border-2 transition-all bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 hover:border-emerald-400"
+                                x-text="quickTask.content"
+                            ></button>
+                        </template>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">※ タップするとフォームに入力されます</p>
                 </div>
 
                 <!-- エラーメッセージ -->
@@ -187,6 +206,7 @@ function todoApp() {
         todos: [],
         difficulties: [],
         tags: [],
+        quickTasks: [],
         newTodo: {
             content: '',
             difficulty_id: null,
@@ -200,7 +220,8 @@ function todoApp() {
             await Promise.all([
                 this.loadTodos(),
                 this.loadDifficulties(),
-                this.loadTags()
+                this.loadTags(),
+                this.loadQuickTasks()
             ]);
         },
 
@@ -217,6 +238,23 @@ function todoApp() {
         async loadTags() {
             const res = await fetch('/api/tags');
             this.tags = await res.json();
+        },
+
+        async loadQuickTasks() {
+            const res = await fetch('/api/quick-tasks');
+            this.quickTasks = await res.json();
+        },
+
+        applyQuickTask(quickTask) {
+            this.newTodo.content = quickTask.content;
+            // 難易度が設定されている場合は反映
+            if (quickTask.difficulty_id) {
+                this.newTodo.difficulty_id = quickTask.difficulty_id;
+            }
+            // タグが設定されている場合は反映
+            if (quickTask.tags && quickTask.tags.length > 0) {
+                this.newTodo.tag_ids = quickTask.tags.map(t => t.id);
+            }
         },
 
         get filteredTodos() {

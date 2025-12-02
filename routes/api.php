@@ -7,6 +7,7 @@ use App\Http\Controllers\DifficultyController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\ColumnController;
+use App\Http\Controllers\QuickTaskController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
@@ -37,4 +38,10 @@ Route::get('/columns/{column}', [ColumnController::class, 'show']);
 Route::post('/columns', [ColumnController::class, 'store']);
 Route::put('/columns/{column}', [ColumnController::class, 'update']);
 Route::delete('/columns/{column}', [ColumnController::class, 'destroy']);
+
+// QuickTask API（クイックタスク）
+Route::get('/quick-tasks', [QuickTaskController::class, 'index']);
+Route::post('/quick-tasks', [QuickTaskController::class, 'store']);
+Route::put('/quick-tasks/{quickTask}', [QuickTaskController::class, 'update']);
+Route::delete('/quick-tasks/{quickTask}', [QuickTaskController::class, 'destroy']);
 

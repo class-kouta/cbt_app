@@ -54,7 +54,25 @@
 - coping_tag_id — bigint, 複合主キー, 外部キー → coping_tags.id
 
 ---
+## quick_tasks（クイックタスク）
+- id — bigint, 主キー
+- content — text, NOT NULL（タスク内容のテンプレート）
+- difficulty_id — bigint, NULL可, 外部キー → difficulties.id（デフォルト難易度）
+- created_at / updated_at — timestamp
+
+**用途:**
+- 頻繁に登録するタスク（家事・育児など）を事前登録しておく
+- TODOページでワンタップで入力フォームに転記できる
+- 難易度とタグを事前設定しておくことで、さらに素早くTODO登録が可能
+
+---
+## quick_task_tag（クイックタスク-タグ中間テーブル）
+- quick_task_id — bigint, 複合主キー, 外部キー → quick_tasks.id
+- tag_id — bigint, 複合主キー, 外部キー → tags.id
+
+---
 ### 補足メモ
 - `todo_tag` は複合主キー (todo_id, tag_id) で重複登録を防止します。
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグはtodosのタグとは独立して管理されます。
+- `quick_tasks` は TODO のテンプレートとして機能し、TODO とは独立して管理されます。

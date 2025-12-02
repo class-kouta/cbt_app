@@ -35,3 +35,8 @@ Route::get('/columns/list', function () {
 Route::get('/columns/{id}', function ($id) {
     return view('column-detail', ['columnId' => $id]);
 })->where('id', '[0-9]+');
+
+// クイックタスク管理ページ
+Route::get('/quick-tasks', function () {
+    return view('quick-tasks');
+});

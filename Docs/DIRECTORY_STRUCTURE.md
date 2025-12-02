@@ -29,11 +29,13 @@ app/Domain/
 │   ├── Difficulty.php              # 難易度エンティティ
 │   ├── Coping.php                  # コーピングエンティティ
 │   ├── CopingTag.php               # コーピングタグエンティティ
-│   └── Column.php                  # コラム（7カラム法）エンティティ
+│   ├── Column.php                  # コラム（7カラム法）エンティティ
+│   └── QuickTask.php               # クイックタスクエンティティ
 ├── ValueObject/
 │   ├── CompletionStatus.php        # 完了状態値オブジェクト
 │   ├── TodoContent.php             # TODOコンテンツ値オブジェクト
-│   └── CopingContent.php           # コーピングコンテンツ値オブジェクト
+│   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
+│   └── QuickTaskContent.php        # クイックタスクコンテンツ値オブジェクト
 ├── Service/
 │   ├── CompletedTodoAggregationService.php    # 完了TODO集計サービス
 │   ├── AchievementCalculationService.php      # 達成感算出サービス
@@ -44,7 +46,8 @@ app/Domain/
     ├── DifficultyRepositoryInterface.php  # 難易度リポジトリインターフェース
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
-    └── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
+    ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
+    └── QuickTaskRepositoryInterface.php   # クイックタスクリポジトリインターフェース
 ```
 
 **特徴：**
@@ -76,6 +79,10 @@ app/Application/
 │   ├── Column/
 │   │   ├── CreateColumnUseCase.php         # コラム作成
 │   │   └── DeleteColumnUseCase.php         # コラム削除
+│   ├── QuickTask/
+│   │   ├── CreateQuickTaskUseCase.php      # クイックタスク作成
+│   │   ├── UpdateQuickTaskUseCase.php      # クイックタスク更新
+│   │   └── DeleteQuickTaskUseCase.php      # クイックタスク削除
 │   └── Statistics/
 │       ├── GetCompletedTodoStatisticsUseCase.php  # 完了TODO統計取得
 │       └── SearchCompletedTodosUseCase.php        # 完了TODO検索
@@ -84,6 +91,7 @@ app/Application/
 │   ├── TagData.php                         # タグデータ転送用
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
+│   ├── QuickTaskData.php                   # クイックタスクデータ転送用
 │   └── StatisticsData.php                  # 統計データ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
@@ -113,7 +121,8 @@ app/Infrastructure/
 │   ├── EloquentDifficultyRepository.php # 難易度リポジトリ実装
 │   ├── EloquentCopingRepository.php     # コーピングリポジトリ実装
 │   ├── EloquentCopingTagRepository.php  # コーピングタグリポジトリ実装
-│   └── EloquentColumnRepository.php     # コラムリポジトリ実装
+│   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
+│   └── EloquentQuickTaskRepository.php  # クイックタスクリポジトリ実装
 ├── Providers/
 │   ├── DomainServiceProvider.php        # ドメインサービス登録
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
@@ -124,7 +133,8 @@ app/Infrastructure/
     │   ├── Difficulty.php                  # 難易度モデル
     │   ├── Coping.php                      # コーピングモデル
     │   ├── CopingTag.php                   # コーピングタグモデル
-    │   └── Column.php                      # コラムモデル
+    │   ├── Column.php                      # コラムモデル
+    │   └── QuickTask.php                   # クイックタスクモデル
 
     ├── Migrations/
     │   ├── create_todos_table.php          # TODOテーブル
@@ -134,7 +144,9 @@ app/Infrastructure/
     │   ├── create_copings_table.php        # コーピングテーブル
     │   ├── create_coping_tags_table.php    # コーピングタグテーブル
     │   ├── create_coping_coping_tag_table.php  # コーピング-コーピングタグ中間テーブル
-    │   └── create_columns_table.php        # コラムテーブル
+    │   ├── create_columns_table.php        # コラムテーブル
+    │   ├── create_quick_tasks_table.php    # クイックタスクテーブル
+    │   └── create_quick_task_tag_table.php # クイックタスク-タグ中間テーブル
     ├── Factories/
     │   ├── TodoFactory.php
     │   ├── TagFactory.php
@@ -171,6 +183,7 @@ app/Http/
 │   ├── CopingController.php        # コーピング操作API
 │   ├── CopingTagController.php     # コーピングタグ取得API
 │   ├── ColumnController.php        # コラム操作API
+│   ├── QuickTaskController.php     # クイックタスク操作API
 │   └── StatisticsController.php    # 統計情報API
 ├── Requests/
 │   ├── Todo/
@@ -183,8 +196,11 @@ app/Http/
 │   ├── Coping/
 │   │   ├── CreateCopingRequest.php
 │   │   └── UpdateCopingRequest.php
-│   └── Column/
-│       └── CreateColumnRequest.php
+│   ├── Column/
+│   │   └── CreateColumnRequest.php
+│   └── QuickTask/
+│       ├── CreateQuickTaskRequest.php
+│       └── UpdateQuickTaskRequest.php
 └── Resources/
     ├── TodoResource.php            # TODOレスポンス形式
     ├── TagResource.php             # タグレスポンス形式
