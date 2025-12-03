@@ -17,7 +17,8 @@
       "value": "base64:BDBSUnUkGj92CHz0jb5yrvAkUcIbZf3azlPmBDSalos="
     },
     "DB_CONNECTION": "pgsql",
-    "SESSION_DRIVER": "file"
+    "SESSION_DRIVER": "file",
+    "USE_BASIC_AUTH": "false"
   },
   "scripts": {
     "postdeploy": "php artisan migrate --force && php artisan db:seed --force"
