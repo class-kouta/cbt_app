@@ -8,6 +8,7 @@ use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\QuickTaskController;
+use App\Http\Controllers\WritingDisclosureController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
@@ -44,4 +45,10 @@ Route::get('/quick-tasks', [QuickTaskController::class, 'index']);
 Route::post('/quick-tasks', [QuickTaskController::class, 'store']);
 Route::put('/quick-tasks/{quickTask}', [QuickTaskController::class, 'update']);
 Route::delete('/quick-tasks/{quickTask}', [QuickTaskController::class, 'destroy']);
+
+// WritingDisclosure API（筆記開示）
+Route::get('/writing-disclosures', [WritingDisclosureController::class, 'index']);
+Route::post('/writing-disclosures', [WritingDisclosureController::class, 'store']);
+Route::put('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'update']);
+Route::delete('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'destroy']);
 

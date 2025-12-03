@@ -30,12 +30,14 @@ app/Domain/
 │   ├── Coping.php                  # コーピングエンティティ
 │   ├── CopingTag.php               # コーピングタグエンティティ
 │   ├── Column.php                  # コラム（7カラム法）エンティティ
-│   └── QuickTask.php               # クイックタスクエンティティ
+│   ├── QuickTask.php               # クイックタスクエンティティ
+│   └── WritingDisclosure.php       # 筆記開示エンティティ
 ├── ValueObject/
 │   ├── CompletionStatus.php        # 完了状態値オブジェクト
 │   ├── TodoContent.php             # TODOコンテンツ値オブジェクト
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
-│   └── QuickTaskContent.php        # クイックタスクコンテンツ値オブジェクト
+│   ├── QuickTaskContent.php        # クイックタスクコンテンツ値オブジェクト
+│   └── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
 ├── Service/
 │   ├── CompletedTodoAggregationService.php    # 完了TODO集計サービス
 │   ├── AchievementCalculationService.php      # 達成感算出サービス
@@ -47,7 +49,8 @@ app/Domain/
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
-    └── QuickTaskRepositoryInterface.php   # クイックタスクリポジトリインターフェース
+    ├── QuickTaskRepositoryInterface.php   # クイックタスクリポジトリインターフェース
+    └── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
 ```
 
 **特徴：**
@@ -83,6 +86,10 @@ app/Application/
 │   │   ├── CreateQuickTaskUseCase.php      # クイックタスク作成
 │   │   ├── UpdateQuickTaskUseCase.php      # クイックタスク更新
 │   │   └── DeleteQuickTaskUseCase.php      # クイックタスク削除
+│   ├── WritingDisclosure/
+│   │   ├── CreateWritingDisclosureUseCase.php  # 筆記開示作成
+│   │   ├── UpdateWritingDisclosureUseCase.php  # 筆記開示更新
+│   │   └── DeleteWritingDisclosureUseCase.php  # 筆記開示削除
 │   └── Statistics/
 │       ├── GetCompletedTodoStatisticsUseCase.php  # 完了TODO統計取得
 │       └── SearchCompletedTodosUseCase.php        # 完了TODO検索
@@ -92,6 +99,7 @@ app/Application/
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
 │   ├── QuickTaskData.php                   # クイックタスクデータ転送用
+│   ├── WritingDisclosureData.php           # 筆記開示データ転送用
 │   └── StatisticsData.php                  # 統計データ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
@@ -122,7 +130,8 @@ app/Infrastructure/
 │   ├── EloquentCopingRepository.php     # コーピングリポジトリ実装
 │   ├── EloquentCopingTagRepository.php  # コーピングタグリポジトリ実装
 │   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
-│   └── EloquentQuickTaskRepository.php  # クイックタスクリポジトリ実装
+│   ├── EloquentQuickTaskRepository.php  # クイックタスクリポジトリ実装
+│   └── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
 ├── Providers/
 │   ├── DomainServiceProvider.php        # ドメインサービス登録
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
@@ -134,7 +143,8 @@ app/Infrastructure/
     │   ├── Coping.php                      # コーピングモデル
     │   ├── CopingTag.php                   # コーピングタグモデル
     │   ├── Column.php                      # コラムモデル
-    │   └── QuickTask.php                   # クイックタスクモデル
+    │   ├── QuickTask.php                   # クイックタスクモデル
+    │   └── WritingDisclosure.php           # 筆記開示モデル
 
     ├── Migrations/
     │   ├── create_todos_table.php          # TODOテーブル
@@ -184,6 +194,7 @@ app/Http/
 │   ├── CopingTagController.php     # コーピングタグ取得API
 │   ├── ColumnController.php        # コラム操作API
 │   ├── QuickTaskController.php     # クイックタスク操作API
+│   ├── WritingDisclosureController.php # 筆記開示操作API
 │   └── StatisticsController.php    # 統計情報API
 ├── Requests/
 │   ├── Todo/
@@ -198,9 +209,12 @@ app/Http/
 │   │   └── UpdateCopingRequest.php
 │   ├── Column/
 │   │   └── CreateColumnRequest.php
-│   └── QuickTask/
-│       ├── CreateQuickTaskRequest.php
-│       └── UpdateQuickTaskRequest.php
+│   ├── QuickTask/
+│   │   ├── CreateQuickTaskRequest.php
+│   │   └── UpdateQuickTaskRequest.php
+│   └── WritingDisclosure/
+│       ├── CreateWritingDisclosureRequest.php
+│       └── UpdateWritingDisclosureRequest.php
 └── Resources/
     ├── TodoResource.php            # TODOレスポンス形式
     ├── TagResource.php             # タグレスポンス形式

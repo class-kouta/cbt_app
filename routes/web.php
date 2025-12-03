@@ -40,3 +40,18 @@ Route::get('/columns/{id}', function ($id) {
 Route::get('/quick-tasks', function () {
     return view('quick-tasks');
 });
+
+// 筆記開示ページ
+Route::get('/writing-disclosures', function () {
+    return view('writing-disclosures');
+});
+
+// 筆記開示一覧ページ
+Route::get('/writing-disclosures/list', function () {
+    return view('writing-disclosures-list');
+});
+
+// 筆記開示詳細ページ
+Route::get('/writing-disclosures/{id}', function ($id) {
+    return view('writing-disclosure-detail', ['itemId' => $id]);
+})->where('id', '[0-9]+');

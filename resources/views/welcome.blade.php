@@ -82,8 +82,8 @@
                 </a>
 
                 <!-- Coping List Card -->
-                <a href="/copings" class="block group md:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <a href="/copings" class="block group">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Coping List Icon -->
                             <div class="w-16 h-16 mb-6 text-purple-600">
@@ -92,6 +92,25 @@
                                 </svg>
                             </div>
                             <h2 class="text-2xl font-bold text-gray-900">コーピングリスト</h2>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Writing Disclosure Card -->
+                <a href="/writing-disclosures" class="block group">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+                        <div class="flex flex-col items-center text-center">
+                            <!-- Writing Disclosure Icon -->
+                            <div class="w-16 h-16 mb-6 text-orange-600">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900">筆記開示</h2>
                         </div>
                     </div>
                 </a>

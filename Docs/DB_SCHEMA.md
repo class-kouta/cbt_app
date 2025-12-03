@@ -71,8 +71,20 @@
 - tag_id — bigint, 複合主キー, 外部キー → tags.id
 
 ---
+## writing_disclosures（筆記開示）
+- id — bigint, 主キー
+- content — text, NOT NULL（メモ内容）
+- created_at / updated_at — timestamp
+
+**用途:**
+- 反芻思考が止まらない時に、頭の中のモヤモヤを書き出して外在化する
+- 思考を言語化することで、客観的に見つめ直すことができる
+- 心理療法における「筆記開示（expressive writing）」の技法を実践
+
+---
 ### 補足メモ
 - `todo_tag` は複合主キー (todo_id, tag_id) で重複登録を防止します。
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグはtodosのタグとは独立して管理されます。
 - `quick_tasks` は TODO のテンプレートとして機能し、TODO とは独立して管理されます。
+- `writing_disclosures` は反芻思考の外在化のための筆記開示記録として機能します。
