@@ -55,3 +55,23 @@ Route::get('/writing-disclosures/list', function () {
 Route::get('/writing-disclosures/{id}', function ($id) {
     return view('writing-disclosure-detail', ['itemId' => $id]);
 })->where('id', '[0-9]+');
+
+// 問題解決法作成ページ
+Route::get('/problem-solvings', function () {
+    return view('problem-solving-edit');
+});
+
+// 問題解決法一覧ページ
+Route::get('/problem-solvings/list', function () {
+    return view('problem-solvings-list');
+});
+
+// 問題解決法詳細ページ
+Route::get('/problem-solvings/{id}', function ($id) {
+    return view('problem-solving-detail', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
+// 問題解決法編集ページ
+Route::get('/problem-solvings/{id}/edit', function ($id) {
+    return view('problem-solving-edit', ['itemId' => $id]);
+})->where('id', '[0-9]+');

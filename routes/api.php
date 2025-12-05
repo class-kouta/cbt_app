@@ -9,6 +9,7 @@ use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\QuickTaskController;
 use App\Http\Controllers\WritingDisclosureController;
+use App\Http\Controllers\ProblemSolvingController;
 
 // Todo API
 Route::get('/todos', [TodoController::class, 'index']);
@@ -52,3 +53,13 @@ Route::post('/writing-disclosures', [WritingDisclosureController::class, 'store'
 Route::put('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'update']);
 Route::delete('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'destroy']);
 
+// ProblemSolving API（問題解決法）
+Route::get('/problem-solvings', [ProblemSolvingController::class, 'index']);
+Route::get('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'show']);
+Route::post('/problem-solvings', [ProblemSolvingController::class, 'store']);
+Route::put('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'update']);
+Route::delete('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'destroy']);
+// 解決策
+Route::post('/problem-solvings/{problemSolving}/solutions', [ProblemSolvingController::class, 'addSolution']);
+Route::put('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'updateSolution']);
+Route::delete('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'deleteSolution']);
