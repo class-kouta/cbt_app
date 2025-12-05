@@ -75,3 +75,32 @@ Route::get('/problem-solvings/{id}', function ($id) {
 Route::get('/problem-solvings/{id}/edit', function ($id) {
     return view('problem-solving-edit', ['itemId' => $id]);
 })->where('id', '[0-9]+');
+
+// ===========================================
+// 管理画面ルート
+// ===========================================
+
+// 管理メニュー
+Route::get('/siteAdmPanel63/menu', function () {
+    return view('admin.menu');
+});
+
+// TODO管理メニュー
+Route::get('/siteAdmPanel63/todo/menu', function () {
+    return view('admin.todo.menu');
+});
+
+// TODOタグ管理
+Route::get('/siteAdmPanel63/todo/tag', function () {
+    return view('admin.todo.tag');
+});
+
+// コーピングリスト管理メニュー
+Route::get('/siteAdmPanel63/coping/menu', function () {
+    return view('admin.coping.menu');
+});
+
+// コーピングリストタグ管理
+Route::get('/siteAdmPanel63/coping/tag', function () {
+    return view('admin.coping.tag');
+});
