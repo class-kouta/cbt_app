@@ -58,7 +58,7 @@
 
                 <!-- タグ選択 -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">タグ <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">タグ</label>
                     <div class="flex flex-wrap gap-2">
                         <template x-for="tag in tags" :key="tag.id">
                             <label class="cursor-pointer">
@@ -76,7 +76,7 @@
                             </label>
                         </template>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">※ 1つ以上選択してください</p>
+                    <p x-show="tags.length === 0" class="text-xs text-gray-500 mt-1">タグがありません。<a href="/siteAdmPanel63/todo/tag" class="text-indigo-600 hover:text-indigo-800 underline">追加する</a></p>
                 </div>
 
                 <!-- クイックタスク -->
@@ -279,10 +279,6 @@ function todoApp() {
             }
             if (!this.newTodo.difficulty_id) {
                 this.error = '難易度を選択してください';
-                return;
-            }
-            if (this.newTodo.tag_ids.length === 0) {
-                this.error = 'タグを1つ以上選択してください';
                 return;
             }
 

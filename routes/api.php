@@ -19,8 +19,13 @@ Route::patch('/todos/{todo}/complete', [TodoController::class, 'complete']);
 Route::patch('/todos/{todo}/uncomplete', [TodoController::class, 'uncomplete']);
 Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);
 
-// Tag API（一覧取得のみ）
+// Tag API
 Route::get('/tags', [TagController::class, 'index']);
+Route::get('/tags/with-trashed', [TagController::class, 'indexWithTrashed']);
+Route::post('/tags', [TagController::class, 'store']);
+Route::put('/tags/{id}', [TagController::class, 'update']);
+Route::delete('/tags/{id}', [TagController::class, 'destroy']);
+Route::post('/tags/{id}/restore', [TagController::class, 'restore']);
 
 // Difficulty API（一覧取得のみ）
 Route::get('/difficulties', [DifficultyController::class, 'index']);
