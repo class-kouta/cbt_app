@@ -8,10 +8,10 @@
 ## 使い所
 - 任意のタグ一覧、任意のIDリストなど「送られないこともある」「空配列＝選択なし」とみなしたいケース。
 
-## 具体例（`CreateTodoRequest`）
+## 具体例（`CreateCopingRequest`）
 
 ```php
-// app/Http/Requests/Todo/CreateTodoRequest.php（抜粋）
+// app/Http/Requests/Coping/CreateCopingRequest.php（抜粋）
 return [
     'difficulty_id' => ['required', 'integer', 'min:1'],
     'content' => ['required', 'string', 'max:10000'],

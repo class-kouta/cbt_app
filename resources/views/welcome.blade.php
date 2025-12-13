@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>達成感を味わえるTODOリストアプリ</title>
+        <title>CBTアプリ</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -48,22 +48,6 @@
         <main class="container mx-auto px-4 py-12 lg:py-20">
             <!-- Cards Grid -->
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <!-- Todo Card -->
-                <a href="/todos" class="block group">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
-                        <div class="flex flex-col items-center text-center">
-                            <!-- Todo Icon -->
-                            <div class="w-16 h-16 mb-6 text-blue-600">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                                    <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <h2 class="text-2xl font-bold text-gray-900">TODO</h2>
-                        </div>
-                    </div>
-                </a>
-
                 <!-- Column Method (CBT) Card -->
                 <a href="/columns" class="block group">
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
@@ -134,7 +118,7 @@
 
         <!-- Footer -->
         <footer class="mt-12 py-8 text-center text-sm text-gray-600">
-            <p>&copy; 2025 達成感を味わえるTODOリストアプリ. All rights reserved.</p>
+            <p>&copy; 2025 CBTアプリ. All rights reserved.</p>
         </footer>
     </body>
 </html>

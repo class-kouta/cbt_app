@@ -1,6 +1,6 @@
 {
-  "name": "todo-and-done-list",
-  "description": "Review app for todo-and-done-list application.",
+  "name": "cbt-app",
+  "description": "Review app for CBT application.",
   "addons": [
     {
       "plan": "heroku-postgresql:essential-0"
