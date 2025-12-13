@@ -26,7 +26,9 @@ app/Domain/
 │   ├── Coping.php                  # コーピングエンティティ
 │   ├── CopingTag.php               # コーピングタグエンティティ
 │   ├── Column.php                  # コラム（7カラム法）エンティティ
-│   └── WritingDisclosure.php       # 筆記開示エンティティ
+│   ├── WritingDisclosure.php       # 筆記開示エンティティ
+│   ├── ProblemSolving.php          # 問題解決法エンティティ
+│   └── ProblemSolvingSolution.php  # 問題解決法の解決策エンティティ
 ├── ValueObject/
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
 │   └── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
@@ -34,7 +36,8 @@ app/Domain/
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
-    └── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
+    ├── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
+    └── ProblemSolvingRepositoryInterface.php    # 問題解決法リポジトリインターフェース
 ```
 
 **特徴：**
@@ -55,14 +58,24 @@ app/Application/
 │   │   └── DeleteCopingUseCase.php         # コーピング削除
 │   ├── Column/
 │   │   ├── CreateColumnUseCase.php         # コラム作成
+│   │   ├── UpdateColumnUseCase.php         # コラム更新
 │   │   └── DeleteColumnUseCase.php         # コラム削除
 │   ├── WritingDisclosure/
 │   │   ├── CreateWritingDisclosureUseCase.php  # 筆記開示作成
 │   │   ├── UpdateWritingDisclosureUseCase.php  # 筆記開示更新
 │   │   └── DeleteWritingDisclosureUseCase.php  # 筆記開示削除
+│   └── ProblemSolving/
+│       ├── CreateProblemSolvingUseCase.php     # 問題解決法作成
+│       ├── UpdateProblemSolvingUseCase.php     # 問題解決法更新
+│       ├── DeleteProblemSolvingUseCase.php     # 問題解決法削除
+│       ├── AddSolutionUseCase.php              # 解決策追加
+│       ├── UpdateSolutionUseCase.php           # 解決策更新
+│       └── DeleteSolutionUseCase.php           # 解決策削除
 ├── DTO/                                    # データ転送オブジェクト
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
+│   ├── ProblemSolvingData.php              # 問題解決法データ転送用
+│   └── ProblemSolvingSolutionData.php      # 問題解決法の解決策データ転送用
 │   ├── WritingDisclosureData.php           # 筆記開示データ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
@@ -90,32 +103,18 @@ app/Infrastructure/
 │   ├── EloquentCopingRepository.php     # コーピングリポジトリ実装
 │   ├── EloquentCopingTagRepository.php  # コーピングタグリポジトリ実装
 │   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
-│   └── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
+│   ├── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
+│   └── EloquentProblemSolvingRepository.php    # 問題解決法リポジトリ実装
 ├── Providers/
-│   ├── DomainServiceProvider.php        # ドメインサービス登録
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
 └── Database/
-    ├── Models/
-    │   ├── Coping.php                      # コーピングモデル
-    │   ├── CopingTag.php                   # コーピングタグモデル
-    │   ├── Column.php                      # コラムモデル
-    │   └── WritingDisclosure.php           # 筆記開示モデル
-
-    ├── Migrations/
-    │   ├── create_copings_table.php        # コーピングテーブル
-    │   ├── create_coping_tags_table.php    # コーピングタグテーブル
-    │   ├── create_coping_coping_tag_table.php  # コーピング-コーピングタグ中間テーブル
-    │   ├── create_columns_table.php        # コラムテーブル
-    ├── Factories/
-    │   ├── CopingFactory.php
-    │   ├── CopingTagFactory.php
-    │   └── ColumnFactory.php
-
-    └── Seeders/
-        ├── CopingSeeder.php
-        ├── CopingTagSeeder.php
-        ├── ColumnSeeder.php
-        └── DatabaseSeeder.php              # 移動元: database/seeders/
+    └── Models/
+        ├── Coping.php                      # コーピングモデル
+        ├── CopingTag.php                   # コーピングタグモデル
+        ├── Column.php                      # コラムモデル
+        ├── WritingDisclosure.php           # 筆記開示モデル
+        ├── ProblemSolving.php              # 問題解決法モデル
+        └── ProblemSolvingSolution.php      # 問題解決法の解決策モデル
 ```
 
 **特徴：**
@@ -134,24 +133,26 @@ app/Http/
 │   ├── CopingTagController.php     # コーピングタグ取得API
 │   ├── ColumnController.php        # コラム操作API
 │   ├── WritingDisclosureController.php # 筆記開示操作API
-│   └── StatisticsController.php    # 統計情報API
+│   └── ProblemSolvingController.php    # 問題解決法操作API
 ├── Requests/
-│   ├── Tag/
-│   │   ├── CreateTagRequest.php
-│   │   └── UpdateTagRequest.php
 │   ├── Coping/
 │   │   ├── CreateCopingRequest.php
 │   │   └── UpdateCopingRequest.php
 │   ├── Column/
-│   │   └── CreateColumnRequest.php
-│   └── WritingDisclosure/
-│       ├── CreateWritingDisclosureRequest.php
-│       └── UpdateWritingDisclosureRequest.php
+│   │   ├── CreateColumnRequest.php
+│   │   └── UpdateColumnRequest.php
+│   ├── WritingDisclosure/
+│   │   ├── CreateWritingDisclosureRequest.php
+│   │   └── UpdateWritingDisclosureRequest.php
+│   └── ProblemSolving/
+│       ├── CreateProblemSolvingRequest.php
+│       ├── UpdateProblemSolvingRequest.php
+│       ├── AddSolutionRequest.php
+│       └── UpdateSolutionRequest.php
 └── Resources/
     ├── CopingResource.php          # コーピングレスポンス形式
     ├── CopingTagResource.php       # コーピングタグレスポンス形式
-    ├── ColumnResource.php          # コラムレスポンス形式
-    └── StatisticsResource.php      # 統計情報レスポンス形式
+    └── ColumnResource.php          # コラムレスポンス形式
 ```
 
 **特徴：**
@@ -240,13 +241,13 @@ app/Providers/
 public function register()
 {
     $this->app->bind(
-        TodoRepositoryInterface::class,
-        EloquentTodoRepository::class
+        CopingRepositoryInterface::class,
+        EloquentCopingRepository::class
     );
 
     $this->app->bind(
-        TagRepositoryInterface::class,
-        EloquentTagRepository::class
+        CopingTagRepositoryInterface::class,
+        EloquentCopingTagRepository::class
     );
 }
 ```
@@ -283,11 +284,22 @@ tests/
 ### コラム法機能（実装済み）
 1. **Phase 1**: Columnエンティティとリポジトリの作成
 2. **Phase 2**: マイグレーションとモデルの作成
-3. **Phase 3**: ユースケース（作成、削除）の実装
+3. **Phase 3**: ユースケース（作成、更新、削除）の実装
+4. **Phase 4**: API エンドポイントの実装
+
+### 筆記開示機能（実装済み）
+1. **Phase 1**: WritingDisclosureエンティティとリポジトリの作成
+2. **Phase 2**: マイグレーションとモデルの作成
+3. **Phase 3**: ユースケース（作成、更新、削除）の実装
+4. **Phase 4**: API エンドポイントの実装
+
+### 問題解決法機能（実装済み）
+1. **Phase 1**: ProblemSolving, ProblemSolvingSolutionエンティティとリポジトリの作成
+2. **Phase 2**: マイグレーションとモデルの作成
+3. **Phase 3**: ユースケース（作成、更新、削除、解決策管理）の実装
 4. **Phase 4**: API エンドポイントの実装
 
 ### 今後の拡張予定
-- コラム法の編集機能
 - コーピングリストの検索・フィルタリング機能
 - 認知の歪みパターンの分析機能
 

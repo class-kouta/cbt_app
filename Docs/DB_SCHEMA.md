@@ -50,7 +50,6 @@
 ## problem_solvings（問題解決法）
 - id — bigint, 主キー
 - problem_situation — text, NOT NULL（問題状況）
-- self_talk — text, NULL可（自分への声かけ）
 - improved_image — text, NULL可（改善イメージ）
 - action_plan — text, NULL可（実行計画）
 - reflection — text, NULL可（振り返り）

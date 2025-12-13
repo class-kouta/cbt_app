@@ -22,16 +22,16 @@
 6. 生成はコンストラクタに集約し、副作用を持たない。
 
 ## サンプル
-アプリケーション層の`TodoData`は以下方針に基づく実装とする。
+アプリケーション層の`CopingData`は以下方針に基づく実装とする。
 
 ```php
 namespace App\Application\DTO;
 
-readonly class TodoData
+readonly class CopingData
 {
     public function __construct(
-        public int $difficultyId,
         public string $content,
+        public ?int $point,
         /** @var int[] */
         public array $tagIds = []
     ) {

@@ -7,12 +7,7 @@
     <!-- ページタイトルと説明 -->
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-2">⚡ クイックタスク</h1>
-        <p class="text-gray-600 text-sm">よく使うタスクを登録しておくと、TODOページでワンタップで追加できます！</p>
-        <div class="mt-2 text-right">
-            <a href="/todos" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors text-sm">
-                TODOリストへ →
-            </a>
-        </div>
+        <p class="text-gray-600 text-sm">よく使うタスクを登録しておくと便利です！</p>
     </div>
 
     <!-- 新規クイックタスク作成フォーム -->
@@ -142,7 +137,7 @@
                                         >
                                         <span
                                             class="inline-block px-2 py-0.5 rounded text-xs font-semibold transition-all"
-                                            :style="{ 
+                                            :style="{
                                                 'background-color': editDifficultyId === difficulty.id ? difficulty.color : 'transparent',
                                                 'color': editDifficultyId === difficulty.id ? 'white' : difficulty.color,
                                                 'border': '1px solid ' + difficulty.color
