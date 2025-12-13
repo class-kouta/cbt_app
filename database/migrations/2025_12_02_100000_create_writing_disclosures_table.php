@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('writing_disclosures', function (Blueprint $table) {
             $table->id();
             $table->text('content')->comment('メモ内容');
-            $table->text('note')->nullable()->comment('備考欄');
             $table->timestamps();
         });
     }

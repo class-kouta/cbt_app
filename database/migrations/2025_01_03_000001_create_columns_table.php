@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('columns', function (Blueprint $table) {
             $table->id();
-            $table->text('situation');              // 状況：気持ちが動揺したときの一場面
-            $table->text('mood');                   // 気分：そのときの気持ち
-            $table->text('automatic_thought');      // 自動思考
-            $table->text('evidence');               // 根拠：自動思考を裏付ける具体的な事実
-            $table->text('counter_evidence');       // 反証：自動思考と反対の事実
-            $table->text('adaptive_thought');       // 適応的思考：バランスのよい考え
-            $table->text('current_mood');           // いまの気分
+            $table->text('situation');                        // 状況：気持ちが動揺したときの一場面（必須）
+            $table->text('mood')->nullable();                 // 気分：そのときの気持ち
+            $table->text('automatic_thought')->nullable();    // 自動思考
+            $table->text('evidence')->nullable();             // 根拠：自動思考を裏付ける具体的な事実
+            $table->text('counter_evidence')->nullable();     // 反証：自動思考と反対の事実
+            $table->text('adaptive_thought')->nullable();     // 適応的思考：バランスのよい考え
+            $table->text('current_mood')->nullable();         // いまの気分
             $table->timestamps();
         });
     }
