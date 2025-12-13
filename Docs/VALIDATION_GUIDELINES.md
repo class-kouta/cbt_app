@@ -62,23 +62,24 @@
 
 ---
 
-## 具体例（TODO作成）
+## 具体例（コーピング作成）
 
-### FormRequest（例: `CreateTodoRequest`）
+### FormRequest（例: `CreateCopingRequest`）
 - ルール例（概念レベル）
   - `content`: required|string|max:1000
-  - `difficulty_id`: nullable|integer （`exists:difficulties,id` を付与可）
+  - `point`: nullable|integer|min:0
   - `tags`: nullable|array|max:20
-  - `tags.*`: integer|distinct （`exists:tags,id` を付与可）
+  - `tags.*`: integer|distinct （`exists:coping_tags,id` を付与可）
 - 目的: 型・形式・サイズの早期フィードバック、存在チェックの早期失敗
 
-### 値オブジェクト（例: `CompletionStatus`）
-- 許容値: `incomplete` / `completed`（日本語表記の場合は `未完了` / `完了` など、どちらかに統一）
+### 値オブジェクト（例: `CopingContent`）
+- 空文字列不可
+- 最大文字数制限（1000文字など）
 - 不正値は生成不可（例外）
 
 ### ユースケース
-- `difficulty_id`/`tags` の存在整合性を最終確認
-- 業務ルールの検証（例: 作成時は `completed_at` を設定不可）
+- `tags` の存在整合性を最終確認
+- 業務ルールの検証（例: ポイントは負の値を許容しない）
 
 ---
 

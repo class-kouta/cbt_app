@@ -3,7 +3,6 @@
 ## 概要
 
 ドメインモデル仕様書に基づいて、DDD（ドメイン駆動設計）の原則に従ったLaravelプロジェクトのディレクトリ構成を提案します。
-当初はTODO機能のみを想定していましたが、現在は認知行動療法（CBT）やコーピングリストなど、心理療法機能も統合しています。
 
 ## 全体構成図
 
@@ -24,32 +23,17 @@ app/
 ```
 app/Domain/
 ├── Entity/
-│   ├── Todo.php                    # TODOエンティティ
-│   ├── Tag.php                     # タグエンティティ
-│   ├── Difficulty.php              # 難易度エンティティ
 │   ├── Coping.php                  # コーピングエンティティ
 │   ├── CopingTag.php               # コーピングタグエンティティ
 │   ├── Column.php                  # コラム（7カラム法）エンティティ
-│   ├── QuickTask.php               # クイックタスクエンティティ
 │   └── WritingDisclosure.php       # 筆記開示エンティティ
 ├── ValueObject/
-│   ├── CompletionStatus.php        # 完了状態値オブジェクト
-│   ├── TodoContent.php             # TODOコンテンツ値オブジェクト
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
-│   ├── QuickTaskContent.php        # クイックタスクコンテンツ値オブジェクト
 │   └── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
-├── Service/
-│   ├── CompletedTodoAggregationService.php    # 完了TODO集計サービス
-│   ├── AchievementCalculationService.php      # 達成感算出サービス
-│   └── TodoSearchService.php                  # TODO検索サービス
 └── Repository/
-    ├── TodoRepositoryInterface.php        # TODOリポジトリインターフェース
-    ├── TagRepositoryInterface.php         # タグリポジトリインターフェース
-    ├── DifficultyRepositoryInterface.php  # 難易度リポジトリインターフェース
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
-    ├── QuickTaskRepositoryInterface.php   # クイックタスクリポジトリインターフェース
     └── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
 ```
 
@@ -65,16 +49,6 @@ app/Domain/
 ```
 app/Application/
 ├── UseCase/
-│   ├── Todo/
-│   │   ├── CreateTodoUseCase.php           # TODO作成
-│   │   ├── UpdateTodoUseCase.php           # TODO更新
-│   │   ├── CompleteTodoUseCase.php         # TODO完了
-│   │   ├── DeleteTodoUseCase.php           # TODO削除
-│   │   └── GetTodoListUseCase.php          # TODO一覧取得
-│   ├── Tag/
-│   │   ├── CreateTagUseCase.php            # タグ作成
-│   │   ├── UpdateTagUseCase.php            # タグ更新
-│   │   └── DeleteTagUseCase.php            # タグ削除
 │   ├── Coping/
 │   │   ├── CreateCopingUseCase.php         # コーピング作成
 │   │   ├── UpdateCopingUseCase.php         # コーピング更新
@@ -82,25 +56,14 @@ app/Application/
 │   ├── Column/
 │   │   ├── CreateColumnUseCase.php         # コラム作成
 │   │   └── DeleteColumnUseCase.php         # コラム削除
-│   ├── QuickTask/
-│   │   ├── CreateQuickTaskUseCase.php      # クイックタスク作成
-│   │   ├── UpdateQuickTaskUseCase.php      # クイックタスク更新
-│   │   └── DeleteQuickTaskUseCase.php      # クイックタスク削除
 │   ├── WritingDisclosure/
 │   │   ├── CreateWritingDisclosureUseCase.php  # 筆記開示作成
 │   │   ├── UpdateWritingDisclosureUseCase.php  # 筆記開示更新
 │   │   └── DeleteWritingDisclosureUseCase.php  # 筆記開示削除
-│   └── Statistics/
-│       ├── GetCompletedTodoStatisticsUseCase.php  # 完了TODO統計取得
-│       └── SearchCompletedTodosUseCase.php        # 完了TODO検索
 ├── DTO/                                    # データ転送オブジェクト
-│   ├── TodoData.php                        # TODOデータ転送用
-│   ├── TagData.php                         # タグデータ転送用
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
-│   ├── QuickTaskData.php                   # クイックタスクデータ転送用
 │   ├── WritingDisclosureData.php           # 筆記開示データ転送用
-│   └── StatisticsData.php                  # 統計データ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
 ```
@@ -124,51 +87,31 @@ app/Application/
 ```
 app/Infrastructure/
 ├── Repository/
-│   ├── EloquentTodoRepository.php       # TODOリポジトリ実装
-│   ├── EloquentTagRepository.php        # タグリポジトリ実装
-│   ├── EloquentDifficultyRepository.php # 難易度リポジトリ実装
 │   ├── EloquentCopingRepository.php     # コーピングリポジトリ実装
 │   ├── EloquentCopingTagRepository.php  # コーピングタグリポジトリ実装
 │   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
-│   ├── EloquentQuickTaskRepository.php  # クイックタスクリポジトリ実装
 │   └── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
 ├── Providers/
 │   ├── DomainServiceProvider.php        # ドメインサービス登録
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
 └── Database/
     ├── Models/
-    │   ├── Todo.php                        # TODOモデル
-    │   ├── Tag.php                         # タグモデル
-    │   ├── Difficulty.php                  # 難易度モデル
     │   ├── Coping.php                      # コーピングモデル
     │   ├── CopingTag.php                   # コーピングタグモデル
     │   ├── Column.php                      # コラムモデル
-    │   ├── QuickTask.php                   # クイックタスクモデル
     │   └── WritingDisclosure.php           # 筆記開示モデル
 
     ├── Migrations/
-    │   ├── create_todos_table.php          # TODOテーブル
-    │   ├── create_tags_table.php           # タグテーブル
-    │   ├── create_difficulties_table.php   # 難易度テーブル
-    │   ├── create_todo_tag_table.php       # TODO-タグ中間テーブル
     │   ├── create_copings_table.php        # コーピングテーブル
     │   ├── create_coping_tags_table.php    # コーピングタグテーブル
     │   ├── create_coping_coping_tag_table.php  # コーピング-コーピングタグ中間テーブル
     │   ├── create_columns_table.php        # コラムテーブル
-    │   ├── create_quick_tasks_table.php    # クイックタスクテーブル
-    │   └── create_quick_task_tag_table.php # クイックタスク-タグ中間テーブル
     ├── Factories/
-    │   ├── TodoFactory.php
-    │   ├── TagFactory.php
-    │   ├── DifficultyFactory.php
     │   ├── CopingFactory.php
     │   ├── CopingTagFactory.php
     │   └── ColumnFactory.php
 
     └── Seeders/
-        ├── TodoSeeder.php
-        ├── TagSeeder.php
-        ├── DifficultySeeder.php
         ├── CopingSeeder.php
         ├── CopingTagSeeder.php
         ├── ColumnSeeder.php
@@ -187,20 +130,12 @@ app/Infrastructure/
 ```
 app/Http/
 ├── Controllers/
-│   ├── TodoController.php          # TODO操作API
-│   ├── TagController.php           # タグ操作API
-│   ├── DifficultyController.php    # 難易度取得API
 │   ├── CopingController.php        # コーピング操作API
 │   ├── CopingTagController.php     # コーピングタグ取得API
 │   ├── ColumnController.php        # コラム操作API
-│   ├── QuickTaskController.php     # クイックタスク操作API
 │   ├── WritingDisclosureController.php # 筆記開示操作API
 │   └── StatisticsController.php    # 統計情報API
 ├── Requests/
-│   ├── Todo/
-│   │   ├── CreateTodoRequest.php
-│   │   ├── UpdateTodoRequest.php
-│   │   └── CompleteTodoRequest.php
 │   ├── Tag/
 │   │   ├── CreateTagRequest.php
 │   │   └── UpdateTagRequest.php
@@ -209,15 +144,10 @@ app/Http/
 │   │   └── UpdateCopingRequest.php
 │   ├── Column/
 │   │   └── CreateColumnRequest.php
-│   ├── QuickTask/
-│   │   ├── CreateQuickTaskRequest.php
-│   │   └── UpdateQuickTaskRequest.php
 │   └── WritingDisclosure/
 │       ├── CreateWritingDisclosureRequest.php
 │       └── UpdateWritingDisclosureRequest.php
 └── Resources/
-    ├── TodoResource.php            # TODOレスポンス形式
-    ├── TagResource.php             # タグレスポンス形式
     ├── CopingResource.php          # コーピングレスポンス形式
     ├── CopingTagResource.php       # コーピングタグレスポンス形式
     ├── ColumnResource.php          # コラムレスポンス形式
@@ -344,13 +274,6 @@ tests/
 
 ## 実装順序の提案
 
-### TODO管理機能（実装済み）
-1. **Phase 1**: ドメイン層の基本エンティティ作成
-2. **Phase 2**: インフラ層（マイグレーション、リポジトリ）
-3. **Phase 3**: アプリケーション層（ユースケース）
-4. **Phase 4**: プレゼンテーション層（API）
-5. **Phase 5**: ドメインサービス（統計機能など）
-
 ### コーピングリスト機能（実装済み）
 1. **Phase 1**: Copingエンティティとリポジトリの作成
 2. **Phase 2**: マイグレーションとモデルの作成
@@ -366,7 +289,6 @@ tests/
 ### 今後の拡張予定
 - コラム法の編集機能
 - コーピングリストの検索・フィルタリング機能
-- TODO統計機能の強化（期間別、タグ別集計）
 - 認知の歪みパターンの分析機能
 
-この構成により、仕様書で定義されたドメインモデルを適切に実装でき、TODO管理だけでなく心理療法機能も含めた総合的なメンタルヘルスサポートアプリとして、将来的な機能拡張にも柔軟に対応できます。
+この構成により、仕様書で定義されたドメインモデルを適切に実装でき、総合的なメンタルヘルスサポートアプリとして、将来的な機能拡張にも柔軟に対応できます。

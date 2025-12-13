@@ -362,4 +362,3 @@ app/Http/Resources/
 - [DOMAIN_MODEL.md](./DOMAIN_MODEL.md) - ドメインモデル仕様書
 - [DB_SCHEMA.md](./DB_SCHEMA.md) - データベーススキーマ定義
 - [DIRECTORY_STRUCTURE.md](./DIRECTORY_STRUCTURE.md) - ディレクトリ構成
-- [IMPLEMENTATION_STEPS_PHASE2_PROTOTYPE.md](./IMPLEMENTATION_STEPS_PHASE2_PROTOTYPE.md) - 実装ステップ

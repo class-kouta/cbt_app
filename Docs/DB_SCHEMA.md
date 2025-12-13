@@ -3,36 +3,6 @@
 最終決定したテーブル構成をまとめた DB 定義書です。スマートフォンでも読みやすいよう、各カラムはリスト形式で記述しています。
 
 ---
-## difficulties
-- id — bigint, 主キー（例: 1=小, 2=中, 3=大）
-- name — varchar(10), NOT NULL（表示名: 小 / 中 / 大）
-- points — tinyint, NOT NULL（1 / 2 / 3 など重み付け）
-- color — char(7), NULL 可（例: #FFAA00）
-- created_at / updated_at — timestamp
-
----
-## tags
-- id — bigint, 主キー
-- name — varchar(50), UNIQUE, NOT NULL
-- created_at / updated_at — timestamp
-
----
-## todos
-- id — bigint, 主キー
-- difficulty_id — bigint, 外部キー → difficulties.id
-- content — text, NOT NULL（タスク内容）
-- completed_at — timestamp, NULL 可（NULL = 未完了）
-- created_at / updated_at — timestamp
-
-インデックス:
-- completed_at
-
----
-## todo_tag (中間テーブル)
-- todo_id — bigint, 複合主キー, 外部キー → todos.id
-- tag_id — bigint, 複合主キー, 外部キー → tags.id
-
----
 ## coping_tags（コーピング専用タグ）
 - id — bigint, 主キー
 - name — varchar(50), UNIQUE, NOT NULL
@@ -54,21 +24,16 @@
 - coping_tag_id — bigint, 複合主キー, 外部キー → coping_tags.id
 
 ---
-## quick_tasks（クイックタスク）
+## columns（コラム法/7カラム法）
 - id — bigint, 主キー
-- content — text, NOT NULL（タスク内容のテンプレート）
-- difficulty_id — bigint, NULL可, 外部キー → difficulties.id（デフォルト難易度）
+- situation — text, NOT NULL（状況）
+- emotion — text, NULL可（感情）
+- automatic_thought — text, NULL可（自動思考）
+- evidence_for — text, NULL可（根拠）
+- evidence_against — text, NULL可（反証）
+- balanced_thought — text, NULL可（適応的思考）
+- action_plan — text, NULL可（今後の対応）
 - created_at / updated_at — timestamp
-
-**用途:**
-- 頻繁に登録するタスク（家事・育児など）を事前登録しておく
-- TODOページでワンタップで入力フォームに転記できる
-- 難易度とタグを事前設定しておくことで、さらに素早くTODO登録が可能
-
----
-## quick_task_tag（クイックタスク-タグ中間テーブル）
-- quick_task_id — bigint, 複合主キー, 外部キー → quick_tasks.id
-- tag_id — bigint, 複合主キー, 外部キー → tags.id
 
 ---
 ## writing_disclosures（筆記開示）
@@ -82,9 +47,28 @@
 - 心理療法における「筆記開示（expressive writing）」の技法を実践
 
 ---
+## problem_solvings（問題解決法）
+- id — bigint, 主キー
+- problem_situation — text, NOT NULL（問題状況）
+- self_talk — text, NULL可（自分への声かけ）
+- improved_image — text, NULL可（改善イメージ）
+- action_plan — text, NULL可（実行計画）
+- reflection — text, NULL可（振り返り）
+- created_at / updated_at — timestamp
+
+---
+## problem_solving_solutions（問題解決法の解決策）
+- id — bigint, 主キー
+- problem_solving_id — bigint, 外部キー → problem_solvings.id
+- content — text, NOT NULL（解決策の内容）
+- effectiveness — tinyint, NULL可（効果的か 0-100%）
+- feasibility — tinyint, NULL可（実行可能か 0-100%）
+- sort_order — integer, NOT NULL（表示順 1-7）
+- created_at / updated_at — timestamp
+
+---
 ### 補足メモ
-- `todo_tag` は複合主キー (todo_id, tag_id) で重複登録を防止します。
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
-- copingsのタグはtodosのタグとは独立して管理されます。
-- `quick_tasks` は TODO のテンプレートとして機能し、TODO とは独立して管理されます。
+- copingsのタグは独立して管理されます。
 - `writing_disclosures` は反芻思考の外在化のための筆記開示記録として機能します。
+- `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
