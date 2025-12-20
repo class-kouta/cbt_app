@@ -31,6 +31,15 @@
             </a>
         </div>
     </div>
+
+    <!-- 新規作成ボタン（フローティング） -->
+    <a
+        href="/writing-disclosures"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
+        title="新しい筆記開示を作成"
+    >
+        ＋
+    </a>
 </div>
 
 <style>
