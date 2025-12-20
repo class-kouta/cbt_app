@@ -21,7 +21,7 @@
     </div>
 
     <!-- フォーム -->
-    <div x-show="!loading || !isEditMode" class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-lg p-6 border border-emerald-100">
+    <div x-show="!loading || !isEditMode">
         <form @submit.prevent="saveProblemSolving()">
             <div class="space-y-6">
                 <!-- Step 1: 問題状況 -->

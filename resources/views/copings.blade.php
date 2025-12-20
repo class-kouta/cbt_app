@@ -5,7 +5,7 @@
 @section('content')
 <div x-data="copingApp()" x-init="init()" x-cloak>
     <!-- 新規コーピング作成フォーム -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="mb-6">
         <form @submit.prevent="createCoping()">
             <div class="space-y-4">
                 <!-- 内容 -->

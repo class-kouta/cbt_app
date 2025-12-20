@@ -52,7 +52,7 @@
         </div>
 
         <!-- 編集モード -->
-        <div x-show="editing" class="bg-white rounded-lg shadow-md p-6">
+        <div x-show="editing">
             <textarea
                 x-model="editContent"
                 rows="18"
@@ -60,9 +60,9 @@
                 maxlength="10000"
             ></textarea>
             <div class="text-xs text-gray-400 text-right mb-4" x-text="editContent.length + '/10000'"></div>
-            
+
             <div x-show="editError" class="text-red-500 text-sm mb-4" x-text="editError"></div>
-            
+
             <div class="flex gap-2">
                 <button
                     @click="saveEdit()"
@@ -102,14 +102,14 @@ function writingDisclosureDetailApp() {
         async loadItem() {
             this.loading = true;
             this.error = '';
-            
+
             try {
                 const id = {{ $itemId }};
                 const res = await fetch('/api/writing-disclosures');
                 const items = await res.json();
-                
+
                 this.item = items.find(item => item.id === id);
-                
+
                 if (!this.item) {
                     this.error = '記録が見つかりませんでした';
                 }
@@ -189,7 +189,7 @@ function writingDisclosureDetailApp() {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });
-                
+
                 window.location.href = '/writing-disclosures/list';
             } catch (e) {
                 console.error(e);
