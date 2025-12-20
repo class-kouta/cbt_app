@@ -3,12 +3,40 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>ココロの避難所</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=noto-sans-jp:400,500,600,700" rel="stylesheet" />
+
+        <!-- Tailwind CSS CDN for development -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <style>
+            [x-cloak] { display: none !important; }
+            .header-bg {
+                background-color: rgba(167, 212, 182, 0.7);
+            }
+            .menu-bg {
+                background-color: rgba(167, 212, 182, 0.85);
+            }
+            .slide-menu {
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .slide-menu.open {
+                transform: translateX(0);
+            }
+            .overlay {
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            }
+            .overlay.open {
+                opacity: 1;
+            }
+        </style>
 
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -19,73 +47,141 @@
             </style>
         @endif
     </head>
-    <body class="bg-gradient-to-br from-emerald-50 to-teal-50 min-h-screen">
-        <!-- Header -->
-        <header class="shadow-sm" style="background-color: rgba(167, 212, 182, 0.7);">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex justify-end gap-4">
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ url('/dashboard') }}" class="px-6 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-all duration-300">
-                                ダッシュボード
+    <body class="bg-gradient-to-br from-emerald-50 to-teal-50 min-h-screen flex flex-col">
+        <!-- Fixed Header -->
+        <nav class="header-bg text-gray-700 shadow-md fixed top-0 left-0 right-0 z-50" x-data="{ menuOpen: false }">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-14">
+                    <!-- Left side - empty -->
+                    <div class="flex items-center">
+                    </div>
+
+                    <!-- Right side - Hamburger menu button -->
+                    <div>
+                        <button
+                            @click="menuOpen = !menuOpen"
+                            class="p-2 rounded-md hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+                            aria-label="メニューを開く"
+                        >
+                            <!-- Hamburger icon -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Overlay -->
+                    <div
+                        x-show="menuOpen"
+                        x-cloak
+                        @click="menuOpen = false"
+                        class="fixed inset-0 bg-black/50 z-40"
+                        :class="menuOpen ? 'overlay open' : 'overlay'"
+                    ></div>
+
+                    <!-- Slide-in menu from right -->
+                    <div
+                        x-cloak
+                        :class="menuOpen ? 'slide-menu open' : 'slide-menu'"
+                        class="fixed top-0 right-0 h-full w-72 menu-bg shadow-2xl z-50"
+                    >
+                        <!-- Menu header with close button -->
+                        <div class="flex items-center justify-between h-14 px-4 border-b border-white/30">
+                            <span class="text-lg font-semibold text-gray-700">メニュー</span>
+                            <button
+                                @click="menuOpen = false"
+                                class="p-2 rounded-md hover:bg-white/30 transition-colors focus:outline-none"
+                                aria-label="メニューを閉じる"
+                            >
+                                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Menu items -->
+                        <nav class="py-4">
+                            <a href="/" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-white/40 transition-colors">
+                                <span class="text-2xl">🏠</span>
+                                <span class="font-medium text-lg">トップ</span>
                             </a>
-                        @else
-                            <a href="{{ route('login') }}" class="px-6 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-all duration-300">
-                                ログイン
+                            <a href="/copings" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-white/40 transition-colors">
+                                <span class="text-2xl">🌈</span>
+                                <span class="font-medium text-lg">コーピングリスト</span>
                             </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-6 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-all duration-300">
-                                    新規登録
-                                </a>
-                            @endif
-                        @endauth
-                    @endif
+                            <a href="/columns" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-white/40 transition-colors">
+                                <span class="text-2xl">📝</span>
+                                <span class="font-medium text-lg">コラム法</span>
+                            </a>
+                            <a href="/writing-disclosures" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-white/40 transition-colors">
+                                <span class="text-2xl">✍️</span>
+                                <span class="font-medium text-lg">筆記開示</span>
+                            </a>
+                            <a href="/problem-solvings" class="flex items-center gap-4 px-6 py-4 text-gray-700 hover:bg-white/40 transition-colors">
+                                <span class="text-2xl">💡</span>
+                                <span class="font-medium text-lg">問題解決法</span>
+                            </a>
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </header>
+        </nav>
+
+        <!-- Spacer for fixed header -->
+        <div class="h-14"></div>
 
         <!-- Main Content -->
-        <main class="container mx-auto px-4 py-12 lg:py-20">
-            <!-- Cards Grid -->
-            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <main class="container mx-auto px-4 py-8 lg:py-12 flex-grow">
+            <!-- Cards Grid - Always 2 columns for mobile friendliness -->
+            <div class="max-w-4xl mx-auto grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                 <!-- Column Method (CBT) Card -->
                 <a href="/columns" class="block group">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+                    <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- CBT Icon -->
-                            <div class="w-16 h-16 mb-6 text-emerald-600">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
-                                    <path d="M12 6C11.45 6 11 6.45 11 7V13C11 13.55 11.45 14 12 14C12.55 14 13 13.55 13 13V7C13 6.45 12.55 6 12 6Z" fill="currentColor"/>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 6V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     <circle cx="12" cy="17" r="1" fill="currentColor"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900">コラム法（CBT）</h2>
+                            <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">コラム法（CBT）</h2>
                         </div>
                     </div>
                 </a>
 
                 <!-- Coping List Card -->
                 <a href="/copings" class="block group">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+                    <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Coping List Icon -->
-                            <div class="w-16 h-16 mb-6 text-teal-600">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="currentColor"/>
+                                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900">コーピングリスト</h2>
+                            <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">コーピングリスト</h2>
                         </div>
                     </div>
                 </a>
 
                 <!-- Writing Disclosure Card -->
                 <a href="/writing-disclosures" class="block group">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+                    <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Writing Disclosure Icon -->
-                            <div class="w-16 h-16 mb-6 text-cyan-600">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -94,22 +190,22 @@
                                     <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900">筆記開示</h2>
+                            <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">筆記開示</h2>
                         </div>
                     </div>
                 </a>
 
                 <!-- Problem Solving Card -->
                 <a href="/problem-solvings" class="block group">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+                    <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Problem Solving Icon -->
-                            <div class="w-16 h-16 mb-6 text-green-600">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900">問題解決法</h2>
+                            <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">問題解決法</h2>
                         </div>
                     </div>
                 </a>
