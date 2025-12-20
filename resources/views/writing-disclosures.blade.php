@@ -5,15 +5,15 @@
 @section('content')
 <div x-data="writingDisclosureApp()" x-init="init()" x-cloak>
     <!-- 説明 -->
-    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-        <p class="text-orange-800 text-sm">
+    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+        <p class="text-emerald-800 text-sm">
             💭 頭の中でぐるぐる回っている考えを書き出して、外に出してみましょう。書くことで気持ちが整理されることがあります。
         </p>
     </div>
 
     <!-- 過去の記録へのリンク -->
     <div class="flex justify-end mb-4">
-        <a href="/writing-disclosures/list" class="text-orange-600 hover:text-orange-800 text-sm font-medium transition-colors flex items-center gap-1">
+        <a href="/writing-disclosures/list" class="text-teal-600 hover:text-teal-800 text-sm font-medium transition-colors flex items-center gap-1">
             📋 過去の記録を見る →
         </a>
     </div>
@@ -28,7 +28,7 @@
                     <textarea
                         x-model="newContent"
                         rows="18"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         placeholder="何でも自由に書いてください..."
                         maxlength="10000"
                         required
@@ -48,7 +48,7 @@
                 <div>
                     <button
                         type="submit"
-                        class="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+                        class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
                         :disabled="loading || !newContent.trim()"
                     >
                         <span x-show="!loading">書き出す 📝</span>

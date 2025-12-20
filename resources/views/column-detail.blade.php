@@ -6,7 +6,7 @@
 <div x-data="columnDetailApp()" x-init="init()" x-cloak>
     <!-- ローディング -->
     <div x-show="loading" class="text-center py-16">
-        <svg class="animate-spin h-8 w-8 mx-auto text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-8 w-8 mx-auto text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -16,7 +16,7 @@
     <div x-show="!loading && column" class="space-y-4">
         <!-- ヘッダー -->
         <div class="flex items-center justify-between mb-4">
-            <a href="/columns/list" class="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
+            <a href="/columns/list" class="text-teal-600 hover:text-teal-800 flex items-center gap-1 transition-colors">
                 ←
             </a>
             <div class="flex items-center gap-3">
@@ -25,7 +25,7 @@
                 <button
                     x-show="!isEditMode"
                     @click="isEditMode = true"
-                    class="text-indigo-600 hover:text-indigo-800 transition-colors p-2 rounded hover:bg-indigo-50"
+                    class="text-teal-600 hover:text-teal-800 transition-colors p-2 rounded hover:bg-teal-50"
                     title="編集する"
                 >
                     ✏️
@@ -42,30 +42,30 @@
 
         <!-- 閲覧モード -->
         <div x-show="!isEditMode" class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2"></div>
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2"></div>
             <div class="p-5 space-y-4">
                 <!-- 状況 -->
-                <div class="bg-indigo-50 rounded-lg p-4">
-                    <div class="text-xs font-semibold text-indigo-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">1</span>
+                <div class="bg-emerald-50 rounded-lg p-4">
+                    <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-xs">1</span>
                         状況
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="column?.situation || '未入力'"></p>
                 </div>
 
                 <!-- 気分 -->
-                <div class="bg-indigo-50 rounded-lg p-4">
-                    <div class="text-xs font-semibold text-indigo-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">2</span>
+                <div class="bg-emerald-50 rounded-lg p-4">
+                    <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-xs">2</span>
                         気分
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.mood ? 'text-gray-400' : ''" x-text="column?.mood || '未入力'"></p>
                 </div>
 
                 <!-- 自動思考 -->
-                <div class="bg-indigo-50 rounded-lg p-4">
-                    <div class="text-xs font-semibold text-indigo-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-xs">3</span>
+                <div class="bg-emerald-50 rounded-lg p-4">
+                    <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-xs">3</span>
                         自動思考
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.automatic_thought ? 'text-gray-400' : ''" x-text="column?.automatic_thought || '未入力'"></p>
@@ -74,18 +74,18 @@
                 <!-- 根拠と反証 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- 根拠 -->
-                    <div class="bg-amber-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-amber-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-xs">4</span>
+                    <div class="bg-teal-50 rounded-lg p-4">
+                        <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">4</span>
                             根拠
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.evidence ? 'text-gray-400' : ''" x-text="column?.evidence || '未入力'"></p>
                     </div>
 
                     <!-- 反証 -->
-                    <div class="bg-teal-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">5</span>
+                    <div class="bg-cyan-50 rounded-lg p-4">
+                        <div class="text-xs font-semibold text-cyan-600 mb-2 flex items-center gap-1">
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-cyan-600 text-white text-xs">5</span>
                             反証
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.counter_evidence ? 'text-gray-400' : ''" x-text="column?.counter_evidence || '未入力'"></p>
@@ -93,18 +93,18 @@
                 </div>
 
                 <!-- 適応的思考 -->
-                <div class="bg-emerald-50 rounded-lg p-4 border-2 border-emerald-200">
-                    <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-xs">6</span>
+                <div class="bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                    <div class="text-xs font-semibold text-green-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 text-white text-xs">6</span>
                         適応的思考 ✨
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere font-medium" :class="!column?.adaptive_thought ? 'text-gray-400' : ''" x-text="column?.adaptive_thought || '未入力'"></p>
                 </div>
 
                 <!-- いまの気分 -->
-                <div class="bg-pink-50 rounded-lg p-4">
-                    <div class="text-xs font-semibold text-pink-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white text-xs">7</span>
+                <div class="bg-lime-50 rounded-lg p-4">
+                    <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs">7</span>
                         いまの気分
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.current_mood ? 'text-gray-400' : ''" x-text="column?.current_mood || '未入力'"></p>
@@ -113,20 +113,20 @@
         </div>
 
         <!-- 編集モード -->
-        <div x-show="isEditMode" class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg p-6 border border-indigo-100">
+        <div x-show="isEditMode" class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-lg p-6 border border-emerald-100">
             <form @submit.prevent="updateColumn()">
                 <div class="space-y-5">
                     <!-- (1) 状況 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">1</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">1</span>
                             状況 <span class="text-red-500">*</span>
                             <span class="text-gray-400 font-normal ml-1">気持ちが動揺したときの一場面</span>
                         </label>
                         <textarea
                             x-model="editData.situation"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                             placeholder="例：会議で自分の意見を否定された"
                             maxlength="1000"
                             required
@@ -137,14 +137,14 @@
                     <!-- (2) 気分 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">2</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">2</span>
                             気分
                             <span class="text-gray-400 font-normal ml-1">そのときの気持ち</span>
                         </label>
                         <textarea
                             x-model="editData.mood"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                             placeholder="例：悲しい(80%) 恥ずかしい(60%)"
                             maxlength="500"
                         ></textarea>
@@ -154,14 +154,14 @@
                     <!-- (3) 自動思考 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">3</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
                             自動思考
                             <span class="text-gray-400 font-normal ml-1">そのとき頭に浮かんだこと</span>
                         </label>
                         <textarea
                             x-model="editData.automatic_thought"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                             placeholder="例：自分は仕事ができない人間だ"
                             maxlength="1000"
                         ></textarea>
@@ -171,14 +171,14 @@
                     <!-- (4) 根拠 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold mr-1">4</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold mr-1">4</span>
                             根拠
                             <span class="text-gray-400 font-normal ml-1">自動思考を裏付ける具体的な事実</span>
                         </label>
                         <textarea
                             x-model="editData.evidence"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                             placeholder="例：提案が採用されなかった"
                             maxlength="1000"
                         ></textarea>
@@ -188,14 +188,14 @@
                     <!-- (5) 反証 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold mr-1">5</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-cyan-600 text-white text-xs font-bold mr-1">5</span>
                             反証
                             <span class="text-gray-400 font-normal ml-1">自動思考と反対の事実</span>
                         </label>
                         <textarea
                             x-model="editData.counter_evidence"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                             placeholder="例：先月の提案は採用されて好評だった"
                             maxlength="1000"
                         ></textarea>
@@ -205,14 +205,14 @@
                     <!-- (6) 適応的思考 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">6</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold mr-1">6</span>
                             適応的思考
                             <span class="text-gray-400 font-normal ml-1">バランスのよい考え</span>
                         </label>
                         <textarea
                             x-model="editData.adaptive_thought"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                             placeholder="例：今回は合わなかっただけで、自分には良い提案もできる"
                             maxlength="1000"
                         ></textarea>
@@ -222,14 +222,14 @@
                     <!-- (7) いまの気分 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-500 text-white text-xs font-bold mr-1">7</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-lime-500 text-white text-xs font-bold mr-1">7</span>
                             いまの気分
                             <span class="text-gray-400 font-normal ml-1">コラムを書き終えた後の気持ち</span>
                         </label>
                         <textarea
                             x-model="editData.current_mood"
                             rows="2"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
                             placeholder="例：悲しい(40%) 少し楽になった"
                             maxlength="500"
                         ></textarea>
@@ -251,7 +251,7 @@
                         </button>
                         <button
                             type="submit"
-                            class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-6 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="saving || !editData.situation.trim()"
                         >
                             <span x-show="!saving" class="flex items-center justify-center gap-2">
@@ -275,7 +275,7 @@
     <div x-show="!loading && !column" class="text-center py-16 bg-white rounded-xl shadow-md">
         <p class="text-6xl mb-4">😢</p>
         <p class="text-gray-600 text-lg mb-2">コラムが見つかりません</p>
-        <a href="/columns/list" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800">
+        <a href="/columns/list" class="inline-block mt-4 text-teal-600 hover:text-teal-800">
             ←
         </a>
     </div>

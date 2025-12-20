@@ -54,23 +54,23 @@
             </div>
 
             <!-- Step 2: 改善イメージ -->
-            <div class="bg-purple-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-purple-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-purple-500 text-white text-xs">2</span>
+            <div class="bg-teal-50 rounded-lg p-4">
+                <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">2</span>
                     改善イメージ
                 </div>
                 <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!item?.improved_image ? 'text-gray-400' : ''" x-text="item?.improved_image || '未入力'"></p>
             </div>
 
             <!-- Step 3: 解決策 -->
-            <div class="bg-amber-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-amber-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-xs">3</span>
+            <div class="bg-cyan-50 rounded-lg p-4">
+                <div class="text-xs font-semibold text-cyan-600 mb-2 flex items-center gap-1">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-cyan-600 text-white text-xs">3</span>
                     解決策
                 </div>
                 <div x-show="item?.solutions && item.solutions.length > 0" class="space-y-3">
                     <template x-for="(solution, index) in item?.solutions" :key="solution.id">
-                        <div class="border border-amber-200 rounded-lg p-3 bg-white">
+                        <div class="border border-cyan-200 rounded-lg p-3 bg-white">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
                             </div>
@@ -101,9 +101,9 @@
             </div>
 
             <!-- Step 5: 振り返り -->
-            <div class="bg-rose-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-rose-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-rose-500 text-white text-xs">5</span>
+            <div class="bg-lime-50 rounded-lg p-4">
+                <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center gap-1">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs">5</span>
                     振り返り
                 </div>
                 <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!item?.reflection ? 'text-gray-400' : ''" x-text="item?.reflection || '未入力'"></p>

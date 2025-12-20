@@ -36,7 +36,7 @@
     <div x-show="error && !loading" class="text-center py-12 text-gray-500">
         <p class="text-4xl mb-4">😢</p>
         <p x-text="error"></p>
-        <a href="/writing-disclosures/list" class="text-orange-600 hover:text-orange-800 text-sm mt-4 inline-block">
+        <a href="/writing-disclosures/list" class="text-teal-600 hover:text-teal-800 text-sm mt-4 inline-block">
             一覧に戻る →
         </a>
     </div>
@@ -56,7 +56,7 @@
             <textarea
                 x-model="editContent"
                 rows="18"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 maxlength="10000"
             ></textarea>
             <div class="text-xs text-gray-400 text-right mb-4" x-text="editContent.length + '/10000'"></div>
@@ -66,7 +66,7 @@
             <div class="flex gap-2">
                 <button
                     @click="saveEdit()"
-                    class="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+                    class="flex-1 bg-emerald-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
                     :disabled="saving || !editContent.trim()"
                 >
                     <span x-show="!saving">保存</span>
