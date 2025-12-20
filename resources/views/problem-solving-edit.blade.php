@@ -4,14 +4,7 @@
 
 @section('content')
 <div x-data="problemSolvingFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
-    <!-- ヘッダー -->
-    <div class="mb-4" x-show="!isEditMode">
-        <div class="text-right">
-            <a href="/problem-solvings/list" class="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 transition-colors">
-                📚 過去の記録 →
-            </a>
-        </div>
-    </div>
+
     <div class="flex justify-between items-center mb-4" x-show="isEditMode">
         <a :href="'/problem-solvings/' + itemId" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
             ← 詳細に戻る
@@ -77,7 +70,7 @@
                                 <div class="flex items-center justify-between gap-2 mb-2">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
-                                        <span 
+                                        <span
                                             class="text-xs"
                                             :class="solution.content.length > 30 ? 'text-red-500 font-semibold' : 'text-gray-400'"
                                             x-text="solution.content.length + '/30'"
