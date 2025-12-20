@@ -4,13 +4,6 @@
 
 @section('content')
 <div x-data="columnApp()" x-cloak>
-    <!-- 過去のコラムへのリンク -->
-    <div class="mb-4 text-right">
-        <a href="/columns/list" class="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 transition-colors">
-            📚 過去のコラム →
-        </a>
-    </div>
-
     <!-- 新規コラム作成フォーム -->
     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-lg p-6 border border-emerald-100">
         <form @submit.prevent="createColumn()">

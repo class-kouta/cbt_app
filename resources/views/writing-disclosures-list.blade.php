@@ -4,13 +4,6 @@
 
 @section('content')
 <div x-data="writingDisclosureListApp()" x-init="init()" x-cloak>
-    <!-- ヘッダー -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold text-gray-800">📋 過去の記録</h1>
-        <a href="/writing-disclosures" class="text-teal-600 hover:text-teal-800 text-sm font-medium transition-colors flex items-center gap-1">
-            ✏️ 新しく書く →
-        </a>
-    </div>
 
     <!-- 筆記開示一覧 -->
     <div class="space-y-3">

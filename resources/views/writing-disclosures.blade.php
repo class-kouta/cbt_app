@@ -11,13 +11,6 @@
         </p>
     </div>
 
-    <!-- 過去の記録へのリンク -->
-    <div class="flex justify-end mb-4">
-        <a href="/writing-disclosures/list" class="text-teal-600 hover:text-teal-800 text-sm font-medium transition-colors flex items-center gap-1">
-            📋 過去の記録を見る →
-        </a>
-    </div>
-
     <!-- 新規筆記開示作成フォーム -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <form @submit.prevent="createWritingDisclosure()">
@@ -101,7 +94,7 @@ function writingDisclosureApp() {
 
                 this.newContent = '';
                 this.success = true;
-                
+
                 // 3秒後に成功メッセージを消す
                 setTimeout(() => {
                     this.success = false;
