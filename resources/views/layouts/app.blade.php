@@ -15,7 +15,7 @@
             background-color: rgba(167, 212, 182, 0.7);
         }
         .menu-bg {
-            background-color: rgba(167, 212, 182, 0.95);
+            background-color: rgba(167, 212, 182, 0.85);
         }
         .slide-menu {
             transform: translateX(100%);
@@ -39,9 +39,8 @@
     <nav class="header-bg text-gray-700 shadow-md fixed top-0 left-0 right-0 z-50" x-data="{ menuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-14">
-                <!-- Left side - empty or can add title -->
+                <!-- Left side - empty -->
                 <div class="flex items-center">
-                    <span class="text-lg font-semibold">セルフケア</span>
                 </div>
 
                 <!-- Right side - Hamburger menu button -->

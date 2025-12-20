@@ -19,9 +19,9 @@
             </style>
         @endif
     </head>
-    <body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
+    <body class="bg-gradient-to-br from-emerald-50 to-teal-50 min-h-screen">
         <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
+        <header class="shadow-sm" style="background-color: rgba(167, 212, 182, 0.7);">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex justify-end gap-4">
                     @if (Route::has('login'))
@@ -34,7 +34,7 @@
                                 ログイン
                             </a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300">
+                                <a href="{{ route('register') }}" class="px-6 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-all duration-300">
                                     新規登録
                                 </a>
                             @endif
@@ -53,7 +53,7 @@
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- CBT Icon -->
-                            <div class="w-16 h-16 mb-6 text-green-600">
+                            <div class="w-16 h-16 mb-6 text-emerald-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
                                     <path d="M12 6C11.45 6 11 6.45 11 7V13C11 13.55 11.45 14 12 14C12.55 14 13 13.55 13 13V7C13 6.45 12.55 6 12 6Z" fill="currentColor"/>
@@ -70,7 +70,7 @@
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Coping List Icon -->
-                            <div class="w-16 h-16 mb-6 text-purple-600">
+                            <div class="w-16 h-16 mb-6 text-teal-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" fill="currentColor"/>
                                 </svg>
@@ -85,7 +85,7 @@
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Writing Disclosure Icon -->
-                            <div class="w-16 h-16 mb-6 text-orange-600">
+                            <div class="w-16 h-16 mb-6 text-cyan-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -104,7 +104,7 @@
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
                         <div class="flex flex-col items-center text-center">
                             <!-- Problem Solving Icon -->
-                            <div class="w-16 h-16 mb-6 text-teal-600">
+                            <div class="w-16 h-16 mb-6 text-green-600">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                                     <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>

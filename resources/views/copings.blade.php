@@ -13,7 +13,7 @@
                     <textarea
                         x-model="newCoping.content"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         placeholder="コーピングを入力..."
                         maxlength="200"
                         required
@@ -35,7 +35,7 @@
                                 >
                                 <span
                                     class="inline-block px-3 py-1 rounded-full text-sm border-2 transition-all"
-                                    :class="newCoping.coping_tag_ids.includes(tag.id) ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-gray-600 border-gray-300 hover:border-pink-300'"
+                                    :class="newCoping.coping_tag_ids.includes(tag.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-300 hover:border-emerald-300'"
                                     x-text="tag.name"
                                 ></span>
                             </label>
@@ -50,7 +50,7 @@
                 <div>
                     <button
                         type="submit"
-                        class="w-full bg-pink-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-pink-600 transition-colors disabled:opacity-50"
+                        class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
                         :disabled="loading || !newCoping.content.trim()"
                     >
                         <span x-show="!loading">追加</span>
@@ -68,7 +68,7 @@
             <button
                 @click="filterTagId = null"
                 class="px-3 py-1 rounded-full text-sm transition-all"
-                :class="filterTagId === null ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                :class="filterTagId === null ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
             >
                 すべて
             </button>
@@ -76,7 +76,7 @@
                 <button
                     @click="filterTagId = tag.id"
                     class="px-3 py-1 rounded-full text-sm transition-all"
-                    :class="filterTagId === tag.id ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                    :class="filterTagId === tag.id ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
                     x-text="tag.name"
                 ></button>
             </template>
@@ -97,7 +97,7 @@
                         <select
                             :value="coping.point"
                             @change="updatePointDirect(coping, $event.target.value)"
-                            class="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-pink-500 focus:border-transparent w-16"
+                            class="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-16"
                         >
                             <template x-for="n in 100" :key="n-1">
                                 <option :value="n-1" x-text="n-1" :selected="coping.point === n-1"></option>
@@ -112,7 +112,7 @@
                             <textarea
                                 x-model="editContent"
                                 rows="2"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                                 maxlength="200"
                             ></textarea>
                             <!-- 編集時のタグ選択 -->
@@ -127,7 +127,7 @@
                                         >
                                         <span
                                             class="inline-block px-2 py-0.5 rounded-full text-xs border transition-all"
-                                            :class="editTagIds.includes(tag.id) ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-gray-600 border-gray-300'"
+                                            :class="editTagIds.includes(tag.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-300'"
                                             x-text="tag.name"
                                         ></span>
                                     </label>
@@ -136,7 +136,7 @@
                             <div class="flex gap-2 mt-2">
                                 <button
                                     @click="saveEdit(coping)"
-                                    class="bg-pink-500 text-white px-3 py-1 rounded text-sm hover:bg-pink-600"
+                                    class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
                                 >
                                     保存
                                 </button>
@@ -164,7 +164,7 @@
                     <div class="flex gap-2" x-show="editingId !== coping.id">
                         <button
                             @click="startEdit(coping)"
-                            class="text-gray-400 hover:text-indigo-600 transition-colors"
+                            class="text-gray-400 hover:text-emerald-600 transition-colors"
                             title="編集"
                         >
                             ✏️

@@ -6,26 +6,26 @@
 <div x-data="columnApp()" x-cloak>
     <!-- 過去のコラムへのリンク -->
     <div class="mb-4 text-right">
-        <a href="/columns/list" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 transition-colors">
+        <a href="/columns/list" class="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 transition-colors">
             📚 過去のコラム →
         </a>
     </div>
 
     <!-- 新規コラム作成フォーム -->
-    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-lg p-6 border border-indigo-100">
+    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-lg p-6 border border-emerald-100">
         <form @submit.prevent="createColumn()">
             <div class="space-y-5">
                 <!-- (1) 状況 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">1</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">1</span>
                         状況 <span class="text-red-500">*</span>
                         <span class="text-gray-400 font-normal ml-1">気持ちが動揺したときの一場面</span>
                     </label>
                     <textarea
                         x-model="newColumn.situation"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：会議で自分の意見を否定された"
                         maxlength="1000"
                         required
@@ -36,14 +36,14 @@
                 <!-- (2) 気分 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">2</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">2</span>
                         気分
                         <span class="text-gray-400 font-normal ml-1">そのときの気持ち</span>
                     </label>
                     <textarea
                         x-model="newColumn.mood"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：悲しい(80%) 恥ずかしい(60%)"
                         maxlength="500"
                     ></textarea>
@@ -53,14 +53,14 @@
                 <!-- (3) 自動思考 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold mr-1">3</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
                         自動思考
                         <span class="text-gray-400 font-normal ml-1">そのとき頭に浮かんだこと</span>
                     </label>
                     <textarea
                         x-model="newColumn.automatic_thought"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：自分は仕事ができない人間だ"
                         maxlength="1000"
                     ></textarea>
@@ -70,14 +70,14 @@
                 <!-- (4) 根拠 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold mr-1">4</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold mr-1">4</span>
                         根拠
                         <span class="text-gray-400 font-normal ml-1">自動思考を裏付ける具体的な事実</span>
                     </label>
                     <textarea
                         x-model="newColumn.evidence"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                         placeholder="例：提案が採用されなかった"
                         maxlength="1000"
                     ></textarea>
@@ -87,14 +87,14 @@
                 <!-- (5) 反証 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold mr-1">5</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-cyan-600 text-white text-xs font-bold mr-1">5</span>
                         反証
                         <span class="text-gray-400 font-normal ml-1">自動思考と反対の事実</span>
                     </label>
                     <textarea
                         x-model="newColumn.counter_evidence"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                         placeholder="例：先月の提案は採用されて好評だった"
                         maxlength="1000"
                     ></textarea>
@@ -104,14 +104,14 @@
                 <!-- (6) 適応的思考 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">6</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold mr-1">6</span>
                         適応的思考
                         <span class="text-gray-400 font-normal ml-1">バランスのよい考え</span>
                     </label>
                     <textarea
                         x-model="newColumn.adaptive_thought"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                         placeholder="例：今回は合わなかっただけで、自分には良い提案もできる"
                         maxlength="1000"
                     ></textarea>
@@ -121,14 +121,14 @@
                 <!-- (7) いまの気分 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-500 text-white text-xs font-bold mr-1">7</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-lime-500 text-white text-xs font-bold mr-1">7</span>
                         いまの気分
                         <span class="text-gray-400 font-normal ml-1">コラムを書き終えた後の気持ち</span>
                     </label>
                     <textarea
                         x-model="newColumn.current_mood"
                         rows="2"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
                         placeholder="例：悲しい(40%) 少し楽になった"
                         maxlength="500"
                     ></textarea>
@@ -142,7 +142,7 @@
                 <div>
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         :disabled="loading || !isFormValid()"
                     >
                         <span x-show="!loading" class="flex items-center justify-center gap-2">
