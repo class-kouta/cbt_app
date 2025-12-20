@@ -35,7 +35,7 @@
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="@yield('body-class', 'bg-gray-100') min-h-screen flex flex-col">
     <!-- Fixed Header -->
     <nav class="header-bg text-gray-700 shadow-md fixed top-0 left-0 right-0 z-50" x-data="{ menuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -259,7 +259,7 @@
     <footer class="footer-bg text-gray-700 shadow-inner mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="text-center text-sm">
-                <p>&copy; {{ date('Y') }} セルフケアアプリ</p>
+                <p>&copy; {{ date('Y') }} ココロの避難所</p>
             </div>
         </div>
     </footer>

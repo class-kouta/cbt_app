@@ -37,13 +37,9 @@
     </div>
 
     <!-- 詳細表示 -->
-    <div x-show="!loading && item" class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-500 to-teal-500 p-4">
-            <div class="text-emerald-100 text-sm" x-text="formatDate(item?.created_at)"></div>
-            <h1 class="text-white text-xl font-bold">問題解決ワークシート</h1>
-        </div>
+    <div x-show="!loading && item">
 
-        <div class="p-6 space-y-6">
+        <div class="space-y-6">
             <!-- Step 1: 問題状況 -->
             <div class="bg-emerald-50 rounded-lg p-4">
                 <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">

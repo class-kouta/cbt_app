@@ -12,45 +12,42 @@
     </div>
 
     <!-- 新規筆記開示作成フォーム -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <form @submit.prevent="createWritingDisclosure()">
-            <div class="space-y-4">
-                <!-- メモ内容 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">今、頭の中にあることを書き出してみて</label>
-                    <textarea
-                        x-model="newContent"
-                        rows="18"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="何でも自由に書いてください..."
-                        maxlength="10000"
-                        required
-                    ></textarea>
-                    <div class="text-xs text-gray-400 text-right" x-text="newContent.length + '/10000'"></div>
-                </div>
-
-                <!-- エラーメッセージ -->
-                <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
-
-                <!-- 成功メッセージ -->
-                <div x-show="success" class="text-green-600 text-sm bg-green-50 border border-green-200 rounded-lg p-3">
-                    ✨ 書き出しました！気持ちが少し軽くなったかな？
-                </div>
-
-                <!-- 送信ボタン -->
-                <div>
-                    <button
-                        type="submit"
-                        class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
-                        :disabled="loading || !newContent.trim()"
-                    >
-                        <span x-show="!loading">書き出す 📝</span>
-                        <span x-show="loading">保存中...</span>
-                    </button>
-                </div>
+    <form @submit.prevent="createWritingDisclosure()">
+        <div class="space-y-4">
+            <!-- メモ内容 -->
+            <div>
+                <textarea
+                    x-model="newContent"
+                    rows="18"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    placeholder="何でも自由に書いてください..."
+                    maxlength="10000"
+                    required
+                ></textarea>
+                <div class="text-xs text-gray-400 text-right" x-text="newContent.length + '/10000'"></div>
             </div>
-        </form>
-    </div>
+
+            <!-- エラーメッセージ -->
+            <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
+
+            <!-- 成功メッセージ -->
+            <div x-show="success" class="text-green-600 text-sm bg-green-50 border border-green-200 rounded-lg p-3">
+                ✨ 書き出しました！気持ちが少し軽くなったかな？
+            </div>
+
+            <!-- 送信ボタン -->
+            <div>
+                <button
+                    type="submit"
+                    class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                    :disabled="loading || !newContent.trim()"
+                >
+                    <span x-show="!loading">書き出す 📝</span>
+                    <span x-show="loading">保存中...</span>
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>

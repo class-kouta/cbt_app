@@ -41,9 +41,8 @@
         </div>
 
         <!-- 閲覧モード -->
-        <div x-show="!isEditMode" class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2"></div>
-            <div class="p-5 space-y-4">
+        <div x-show="!isEditMode">
+            <div class="space-y-4">
                 <!-- 状況 -->
                 <div class="bg-emerald-50 rounded-lg p-4">
                     <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
@@ -113,7 +112,7 @@
         </div>
 
         <!-- 編集モード -->
-        <div x-show="isEditMode" class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl shadow-lg p-6 border border-emerald-100">
+        <div x-show="isEditMode">
             <form @submit.prevent="updateColumn()">
                 <div class="space-y-5">
                     <!-- (1) 状況 -->
@@ -339,7 +338,7 @@ function columnDetailApp() {
 
         async updateColumn() {
             this.error = '';
-            
+
             if (!this.editData.situation.trim()) {
                 this.error = '状況を入力してください';
                 return;
