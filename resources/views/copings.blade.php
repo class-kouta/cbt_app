@@ -92,19 +92,6 @@
         <template x-for="coping in filteredCopings" :key="coping.id">
             <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg">
                 <div class="flex items-start gap-4">
-                    <!-- ポイントセレクトボックス -->
-                    <div class="flex-shrink-0">
-                        <select
-                            :value="coping.point"
-                            @change="updatePointDirect(coping, $event.target.value)"
-                            class="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-16"
-                        >
-                            <template x-for="n in 100" :key="n-1">
-                                <option :value="n-1" x-text="n-1" :selected="coping.point === n-1"></option>
-                            </template>
-                        </select>
-                    </div>
-
                     <!-- 内容 -->
                     <div class="flex-1 min-w-0">
                         <!-- 編集モード -->
@@ -259,30 +246,6 @@ function copingApp() {
                 this.error = e.message;
             } finally {
                 this.loading = false;
-            }
-        },
-
-        async updatePointDirect(coping, newPoint) {
-            const point = parseInt(newPoint, 10);
-            try {
-                const res = await fetch(`/api/copings/${coping.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        content: coping.content,
-                        coping_tag_ids: coping.coping_tags.map(t => t.id),
-                        point: point
-                    })
-                });
-
-                if (res.ok) {
-                    await this.loadCopings();
-                }
-            } catch (e) {
-                console.error(e);
             }
         },
 
