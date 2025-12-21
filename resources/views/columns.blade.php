@@ -254,17 +254,6 @@
 
             <!-- ボタンエリア -->
             <div class="space-y-3">
-                <!-- コピーボタン -->
-                <button
-                    type="button"
-                    @click="copyToClipboard()"
-                    class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
-                    :disabled="!hasAnyContent()"
-                    :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
-                >
-                    📋 入力内容をコピー
-                </button>
-
                 <!-- 送信ボタン -->
                 <button
                     type="submit"
@@ -284,6 +273,17 @@
                         </svg>
                         <span x-text="isEditMode ? '更新中...' : '保存中...'"></span>
                     </span>
+                </button>
+
+                <!-- コピーボタン -->
+                <button
+                    type="button"
+                    @click="copyToClipboard()"
+                    class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                    :disabled="!hasAnyContent()"
+                    :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
+                >
+                    📋 入力内容をコピー
                 </button>
             </div>
         </div>
