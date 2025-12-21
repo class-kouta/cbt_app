@@ -214,47 +214,32 @@ function columnApp() {
             sections.push('【コラム法】');
             sections.push('');
 
-            if (this.newColumn.situation.trim()) {
-                sections.push('■ 状況');
-                sections.push(this.newColumn.situation.trim());
-                sections.push('');
-            }
+            sections.push('■ 状況');
+            sections.push(this.newColumn.situation.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.mood.trim()) {
-                sections.push('■ 気分');
-                sections.push(this.newColumn.mood.trim());
-                sections.push('');
-            }
+            sections.push('■ 気分');
+            sections.push(this.newColumn.mood.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.automatic_thought.trim()) {
-                sections.push('■ 自動思考');
-                sections.push(this.newColumn.automatic_thought.trim());
-                sections.push('');
-            }
+            sections.push('■ 自動思考');
+            sections.push(this.newColumn.automatic_thought.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.evidence.trim()) {
-                sections.push('■ 根拠');
-                sections.push(this.newColumn.evidence.trim());
-                sections.push('');
-            }
+            sections.push('■ 根拠');
+            sections.push(this.newColumn.evidence.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.counter_evidence.trim()) {
-                sections.push('■ 反証');
-                sections.push(this.newColumn.counter_evidence.trim());
-                sections.push('');
-            }
+            sections.push('■ 反証');
+            sections.push(this.newColumn.counter_evidence.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.adaptive_thought.trim()) {
-                sections.push('■ 適応的思考');
-                sections.push(this.newColumn.adaptive_thought.trim());
-                sections.push('');
-            }
+            sections.push('■ 適応的思考');
+            sections.push(this.newColumn.adaptive_thought.trim() || '未入力');
+            sections.push('');
 
-            if (this.newColumn.current_mood.trim()) {
-                sections.push('■ いまの気分');
-                sections.push(this.newColumn.current_mood.trim());
-                sections.push('');
-            }
+            sections.push('■ いまの気分');
+            sections.push(this.newColumn.current_mood.trim() || '未入力');
 
             return sections.join('\n').trim();
         },
