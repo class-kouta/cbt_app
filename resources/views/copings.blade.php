@@ -87,97 +87,112 @@
     <div class="space-y-3">
         <div class="text-sm text-gray-600 mb-2">
             合計: <span x-text="filteredCopings.length" class="font-bold"></span> 件
+            <span x-show="filterTagId === null" class="text-gray-400 text-xs ml-2">（ドラッグで並び替え可能）</span>
         </div>
 
-        <template x-for="coping in filteredCopings" :key="coping.id">
-            <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg">
-                <div class="flex items-start gap-4">
-                    <!-- ポイントセレクトボックス -->
-                    <div class="flex-shrink-0">
-                        <select
-                            :value="coping.point"
-                            @change="updatePointDirect(coping, $event.target.value)"
-                            class="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-16"
-                        >
-                            <template x-for="n in 100" :key="n-1">
-                                <option :value="n-1" x-text="n-1" :selected="coping.point === n-1"></option>
-                            </template>
-                        </select>
-                    </div>
-
-                    <!-- 内容 -->
-                    <div class="flex-1 min-w-0">
-                        <!-- 編集モード -->
-                        <div x-show="editingId === coping.id">
-                            <textarea
-                                x-model="editContent"
-                                x-ref="editTextarea"
-                                rows="2"
-                                @keydown.escape="cancelEdit()"
-                                @keydown.meta.enter="saveEdit(coping)"
-                                @keydown.ctrl.enter="saveEdit(coping)"
-                                class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
-                                maxlength="200"
-                            ></textarea>
-                            <!-- 編集時のタグ選択 -->
-                            <div class="flex flex-wrap gap-2 mt-2" x-show="copingTags.length > 0">
-                                <template x-for="tag in copingTags" :key="tag.id">
-                                    <label class="cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            :value="tag.id"
-                                            x-model.number="editTagIds"
-                                            class="sr-only"
-                                        >
-                                        <span
-                                            class="inline-block px-2 py-0.5 rounded-full text-xs border transition-all"
-                                            :class="editTagIds.includes(tag.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-300'"
-                                            x-text="tag.name"
-                                        ></span>
-                                    </label>
+        <div x-ref="copingList" class="space-y-3">
+            <template x-for="coping in filteredCopings" :key="coping.id">
+                <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg" :data-id="coping.id">
+                    <div class="flex items-start gap-4">
+                        <!-- ポイントセレクトボックス -->
+                        <div class="flex-shrink-0">
+                            <select
+                                :value="coping.point"
+                                @change="updatePointDirect(coping, $event.target.value)"
+                                class="border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-16"
+                            >
+                                <template x-for="n in 100" :key="n-1">
+                                    <option :value="n-1" x-text="n-1" :selected="coping.point === n-1"></option>
                                 </template>
+                            </select>
+                        </div>
+
+                        <!-- 内容 -->
+                        <div class="flex-1 min-w-0">
+                            <!-- 編集モード -->
+                            <div x-show="editingId === coping.id">
+                                <textarea
+                                    x-model="editContent"
+                                    x-ref="editTextarea"
+                                    rows="2"
+                                    @keydown.escape="cancelEdit()"
+                                    @keydown.meta.enter="saveEdit(coping)"
+                                    @keydown.ctrl.enter="saveEdit(coping)"
+                                    class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
+                                    maxlength="200"
+                                ></textarea>
+                                <!-- 編集時のタグ選択 -->
+                                <div class="flex flex-wrap gap-2 mt-2" x-show="copingTags.length > 0">
+                                    <template x-for="tag in copingTags" :key="tag.id">
+                                        <label class="cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                :value="tag.id"
+                                                x-model.number="editTagIds"
+                                                class="sr-only"
+                                            >
+                                            <span
+                                                class="inline-block px-2 py-0.5 rounded-full text-xs border transition-all"
+                                                :class="editTagIds.includes(tag.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-600 border-gray-300'"
+                                                x-text="tag.name"
+                                            ></span>
+                                        </label>
+                                    </template>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button
+                                        @click="saveEdit(coping)"
+                                        class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
+                                    >
+                                        保存
+                                    </button>
+                                    <button
+                                        @click="cancelEdit()"
+                                        class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
+                                    >
+                                        キャンセル
+                                    </button>
+                                    <button
+                                        @click="deleteCoping(coping)"
+                                        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                                    >
+                                        削除
+                                    </button>
+                                </div>
                             </div>
-                            <div class="flex gap-2 mt-2">
-                                <button
-                                    @click="saveEdit(coping)"
-                                    class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
-                                >
-                                    保存
-                                </button>
-                                <button
-                                    @click="cancelEdit()"
-                                    class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
-                                >
-                                    キャンセル
-                                </button>
-                                <button
-                                    @click="deleteCoping(coping)"
-                                    class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                >
-                                    削除
-                                </button>
+
+                            <!-- 表示モード（クリックで編集） -->
+                            <div
+                                x-show="editingId !== coping.id"
+                                @click="startEdit(coping)"
+                                class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                                title="クリックして編集"
+                            >
+                                <p class="text-gray-800 break-words overflow-wrap-anywhere" x-text="coping.content"></p>
+                                <div class="flex flex-wrap gap-1 mt-2">
+                                    <template x-for="tag in coping.coping_tags" :key="tag.id">
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600" x-text="'#' + tag.name"></span>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- 表示モード（クリックで編集） -->
+                        <!-- ドラッグハンドル（3本線） -->
                         <div
-                            x-show="editingId !== coping.id"
-                            @click="startEdit(coping)"
-                            class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
-                            title="クリックして編集"
+                            x-show="filterTagId === null && editingId !== coping.id"
+                            class="drag-handle flex-shrink-0 cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 touch-none"
+                            title="長押しして並び替え"
+                            @click.stop
                         >
-                            <p class="text-gray-800 break-words overflow-wrap-anywhere" x-text="coping.content"></p>
-                            <div class="flex flex-wrap gap-1 mt-2">
-                                <template x-for="tag in coping.coping_tags" :key="tag.id">
-                                    <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600" x-text="'#' + tag.name"></span>
-                                </template>
-                            </div>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
 
         <!-- 空の状態 -->
         <div x-show="filteredCopings.length === 0" class="text-center py-12 text-gray-500">
@@ -187,6 +202,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 function copingApp() {
     return {
@@ -202,12 +218,62 @@ function copingApp() {
         editTagIds: [],
         loading: false,
         error: '',
+        sortable: null,
 
         async init() {
             await Promise.all([
                 this.loadCopings(),
                 this.loadCopingTags()
             ]);
+            // SortableJSの初期化
+            this.$nextTick(() => {
+                this.initSortable();
+            });
+        },
+
+        initSortable() {
+            const listEl = this.$refs.copingList;
+            if (!listEl || this.sortable) return;
+
+            this.sortable = new Sortable(listEl, {
+                animation: 150,
+                handle: '.drag-handle',
+                delay: 150, // 長押し用の遅延（モバイル対応）
+                delayOnTouchOnly: true,
+                ghostClass: 'opacity-50',
+                chosenClass: 'shadow-xl',
+                dragClass: 'rotate-2',
+                onEnd: async (evt) => {
+                    // フィルター中は並び替え無効
+                    if (this.filterTagId !== null) return;
+
+                    // DOM上のアイテムからIDを取得して順番を保存
+                    const items = listEl.querySelectorAll('[data-id]');
+                    const copingIds = Array.from(items).map(item => parseInt(item.dataset.id));
+
+                    await this.saveOrder(copingIds);
+                }
+            });
+        },
+
+        async saveOrder(copingIds) {
+            try {
+                const res = await fetch('/api/copings/reorder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ coping_ids: copingIds })
+                });
+
+                if (res.ok) {
+                    // 並び替え成功後にデータを再読み込み
+                    await this.loadCopings();
+                }
+            } catch (e) {
+                console.error('並び替えの保存に失敗しました:', e);
+            }
         },
 
         async loadCopings() {

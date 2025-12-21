@@ -10,6 +10,7 @@ use App\Http\Controllers\ProblemSolvingController;
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
 Route::post('/copings', [CopingController::class, 'store']);
+Route::post('/copings/reorder', [CopingController::class, 'reorder']);
 Route::put('/copings/{coping}', [CopingController::class, 'update']);
 Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
 

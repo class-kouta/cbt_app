@@ -8,6 +8,7 @@ use App\Application\UseCase\Coping\UpdateCopingUseCase;
 use App\Application\UseCase\Coping\DeleteCopingUseCase;
 use App\Http\Requests\Coping\CreateCopingRequest;
 use App\Http\Requests\Coping\UpdateCopingRequest;
+use App\Http\Requests\Coping\ReorderCopingsRequest;
 use App\Infrastructure\Database\Models\Coping;
 use Illuminate\Http\JsonResponse;
 
@@ -94,5 +95,24 @@ class CopingController extends Controller
         $deleteCoping->handle($coping->id);
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * コーピングの並び順を更新
+     * 配列の順番に従ってpointを設定（先頭が最高ポイント）
+     */
+    public function reorder(ReorderCopingsRequest $request): JsonResponse
+    {
+        $copingIds = $request->input('coping_ids');
+        $totalCount = count($copingIds);
+
+        // 先頭のアイテムが最高ポイントになるように設定
+        foreach ($copingIds as $index => $copingId) {
+            Coping::where('id', $copingId)->update([
+                'point' => $totalCount - $index - 1
+            ]);
+        }
+
+        return response()->json(['message' => '並び順を更新しました'], 200);
     }
 }
