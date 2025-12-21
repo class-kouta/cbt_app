@@ -26,6 +26,11 @@ Route::get('/columns/{id}', function ($id) {
     return view('column-detail', ['columnId' => $id]);
 })->where('id', '[0-9]+');
 
+// コラム編集ページ
+Route::get('/columns/{id}/edit', function ($id) {
+    return view('columns', ['columnId' => $id]);
+})->where('id', '[0-9]+');
+
 // クイックタスク管理ページ
 Route::get('/quick-tasks', function () {
     return view('quick-tasks');

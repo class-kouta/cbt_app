@@ -3,7 +3,23 @@
 @section('title', 'コラム法')
 
 @section('content')
-<div x-data="columnApp()" x-cloak>
+<div x-data="columnApp({{ $columnId ?? 'null' }})" x-init="init()" x-cloak>
+    <!-- 編集モード時のヘッダー -->
+    <div class="flex justify-between items-center mb-4" x-show="isEditMode">
+        <a :href="'/columns/' + columnId" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
+            ← 詳細に戻る
+        </a>
+    </div>
+
+    <!-- ローディング（編集モードのみ） -->
+    <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-gray-600 mt-2">読み込み中...</p>
+    </div>
+
     <!-- コピー成功トースト -->
     <div
         x-show="showCopyToast"
@@ -18,8 +34,19 @@
         <span>📋</span>
         <span>コピーしました！</span>
     </div>
-    <!-- 新規コラム作成フォーム -->
-    <form @submit.prevent="createColumn()">
+
+    <!-- 成功メッセージ（編集時のみ） -->
+    <div
+        x-show="showSuccess && isEditMode"
+        x-transition
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50"
+    >
+        更新しました！
+    </div>
+
+    <!-- コラム作成/編集フォーム -->
+    <div x-show="!loading || !isEditMode">
+    <form @submit.prevent="saveColumn()">
         <div class="space-y-5">
             <!-- (1) 状況 -->
             <div>
@@ -242,27 +269,33 @@
                 <button
                     type="submit"
                     class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                    :disabled="loading || !isFormValid()"
+                    :disabled="submitting || !isFormValid()"
                 >
-                    <span x-show="!loading" class="flex items-center justify-center gap-2">
+                    <span x-show="!submitting && !isEditMode" class="flex items-center justify-center gap-2">
                         ✨ コラムを保存
                     </span>
-                    <span x-show="loading" class="flex items-center justify-center gap-2">
+                    <span x-show="!submitting && isEditMode" class="flex items-center justify-center gap-2">
+                        ✨ 更新する
+                    </span>
+                    <span x-show="submitting" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        保存中...
+                        <span x-text="isEditMode ? '更新中...' : '保存中...'"></span>
                     </span>
                 </button>
             </div>
         </div>
     </form>
+    </div>
 </div>
 
 <script>
-function columnApp() {
+function columnApp(columnId) {
     return {
+        columnId: columnId,
+        isEditMode: columnId !== null,
         newColumn: {
             situation: '',
             mood: '',
@@ -274,8 +307,10 @@ function columnApp() {
             notes: ''
         },
         loading: false,
+        submitting: false,
         error: '',
         showCopyToast: false,
+        showSuccess: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
@@ -304,6 +339,34 @@ function columnApp() {
             // 中立・その他
             '驚き', '複雑', 'モヤモヤ', 'スッキリ'
         ],
+
+        async init() {
+            if (this.isEditMode) {
+                await this.loadColumn();
+            }
+        },
+
+        async loadColumn() {
+            this.loading = true;
+            try {
+                const res = await fetch(`/api/columns/${this.columnId}`);
+                if (res.ok) {
+                    const column = await res.json();
+                    this.newColumn.situation = column.situation || '';
+                    this.newColumn.mood = column.mood || '';
+                    this.newColumn.automatic_thought = column.automatic_thought || '';
+                    this.newColumn.evidence = column.evidence || '';
+                    this.newColumn.counter_evidence = column.counter_evidence || '';
+                    this.newColumn.adaptive_thought = column.adaptive_thought || '';
+                    this.newColumn.current_mood = column.current_mood || '';
+                    this.newColumn.notes = column.notes || '';
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.loading = false;
+            }
+        },
 
         // 2番「気分」に感情を追加
         addEmotionToMood(emotion) {
@@ -404,6 +467,14 @@ function columnApp() {
             }
         },
 
+        async saveColumn() {
+            if (this.isEditMode) {
+                await this.updateColumn();
+            } else {
+                await this.createColumn();
+            }
+        },
+
         async createColumn() {
             this.error = '';
 
@@ -412,7 +483,7 @@ function columnApp() {
                 return;
             }
 
-            this.loading = true;
+            this.submitting = true;
             try {
                 const res = await fetch('/api/columns', {
                     method: 'POST',
@@ -432,7 +503,43 @@ function columnApp() {
                 window.location.href = '/columns/list';
             } catch (e) {
                 this.error = e.message;
-                this.loading = false;
+                this.submitting = false;
+            }
+        },
+
+        async updateColumn() {
+            this.error = '';
+
+            if (!this.isFormValid()) {
+                this.error = '状況を入力してください';
+                return;
+            }
+
+            this.submitting = true;
+            try {
+                const res = await fetch(`/api/columns/${this.columnId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(this.newColumn)
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || 'エラーが発生しました');
+                }
+
+                // 更新成功したら詳細ページに遷移
+                this.showSuccess = true;
+                setTimeout(() => {
+                    this.showSuccess = false;
+                    window.location.href = `/columns/${this.columnId}`;
+                }, 1000);
+            } catch (e) {
+                this.error = e.message;
+                this.submitting = false;
             }
         }
     };
