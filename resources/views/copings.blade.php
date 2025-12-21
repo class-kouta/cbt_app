@@ -150,6 +150,12 @@
                                 >
                                     キャンセル
                                 </button>
+                                <button
+                                    @click="deleteCoping(coping)"
+                                    class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                                >
+                                    削除
+                                </button>
                             </div>
                         </div>
 
@@ -169,16 +175,6 @@
                         </div>
                     </div>
 
-                    <!-- 削除ボタンのみ -->
-                    <div class="flex-shrink-0" x-show="editingId !== coping.id">
-                        <button
-                            @click.stop="deleteCoping(coping)"
-                            class="text-gray-400 hover:text-red-600 transition-colors"
-                            title="削除"
-                        >
-                            🗑️
-                        </button>
-                    </div>
                 </div>
             </div>
         </template>
