@@ -4,6 +4,20 @@
 
 @section('content')
 <div x-data="columnApp()" x-cloak>
+    <!-- コピー成功トースト -->
+    <div
+        x-show="showCopyToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <span>📋</span>
+        <span>コピーしました！</span>
+    </div>
     <!-- 新規コラム作成フォーム -->
     <form @submit.prevent="createColumn()">
         <div class="space-y-5">
@@ -194,8 +208,20 @@
             <!-- エラーメッセージ -->
             <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
 
-            <!-- 送信ボタン -->
-            <div>
+            <!-- ボタンエリア -->
+            <div class="space-y-3">
+                <!-- コピーボタン -->
+                <button
+                    type="button"
+                    @click="copyToClipboard()"
+                    class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                    :disabled="!hasAnyContent()"
+                    :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
+                >
+                    📋 入力内容をコピー
+                </button>
+
+                <!-- 送信ボタン -->
                 <button
                     type="submit"
                     class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
@@ -231,6 +257,7 @@ function columnApp() {
         },
         loading: false,
         error: '',
+        showCopyToast: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
@@ -280,6 +307,83 @@ function columnApp() {
 
         isFormValid() {
             return this.newColumn.situation.trim();
+        },
+
+        hasAnyContent() {
+            return this.newColumn.situation.trim() ||
+                   this.newColumn.mood.trim() ||
+                   this.newColumn.automatic_thought.trim() ||
+                   this.newColumn.evidence.trim() ||
+                   this.newColumn.counter_evidence.trim() ||
+                   this.newColumn.adaptive_thought.trim() ||
+                   this.newColumn.current_mood.trim();
+        },
+
+        generateCopyText() {
+            const sections = [];
+            sections.push('【コラム法】');
+            sections.push('');
+
+            sections.push('■ 状況');
+            sections.push(this.newColumn.situation.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 気分');
+            sections.push(this.newColumn.mood.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 自動思考');
+            sections.push(this.newColumn.automatic_thought.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 根拠');
+            sections.push(this.newColumn.evidence.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 反証');
+            sections.push(this.newColumn.counter_evidence.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 適応的思考');
+            sections.push(this.newColumn.adaptive_thought.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ いまの気分');
+            sections.push(this.newColumn.current_mood.trim() || '未入力');
+
+            return sections.join('\n').trim();
+        },
+
+        async copyToClipboard() {
+            const text = this.generateCopyText();
+
+            try {
+                await navigator.clipboard.writeText(text);
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
+            } catch (err) {
+                // フォールバック: 古いブラウザ対応
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    this.showCopyToast = true;
+                    setTimeout(() => {
+                        this.showCopyToast = false;
+                    }, 2000);
+                } catch (err) {
+                    console.error('コピーに失敗しました:', err);
+                }
+                document.body.removeChild(textArea);
+            }
         },
 
         async createColumn() {
