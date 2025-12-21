@@ -111,8 +111,12 @@
                         <div x-show="editingId === coping.id">
                             <textarea
                                 x-model="editContent"
+                                x-ref="editTextarea"
                                 rows="2"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                @keydown.escape="cancelEdit()"
+                                @keydown.meta.enter="saveEdit(coping)"
+                                @keydown.ctrl.enter="saveEdit(coping)"
+                                class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
                                 maxlength="200"
                             ></textarea>
                             <!-- 編集時のタグ選択 -->
@@ -149,8 +153,13 @@
                             </div>
                         </div>
 
-                        <!-- 表示モード -->
-                        <div x-show="editingId !== coping.id">
+                        <!-- 表示モード（クリックで編集） -->
+                        <div
+                            x-show="editingId !== coping.id"
+                            @click="startEdit(coping)"
+                            class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            title="クリックして編集"
+                        >
                             <p class="text-gray-800 break-words overflow-wrap-anywhere" x-text="coping.content"></p>
                             <div class="flex flex-wrap gap-1 mt-2">
                                 <template x-for="tag in coping.coping_tags" :key="tag.id">
@@ -160,17 +169,10 @@
                         </div>
                     </div>
 
-                    <!-- 操作ボタン -->
-                    <div class="flex gap-2" x-show="editingId !== coping.id">
+                    <!-- 削除ボタンのみ -->
+                    <div class="flex-shrink-0" x-show="editingId !== coping.id">
                         <button
-                            @click="startEdit(coping)"
-                            class="text-gray-400 hover:text-emerald-600 transition-colors"
-                            title="編集"
-                        >
-                            ✏️
-                        </button>
-                        <button
-                            @click="deleteCoping(coping)"
+                            @click.stop="deleteCoping(coping)"
                             class="text-gray-400 hover:text-red-600 transition-colors"
                             title="削除"
                         >
@@ -292,6 +294,15 @@ function copingApp() {
             this.editingId = coping.id;
             this.editContent = coping.content;
             this.editTagIds = coping.coping_tags.map(t => t.id);
+            // 次のティックでテキストエリアにフォーカス
+            this.$nextTick(() => {
+                const textarea = document.querySelector(`[x-ref="editTextarea"]`);
+                if (textarea) {
+                    textarea.focus();
+                    // カーソルを末尾に移動
+                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
+            });
         },
 
         cancelEdit() {
