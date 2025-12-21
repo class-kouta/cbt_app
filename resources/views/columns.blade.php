@@ -31,7 +31,39 @@
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">2</span>
                     気分
                     <span class="text-gray-400 font-normal ml-1">そのときの気持ち</span>
+                    <!-- 感情リストトグルボタン -->
+                    <button
+                        type="button"
+                        @click="showMoodEmotions = !showMoodEmotions"
+                        class="ml-2 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-all"
+                        :class="showMoodEmotions ? 'bg-emerald-500 text-white' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'"
+                    >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                        感情リスト
+                    </button>
                 </label>
+
+                <!-- 感情リスト（2番用） -->
+                <div
+                    x-show="showMoodEmotions"
+                    x-collapse
+                    class="mb-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
+                >
+                    <p class="text-xs text-emerald-600 mb-2">タップして感情を追加できます</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <template x-for="emotion in emotionList" :key="emotion">
+                            <button
+                                type="button"
+                                @click="addEmotionToMood(emotion)"
+                                class="px-2.5 py-1 text-sm bg-white border border-emerald-300 rounded-full hover:bg-emerald-100 hover:border-emerald-400 transition-all"
+                                x-text="emotion"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+
                 <textarea
                     x-model="newColumn.mood"
                     rows="10"
@@ -116,7 +148,39 @@
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-lime-500 text-white text-xs font-bold mr-1">7</span>
                     いまの気分
                     <span class="text-gray-400 font-normal ml-1">コラムを書き終えた後の気持ち</span>
+                    <!-- 感情リストトグルボタン -->
+                    <button
+                        type="button"
+                        @click="showCurrentMoodEmotions = !showCurrentMoodEmotions"
+                        class="ml-2 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-all"
+                        :class="showCurrentMoodEmotions ? 'bg-lime-500 text-white' : 'bg-lime-100 text-lime-700 hover:bg-lime-200'"
+                    >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                        感情リスト
+                    </button>
                 </label>
+
+                <!-- 感情リスト（7番用） -->
+                <div
+                    x-show="showCurrentMoodEmotions"
+                    x-collapse
+                    class="mb-2 p-3 bg-lime-50 border border-lime-200 rounded-lg"
+                >
+                    <p class="text-xs text-lime-600 mb-2">タップして感情を追加できます</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <template x-for="emotion in emotionList" :key="emotion">
+                            <button
+                                type="button"
+                                @click="addEmotionToCurrentMood(emotion)"
+                                class="px-2.5 py-1 text-sm bg-white border border-lime-300 rounded-full hover:bg-lime-100 hover:border-lime-400 transition-all"
+                                x-text="emotion"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+
                 <textarea
                     x-model="newColumn.current_mood"
                     rows="10"
@@ -167,6 +231,52 @@ function columnApp() {
         },
         loading: false,
         error: '',
+
+        // 感情リストの表示状態
+        showMoodEmotions: false,
+        showCurrentMoodEmotions: false,
+
+        // 感情リスト（約50個の感情例）
+        emotionList: [
+            // ネガティブ感情（怒り系）
+            '怒り', 'イライラ', '腹立たしい', 'ムカつく', '憤り',
+            // ネガティブ感情（悲しみ系）
+            '悲しい', '寂しい', '切ない', '虚しい', '孤独',
+            // ネガティブ感情（不安・恐怖系）
+            '不安', '心配', '恐怖', '怖い', 'パニック', '焦り', '緊張',
+            // ネガティブ感情（落ち込み系）
+            '落ち込み', '憂うつ', '絶望', '無力感', '疲労感',
+            // ネガティブ感情（恥・罪悪感系）
+            '恥ずかしい', '罪悪感', '後悔', '自己嫌悪', '情けない',
+            // ネガティブ感情（嫉妬・羨望系）
+            '嫉妬', '羨ましい', '妬ましい', '劣等感',
+            // ネガティブ感情（その他）
+            '困惑', '戸惑い', 'もどかしい', '退屈', '不満', '失望',
+            // ポジティブ感情
+            '嬉しい', '楽しい', '幸せ', 'ワクワク', '期待',
+            '安心', 'ホッとした', '満足', '達成感', '充実感',
+            '感謝', '愛情', '親しみ', '誇らしい', '自信',
+            // 中立・その他
+            '驚き', '複雑', 'モヤモヤ', 'スッキリ'
+        ],
+
+        // 2番「気分」に感情を追加
+        addEmotionToMood(emotion) {
+            if (this.newColumn.mood.length > 0) {
+                this.newColumn.mood += ' ' + emotion;
+            } else {
+                this.newColumn.mood = emotion;
+            }
+        },
+
+        // 7番「いまの気分」に感情を追加
+        addEmotionToCurrentMood(emotion) {
+            if (this.newColumn.current_mood.length > 0) {
+                this.newColumn.current_mood += ' ' + emotion;
+            } else {
+                this.newColumn.current_mood = emotion;
+            }
+        },
 
         isFormValid() {
             return this.newColumn.situation.trim();
