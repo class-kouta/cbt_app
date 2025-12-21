@@ -17,5 +17,6 @@ class Column extends Model
         'counter_evidence',
         'adaptive_thought',
         'current_mood',
+        'notes',
     ];
 }

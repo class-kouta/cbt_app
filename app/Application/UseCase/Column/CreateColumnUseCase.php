@@ -21,7 +21,8 @@ class CreateColumnUseCase
             $data->evidence,
             $data->counterEvidence,
             $data->adaptiveThought,
-            $data->currentMood
+            $data->currentMood,
+            $data->notes
         );
 
         return $this->columnRepository->save($column);

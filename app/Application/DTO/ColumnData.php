@@ -11,7 +11,8 @@ readonly class ColumnData
         public ?string $evidence,
         public ?string $counterEvidence,
         public ?string $adaptiveThought,
-        public ?string $currentMood
+        public ?string $currentMood,
+        public ?string $notes = null
     ) {
     }
 }

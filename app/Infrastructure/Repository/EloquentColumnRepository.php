@@ -21,6 +21,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->counter_evidence = $column->getCounterEvidence();
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
+            $model->notes = $column->getNotes();
             $model->save();
         } else {
             // 新規作成
@@ -32,6 +33,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->counter_evidence = $column->getCounterEvidence();
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
+            $model->notes = $column->getNotes();
             $model->save();
         }
 
@@ -44,6 +46,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             counterEvidence: $model->counter_evidence,
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
+            notes: $model->notes,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -66,6 +69,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             counterEvidence: $model->counter_evidence,
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
+            notes: $model->notes,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -97,6 +101,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     counterEvidence: $model->counter_evidence,
                     adaptiveThought: $model->adaptive_thought,
                     currentMood: $model->current_mood,
+                    notes: $model->notes,
                     createdAt: new DateTimeImmutable($model->created_at),
                     updatedAt: new DateTimeImmutable($model->updated_at),
                 );

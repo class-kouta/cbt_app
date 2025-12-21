@@ -14,6 +14,7 @@ class Column
     private ?string $counterEvidence;
     private ?string $adaptiveThought;
     private ?string $currentMood;
+    private ?string $notes;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
@@ -26,6 +27,7 @@ class Column
         ?string $counterEvidence,
         ?string $adaptiveThought,
         ?string $currentMood,
+        ?string $notes,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -37,6 +39,7 @@ class Column
         $this->counterEvidence = $counterEvidence;
         $this->adaptiveThought = $adaptiveThought;
         $this->currentMood = $currentMood;
+        $this->notes = $notes;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -48,7 +51,8 @@ class Column
         ?string $evidence,
         ?string $counterEvidence,
         ?string $adaptiveThought,
-        ?string $currentMood
+        ?string $currentMood,
+        ?string $notes = null
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
@@ -60,6 +64,7 @@ class Column
             $counterEvidence,
             $adaptiveThought,
             $currentMood,
+            $notes,
             $now,
             $now
         );
@@ -74,6 +79,7 @@ class Column
         ?string $counterEvidence,
         ?string $adaptiveThought,
         ?string $currentMood,
+        ?string $notes,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -86,6 +92,7 @@ class Column
             $counterEvidence,
             $adaptiveThought,
             $currentMood,
+            $notes,
             $createdAt,
             $updatedAt
         );
@@ -131,6 +138,11 @@ class Column
         return $this->currentMood;
     }
 
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -152,6 +164,7 @@ class Column
             $this->counterEvidence,
             $this->adaptiveThought,
             $this->currentMood,
+            $this->notes,
             $this->createdAt,
             $this->updatedAt
         );

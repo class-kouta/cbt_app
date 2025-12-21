@@ -108,6 +108,15 @@
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.current_mood ? 'text-gray-400' : ''" x-text="column?.current_mood || '未入力'"></p>
                 </div>
+
+                <!-- 備考 -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-500 text-white text-xs">📝</span>
+                        備考
+                    </div>
+                    <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.notes ? 'text-gray-400' : ''" x-text="column?.notes || '未入力'"></p>
+                </div>
             </div>
         </div>
 
@@ -235,6 +244,23 @@
                         <div class="text-xs text-gray-400 text-right" x-text="editData.current_mood.length + '/500'"></div>
                     </div>
 
+                    <!-- 備考 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-500 text-white text-xs font-bold mr-1">📝</span>
+                            備考
+                            <span class="text-gray-400 font-normal ml-1">その他メモしておきたいこと</span>
+                        </label>
+                        <textarea
+                            x-model="editData.notes"
+                            rows="3"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                            placeholder="例：次回から気をつけたいこと、気づいたパターンなど"
+                            maxlength="2000"
+                        ></textarea>
+                        <div class="text-xs text-gray-400 text-right" x-text="editData.notes.length + '/2000'"></div>
+                    </div>
+
                     <!-- エラーメッセージ -->
                     <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
 
@@ -296,7 +322,8 @@ function columnDetailApp() {
             evidence: '',
             counter_evidence: '',
             adaptive_thought: '',
-            current_mood: ''
+            current_mood: '',
+            notes: ''
         },
 
         async init() {
@@ -326,7 +353,8 @@ function columnDetailApp() {
                 evidence: this.column?.evidence || '',
                 counter_evidence: this.column?.counter_evidence || '',
                 adaptive_thought: this.column?.adaptive_thought || '',
-                current_mood: this.column?.current_mood || ''
+                current_mood: this.column?.current_mood || '',
+                notes: this.column?.notes || ''
             };
         },
 
