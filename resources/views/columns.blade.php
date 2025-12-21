@@ -127,6 +127,23 @@
                 <div class="text-xs text-gray-400 text-right" x-text="newColumn.current_mood.length + '/500'"></div>
             </div>
 
+            <!-- 備考 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-500 text-white text-xs font-bold mr-1">📝</span>
+                    備考
+                    <span class="text-gray-400 font-normal ml-1">その他メモしておきたいこと</span>
+                </label>
+                <textarea
+                    x-model="newColumn.notes"
+                    rows="3"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                    placeholder="例：次回から気をつけたいこと、気づいたパターンなど"
+                    maxlength="2000"
+                ></textarea>
+                <div class="text-xs text-gray-400 text-right" x-text="newColumn.notes.length + '/2000'"></div>
+            </div>
+
             <!-- エラーメッセージ -->
             <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
 
@@ -163,7 +180,8 @@ function columnApp() {
             evidence: '',
             counter_evidence: '',
             adaptive_thought: '',
-            current_mood: ''
+            current_mood: '',
+            notes: ''
         },
         loading: false,
         error: '',

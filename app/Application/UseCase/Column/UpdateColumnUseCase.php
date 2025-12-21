@@ -31,6 +31,7 @@ class UpdateColumnUseCase
             counterEvidence: $data->counterEvidence,
             adaptiveThought: $data->adaptiveThought,
             currentMood: $data->currentMood,
+            notes: $data->notes,
             createdAt: $existingColumn->getCreatedAt(),
             updatedAt: new \DateTimeImmutable('now')
         );

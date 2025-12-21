@@ -21,6 +21,7 @@ class CreateColumnRequest extends FormRequest
             'counter_evidence' => ['nullable', 'string', 'max:1000'],
             'adaptive_thought' => ['nullable', 'string', 'max:1000'],
             'current_mood' => ['nullable', 'string', 'max:500'],
+            'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
 
@@ -35,6 +36,7 @@ class CreateColumnRequest extends FormRequest
             'counter_evidence.max' => '反証は1000文字以内で入力してください',
             'adaptive_thought.max' => '適応的思考は1000文字以内で入力してください',
             'current_mood.max' => 'いまの気分は500文字以内で入力してください',
+            'notes.max' => '備考は2000文字以内で入力してください',
         ];
     }
 }

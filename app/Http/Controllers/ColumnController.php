@@ -30,6 +30,7 @@ class ColumnController extends Controller
                     'counter_evidence' => $column->counter_evidence,
                     'adaptive_thought' => $column->adaptive_thought,
                     'current_mood' => $column->current_mood,
+                    'notes' => $column->notes,
                     'created_at' => $column->created_at->format(DATE_ATOM),
                     'updated_at' => $column->updated_at->format(DATE_ATOM),
                 ];
@@ -52,6 +53,7 @@ class ColumnController extends Controller
             'counter_evidence' => $column->counter_evidence,
             'adaptive_thought' => $column->adaptive_thought,
             'current_mood' => $column->current_mood,
+            'notes' => $column->notes,
             'created_at' => $column->created_at->format(DATE_ATOM),
             'updated_at' => $column->updated_at->format(DATE_ATOM),
         ]);
@@ -69,7 +71,8 @@ class ColumnController extends Controller
             evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
             counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
             adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
-            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null
+            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
+            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null
         );
 
         $column = $createColumn->handle($data);
@@ -83,6 +86,7 @@ class ColumnController extends Controller
             'counter_evidence' => $column->getCounterEvidence(),
             'adaptive_thought' => $column->getAdaptiveThought(),
             'current_mood' => $column->getCurrentMood(),
+            'notes' => $column->getNotes(),
             'created_at' => $column->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $column->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -100,7 +104,8 @@ class ColumnController extends Controller
             evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
             counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
             adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
-            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null
+            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
+            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null
         );
 
         $updatedColumn = $updateColumn->handle($column->id, $data);
@@ -114,6 +119,7 @@ class ColumnController extends Controller
             'counter_evidence' => $updatedColumn->getCounterEvidence(),
             'adaptive_thought' => $updatedColumn->getAdaptiveThought(),
             'current_mood' => $updatedColumn->getCurrentMood(),
+            'notes' => $updatedColumn->getNotes(),
             'created_at' => $updatedColumn->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedColumn->getUpdatedAt()->format(DATE_ATOM),
         ]);
