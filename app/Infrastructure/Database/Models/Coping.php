@@ -13,10 +13,12 @@ class Coping extends Model
     protected $fillable = [
         'content',
         'point',
+        'sort_order',
     ];
 
     protected $casts = [
         'point' => 'integer',
+        'sort_order' => 'integer',
     ];
 
     /**

@@ -12,6 +12,7 @@ Route::get('/copings', [CopingController::class, 'index']);
 Route::post('/copings', [CopingController::class, 'store']);
 Route::put('/copings/{coping}', [CopingController::class, 'update']);
 Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
+Route::patch('/copings/reorder', [CopingController::class, 'reorder']);
 
 // CopingTag API（一覧取得のみ）
 Route::get('/coping-tags', [CopingTagController::class, 'index']);

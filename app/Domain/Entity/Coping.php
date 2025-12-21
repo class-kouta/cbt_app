@@ -10,6 +10,7 @@ class Coping
     private ?int $id;
     private CopingContent $content;
     private int $point;
+    private int $sortOrder;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
     /** @var int[] */
@@ -19,6 +20,7 @@ class Coping
         ?int $id,
         CopingContent $content,
         int $point,
+        int $sortOrder,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt,
         array $copingTagIds = []
@@ -26,26 +28,28 @@ class Coping
         $this->id = $id;
         $this->content = $content;
         $this->point = $point;
+        $this->sortOrder = $sortOrder;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
         $this->copingTagIds = array_values(array_unique(array_map('intval', $copingTagIds)));
     }
 
-    public static function createNew(string $content, array $copingTagIds = []): self
+    public static function createNew(string $content, array $copingTagIds = [], int $sortOrder = 0): self
     {
         $now = new DateTimeImmutable('now');
-        return new self(null, new CopingContent($content), 0, $now, $now, $copingTagIds);
+        return new self(null, new CopingContent($content), 0, $sortOrder, $now, $now, $copingTagIds);
     }
 
     public static function reconstitute(
         int $id,
         string $content,
         int $point,
+        int $sortOrder,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt,
         array $copingTagIds = []
     ): self {
-        return new self($id, new CopingContent($content), $point, $createdAt, $updatedAt, $copingTagIds);
+        return new self($id, new CopingContent($content), $point, $sortOrder, $createdAt, $updatedAt, $copingTagIds);
     }
 
     public function getId(): ?int
@@ -73,6 +77,11 @@ class Coping
         return $this->updatedAt;
     }
 
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder;
+    }
+
     /**
      * @return int[]
      */
@@ -83,7 +92,12 @@ class Coping
 
     public function withId(int $id): self
     {
-        return new self($id, $this->content, $this->point, $this->createdAt, $this->updatedAt, $this->copingTagIds);
+        return new self($id, $this->content, $this->point, $this->sortOrder, $this->createdAt, $this->updatedAt, $this->copingTagIds);
+    }
+
+    public function withSortOrder(int $sortOrder): self
+    {
+        return new self($this->id, $this->content, $this->point, $sortOrder, $this->createdAt, $this->updatedAt, $this->copingTagIds);
     }
 
     public function incrementPoint(): self
@@ -92,6 +106,7 @@ class Coping
             $this->id,
             $this->content,
             $this->point + 1,
+            $this->sortOrder,
             $this->createdAt,
             new DateTimeImmutable('now'),
             $this->copingTagIds
@@ -105,6 +120,7 @@ class Coping
             $this->id,
             $this->content,
             $newPoint,
+            $this->sortOrder,
             $this->createdAt,
             new DateTimeImmutable('now'),
             $this->copingTagIds
@@ -117,6 +133,7 @@ class Coping
             $this->id,
             new CopingContent($content),
             $point ?? $this->point,
+            $this->sortOrder,
             $this->createdAt,
             new DateTimeImmutable('now'),
             $copingTagIds

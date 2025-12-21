@@ -16,12 +16,14 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             $model = CopingModel::findOrFail($coping->getId());
             $model->content = $coping->getContent();
             $model->point = $coping->getPoint();
+            $model->sort_order = $coping->getSortOrder();
             $model->save();
         } else {
             // 新規作成
             $model = new CopingModel();
             $model->content = $coping->getContent();
             $model->point = $coping->getPoint();
+            $model->sort_order = $coping->getSortOrder() ?: $this->getNextSortOrder();
             $model->save();
         }
 
@@ -32,6 +34,7 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             id: (int) $model->getKey(),
             content: (string) $model->content,
             point: (int) $model->point,
+            sortOrder: (int) $model->sort_order,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
             copingTagIds: $coping->getCopingTagIds(),
@@ -50,6 +53,7 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             id: (int) $model->id,
             content: (string) $model->content,
             point: (int) $model->point,
+            sortOrder: (int) $model->sort_order,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
             copingTagIds: $model->copingTags->pluck('id')->map(fn ($id) => (int) $id)->toArray(),
@@ -64,5 +68,26 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             $model->copingTags()->detach();
             $model->delete();
         }
+    }
+
+    /**
+     * 複数コーピングの並び順を一括更新
+     *
+     * @param array<int, int> $orderMap IDをキー、sort_orderを値とする配列
+     */
+    public function updateSortOrders(array $orderMap): void
+    {
+        foreach ($orderMap as $id => $sortOrder) {
+            CopingModel::where('id', $id)->update(['sort_order' => $sortOrder]);
+        }
+    }
+
+    /**
+     * 次のsort_orderを取得（新規作成時用）
+     */
+    public function getNextSortOrder(): int
+    {
+        $maxSortOrder = CopingModel::max('sort_order');
+        return ($maxSortOrder ?? 0) + 1;
     }
 }
