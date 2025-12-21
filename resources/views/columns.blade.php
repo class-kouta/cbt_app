@@ -16,7 +16,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.situation"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     placeholder="例：会議で自分の意見を否定された"
                     maxlength="1000"
@@ -34,7 +34,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.mood"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     placeholder="例：悲しい(80%) 恥ずかしい(60%)"
                     maxlength="500"
@@ -51,7 +51,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.automatic_thought"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     placeholder="例：自分は仕事ができない人間だ"
                     maxlength="1000"
@@ -68,7 +68,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.evidence"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                     placeholder="例：提案が採用されなかった"
                     maxlength="1000"
@@ -85,7 +85,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.counter_evidence"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                     placeholder="例：先月の提案は採用されて好評だった"
                     maxlength="1000"
@@ -102,7 +102,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.adaptive_thought"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     placeholder="例：今回は合わなかっただけで、自分には良い提案もできる"
                     maxlength="1000"
@@ -119,7 +119,7 @@
                 </label>
                 <textarea
                     x-model="newColumn.current_mood"
-                    rows="2"
+                    rows="6"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
                     placeholder="例：悲しい(40%) 少し楽になった"
                     maxlength="500"
