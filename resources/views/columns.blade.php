@@ -35,15 +35,6 @@
         <span>コピーしました！</span>
     </div>
 
-    <!-- 成功メッセージ（編集時のみ） -->
-    <div
-        x-show="showSuccess && isEditMode"
-        x-transition
-        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50"
-    >
-        更新しました！
-    </div>
-
     <!-- コラム作成/編集フォーム -->
     <div x-show="!loading || !isEditMode">
     <form @submit.prevent="saveColumn()">
@@ -93,15 +84,35 @@
                     class="mb-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
                 >
                     <p class="text-xs text-emerald-600 mb-2">タップして感情を追加できます</p>
-                    <div class="flex flex-wrap gap-1.5">
-                        <template x-for="emotion in emotionList" :key="emotion">
-                            <button
-                                type="button"
-                                @click="addEmotionToMood(emotion)"
-                                class="px-2.5 py-1 text-sm bg-white border border-emerald-300 rounded-full hover:bg-emerald-100 hover:border-emerald-400 transition-all"
-                                x-text="emotion"
-                            ></button>
-                        </template>
+
+                    <!-- ネガティブエリア -->
+                    <div class="mb-3">
+                        <p class="text-xs font-semibold text-gray-500 mb-1.5">😔 ネガティブ</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="emotion in negativeEmotions" :key="emotion">
+                                <button
+                                    type="button"
+                                    @click="addEmotionToMood(emotion)"
+                                    class="px-2.5 py-1 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 hover:border-gray-400 transition-all"
+                                    x-text="emotion"
+                                ></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- ポジティブエリア -->
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 mb-1.5">😊 ポジティブ</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="emotion in positiveEmotions" :key="emotion">
+                                <button
+                                    type="button"
+                                    @click="addEmotionToMood(emotion)"
+                                    class="px-2.5 py-1 text-sm bg-white border border-emerald-300 rounded-full hover:bg-emerald-100 hover:border-emerald-400 transition-all"
+                                    x-text="emotion"
+                                ></button>
+                            </template>
+                        </div>
                     </div>
                 </div>
 
@@ -210,15 +221,35 @@
                     class="mb-2 p-3 bg-lime-50 border border-lime-200 rounded-lg"
                 >
                     <p class="text-xs text-lime-600 mb-2">タップして感情を追加できます</p>
-                    <div class="flex flex-wrap gap-1.5">
-                        <template x-for="emotion in emotionList" :key="emotion">
-                            <button
-                                type="button"
-                                @click="addEmotionToCurrentMood(emotion)"
-                                class="px-2.5 py-1 text-sm bg-white border border-lime-300 rounded-full hover:bg-lime-100 hover:border-lime-400 transition-all"
-                                x-text="emotion"
-                            ></button>
-                        </template>
+
+                    <!-- ネガティブエリア -->
+                    <div class="mb-3">
+                        <p class="text-xs font-semibold text-gray-500 mb-1.5">😔 ネガティブ</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="emotion in negativeEmotions" :key="emotion">
+                                <button
+                                    type="button"
+                                    @click="addEmotionToCurrentMood(emotion)"
+                                    class="px-2.5 py-1 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 hover:border-gray-400 transition-all"
+                                    x-text="emotion"
+                                ></button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- ポジティブエリア -->
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 mb-1.5">😊 ポジティブ</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="emotion in positiveEmotions" :key="emotion">
+                                <button
+                                    type="button"
+                                    @click="addEmotionToCurrentMood(emotion)"
+                                    class="px-2.5 py-1 text-sm bg-white border border-lime-300 rounded-full hover:bg-lime-100 hover:border-lime-400 transition-all"
+                                    x-text="emotion"
+                                ></button>
+                            </template>
+                        </div>
                     </div>
                 </div>
 
@@ -310,34 +341,35 @@ function columnApp(columnId) {
         submitting: false,
         error: '',
         showCopyToast: false,
-        showSuccess: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
         showCurrentMoodEmotions: false,
 
-        // 感情リスト（約50個の感情例）
-        emotionList: [
-            // ネガティブ感情（怒り系）
+        // ネガティブ感情リスト
+        negativeEmotions: [
+            // 怒り系
             '怒り', 'イライラ', '腹立たしい', 'ムカつく', '憤り',
-            // ネガティブ感情（悲しみ系）
+            // 悲しみ系
             '悲しい', '寂しい', '切ない', '虚しい', '孤独',
-            // ネガティブ感情（不安・恐怖系）
+            // 不安・恐怖系
             '不安', '心配', '恐怖', '怖い', 'パニック', '焦り', '緊張',
-            // ネガティブ感情（落ち込み系）
+            // 落ち込み系
             '落ち込み', '憂うつ', '絶望', '無力感', '疲労感',
-            // ネガティブ感情（恥・罪悪感系）
+            // 恥・罪悪感系
             '恥ずかしい', '罪悪感', '後悔', '自己嫌悪', '情けない',
-            // ネガティブ感情（嫉妬・羨望系）
+            // 嫉妬・羨望系
             '嫉妬', '羨ましい', '妬ましい', '劣等感',
-            // ネガティブ感情（その他）
+            // その他
             '困惑', '戸惑い', 'もどかしい', '退屈', '不満', '失望',
-            // ポジティブ感情
+            '複雑', 'モヤモヤ'
+        ],
+        // ポジティブ感情リスト
+        positiveEmotions: [
             '嬉しい', '楽しい', '幸せ', 'ワクワク', '期待',
             '安心', 'ホッとした', '満足', '達成感', '充実感',
             '感謝', '愛情', '親しみ', '誇らしい', '自信',
-            // 中立・その他
-            '驚き', '複雑', 'モヤモヤ', 'スッキリ'
+            '驚き', 'スッキリ'
         ],
 
         async init() {
@@ -370,8 +402,8 @@ function columnApp(columnId) {
 
         // 2番「気分」に感情を追加
         addEmotionToMood(emotion) {
-            if (this.newColumn.mood.length > 0) {
-                this.newColumn.mood += ' ' + emotion;
+            if (this.newColumn.mood.trim().length > 0) {
+                this.newColumn.mood += '\n' + emotion;
             } else {
                 this.newColumn.mood = emotion;
             }
@@ -379,8 +411,8 @@ function columnApp(columnId) {
 
         // 7番「いまの気分」に感情を追加
         addEmotionToCurrentMood(emotion) {
-            if (this.newColumn.current_mood.length > 0) {
-                this.newColumn.current_mood += ' ' + emotion;
+            if (this.newColumn.current_mood.trim().length > 0) {
+                this.newColumn.current_mood += '\n' + emotion;
             } else {
                 this.newColumn.current_mood = emotion;
             }
@@ -532,11 +564,7 @@ function columnApp(columnId) {
                 }
 
                 // 更新成功したら詳細ページに遷移
-                this.showSuccess = true;
-                setTimeout(() => {
-                    this.showSuccess = false;
-                    window.location.href = `/columns/${this.columnId}`;
-                }, 1000);
+                window.location.href = `/columns/${this.columnId}`;
             } catch (e) {
                 this.error = e.message;
                 this.submitting = false;
