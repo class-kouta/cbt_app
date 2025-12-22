@@ -7,11 +7,13 @@ use App\Domain\Repository\CopingTagRepositoryInterface;
 use App\Domain\Repository\ColumnRepositoryInterface;
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use App\Infrastructure\Repository\EloquentCopingRepository;
 use App\Infrastructure\Repository\EloquentCopingTagRepository;
 use App\Infrastructure\Repository\EloquentColumnRepository;
 use App\Infrastructure\Repository\EloquentWritingDisclosureRepository;
 use App\Infrastructure\Repository\EloquentProblemSolvingRepository;
+use App\Infrastructure\Repository\EloquentSimpleNotepadRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -23,5 +25,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ColumnRepositoryInterface::class, EloquentColumnRepository::class);
         $this->app->bind(WritingDisclosureRepositoryInterface::class, EloquentWritingDisclosureRepository::class);
         $this->app->bind(ProblemSolvingRepositoryInterface::class, EloquentProblemSolvingRepository::class);
+        $this->app->bind(SimpleNotepadRepositoryInterface::class, EloquentSimpleNotepadRepository::class);
     }
 }

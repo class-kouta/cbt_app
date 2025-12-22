@@ -28,16 +28,19 @@ app/Domain/
 │   ├── Column.php                  # コラム（7カラム法）エンティティ
 │   ├── WritingDisclosure.php       # 筆記開示エンティティ
 │   ├── ProblemSolving.php          # 問題解決法エンティティ
-│   └── ProblemSolvingSolution.php  # 問題解決法の解決策エンティティ
+│   ├── ProblemSolvingSolution.php  # 問題解決法の解決策エンティティ
+│   └── SimpleNotepad.php           # シンプルメモ帳エンティティ
 ├── ValueObject/
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
-│   └── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
+│   ├── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
+│   └── SimpleNotepadContent.php    # シンプルメモ帳コンテンツ値オブジェクト
 └── Repository/
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
     ├── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
-    └── ProblemSolvingRepositoryInterface.php    # 問題解決法リポジトリインターフェース
+│   ├── ProblemSolvingRepositoryInterface.php    # 問題解決法リポジトリインターフェース
+    └── SimpleNotepadRepositoryInterface.php     # シンプルメモ帳リポジトリインターフェース
 ```
 
 **特徴：**
@@ -64,19 +67,24 @@ app/Application/
 │   │   ├── CreateWritingDisclosureUseCase.php  # 筆記開示作成
 │   │   ├── UpdateWritingDisclosureUseCase.php  # 筆記開示更新
 │   │   └── DeleteWritingDisclosureUseCase.php  # 筆記開示削除
-│   └── ProblemSolving/
-│       ├── CreateProblemSolvingUseCase.php     # 問題解決法作成
-│       ├── UpdateProblemSolvingUseCase.php     # 問題解決法更新
-│       ├── DeleteProblemSolvingUseCase.php     # 問題解決法削除
-│       ├── AddSolutionUseCase.php              # 解決策追加
-│       ├── UpdateSolutionUseCase.php           # 解決策更新
-│       └── DeleteSolutionUseCase.php           # 解決策削除
+│   ├── ProblemSolving/
+│   │   ├── CreateProblemSolvingUseCase.php     # 問題解決法作成
+│   │   ├── UpdateProblemSolvingUseCase.php     # 問題解決法更新
+│   │   ├── DeleteProblemSolvingUseCase.php     # 問題解決法削除
+│   │   ├── AddSolutionUseCase.php              # 解決策追加
+│   │   ├── UpdateSolutionUseCase.php           # 解決策更新
+│   │   └── DeleteSolutionUseCase.php           # 解決策削除
+│   └── SimpleNotepad/
+│       ├── CreateSimpleNotepadUseCase.php      # シンプルメモ帳作成
+│       ├── UpdateSimpleNotepadUseCase.php      # シンプルメモ帳更新
+│       └── DeleteSimpleNotepadUseCase.php      # シンプルメモ帳削除
 ├── DTO/                                    # データ転送オブジェクト
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
 │   ├── ProblemSolvingData.php              # 問題解決法データ転送用
-│   └── ProblemSolvingSolutionData.php      # 問題解決法の解決策データ転送用
+│   ├── ProblemSolvingSolutionData.php      # 問題解決法の解決策データ転送用
 │   ├── WritingDisclosureData.php           # 筆記開示データ転送用
+│   └── SimpleNotepadData.php               # シンプルメモ帳データ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
 ```
@@ -104,7 +112,8 @@ app/Infrastructure/
 │   ├── EloquentCopingTagRepository.php  # コーピングタグリポジトリ実装
 │   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
 │   ├── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
-│   └── EloquentProblemSolvingRepository.php    # 問題解決法リポジトリ実装
+│   ├── EloquentProblemSolvingRepository.php    # 問題解決法リポジトリ実装
+│   └── EloquentSimpleNotepadRepository.php     # シンプルメモ帳リポジトリ実装
 ├── Providers/
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
 └── Database/
@@ -114,7 +123,8 @@ app/Infrastructure/
         ├── Column.php                      # コラムモデル
         ├── WritingDisclosure.php           # 筆記開示モデル
         ├── ProblemSolving.php              # 問題解決法モデル
-        └── ProblemSolvingSolution.php      # 問題解決法の解決策モデル
+│       ├── ProblemSolvingSolution.php      # 問題解決法の解決策モデル
+        └── SimpleNotepad.php               # シンプルメモ帳モデル
 ```
 
 **特徴：**
@@ -133,7 +143,8 @@ app/Http/
 │   ├── CopingTagController.php     # コーピングタグ取得API
 │   ├── ColumnController.php        # コラム操作API
 │   ├── WritingDisclosureController.php # 筆記開示操作API
-│   └── ProblemSolvingController.php    # 問題解決法操作API
+│   ├── ProblemSolvingController.php    # 問題解決法操作API
+│   └── SimpleNotepadController.php     # シンプルメモ帳操作API
 ├── Requests/
 │   ├── Coping/
 │   │   ├── CreateCopingRequest.php
@@ -144,11 +155,14 @@ app/Http/
 │   ├── WritingDisclosure/
 │   │   ├── CreateWritingDisclosureRequest.php
 │   │   └── UpdateWritingDisclosureRequest.php
-│   └── ProblemSolving/
-│       ├── CreateProblemSolvingRequest.php
-│       ├── UpdateProblemSolvingRequest.php
-│       ├── AddSolutionRequest.php
-│       └── UpdateSolutionRequest.php
+│   ├── ProblemSolving/
+│   │   ├── CreateProblemSolvingRequest.php
+│   │   ├── UpdateProblemSolvingRequest.php
+│   │   ├── AddSolutionRequest.php
+│   │   └── UpdateSolutionRequest.php
+│   └── SimpleNotepad/
+│       ├── CreateSimpleNotepadRequest.php
+│       └── UpdateSimpleNotepadRequest.php
 └── Resources/
     ├── CopingResource.php          # コーピングレスポンス形式
     ├── CopingTagResource.php       # コーピングタグレスポンス形式
