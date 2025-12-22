@@ -35,6 +35,20 @@
         <span>コピーしました！</span>
     </div>
 
+    <!-- 自動保存トースト（控えめなデザイン） -->
+    <div
+        x-show="showAutoSaveToast"
+        x-transition:enter="transition ease-out duration-500"
+        x-transition:enter-start="opacity-0 transform translate-y-1"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-1"
+        class="fixed bottom-4 right-4 bg-gray-600/80 text-white/90 text-xs px-3 py-1.5 rounded-md shadow-sm z-40"
+    >
+        自動保存しました
+    </div>
+
     <!-- コラム作成/編集フォーム -->
     <div x-show="!loading || !isEditMode">
     <form @submit.prevent="saveColumn()">
@@ -341,6 +355,12 @@ function columnApp(columnId) {
         submitting: false,
         error: '',
         showCopyToast: false,
+        showAutoSaveToast: false,
+
+        // 自動保存用
+        autoSaveSnapshots: [], // 30秒ごとのスナップショット（直近2つ分を保持）
+        autoSaveInterval: null,
+        autoSaving: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
@@ -376,6 +396,138 @@ function columnApp(columnId) {
             if (this.isEditMode) {
                 await this.loadColumn();
             }
+
+            // 初期スナップショットを取得
+            this.takeSnapshot();
+
+            // 30秒ごとに自動保存チェック
+            this.autoSaveInterval = setInterval(() => {
+                this.checkAndAutoSave();
+            }, 30000);
+        },
+
+        // 現在の値のスナップショットを取得
+        takeSnapshot() {
+            const snapshot = {
+                situation: this.newColumn.situation,
+                mood: this.newColumn.mood,
+                automatic_thought: this.newColumn.automatic_thought,
+                evidence: this.newColumn.evidence,
+                counter_evidence: this.newColumn.counter_evidence,
+                adaptive_thought: this.newColumn.adaptive_thought,
+                current_mood: this.newColumn.current_mood,
+                notes: this.newColumn.notes
+            };
+            this.autoSaveSnapshots.push(snapshot);
+
+            // 直近2つ分のみ保持（60秒前の値と比較するため）
+            if (this.autoSaveSnapshots.length > 2) {
+                this.autoSaveSnapshots.shift();
+            }
+        },
+
+        // 60秒前のスナップショットと現在の値を比較
+        hasChangedFromPreviousSnapshot() {
+            // 2回分のスナップショットがない場合（まだ60秒経っていない）
+            if (this.autoSaveSnapshots.length < 2) {
+                // 1つ目のスナップショットと比較
+                if (this.autoSaveSnapshots.length === 1) {
+                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
+                }
+                return false;
+            }
+
+            // 60秒前（2回前）のスナップショットと比較
+            const oldSnapshot = this.autoSaveSnapshots[0];
+            return this.hasValueChanged(oldSnapshot);
+        },
+
+        // 指定されたスナップショットと現在の値を比較
+        hasValueChanged(snapshot) {
+            return (
+                this.newColumn.situation !== snapshot.situation ||
+                this.newColumn.mood !== snapshot.mood ||
+                this.newColumn.automatic_thought !== snapshot.automatic_thought ||
+                this.newColumn.evidence !== snapshot.evidence ||
+                this.newColumn.counter_evidence !== snapshot.counter_evidence ||
+                this.newColumn.adaptive_thought !== snapshot.adaptive_thought ||
+                this.newColumn.current_mood !== snapshot.current_mood ||
+                this.newColumn.notes !== snapshot.notes
+            );
+        },
+
+        // 30秒ごとの自動保存チェック
+        async checkAndAutoSave() {
+            // 条件チェック：
+            // 1. 「状況」が入力済み
+            // 2. 1分前の値から変更がある
+            // 3. 現在保存中でない
+            if (
+                this.newColumn.situation.trim() &&
+                this.hasChangedFromPreviousSnapshot() &&
+                !this.submitting &&
+                !this.autoSaving
+            ) {
+                await this.performAutoSave();
+            }
+
+            // 新しいスナップショットを取得
+            this.takeSnapshot();
+        },
+
+        // 自動保存を実行
+        async performAutoSave() {
+            this.autoSaving = true;
+
+            try {
+                if (this.columnId) {
+                    // 既存コラムの更新
+                    const res = await fetch(`/api/columns/${this.columnId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(this.newColumn)
+                    });
+
+                    if (res.ok) {
+                        this.showAutoSaveNotification();
+                    }
+                } else {
+                    // 新規作成
+                    const res = await fetch('/api/columns', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(this.newColumn)
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // 新規作成後は編集モードに切り替え（以降の自動保存は更新になる）
+                        this.columnId = data.id;
+                        this.isEditMode = true;
+                        // URLを編集ページに変更（リロードなし）
+                        history.replaceState(null, '', `/columns/${this.columnId}/edit`);
+                        this.showAutoSaveNotification();
+                    }
+                }
+            } catch (error) {
+                console.error('自動保存に失敗しました:', error);
+            } finally {
+                this.autoSaving = false;
+            }
+        },
+
+        // 自動保存の通知を表示
+        showAutoSaveNotification() {
+            this.showAutoSaveToast = true;
+            setTimeout(() => {
+                this.showAutoSaveToast = false;
+            }, 2000);
         },
 
         async loadColumn() {
