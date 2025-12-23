@@ -6,6 +6,7 @@ use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\WritingDisclosureController;
 use App\Http\Controllers\ProblemSolvingController;
+use App\Http\Controllers\SimpleNotepadController;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -39,3 +40,9 @@ Route::delete('/problem-solvings/{problemSolving}', [ProblemSolvingController::c
 Route::post('/problem-solvings/{problemSolving}/solutions', [ProblemSolvingController::class, 'addSolution']);
 Route::put('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'updateSolution']);
 Route::delete('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'deleteSolution']);
+
+// SimpleNotepad API（シンプルメモ帳）
+Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);
+Route::post('/simple-notepads', [SimpleNotepadController::class, 'store']);
+Route::put('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'update']);
+Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'destroy']);

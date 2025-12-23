@@ -66,8 +66,20 @@
 - created_at / updated_at — timestamp
 
 ---
+## simple_notepads（シンプルメモ帳）
+- id — bigint, 主キー
+- content — text, NOT NULL（メモ内容）
+- created_at / updated_at — timestamp
+
+**用途:**
+- 各機能に当てはまらない、ただ思い浮かんだ思考を外在化するため
+- 特定の心理療法に紐づかないシンプルなメモ書き
+- 思いついたことをとりあえず書き留めておく
+
+---
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます。
 - `writing_disclosures` は反芻思考の外在化のための筆記開示記録として機能します。
 - `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
+- `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。

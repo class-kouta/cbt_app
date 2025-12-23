@@ -51,6 +51,21 @@ Route::get('/writing-disclosures/{id}', function ($id) {
     return view('writing-disclosure-detail', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// シンプルメモ帳ページ
+Route::get('/simple-notepads', function () {
+    return view('simple-notepads');
+});
+
+// シンプルメモ帳一覧ページ
+Route::get('/simple-notepads/list', function () {
+    return view('simple-notepads-list');
+});
+
+// シンプルメモ帳詳細ページ
+Route::get('/simple-notepads/{id}', function ($id) {
+    return view('simple-notepad-detail', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
 // 問題解決法作成ページ
 Route::get('/problem-solvings', function () {
     return view('problem-solving-edit');

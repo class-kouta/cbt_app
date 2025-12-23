@@ -1,26 +1,26 @@
 @extends('layouts.app')
 
-@section('title', '筆記開示')
+@section('title', 'メモ帳')
 
 @section('content')
-<div x-data="writingDisclosureApp()" x-init="init()" x-cloak>
+<div x-data="simpleNotepadApp()" x-init="init()" x-cloak>
     <!-- 説明 -->
-    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-        <p class="text-emerald-800 text-sm">
-            💭 頭の中でぐるぐる回っている考えを書き出して、外に出してみましょう。書くことで気持ちが整理されることがあります。
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+        <p class="text-amber-800 text-sm">
+            📝 各機能に当てはまらないけど、思い浮かんだ思考をただ外在化したい時に。自由にメモを残しましょう。
         </p>
     </div>
 
-    <!-- 新規筆記開示作成フォーム -->
-    <form @submit.prevent="createWritingDisclosure()">
+    <!-- 新規メモ帳作成フォーム -->
+    <form @submit.prevent="createSimpleNotepad()">
         <div class="space-y-4">
             <!-- メモ内容 -->
             <div>
                 <textarea
                     x-model="newContent"
                     rows="18"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="何でも自由に書いてください..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    placeholder="なんでも自由に書いてください..."
                     maxlength="10000"
                     required
                 ></textarea>
@@ -34,10 +34,10 @@
             <div>
                 <button
                     type="submit"
-                    class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                    class="w-full bg-amber-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
                     :disabled="loading || !newContent.trim()"
                 >
-                    <span x-show="!loading">書き出す 📝</span>
+                    <span x-show="!loading">メモを保存 📝</span>
                     <span x-show="loading" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -52,7 +52,7 @@
 </div>
 
 <script>
-function writingDisclosureApp() {
+function simpleNotepadApp() {
     return {
         newContent: '',
         loading: false,
@@ -62,7 +62,7 @@ function writingDisclosureApp() {
             // 初期化
         },
 
-        async createWritingDisclosure() {
+        async createSimpleNotepad() {
             this.error = '';
 
             if (!this.newContent.trim()) {
@@ -72,7 +72,7 @@ function writingDisclosureApp() {
 
             this.loading = true;
             try {
-                const res = await fetch('/api/writing-disclosures', {
+                const res = await fetch('/api/simple-notepads', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ function writingDisclosureApp() {
                 }
 
                 // 保存成功したら一覧ページに遷移
-                window.location.href = '/writing-disclosures/list';
+                window.location.href = '/simple-notepads/list';
             } catch (e) {
                 this.error = e.message;
                 this.loading = false;
