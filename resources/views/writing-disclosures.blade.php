@@ -30,11 +30,6 @@
             <!-- エラーメッセージ -->
             <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
 
-            <!-- 成功メッセージ -->
-            <div x-show="success" class="text-green-600 text-sm bg-green-50 border border-green-200 rounded-lg p-3">
-                ✨ 書き出しました！気持ちが少し軽くなったかな？
-            </div>
-
             <!-- 送信ボタン -->
             <div>
                 <button
@@ -43,7 +38,13 @@
                     :disabled="loading || !newContent.trim()"
                 >
                     <span x-show="!loading">書き出す 📝</span>
-                    <span x-show="loading">保存中...</span>
+                    <span x-show="loading" class="flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        保存中...
+                    </span>
                 </button>
             </div>
         </div>
@@ -56,7 +57,6 @@ function writingDisclosureApp() {
         newContent: '',
         loading: false,
         error: '',
-        success: false,
 
         init() {
             // 初期化
@@ -64,7 +64,6 @@ function writingDisclosureApp() {
 
         async createWritingDisclosure() {
             this.error = '';
-            this.success = false;
 
             if (!this.newContent.trim()) {
                 this.error = '内容を入力してください';
@@ -89,16 +88,10 @@ function writingDisclosureApp() {
                     throw new Error(data.message || 'エラーが発生しました');
                 }
 
-                this.newContent = '';
-                this.success = true;
-
-                // 3秒後に成功メッセージを消す
-                setTimeout(() => {
-                    this.success = false;
-                }, 3000);
+                // 保存成功したら一覧ページに遷移
+                window.location.href = '/writing-disclosures/list';
             } catch (e) {
                 this.error = e.message;
-            } finally {
                 this.loading = false;
             }
         }
