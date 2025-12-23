@@ -98,7 +98,7 @@
                     </div>
 
                     <!-- Menu items -->
-                    <nav class="py-2" x-data="{ columnOpen: true, writingOpen: true, problemOpen: true }">
+                    <nav class="py-2" x-data="{ columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -204,7 +204,7 @@
                         </div>
 
                         <!-- 問題解決法（多段） -->
-                        <div>
+                        <div class="border-b border-gray-500/30">
                             <button
                                 @click="problemOpen = !problemOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -236,6 +236,45 @@
                                     </span>
                                 @else
                                     <a href="/problem-solvings/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- メモ帳（多段） -->
+                        <div>
+                            <button
+                                @click="notepadOpen = !notepadOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">メモ帳</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="notepadOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="notepadOpen" x-collapse class="">
+                                @if(request()->is('simple-notepads'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/simple-notepads" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('simple-notepads/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/simple-notepads/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif
