@@ -13,7 +13,7 @@
 
         <template x-for="item in simpleNotepads" :key="item.id">
             <a :href="'/simple-notepads/' + item.id" class="block">
-                <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg hover:bg-amber-50 cursor-pointer">
+                <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg hover:bg-emerald-50 cursor-pointer">
                     <p class="text-gray-800 line-clamp-2" x-text="item.content"></p>
                     <div class="mt-2">
                         <span class="text-xs text-gray-400" x-text="formatDate(item.created_at)"></span>
@@ -26,7 +26,7 @@
         <div x-show="simpleNotepads.length === 0" class="text-center py-12 text-gray-500">
             <p class="text-4xl mb-4">📝</p>
             <p>まだメモがありません</p>
-            <a href="/simple-notepads" class="text-amber-600 hover:text-amber-800 text-sm mt-4 inline-block">
+            <a href="/simple-notepads" class="text-emerald-600 hover:text-emerald-800 text-sm mt-4 inline-block">
                 メモを書いてみましょう →
             </a>
         </div>
@@ -35,7 +35,7 @@
     <!-- 新規作成ボタン（フローティング） -->
     <a
         href="/simple-notepads"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-amber-600 hover:to-orange-600 transition-all"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
         title="新しいメモを作成"
     >
         ＋
