@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'コラム一覧')
+@section('page-title', 'コラム法')
 
 @section('content')
 <div x-data="columnListApp()" x-init="init()" x-cloak>

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'コーピングリスト')
+@section('page-title', 'コーピングリスト')
 
 @section('content')
 <div x-data="copingApp()" x-init="init()" x-cloak>

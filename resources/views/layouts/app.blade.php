@@ -39,9 +39,14 @@
     <!-- Fixed Header -->
     <nav class="header-bg text-gray-700 shadow-md fixed top-0 left-0 right-0 z-50" x-data="{ menuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-14">
-                <!-- Left side - empty -->
-                <div class="flex items-center">
+                <div class="flex items-center justify-between h-14">
+                <!-- Left side - empty for balance -->
+                <div class="flex items-center w-10">
+                </div>
+
+                <!-- Center - Page title -->
+                <div class="flex-1 text-center">
+                    <span class="font-medium text-gray-700">@yield('page-title', '')</span>
                 </div>
 
                 <!-- Right side - Hamburger menu button -->
@@ -76,10 +81,10 @@
                 <div
                     x-cloak
                     :class="menuOpen ? 'slide-menu open' : 'slide-menu'"
-                    class="fixed top-0 right-0 h-full w-72 menu-bg shadow-2xl z-50"
+                    class="fixed top-0 right-0 h-full w-72 menu-bg shadow-2xl z-50 flex flex-col"
                 >
                     <!-- Menu header with close button -->
-                    <div class="flex items-center justify-between h-14 px-4">
+                    <div class="flex items-center justify-between h-14 px-4 flex-shrink-0">
                         <span class="text-lg font-semibold text-gray-700"></span>
                         <button
                             @click="menuOpen = false"
@@ -97,8 +102,8 @@
                         </button>
                     </div>
 
-                    <!-- Menu items -->
-                    <nav class="py-2" x-data="{ columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
+                    <!-- Menu items (scrollable) -->
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))

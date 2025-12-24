@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '問題解決法')
+@section('page-title', '問題解決法')
 
 @section('content')
 <div x-data="problemSolvingFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>

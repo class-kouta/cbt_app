@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'コラム法')
+@section('page-title', 'コラム法')
 
 @section('content')
 <div x-data="columnApp({{ $columnId ?? 'null' }})" x-init="init()" x-cloak>
