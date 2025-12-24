@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'メモ帳 - 過去の記録')
+@section('page-title', 'メモ帳')
 
 @section('content')
 <div x-data="simpleNotepadListApp()" x-init="init()" x-cloak>

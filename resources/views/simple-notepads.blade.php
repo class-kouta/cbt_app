@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'メモ帳')
+@section('page-title', 'メモ帳')
 
 @section('content')
 <div x-data="simpleNotepadApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>

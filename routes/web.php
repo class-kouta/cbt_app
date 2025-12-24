@@ -51,6 +51,11 @@ Route::get('/writing-disclosures/{id}', function ($id) {
     return view('writing-disclosure-detail', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// 筆記開示編集ページ
+Route::get('/writing-disclosures/{id}/edit', function ($id) {
+    return view('writing-disclosures', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
 // シンプルメモ帳ページ
 Route::get('/simple-notepads', function () {
     return view('simple-notepads');

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '筆記開示 - 過去の記録')
+@section('page-title', '筆記開示')
 
 @section('content')
 <div x-data="writingDisclosureListApp()" x-init="init()" x-cloak>
