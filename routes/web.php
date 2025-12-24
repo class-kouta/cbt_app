@@ -66,6 +66,11 @@ Route::get('/simple-notepads/{id}', function ($id) {
     return view('simple-notepad-detail', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// シンプルメモ帳編集ページ
+Route::get('/simple-notepads/{id}/edit', function ($id) {
+    return view('simple-notepads', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
 // 問題解決法作成ページ
 Route::get('/problem-solvings', function () {
     return view('problem-solving-edit');

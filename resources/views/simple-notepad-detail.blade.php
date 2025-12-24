@@ -9,14 +9,14 @@
         <a href="/simple-notepads/list" class="text-gray-600 hover:text-gray-800 text-sm font-medium transition-colors flex items-center gap-1">
             ← 一覧に戻る
         </a>
-        <div class="flex gap-3" x-show="!editing && item">
-            <button
-                @click="startEdit()"
-                class="text-xl hover:opacity-70 transition-opacity"
-                title="編集"
+        <div class="flex gap-3" x-show="item">
+            <a
+                :href="'/simple-notepads/' + item?.id + '/edit'"
+                class="text-emerald-600 hover:text-emerald-800 transition-colors p-2 rounded hover:bg-emerald-50"
+                title="編集する"
             >
                 ✏️
-            </button>
+            </a>
             <button
                 @click="deleteItem()"
                 class="text-xl hover:opacity-70 transition-opacity"
@@ -36,49 +36,17 @@
     <div x-show="error && !loading" class="text-center py-12 text-gray-500">
         <p class="text-4xl mb-4">😢</p>
         <p x-text="error"></p>
-        <a href="/simple-notepads/list" class="text-amber-600 hover:text-amber-800 text-sm mt-4 inline-block">
+        <a href="/simple-notepads/list" class="text-emerald-600 hover:text-emerald-800 text-sm mt-4 inline-block">
             一覧に戻る →
         </a>
     </div>
 
     <!-- 詳細表示 -->
     <div x-show="item && !loading && !error">
-        <!-- 表示モード -->
-        <div x-show="!editing" class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
             <p class="text-gray-800 whitespace-pre-wrap break-words" x-text="item?.content"></p>
             <div class="mt-4 pt-4 border-t border-gray-100">
                 <span class="text-xs text-gray-400" x-text="item ? formatDate(item.created_at) : ''"></span>
-            </div>
-        </div>
-
-        <!-- 編集モード -->
-        <div x-show="editing">
-            <textarea
-                x-model="editContent"
-                rows="18"
-                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                maxlength="10000"
-            ></textarea>
-            <div class="text-xs text-gray-400 text-right mb-4" x-text="editContent.length + '/10000'"></div>
-
-            <div x-show="editError" class="text-red-500 text-sm mb-4" x-text="editError"></div>
-
-            <div class="flex gap-2">
-                <button
-                    @click="saveEdit()"
-                    class="flex-1 bg-amber-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
-                    :disabled="saving || !editContent.trim()"
-                >
-                    <span x-show="!saving">保存</span>
-                    <span x-show="saving">保存中...</span>
-                </button>
-                <button
-                    @click="cancelEdit()"
-                    class="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
-                    :disabled="saving"
-                >
-                    キャンセル
-                </button>
             </div>
         </div>
     </div>
@@ -90,10 +58,6 @@ function simpleNotepadDetailApp() {
         item: null,
         loading: true,
         error: '',
-        editing: false,
-        editContent: '',
-        editError: '',
-        saving: false,
 
         async init() {
             await this.loadItem();
@@ -130,55 +94,6 @@ function simpleNotepadDetailApp() {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-        },
-
-        startEdit() {
-            this.editing = true;
-            this.editContent = this.item.content;
-            this.editError = '';
-        },
-
-        cancelEdit() {
-            this.editing = false;
-            this.editContent = '';
-            this.editError = '';
-        },
-
-        async saveEdit() {
-            if (!this.editContent.trim()) {
-                this.editError = '内容を入力してください';
-                return;
-            }
-
-            this.saving = true;
-            this.editError = '';
-
-            try {
-                const res = await fetch(`/api/simple-notepads/${this.item.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        content: this.editContent
-                    })
-                });
-
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
-                }
-
-                const updated = await res.json();
-                this.item = updated;
-                this.editing = false;
-                this.editContent = '';
-            } catch (e) {
-                this.editError = e.message;
-            } finally {
-                this.saving = false;
-            }
         },
 
         async deleteItem() {
