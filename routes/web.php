@@ -96,6 +96,11 @@ Route::get('/problem-solvings/{id}/edit', function ($id) {
     return view('problem-solving-edit', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// サポートネットワークページ
+Route::get('/support-networks', function () {
+    return view('support-networks');
+});
+
 // ===========================================
 // 管理画面ルート
 // ===========================================

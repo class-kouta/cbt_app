@@ -29,18 +29,21 @@ app/Domain/
 │   ├── WritingDisclosure.php       # 筆記開示エンティティ
 │   ├── ProblemSolving.php          # 問題解決法エンティティ
 │   ├── ProblemSolvingSolution.php  # 問題解決法の解決策エンティティ
-│   └── SimpleNotepad.php           # シンプルメモ帳エンティティ
+│   ├── SimpleNotepad.php           # シンプルメモ帳エンティティ
+│   └── SupportNetwork.php          # サポートネットワークエンティティ
 ├── ValueObject/
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
 │   ├── WritingDisclosureContent.php # 筆記開示コンテンツ値オブジェクト
-│   └── SimpleNotepadContent.php    # シンプルメモ帳コンテンツ値オブジェクト
+│   ├── SimpleNotepadContent.php    # シンプルメモ帳コンテンツ値オブジェクト
+│   └── SupportNetworkName.php      # サポートネットワーク名値オブジェクト
 └── Repository/
     ├── CopingRepositoryInterface.php      # コーピングリポジトリインターフェース
     ├── CopingTagRepositoryInterface.php   # コーピングタグリポジトリインターフェース
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
     ├── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
 │   ├── ProblemSolvingRepositoryInterface.php    # 問題解決法リポジトリインターフェース
-    └── SimpleNotepadRepositoryInterface.php     # シンプルメモ帳リポジトリインターフェース
+    ├── SimpleNotepadRepositoryInterface.php     # シンプルメモ帳リポジトリインターフェース
+    └── SupportNetworkRepositoryInterface.php    # サポートネットワークリポジトリインターフェース
 ```
 
 **特徴：**
@@ -74,17 +77,22 @@ app/Application/
 │   │   ├── AddSolutionUseCase.php              # 解決策追加
 │   │   ├── UpdateSolutionUseCase.php           # 解決策更新
 │   │   └── DeleteSolutionUseCase.php           # 解決策削除
-│   └── SimpleNotepad/
-│       ├── CreateSimpleNotepadUseCase.php      # シンプルメモ帳作成
-│       ├── UpdateSimpleNotepadUseCase.php      # シンプルメモ帳更新
-│       └── DeleteSimpleNotepadUseCase.php      # シンプルメモ帳削除
+│   ├── SimpleNotepad/
+│   │   ├── CreateSimpleNotepadUseCase.php      # シンプルメモ帳作成
+│   │   ├── UpdateSimpleNotepadUseCase.php      # シンプルメモ帳更新
+│   │   └── DeleteSimpleNotepadUseCase.php      # シンプルメモ帳削除
+│   └── SupportNetwork/
+│       ├── CreateSupportNetworkUseCase.php     # サポートネットワーク作成
+│       ├── UpdateSupportNetworkUseCase.php     # サポートネットワーク更新
+│       └── DeleteSupportNetworkUseCase.php     # サポートネットワーク削除
 ├── DTO/                                    # データ転送オブジェクト
 │   ├── CopingData.php                      # コーピングデータ転送用
 │   ├── ColumnData.php                      # コラムデータ転送用
 │   ├── ProblemSolvingData.php              # 問題解決法データ転送用
 │   ├── ProblemSolvingSolutionData.php      # 問題解決法の解決策データ転送用
 │   ├── WritingDisclosureData.php           # 筆記開示データ転送用
-│   └── SimpleNotepadData.php               # シンプルメモ帳データ転送用
+│   ├── SimpleNotepadData.php               # シンプルメモ帳データ転送用
+│   └── SupportNetworkData.php              # サポートネットワークデータ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
 ```
@@ -113,7 +121,8 @@ app/Infrastructure/
 │   ├── EloquentColumnRepository.php     # コラムリポジトリ実装
 │   ├── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
 │   ├── EloquentProblemSolvingRepository.php    # 問題解決法リポジトリ実装
-│   └── EloquentSimpleNotepadRepository.php     # シンプルメモ帳リポジトリ実装
+│   ├── EloquentSimpleNotepadRepository.php     # シンプルメモ帳リポジトリ実装
+│   └── EloquentSupportNetworkRepository.php    # サポートネットワークリポジトリ実装
 ├── Providers/
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
 └── Database/
@@ -124,7 +133,8 @@ app/Infrastructure/
         ├── WritingDisclosure.php           # 筆記開示モデル
         ├── ProblemSolving.php              # 問題解決法モデル
 │       ├── ProblemSolvingSolution.php      # 問題解決法の解決策モデル
-        └── SimpleNotepad.php               # シンプルメモ帳モデル
+        ├── SimpleNotepad.php               # シンプルメモ帳モデル
+        └── SupportNetwork.php              # サポートネットワークモデル
 ```
 
 **特徴：**
@@ -144,7 +154,8 @@ app/Http/
 │   ├── ColumnController.php        # コラム操作API
 │   ├── WritingDisclosureController.php # 筆記開示操作API
 │   ├── ProblemSolvingController.php    # 問題解決法操作API
-│   └── SimpleNotepadController.php     # シンプルメモ帳操作API
+│   ├── SimpleNotepadController.php     # シンプルメモ帳操作API
+│   └── SupportNetworkController.php    # サポートネットワーク操作API
 ├── Requests/
 │   ├── Coping/
 │   │   ├── CreateCopingRequest.php
@@ -160,9 +171,12 @@ app/Http/
 │   │   ├── UpdateProblemSolvingRequest.php
 │   │   ├── AddSolutionRequest.php
 │   │   └── UpdateSolutionRequest.php
-│   └── SimpleNotepad/
-│       ├── CreateSimpleNotepadRequest.php
-│       └── UpdateSimpleNotepadRequest.php
+│   ├── SimpleNotepad/
+│   │   ├── CreateSimpleNotepadRequest.php
+│   │   └── UpdateSimpleNotepadRequest.php
+│   └── SupportNetwork/
+│       ├── CreateSupportNetworkRequest.php
+│       └── UpdateSupportNetworkRequest.php
 └── Resources/
     ├── CopingResource.php          # コーピングレスポンス形式
     ├── CopingTagResource.php       # コーピングタグレスポンス形式

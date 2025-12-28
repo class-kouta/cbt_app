@@ -7,6 +7,7 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\WritingDisclosureController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
+use App\Http\Controllers\SupportNetworkController;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -46,3 +47,9 @@ Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);
 Route::post('/simple-notepads', [SimpleNotepadController::class, 'store']);
 Route::put('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'update']);
 Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'destroy']);
+
+// SupportNetwork API（サポートネットワーク）
+Route::get('/support-networks', [SupportNetworkController::class, 'index']);
+Route::post('/support-networks', [SupportNetworkController::class, 'store']);
+Route::put('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'update']);
+Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'destroy']);
