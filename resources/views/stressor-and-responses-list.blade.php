@@ -10,11 +10,11 @@
         <template x-for="item in items" :key="item.id">
             <a
                 :href="'/stressor-and-responses/' + item.id"
-                class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-rose-300"
+                class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
                     <!-- 日付 -->
-                    <div class="text-xs text-rose-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
+                    <div class="text-xs text-emerald-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- ストレッサー -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.stressor"></p>
                     <!-- 未入力項目タグ -->
@@ -24,14 +24,14 @@
                         </template>
                     </div>
                 </div>
-                <div class="bg-gradient-to-r from-rose-500 to-pink-500 h-1"></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
             </a>
         </template>
 
         <!-- ローディング中 -->
         <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
             <div class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-8 w-8 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -43,7 +43,7 @@
         <div x-show="!loading && items.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-6xl mb-4">⚡</p>
             <p class="text-gray-600 text-lg mb-2">まだ記録がありません</p>
-            <a href="/stressor-and-responses" class="inline-block mt-4 bg-gradient-to-r from-rose-500 to-pink-500 text-white py-2 px-6 rounded-lg font-medium hover:from-rose-600 hover:to-pink-600 transition-all">
+            <a href="/stressor-and-responses" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
                 新しく記録する
             </a>
         </div>
@@ -52,7 +52,7 @@
     <!-- 新規作成ボタン（フローティング） -->
     <a
         href="/stressor-and-responses"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-rose-600 hover:to-pink-600 transition-all"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
         title="新しく記録する"
     >
         ＋

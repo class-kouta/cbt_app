@@ -7,14 +7,14 @@
 <div x-data="stressorApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
     <!-- 編集モード時のヘッダー -->
     <div class="flex justify-between items-center mb-4" x-show="isEditMode">
-        <a :href="'/stressor-and-responses/' + itemId" class="text-rose-600 hover:text-rose-800 flex items-center gap-1">
+        <a :href="'/stressor-and-responses/' + itemId" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
             ← 詳細に戻る
         </a>
     </div>
 
     <!-- ローディング（編集モードのみ） -->
     <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
-        <svg class="animate-spin h-8 w-8 text-rose-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -57,17 +57,18 @@
     <div x-show="!loading || !isEditMode">
     <form @submit.prevent="saveItem()">
         <div class="space-y-5">
-            <!-- ストレッサー -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rose-500 text-white text-xs font-bold mr-1">1</span>
-                    ストレッサー <span class="text-red-500">*</span>
-                    <span class="text-gray-400 font-normal ml-1">ストレスの原因となった出来事や状況</span>
-                </label>
+            <!-- ストレッサーセクション -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span class="text-emerald-500">⚡</span>
+                    ストレッサー
+                    <span class="text-red-500 text-sm">*</span>
+                    <span class="text-gray-400 font-normal text-sm">ストレスの原因となった出来事や状況</span>
+                </h3>
                 <textarea
                     x-model="formData.stressor"
                     rows="6"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     placeholder="例：仕事の締め切りが重なった"
                     maxlength="1000"
                     required
@@ -78,7 +79,7 @@
             <!-- ストレス反応セクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <span class="text-rose-500">⚡</span>
+                    <span class="text-emerald-500">💭</span>
                     ストレス反応
                     <span class="text-gray-400 font-normal text-sm">（任意）</span>
                 </h3>
@@ -214,7 +215,7 @@
                 <!-- 送信ボタン -->
                 <button
                     type="submit"
-                    class="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                     :disabled="submitting || !isFormValid()"
                 >
                     <span x-show="!submitting && !isEditMode" class="flex items-center justify-center gap-2">
