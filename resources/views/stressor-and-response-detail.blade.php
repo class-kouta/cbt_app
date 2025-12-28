@@ -43,10 +43,10 @@
         <!-- 詳細表示 -->
         <div class="space-y-4">
             <!-- ストレッサー -->
-            <div class="bg-emerald-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-emerald-600 mb-2">
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="text-base font-semibold text-gray-700 mb-4">
                     ストレッサー
-                </div>
+                </h3>
                 <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="item?.stressor || '未入力'"></p>
             </div>
 
