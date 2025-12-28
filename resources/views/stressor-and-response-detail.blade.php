@@ -44,8 +44,7 @@
         <div class="space-y-4">
             <!-- ストレッサー -->
             <div class="bg-emerald-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
-                    <span class="text-emerald-500">⚡</span>
+                <div class="text-xs font-semibold text-emerald-600 mb-2">
                     ストレッサー
                 </div>
                 <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="item?.stressor || '未入力'"></p>
@@ -53,16 +52,14 @@
 
             <!-- ストレス反応セクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <h3 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <span class="text-emerald-500">💭</span>
+                <h3 class="text-base font-semibold text-gray-700 mb-4">
                     ストレス反応
                 </h3>
                 
                 <div class="space-y-4">
                     <!-- 認知（自動思考） -->
                     <div class="bg-amber-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-amber-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-xs">💭</span>
+                        <div class="text-xs font-semibold text-amber-600 mb-2">
                             認知（自動思考）
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!item?.cognition ? 'text-gray-400' : ''" x-text="item?.cognition || '未入力'"></p>
@@ -70,8 +67,7 @@
 
                     <!-- 気分・感情 -->
                     <div class="bg-blue-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-blue-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-500 text-white text-xs">💙</span>
+                        <div class="text-xs font-semibold text-blue-600 mb-2">
                             気分・感情
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!item?.mood ? 'text-gray-400' : ''" x-text="item?.mood || '未入力'"></p>
@@ -79,8 +75,7 @@
 
                     <!-- 身体反応 -->
                     <div class="bg-green-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-green-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 text-white text-xs">🫀</span>
+                        <div class="text-xs font-semibold text-green-600 mb-2">
                             身体反応
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!item?.body_reaction ? 'text-gray-400' : ''" x-text="item?.body_reaction || '未入力'"></p>
@@ -88,8 +83,7 @@
 
                     <!-- 行動 -->
                     <div class="bg-purple-50 rounded-lg p-4">
-                        <div class="text-xs font-semibold text-purple-600 mb-2 flex items-center gap-1">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-purple-500 text-white text-xs">🏃</span>
+                        <div class="text-xs font-semibold text-purple-600 mb-2">
                             行動
                         </div>
                         <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!item?.behavior ? 'text-gray-400' : ''" x-text="item?.behavior || '未入力'"></p>

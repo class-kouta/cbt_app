@@ -60,10 +60,8 @@
             <!-- ストレッサーセクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <span class="text-emerald-500">⚡</span>
                     ストレッサー
                     <span class="text-red-500 text-sm">*</span>
-                    <span class="text-gray-400 font-normal text-sm">ストレスの原因となった出来事や状況</span>
                 </h3>
                 <textarea
                     x-model="formData.stressor"
@@ -79,7 +77,6 @@
             <!-- ストレス反応セクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <span class="text-emerald-500">💭</span>
                     ストレス反応
                     <span class="text-gray-400 font-normal text-sm">（任意）</span>
                 </h3>
@@ -88,9 +85,7 @@
                     <!-- 認知（自動思考） -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold mr-1">💭</span>
                             認知（自動思考）
-                            <span class="text-gray-400 font-normal ml-1">頭に浮かんだ考え</span>
                         </label>
                         <textarea
                             x-model="formData.cognition"
@@ -105,9 +100,7 @@
                     <!-- 気分・感情 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white text-xs font-bold mr-1">💙</span>
                             気分・感情
-                            <span class="text-gray-400 font-normal ml-1">そのときの気持ち</span>
                             <!-- 感情リストトグルボタン -->
                             <button
                                 type="button"
@@ -174,9 +167,7 @@
                     <!-- 身体反応 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold mr-1">🫀</span>
                             身体反応
-                            <span class="text-gray-400 font-normal ml-1">体に現れた変化</span>
                         </label>
                         <textarea
                             x-model="formData.body_reaction"
@@ -191,9 +182,7 @@
                     <!-- 行動 -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-500 text-white text-xs font-bold mr-1">🏃</span>
                             行動
-                            <span class="text-gray-400 font-normal ml-1">とった行動や反応</span>
                         </label>
                         <textarea
                             x-model="formData.behavior"
