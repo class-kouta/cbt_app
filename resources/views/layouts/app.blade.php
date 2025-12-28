@@ -103,7 +103,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -115,6 +115,45 @@
                                     <span class="font-medium text-lg">トップ</span>
                                 </a>
                             @endif
+                        </div>
+
+                        <!-- ストレッサーとストレス反応（多段） -->
+                        <div class="border-b border-gray-500/30">
+                            <button
+                                @click="stressorOpen = !stressorOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">ストレッサーとストレス反応</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="stressorOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="stressorOpen" x-collapse class="">
+                                @if(request()->is('stressor-and-responses'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/stressor-and-responses" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('stressor-and-responses/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/stressor-and-responses/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- コラム法（多段） -->

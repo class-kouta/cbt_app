@@ -77,9 +77,25 @@
 - 思いついたことをとりあえず書き留めておく
 
 ---
+## stressor_and_responses（ストレッサーとストレス反応）
+- id — bigint, 主キー
+- stressor — text, NOT NULL（ストレッサー：ストレスの原因）
+- cognition — text, NULL可（認知：自動思考）
+- mood — text, NULL可（気分・感情）
+- body_reaction — text, NULL可（身体反応）
+- behavior — text, NULL可（行動）
+- created_at / updated_at — timestamp
+
+**用途:**
+- ストレスの原因（ストレッサー）と、それに対する反応を4つの側面から記録
+- 認知行動療法におけるストレス反応の理解と分析
+- ストレスへの気づきを高め、適切なコーピング選択の基盤となる
+
+---
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます。
 - `writing_disclosures` は反芻思考の外在化のための筆記開示記録として機能します。
 - `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
 - `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。
+- `stressor_and_responses` はストレッサーとそれに対するストレス反応（認知・感情・身体・行動）を記録する機能です。

@@ -7,6 +7,7 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\WritingDisclosureController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
+use App\Http\Controllers\StressorAndResponseController;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -46,3 +47,10 @@ Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);
 Route::post('/simple-notepads', [SimpleNotepadController::class, 'store']);
 Route::put('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'update']);
 Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'destroy']);
+
+// StressorAndResponse API（ストレッサーとストレス反応）
+Route::get('/stressor-and-responses', [StressorAndResponseController::class, 'index']);
+Route::get('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'show']);
+Route::post('/stressor-and-responses', [StressorAndResponseController::class, 'store']);
+Route::put('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'update']);
+Route::delete('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'destroy']);
