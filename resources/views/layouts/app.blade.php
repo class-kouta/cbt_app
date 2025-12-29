@@ -103,7 +103,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, notepadOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -284,6 +284,19 @@
                                     </a>
                                 @endif
                             </div>
+                        </div>
+
+                        <!-- サポートネットワーク -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('support-networks'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                </span>
+                            @else
+                                <a href="/support-networks" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                </a>
+                            @endif
                         </div>
 
                         <!-- メモ帳（多段） -->

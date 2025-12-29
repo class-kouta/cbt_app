@@ -8,6 +8,7 @@ use App\Http\Controllers\WritingDisclosureController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
+use App\Http\Controllers\SupportNetworkController;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -54,3 +55,9 @@ Route::get('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponse
 Route::post('/stressor-and-responses', [StressorAndResponseController::class, 'store']);
 Route::put('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'update']);
 Route::delete('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'destroy']);
+
+// SupportNetwork API（サポートネットワーク）
+Route::get('/support-networks', [SupportNetworkController::class, 'index']);
+Route::post('/support-networks', [SupportNetworkController::class, 'store']);
+Route::put('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'update']);
+Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'destroy']);

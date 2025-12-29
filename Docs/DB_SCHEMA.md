@@ -92,6 +92,21 @@
 - ストレスへの気づきを高め、適切なコーピング選択の基盤となる
 
 ---
+## support_networks（サポートネットワーク）
+- id — bigint, 主キー
+- name — varchar(100), NOT NULL（サポート者の名前）
+- point — integer, DEFAULT 0（お気に入りポイント、高いほど上に表示）
+- created_at / updated_at — timestamp
+
+インデックス:
+- point, created_at（ソート用）
+
+**用途:**
+- 自分をサポートしてくれる人々（家族、友人、専門家など）を管理する
+- 困った時に頼れる人のリストを可視化する
+- お気に入りポイントで頼りになる度合いを記録
+
+---
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます。

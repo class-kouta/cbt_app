@@ -116,6 +116,12 @@ Route::get('/stressor-and-responses/{id}/edit', function ($id) {
     return view('stressor-and-responses', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// サポートネットワークページ
+Route::get('/support-networks', function () {
+    return view('support-networks');
+});
+
+
 // ===========================================
 // 管理画面ルート
 // ===========================================
