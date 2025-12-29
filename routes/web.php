@@ -96,10 +96,31 @@ Route::get('/problem-solvings/{id}/edit', function ($id) {
     return view('problem-solving-edit', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
+// ストレッサーとストレス反応作成ページ
+Route::get('/stressor-and-responses', function () {
+    return view('stressor-and-responses');
+});
+
+// ストレッサーとストレス反応一覧ページ
+Route::get('/stressor-and-responses/list', function () {
+    return view('stressor-and-responses-list');
+});
+
+// ストレッサーとストレス反応詳細ページ
+Route::get('/stressor-and-responses/{id}', function ($id) {
+    return view('stressor-and-response-detail', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
+// ストレッサーとストレス反応編集ページ
+Route::get('/stressor-and-responses/{id}/edit', function ($id) {
+    return view('stressor-and-responses', ['itemId' => $id]);
+})->where('id', '[0-9]+');
+
 // サポートネットワークページ
 Route::get('/support-networks', function () {
     return view('support-networks');
 });
+
 
 // ===========================================
 // 管理画面ルート

@@ -30,6 +30,7 @@ app/Domain/
 │   ├── ProblemSolving.php          # 問題解決法エンティティ
 │   ├── ProblemSolvingSolution.php  # 問題解決法の解決策エンティティ
 │   ├── SimpleNotepad.php           # シンプルメモ帳エンティティ
+│   ├── StressorAndResponse.php     # ストレッサーとストレス反応エンティティ
 │   └── SupportNetwork.php          # サポートネットワークエンティティ
 ├── ValueObject/
 │   ├── CopingContent.php           # コーピングコンテンツ値オブジェクト
@@ -42,7 +43,8 @@ app/Domain/
     ├── ColumnRepositoryInterface.php      # コラムリポジトリインターフェース
     ├── WritingDisclosureRepositoryInterface.php # 筆記開示リポジトリインターフェース
 │   ├── ProblemSolvingRepositoryInterface.php    # 問題解決法リポジトリインターフェース
-    ├── SimpleNotepadRepositoryInterface.php     # シンプルメモ帳リポジトリインターフェース
+│   ├── SimpleNotepadRepositoryInterface.php     # シンプルメモ帳リポジトリインターフェース
+│   ├── StressorAndResponseRepositoryInterface.php # ストレッサーとストレス反応リポジトリインターフェース
     └── SupportNetworkRepositoryInterface.php    # サポートネットワークリポジトリインターフェース
 ```
 
@@ -81,6 +83,10 @@ app/Application/
 │   │   ├── CreateSimpleNotepadUseCase.php      # シンプルメモ帳作成
 │   │   ├── UpdateSimpleNotepadUseCase.php      # シンプルメモ帳更新
 │   │   └── DeleteSimpleNotepadUseCase.php      # シンプルメモ帳削除
+│   ├── StressorAndResponse/
+│   │   ├── CreateStressorAndResponseUseCase.php  # ストレッサーとストレス反応作成
+│   │   ├── UpdateStressorAndResponseUseCase.php  # ストレッサーとストレス反応更新
+│   │   └── DeleteStressorAndResponseUseCase.php  # ストレッサーとストレス反応削除
 │   └── SupportNetwork/
 │       ├── CreateSupportNetworkUseCase.php     # サポートネットワーク作成
 │       ├── UpdateSupportNetworkUseCase.php     # サポートネットワーク更新
@@ -92,6 +98,7 @@ app/Application/
 │   ├── ProblemSolvingSolutionData.php      # 問題解決法の解決策データ転送用
 │   ├── WritingDisclosureData.php           # 筆記開示データ転送用
 │   ├── SimpleNotepadData.php               # シンプルメモ帳データ転送用
+│   ├── StressorAndResponseData.php         # ストレッサーとストレス反応データ転送用
 │   └── SupportNetworkData.php              # サポートネットワークデータ転送用
 └── Service/
     └── ApplicationService.php              # トランザクション管理、複数ユースケース調整
@@ -122,6 +129,7 @@ app/Infrastructure/
 │   ├── EloquentWritingDisclosureRepository.php # 筆記開示リポジトリ実装
 │   ├── EloquentProblemSolvingRepository.php    # 問題解決法リポジトリ実装
 │   ├── EloquentSimpleNotepadRepository.php     # シンプルメモ帳リポジトリ実装
+│   ├── EloquentStressorAndResponseRepository.php # ストレッサーとストレス反応リポジトリ実装
 │   └── EloquentSupportNetworkRepository.php    # サポートネットワークリポジトリ実装
 ├── Providers/
 │   └── RepositoryServiceProvider.php    # リポジトリ実装バインド
@@ -134,6 +142,7 @@ app/Infrastructure/
         ├── ProblemSolving.php              # 問題解決法モデル
 │       ├── ProblemSolvingSolution.php      # 問題解決法の解決策モデル
         ├── SimpleNotepad.php               # シンプルメモ帳モデル
+        ├── StressorAndResponse.php         # ストレッサーとストレス反応モデル
         └── SupportNetwork.php              # サポートネットワークモデル
 ```
 
@@ -155,6 +164,7 @@ app/Http/
 │   ├── WritingDisclosureController.php # 筆記開示操作API
 │   ├── ProblemSolvingController.php    # 問題解決法操作API
 │   ├── SimpleNotepadController.php     # シンプルメモ帳操作API
+│   ├── StressorAndResponseController.php # ストレッサーとストレス反応操作API
 │   └── SupportNetworkController.php    # サポートネットワーク操作API
 ├── Requests/
 │   ├── Coping/
@@ -174,6 +184,9 @@ app/Http/
 │   ├── SimpleNotepad/
 │   │   ├── CreateSimpleNotepadRequest.php
 │   │   └── UpdateSimpleNotepadRequest.php
+│   ├── StressorAndResponse/
+│   │   ├── CreateStressorAndResponseRequest.php
+│   │   └── UpdateStressorAndResponseRequest.php
 │   └── SupportNetwork/
 │       ├── CreateSupportNetworkRequest.php
 │       └── UpdateSupportNetworkRequest.php
