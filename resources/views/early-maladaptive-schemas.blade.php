@@ -5,9 +5,9 @@
 
 @section('content')
 <div x-data="schemaApp()" x-init="init()" x-cloak>
-    <!-- 自動保存トースト -->
+    <!-- 保存トースト -->
     <div
-        x-show="showAutoSaveToast"
+        x-show="showSaveToast"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 transform -translate-y-2"
         x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -19,7 +19,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
-        自動保存しました
+        <span x-text="saveToastMessage"></span>
     </div>
 
     <!-- ローディング -->
@@ -48,7 +48,7 @@
 
         <!-- 第1領域：切断と拒絶 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-red-500 text-white px-4 py-3">
+            <div class="bg-red-500/70 text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第1領域：切断と拒絶</h2>
                 <p class="text-sm opacity-90">安全、受容、養育といった基本的なニーズが満たされなかった領域</p>
             </div>
@@ -197,7 +197,7 @@
 
         <!-- 第2領域：自律性と機能の障害 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-orange-500 text-white px-4 py-3">
+            <div class="bg-orange-500/70 text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第2領域：自律性と機能の障害</h2>
                 <p class="text-sm opacity-90">自分への自信や、自立して生きる能力が育たなかった領域</p>
             </div>
@@ -318,7 +318,7 @@
 
         <!-- 第3領域：制約の欠如 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-yellow-500 text-white px-4 py-3">
+            <div class="bg-yellow-500/70 text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第3領域：制約の欠如</h2>
                 <p class="text-sm opacity-90">自制心、責任感、他者の権利の尊重といった限界設定が学べなかった領域</p>
             </div>
@@ -383,7 +383,7 @@
 
         <!-- 第4領域：他者への志向 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-green-500 text-white px-4 py-3">
+            <div class="bg-green-500/70 text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第4領域：他者への志向</h2>
                 <p class="text-sm opacity-90">愛や承認を得るために、自分のニーズを犠牲にして他者に合わせる領域</p>
             </div>
@@ -476,7 +476,7 @@
 
         <!-- 第5領域：過剰警戒と抑制 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-purple-500 text-white px-4 py-3">
+            <div class="bg-purple-500/70 text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第5領域：過剰警戒と抑制</h2>
                 <p class="text-sm opacity-90">自発性や喜びを抑圧し、厳格なルールや警戒心に縛られる領域</p>
             </div>
@@ -606,7 +606,7 @@
                 :disabled="submitting"
             >
                 <span x-show="!submitting" class="flex items-center justify-center gap-2">
-                    💾 保存する
+                    保存する
                 </span>
                 <span x-show="submitting" class="flex items-center justify-center gap-2">
                     <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -647,7 +647,8 @@ function schemaApp() {
         loading: true,
         submitting: false,
         error: '',
-        showAutoSaveToast: false,
+        showSaveToast: false,
+        saveToastMessage: '',
         autoSaveInterval: null,
         autoSaveSnapshots: [],
         autoSaving: false,
@@ -720,7 +721,7 @@ function schemaApp() {
             this.autoSaving = true;
             try {
                 await this.saveData();
-                this.showAutoSaveNotification();
+                this.showNotification('自動保存しました');
             } catch (error) {
                 console.error('自動保存に失敗しました:', error);
             } finally {
@@ -728,10 +729,11 @@ function schemaApp() {
             }
         },
 
-        showAutoSaveNotification() {
-            this.showAutoSaveToast = true;
+        showNotification(message) {
+            this.saveToastMessage = message;
+            this.showSaveToast = true;
             setTimeout(() => {
-                this.showAutoSaveToast = false;
+                this.showSaveToast = false;
             }, 2000);
         },
 
@@ -740,7 +742,7 @@ function schemaApp() {
             this.error = '';
             try {
                 await this.saveData();
-                this.showAutoSaveNotification();
+                this.showNotification('保存しました');
             } catch (e) {
                 this.error = e.message;
             } finally {
