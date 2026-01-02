@@ -19,7 +19,8 @@ class CreateStressorAndResponseUseCase
             $data->cognition,
             $data->mood,
             $data->bodyReaction,
-            $data->behavior
+            $data->behavior,
+            $data->stimulatedSchemas
         );
 
         return $this->repository->save($stressorAndResponse);

@@ -12,9 +12,14 @@ class StressorAndResponse
     private ?string $mood;
     private ?string $bodyReaction;
     private ?string $behavior;
+    /** @var array<string>|null */
+    private ?array $stimulatedSchemas;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
+    /**
+     * @param array<string>|null $stimulatedSchemas
+     */
     private function __construct(
         ?int $id,
         string $stressor,
@@ -22,6 +27,7 @@ class StressorAndResponse
         ?string $mood,
         ?string $bodyReaction,
         ?string $behavior,
+        ?array $stimulatedSchemas,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -31,16 +37,21 @@ class StressorAndResponse
         $this->mood = $mood;
         $this->bodyReaction = $bodyReaction;
         $this->behavior = $behavior;
+        $this->stimulatedSchemas = $stimulatedSchemas;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * @param array<string>|null $stimulatedSchemas
+     */
     public static function createNew(
         string $stressor,
         ?string $cognition,
         ?string $mood,
         ?string $bodyReaction,
-        ?string $behavior
+        ?string $behavior,
+        ?array $stimulatedSchemas = null
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
@@ -50,11 +61,15 @@ class StressorAndResponse
             $mood,
             $bodyReaction,
             $behavior,
+            $stimulatedSchemas,
             $now,
             $now
         );
     }
 
+    /**
+     * @param array<string>|null $stimulatedSchemas
+     */
     public static function reconstitute(
         int $id,
         string $stressor,
@@ -62,6 +77,7 @@ class StressorAndResponse
         ?string $mood,
         ?string $bodyReaction,
         ?string $behavior,
+        ?array $stimulatedSchemas,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -72,6 +88,7 @@ class StressorAndResponse
             $mood,
             $bodyReaction,
             $behavior,
+            $stimulatedSchemas,
             $createdAt,
             $updatedAt
         );
@@ -107,6 +124,14 @@ class StressorAndResponse
         return $this->behavior;
     }
 
+    /**
+     * @return array<string>|null
+     */
+    public function getStimulatedSchemas(): ?array
+    {
+        return $this->stimulatedSchemas;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -126,6 +151,7 @@ class StressorAndResponse
             $this->mood,
             $this->bodyReaction,
             $this->behavior,
+            $this->stimulatedSchemas,
             $this->createdAt,
             $this->updatedAt
         );

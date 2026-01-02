@@ -28,6 +28,7 @@ class StressorAndResponseController extends Controller
                     'mood' => $item->mood,
                     'body_reaction' => $item->body_reaction,
                     'behavior' => $item->behavior,
+                    'stimulated_schemas' => $item->stimulated_schemas,
                     'created_at' => $item->created_at->format(DATE_ATOM),
                     'updated_at' => $item->updated_at->format(DATE_ATOM),
                 ];
@@ -48,6 +49,7 @@ class StressorAndResponseController extends Controller
             'mood' => $stressorAndResponse->mood,
             'body_reaction' => $stressorAndResponse->body_reaction,
             'behavior' => $stressorAndResponse->behavior,
+            'stimulated_schemas' => $stressorAndResponse->stimulated_schemas,
             'created_at' => $stressorAndResponse->created_at->format(DATE_ATOM),
             'updated_at' => $stressorAndResponse->updated_at->format(DATE_ATOM),
         ]);
@@ -58,12 +60,17 @@ class StressorAndResponseController extends Controller
      */
     public function store(CreateStressorAndResponseRequest $request, CreateStressorAndResponseUseCase $createUseCase): JsonResponse
     {
+        $stimulatedSchemas = $request->has('stimulated_schemas') && is_array($request->input('stimulated_schemas'))
+            ? $request->input('stimulated_schemas')
+            : null;
+
         $data = new StressorAndResponseData(
             stressor: (string) $request->string('stressor'),
             cognition: $request->has('cognition') && $request->filled('cognition') ? (string) $request->string('cognition') : null,
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
             bodyReaction: $request->has('body_reaction') && $request->filled('body_reaction') ? (string) $request->string('body_reaction') : null,
-            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null
+            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null,
+            stimulatedSchemas: $stimulatedSchemas
         );
 
         $item = $createUseCase->handle($data);
@@ -75,6 +82,7 @@ class StressorAndResponseController extends Controller
             'mood' => $item->getMood(),
             'body_reaction' => $item->getBodyReaction(),
             'behavior' => $item->getBehavior(),
+            'stimulated_schemas' => $item->getStimulatedSchemas(),
             'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -85,12 +93,17 @@ class StressorAndResponseController extends Controller
      */
     public function update(UpdateStressorAndResponseRequest $request, StressorAndResponse $stressorAndResponse, UpdateStressorAndResponseUseCase $updateUseCase): JsonResponse
     {
+        $stimulatedSchemas = $request->has('stimulated_schemas') && is_array($request->input('stimulated_schemas'))
+            ? $request->input('stimulated_schemas')
+            : null;
+
         $data = new StressorAndResponseData(
             stressor: (string) $request->string('stressor'),
             cognition: $request->has('cognition') && $request->filled('cognition') ? (string) $request->string('cognition') : null,
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
             bodyReaction: $request->has('body_reaction') && $request->filled('body_reaction') ? (string) $request->string('body_reaction') : null,
-            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null
+            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null,
+            stimulatedSchemas: $stimulatedSchemas
         );
 
         $updatedItem = $updateUseCase->handle($stressorAndResponse->id, $data);
@@ -102,6 +115,7 @@ class StressorAndResponseController extends Controller
             'mood' => $updatedItem->getMood(),
             'body_reaction' => $updatedItem->getBodyReaction(),
             'behavior' => $updatedItem->getBehavior(),
+            'stimulated_schemas' => $updatedItem->getStimulatedSchemas(),
             'created_at' => $updatedItem->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedItem->getUpdatedAt()->format(DATE_ATOM),
         ]);

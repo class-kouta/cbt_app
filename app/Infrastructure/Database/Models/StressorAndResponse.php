@@ -15,5 +15,10 @@ class StressorAndResponse extends Model
         'mood',
         'body_reaction',
         'behavior',
+        'stimulated_schemas',
+    ];
+
+    protected $casts = [
+        'stimulated_schemas' => 'array',
     ];
 }
