@@ -9,6 +9,7 @@ use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
+use App\Http\Controllers\EarlyMaladaptiveSchemaController;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -61,3 +62,8 @@ Route::get('/support-networks', [SupportNetworkController::class, 'index']);
 Route::post('/support-networks', [SupportNetworkController::class, 'store']);
 Route::put('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'update']);
 Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::class, 'destroy']);
+
+// EarlyMaladaptiveSchema API（スキーマ療法 - 早期不適応スキーマ）
+Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
+Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
+Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);

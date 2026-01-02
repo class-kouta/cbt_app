@@ -286,6 +286,19 @@
                             </div>
                         </div>
 
+                        <!-- スキーマ療法 -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('early-maladaptive-schemas'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">スキーマ療法</span>
+                                </span>
+                            @else
+                                <a href="/early-maladaptive-schemas" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">スキーマ療法</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <!-- サポートネットワーク -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('support-networks'))

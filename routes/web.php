@@ -121,6 +121,11 @@ Route::get('/support-networks', function () {
     return view('support-networks');
 });
 
+// スキーマ療法（早期不適応スキーマ）ページ
+Route::get('/early-maladaptive-schemas', function () {
+    return view('early-maladaptive-schemas');
+});
+
 
 // ===========================================
 // 管理画面ルート
