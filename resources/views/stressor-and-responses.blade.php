@@ -227,13 +227,16 @@
                 </div>
 
                 <!-- スキーマ選択UI -->
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <!-- 第1領域：切断と拒絶 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-red-100">
-                        <div class="bg-red-500 text-white px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-red-100" x-data="{ domainOpen: false }">
+                        <button type="button" @click="domainOpen = !domainOpen" class="w-full bg-red-500 text-white px-4 py-2.5 flex items-center justify-between hover:bg-red-600 transition-colors">
                             <h4 class="text-sm font-bold">第1領域：切断と拒絶</h4>
-                        </div>
-                        <div class="p-3 space-y-3">
+                            <svg class="w-5 h-5 transition-transform" :class="domainOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="domainOpen" x-collapse class="p-3 space-y-3">
                             <!-- 1. 見捨てられ/不安定スキーマ -->
                             <div class="border-b border-gray-100 pb-3" x-data="{ open: false }">
                                 <div class="flex items-start justify-between gap-3">
@@ -337,11 +340,14 @@
                     </div>
 
                     <!-- 第2領域：自律性と機能の障害 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-orange-100">
-                        <div class="bg-orange-500 text-white px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-orange-100" x-data="{ domainOpen: false }">
+                        <button type="button" @click="domainOpen = !domainOpen" class="w-full bg-orange-500 text-white px-4 py-2.5 flex items-center justify-between hover:bg-orange-600 transition-colors">
                             <h4 class="text-sm font-bold">第2領域：自律性と機能の障害</h4>
-                        </div>
-                        <div class="p-3 space-y-3">
+                            <svg class="w-5 h-5 transition-transform" :class="domainOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="domainOpen" x-collapse class="p-3 space-y-3">
                             <!-- 6. 依存/無能スキーマ -->
                             <div class="border-b border-gray-100 pb-3" x-data="{ open: false }">
                                 <div class="flex items-start justify-between gap-3">
@@ -425,11 +431,14 @@
                     </div>
 
                     <!-- 第3領域：制約の欠如 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-yellow-100">
-                        <div class="bg-yellow-500 text-white px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-yellow-100" x-data="{ domainOpen: false }">
+                        <button type="button" @click="domainOpen = !domainOpen" class="w-full bg-yellow-500 text-white px-4 py-2.5 flex items-center justify-between hover:bg-yellow-600 transition-colors">
                             <h4 class="text-sm font-bold">第3領域：制約の欠如</h4>
-                        </div>
-                        <div class="p-3 space-y-3">
+                            <svg class="w-5 h-5 transition-transform" :class="domainOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="domainOpen" x-collapse class="p-3 space-y-3">
                             <!-- 10. 権利要求/尊大さスキーマ -->
                             <div class="border-b border-gray-100 pb-3" x-data="{ open: false }">
                                 <div class="flex items-start justify-between gap-3">
@@ -473,11 +482,14 @@
                     </div>
 
                     <!-- 第4領域：他者への志向 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-green-100">
-                        <div class="bg-green-500 text-white px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-green-100" x-data="{ domainOpen: false }">
+                        <button type="button" @click="domainOpen = !domainOpen" class="w-full bg-green-500 text-white px-4 py-2.5 flex items-center justify-between hover:bg-green-600 transition-colors">
                             <h4 class="text-sm font-bold">第4領域：他者への志向</h4>
-                        </div>
-                        <div class="p-3 space-y-3">
+                            <svg class="w-5 h-5 transition-transform" :class="domainOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="domainOpen" x-collapse class="p-3 space-y-3">
                             <!-- 12. 服従スキーマ -->
                             <div class="border-b border-gray-100 pb-3" x-data="{ open: false }">
                                 <div class="flex items-start justify-between gap-3">
@@ -541,11 +553,14 @@
                     </div>
 
                     <!-- 第5領域：過剰警戒と抑制 -->
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-purple-100">
-                        <div class="bg-purple-500 text-white px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-purple-100" x-data="{ domainOpen: false }">
+                        <button type="button" @click="domainOpen = !domainOpen" class="w-full bg-purple-500 text-white px-4 py-2.5 flex items-center justify-between hover:bg-purple-600 transition-colors">
                             <h4 class="text-sm font-bold">第5領域：過剰警戒と抑制</h4>
-                        </div>
-                        <div class="p-3 space-y-3">
+                            <svg class="w-5 h-5 transition-transform" :class="domainOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="domainOpen" x-collapse class="p-3 space-y-3">
                             <!-- 15. 否定/悲観スキーマ -->
                             <div class="border-b border-gray-100 pb-3" x-data="{ open: false }">
                                 <div class="flex items-start justify-between gap-3">
