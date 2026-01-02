@@ -48,9 +48,9 @@
 
         <!-- 第1領域：切断と拒絶 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-red-500/70 text-white px-4 py-3">
+            <div class="bg-gradient-to-r from-red-500/80 to-red-400/60 backdrop-blur-sm text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第1領域：切断と拒絶</h2>
-                <p class="text-sm opacity-90">安全、受容、養育といった基本的なニーズが満たされなかった領域</p>
+                <p class="text-sm text-white/80">安全、受容、養育といった基本的なニーズが満たされなかった領域</p>
             </div>
             <div class="p-4 space-y-6">
                 <!-- 1. 見捨てられ/不安定スキーマ -->
@@ -197,9 +197,9 @@
 
         <!-- 第2領域：自律性と機能の障害 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-orange-500/70 text-white px-4 py-3">
+            <div class="bg-gradient-to-r from-orange-500/80 to-amber-400/60 backdrop-blur-sm text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第2領域：自律性と機能の障害</h2>
-                <p class="text-sm opacity-90">自分への自信や、自立して生きる能力が育たなかった領域</p>
+                <p class="text-sm text-white/80">自分への自信や、自立して生きる能力が育たなかった領域</p>
             </div>
             <div class="p-4 space-y-6">
                 <!-- 6. 依存/無能スキーマ -->
@@ -318,9 +318,9 @@
 
         <!-- 第3領域：制約の欠如 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-yellow-500/70 text-white px-4 py-3">
+            <div class="bg-gradient-to-r from-yellow-500/80 to-yellow-400/60 backdrop-blur-sm text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第3領域：制約の欠如</h2>
-                <p class="text-sm opacity-90">自制心、責任感、他者の権利の尊重といった限界設定が学べなかった領域</p>
+                <p class="text-sm text-white/80">自制心、責任感、他者の権利の尊重といった限界設定が学べなかった領域</p>
             </div>
             <div class="p-4 space-y-6">
                 <!-- 10. 権利要求/尊大さスキーマ -->
@@ -383,9 +383,9 @@
 
         <!-- 第4領域：他者への志向 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-green-500/70 text-white px-4 py-3">
+            <div class="bg-gradient-to-r from-emerald-500/80 to-teal-400/60 backdrop-blur-sm text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第4領域：他者への志向</h2>
-                <p class="text-sm opacity-90">愛や承認を得るために、自分のニーズを犠牲にして他者に合わせる領域</p>
+                <p class="text-sm text-white/80">愛や承認を得るために、自分のニーズを犠牲にして他者に合わせる領域</p>
             </div>
             <div class="p-4 space-y-6">
                 <!-- 12. 服従スキーマ -->
@@ -476,9 +476,9 @@
 
         <!-- 第5領域：過剰警戒と抑制 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="bg-purple-500/70 text-white px-4 py-3">
+            <div class="bg-gradient-to-r from-purple-500/80 to-violet-400/60 backdrop-blur-sm text-white px-4 py-3">
                 <h2 class="text-lg font-bold">第5領域：過剰警戒と抑制</h2>
-                <p class="text-sm opacity-90">自発性や喜びを抑圧し、厳格なルールや警戒心に縛られる領域</p>
+                <p class="text-sm text-white/80">自発性や喜びを抑圧し、厳格なルールや警戒心に縛られる領域</p>
             </div>
             <div class="p-4 space-y-6">
                 <!-- 15. 否定/悲観スキーマ -->
