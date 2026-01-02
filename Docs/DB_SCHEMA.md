@@ -107,6 +107,47 @@
 - お気に入りポイントで頼りになる度合いを記録
 
 ---
+---
+## early_maladaptive_schemas（早期不適応スキーマ）
+- id — bigint, 主キー
+
+### 第1領域：切断と拒絶
+- abandonment — tinyint, NULL可（見捨てられ/不安定スキーマ 0-100%）
+- mistrust_abuse — tinyint, NULL可（不信/虐待スキーマ 0-100%）
+- emotional_deprivation — tinyint, NULL可（情緒的剥奪スキーマ 0-100%）
+- defectiveness_shame — tinyint, NULL可（欠陥/恥スキーマ 0-100%）
+- social_isolation — tinyint, NULL可（社会的孤立/疎外スキーマ 0-100%）
+
+### 第2領域：自律性と機能の障害
+- dependence_incompetence — tinyint, NULL可（依存/無能スキーマ 0-100%）
+- vulnerability_to_harm — tinyint, NULL可（損害や疾病に対する脆弱性スキーマ 0-100%）
+- enmeshment — tinyint, NULL可（巻き込まれ/未発達な自己スキーマ 0-100%）
+- failure — tinyint, NULL可（失敗スキーマ 0-100%）
+
+### 第3領域：制約の欠如
+- entitlement_grandiosity — tinyint, NULL可（権利要求/尊大さスキーマ 0-100%）
+- insufficient_self_control — tinyint, NULL可（自制と自律の欠如スキーマ 0-100%）
+
+### 第4領域：他者への志向
+- subjugation — tinyint, NULL可（服従スキーマ 0-100%）
+- self_sacrifice — tinyint, NULL可（自己犠牲スキーマ 0-100%）
+- approval_seeking — tinyint, NULL可（承認欲求/評価の追求スキーマ 0-100%）
+
+### 第5領域：過剰警戒と抑制
+- negativity_pessimism — tinyint, NULL可（否定/悲観スキーマ 0-100%）
+- emotional_inhibition — tinyint, NULL可（感情抑制スキーマ 0-100%）
+- unrelenting_standards — tinyint, NULL可（厳密な基準/過度の批判スキーマ 0-100%）
+- punitiveness — tinyint, NULL可（罰への懲罰的志向スキーマ 0-100%）
+
+- created_at / updated_at — timestamp
+
+**用途:**
+- スキーマ療法における18の早期不適応スキーマの囚われ度を記録
+- 各スキーマに対して0-100%（5%刻み）で自己評価
+- 30秒ごとに自動保存し、ユーザーの入力を保持
+
+---
+
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます。
@@ -114,3 +155,4 @@
 - `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
 - `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。
 - `stressor_and_responses` はストレッサーとそれに対するストレス反応（認知・感情・身体・行動）を記録する機能です。
+- `early_maladaptive_schemas` はスキーマ療法の18の早期不適応スキーマの囚われ度を記録する機能です。
