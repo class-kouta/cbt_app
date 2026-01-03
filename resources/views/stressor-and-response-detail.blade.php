@@ -111,7 +111,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </button>
-                                <!-- ツールチップ -->
+                                <!-- ツールチップ（上に表示） -->
                                 <div
                                     x-show="showTooltip"
                                     x-transition:enter="transition ease-out duration-200"
@@ -120,7 +120,7 @@
                                     x-transition:leave="transition ease-in duration-150"
                                     x-transition:leave-start="opacity-100 transform scale-100"
                                     x-transition:leave-end="opacity-0 transform scale-95"
-                                    class="absolute z-10 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                    class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                                 >
                                     <div class="text-sm text-gray-600 space-y-2">
                                         <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schemaKey, 'belief')"></span></p>
