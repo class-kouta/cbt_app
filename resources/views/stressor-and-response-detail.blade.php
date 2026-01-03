@@ -96,22 +96,41 @@
                 <h3 class="text-base font-semibold text-gray-700 mb-4">
                     刺激されたスキーマ
                 </h3>
-                <div x-show="item?.stimulated_schemas && item.stimulated_schemas.length > 0" class="space-y-2">
-                    <template x-for="schemaKey in (item?.stimulated_schemas || [])" :key="schemaKey">
-                        <div class="bg-white rounded-lg border border-indigo-100 overflow-hidden" x-data="{ open: false }">
-                            <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-indigo-50 transition-colors" @click="open = !open">
-                                <span class="font-medium text-indigo-700 text-sm" x-text="getSchemaName(schemaKey)"></span>
-                                <svg class="w-4 h-4 text-indigo-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
+                <div x-show="item?.stimulated_schemas && item.stimulated_schemas.length > 0">
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="schemaKey in (item?.stimulated_schemas || [])" :key="schemaKey">
+                            <div class="relative" x-data="{ showTooltip: false }">
+                                <button
+                                    type="button"
+                                    @click="showTooltip = !showTooltip"
+                                    @click.outside="showTooltip = false"
+                                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-200 transition-colors cursor-pointer"
+                                >
+                                    <span x-text="getSchemaName(schemaKey)"></span>
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </button>
+                                <!-- ツールチップ -->
+                                <div
+                                    x-show="showTooltip"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 transform scale-95"
+                                    x-transition:enter-end="opacity-100 transform scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 transform scale-100"
+                                    x-transition:leave-end="opacity-0 transform scale-95"
+                                    class="absolute z-10 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                >
+                                    <div class="text-sm text-gray-600 space-y-2">
+                                        <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schemaKey, 'belief')"></span></p>
+                                        <p><strong class="text-gray-700">典型的な行動・特徴：</strong><span x-text="getSchemaDetail(schemaKey, 'behavior')"></span></p>
+                                        <p><strong class="text-gray-700">背景・ルーツ：</strong><span x-text="getSchemaDetail(schemaKey, 'background')"></span></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div x-show="open" x-collapse class="px-3 pb-3 text-sm text-gray-600 space-y-2 border-t border-indigo-50">
-                                <p class="pt-2"><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schemaKey, 'belief')"></span></p>
-                                <p><strong class="text-gray-700">典型的な行動・特徴：</strong><span x-text="getSchemaDetail(schemaKey, 'behavior')"></span></p>
-                                <p><strong class="text-gray-700">背景・ルーツ：</strong><span x-text="getSchemaDetail(schemaKey, 'background')"></span></p>
-                            </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
                 <div x-show="!item?.stimulated_schemas || item.stimulated_schemas.length === 0">
                     <p class="text-gray-400">未選択</p>
