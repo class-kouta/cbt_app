@@ -89,7 +89,7 @@
                         </label>
                         <textarea
                             x-model="formData.cognition"
-                            rows="4"
+                            rows="8"
                             class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                             placeholder="例：もう間に合わない、失敗したらどうしよう"
                             maxlength="1000"
@@ -156,7 +156,7 @@
 
                         <textarea
                             x-model="formData.mood"
-                            rows="4"
+                            rows="8"
                             class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                             placeholder="例：不安(80%)、焦り(70%)"
                             maxlength="1000"
