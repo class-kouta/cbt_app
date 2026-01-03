@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'スキーマ療法（早期不適応スキーマ）')
-@section('page-title', 'スキーマ療法')
+@section('title', '早期不適応スキーマ')
+@section('page-title', '早期不適応スキーマ')
 
 @section('content')
 <div x-data="schemaApp()" x-init="init()" x-cloak>
@@ -66,7 +66,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.abandonment" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <select x-model="schemas.abandonment" :class="getIntensityClass(schemas.abandonment) + ' ' + getIntensityBorderClass(schemas.abandonment)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -94,7 +94,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.mistrust_abuse" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <select x-model="schemas.mistrust_abuse" :class="getIntensityClass(schemas.mistrust_abuse) + ' ' + getIntensityBorderClass(schemas.mistrust_abuse)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -122,7 +122,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.emotional_deprivation" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <select x-model="schemas.emotional_deprivation" :class="getIntensityClass(schemas.emotional_deprivation) + ' ' + getIntensityBorderClass(schemas.emotional_deprivation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -150,7 +150,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.defectiveness_shame" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <select x-model="schemas.defectiveness_shame" :class="getIntensityClass(schemas.defectiveness_shame) + ' ' + getIntensityBorderClass(schemas.defectiveness_shame)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -178,7 +178,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.social_isolation" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                            <select x-model="schemas.social_isolation" :class="getIntensityClass(schemas.social_isolation) + ' ' + getIntensityBorderClass(schemas.social_isolation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -215,7 +215,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.dependence_incompetence" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <select x-model="schemas.dependence_incompetence" :class="getIntensityClass(schemas.dependence_incompetence) + ' ' + getIntensityBorderClass(schemas.dependence_incompetence)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -243,7 +243,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.vulnerability_to_harm" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <select x-model="schemas.vulnerability_to_harm" :class="getIntensityClass(schemas.vulnerability_to_harm) + ' ' + getIntensityBorderClass(schemas.vulnerability_to_harm)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -271,7 +271,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.enmeshment" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <select x-model="schemas.enmeshment" :class="getIntensityClass(schemas.enmeshment) + ' ' + getIntensityBorderClass(schemas.enmeshment)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -299,7 +299,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.failure" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <select x-model="schemas.failure" :class="getIntensityClass(schemas.failure) + ' ' + getIntensityBorderClass(schemas.failure)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -336,7 +336,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.entitlement_grandiosity" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                            <select x-model="schemas.entitlement_grandiosity" :class="getIntensityClass(schemas.entitlement_grandiosity) + ' ' + getIntensityBorderClass(schemas.entitlement_grandiosity)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -364,7 +364,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.insufficient_self_control" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                            <select x-model="schemas.insufficient_self_control" :class="getIntensityClass(schemas.insufficient_self_control) + ' ' + getIntensityBorderClass(schemas.insufficient_self_control)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -401,7 +401,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.subjugation" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <select x-model="schemas.subjugation" :class="getIntensityClass(schemas.subjugation) + ' ' + getIntensityBorderClass(schemas.subjugation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -429,7 +429,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.self_sacrifice" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <select x-model="schemas.self_sacrifice" :class="getIntensityClass(schemas.self_sacrifice) + ' ' + getIntensityBorderClass(schemas.self_sacrifice)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -457,7 +457,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.approval_seeking" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <select x-model="schemas.approval_seeking" :class="getIntensityClass(schemas.approval_seeking) + ' ' + getIntensityBorderClass(schemas.approval_seeking)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -494,7 +494,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.negativity_pessimism" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select x-model="schemas.negativity_pessimism" :class="getIntensityClass(schemas.negativity_pessimism) + ' ' + getIntensityBorderClass(schemas.negativity_pessimism)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -522,7 +522,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.emotional_inhibition" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select x-model="schemas.emotional_inhibition" :class="getIntensityClass(schemas.emotional_inhibition) + ' ' + getIntensityBorderClass(schemas.emotional_inhibition)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -550,7 +550,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.unrelenting_standards" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select x-model="schemas.unrelenting_standards" :class="getIntensityClass(schemas.unrelenting_standards) + ' ' + getIntensityBorderClass(schemas.unrelenting_standards)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -578,7 +578,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.punitiveness" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <select x-model="schemas.punitiveness" :class="getIntensityClass(schemas.punitiveness) + ' ' + getIntensityBorderClass(schemas.punitiveness)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -652,6 +652,28 @@ function schemaApp() {
         autoSaveInterval: null,
         autoSaveSnapshots: [],
         autoSaving: false,
+
+        // %の値に応じた背景色クラスを返す
+        getIntensityClass(value) {
+            if (value === '' || value === null) return 'bg-white';
+            const num = parseInt(value, 10);
+            if (num <= 20) return 'bg-green-100 text-green-800';
+            if (num <= 40) return 'bg-yellow-100 text-yellow-800';
+            if (num <= 60) return 'bg-orange-100 text-orange-800';
+            if (num <= 80) return 'bg-orange-200 text-orange-900 font-semibold';
+            return 'bg-red-200 text-red-900 font-bold';
+        },
+
+        // %の値に応じたボーダー色クラスを返す
+        getIntensityBorderClass(value) {
+            if (value === '' || value === null) return 'border-gray-300';
+            const num = parseInt(value, 10);
+            if (num <= 20) return 'border-green-400';
+            if (num <= 40) return 'border-yellow-400';
+            if (num <= 60) return 'border-orange-400';
+            if (num <= 80) return 'border-orange-500';
+            return 'border-red-500 ring-2 ring-red-300';
+        },
 
         async init() {
             await this.loadSchemas();
