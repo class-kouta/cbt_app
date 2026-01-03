@@ -19,6 +19,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
             $model->mood = $stressorAndResponse->getMood();
             $model->body_reaction = $stressorAndResponse->getBodyReaction();
             $model->behavior = $stressorAndResponse->getBehavior();
+            $model->stimulated_schemas = $stressorAndResponse->getStimulatedSchemas();
             $model->save();
         } else {
             // 新規作成
@@ -28,6 +29,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
             $model->mood = $stressorAndResponse->getMood();
             $model->body_reaction = $stressorAndResponse->getBodyReaction();
             $model->behavior = $stressorAndResponse->getBehavior();
+            $model->stimulated_schemas = $stressorAndResponse->getStimulatedSchemas();
             $model->save();
         }
 
@@ -38,6 +40,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
             mood: $model->mood,
             bodyReaction: $model->body_reaction,
             behavior: $model->behavior,
+            stimulatedSchemas: $model->stimulated_schemas,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -58,6 +61,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
             mood: $model->mood,
             bodyReaction: $model->body_reaction,
             behavior: $model->behavior,
+            stimulatedSchemas: $model->stimulated_schemas,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -87,6 +91,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
                     mood: $model->mood,
                     bodyReaction: $model->body_reaction,
                     behavior: $model->behavior,
+                    stimulatedSchemas: $model->stimulated_schemas,
                     createdAt: new DateTimeImmutable($model->created_at),
                     updatedAt: new DateTimeImmutable($model->updated_at),
                 );

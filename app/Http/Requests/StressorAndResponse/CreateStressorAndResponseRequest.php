@@ -27,6 +27,8 @@ class CreateStressorAndResponseRequest extends FormRequest
             'mood' => ['nullable', 'string'],
             'body_reaction' => ['nullable', 'string'],
             'behavior' => ['nullable', 'string'],
+            'stimulated_schemas' => ['nullable', 'array'],
+            'stimulated_schemas.*' => ['string'],
         ];
     }
 
