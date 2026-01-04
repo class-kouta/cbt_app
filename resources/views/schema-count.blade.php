@@ -39,7 +39,7 @@
                         <span class="text-2xl">📝</span>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">ストレッサー記録数</p>
+                        <p class="text-sm text-gray-500">ストレッサー</p>
                         <p class="text-2xl font-bold text-gray-800" x-text="totalRecords + '件'"></p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                         <span class="text-2xl">🎯</span>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">スキーマ選択総数</p>
+                        <p class="text-sm text-gray-500">スキーマ</p>
                         <p class="text-2xl font-bold text-gray-800" x-text="totalSchemaSelections + '回'"></p>
                     </div>
                 </div>
@@ -78,8 +78,9 @@
                 <div class="p-4 space-y-3">
                     <template x-for="schema in getDomainSchemas('domain1')" :key="schema.key">
                         <div class="relative" x-data="{ showTooltip: false }">
-                            <div
-                                class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            <button
+                                type="button"
+                                class="w-full flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors text-left"
                                 @click="showTooltip = !showTooltip"
                             >
                                 <div class="w-32 sm:w-40 text-sm font-medium text-gray-700 truncate flex items-center gap-1">
@@ -95,8 +96,8 @@
                                     ></div>
                                 </div>
                                 <div class="w-12 text-right text-sm font-bold text-gray-800" x-text="schema.count + '回'"></div>
-                            </div>
-                            <!-- ツールチップ -->
+                            </button>
+                            <!-- ツールチップ（上に表示） -->
                             <div
                                 x-show="showTooltip"
                                 @click.outside="showTooltip = false"
@@ -106,7 +107,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -127,8 +128,9 @@
                 <div class="p-4 space-y-3">
                     <template x-for="schema in getDomainSchemas('domain2')" :key="schema.key">
                         <div class="relative" x-data="{ showTooltip: false }">
-                            <div
-                                class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            <button
+                                type="button"
+                                class="w-full flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors text-left"
                                 @click="showTooltip = !showTooltip"
                             >
                                 <div class="w-32 sm:w-40 text-sm font-medium text-gray-700 truncate flex items-center gap-1">
@@ -144,8 +146,8 @@
                                     ></div>
                                 </div>
                                 <div class="w-12 text-right text-sm font-bold text-gray-800" x-text="schema.count + '回'"></div>
-                            </div>
-                            <!-- ツールチップ -->
+                            </button>
+                            <!-- ツールチップ（上に表示） -->
                             <div
                                 x-show="showTooltip"
                                 @click.outside="showTooltip = false"
@@ -155,7 +157,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -176,8 +178,9 @@
                 <div class="p-4 space-y-3">
                     <template x-for="schema in getDomainSchemas('domain3')" :key="schema.key">
                         <div class="relative" x-data="{ showTooltip: false }">
-                            <div
-                                class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            <button
+                                type="button"
+                                class="w-full flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors text-left"
                                 @click="showTooltip = !showTooltip"
                             >
                                 <div class="w-32 sm:w-40 text-sm font-medium text-gray-700 truncate flex items-center gap-1">
@@ -193,8 +196,8 @@
                                     ></div>
                                 </div>
                                 <div class="w-12 text-right text-sm font-bold text-gray-800" x-text="schema.count + '回'"></div>
-                            </div>
-                            <!-- ツールチップ -->
+                            </button>
+                            <!-- ツールチップ（上に表示） -->
                             <div
                                 x-show="showTooltip"
                                 @click.outside="showTooltip = false"
@@ -204,7 +207,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -225,8 +228,9 @@
                 <div class="p-4 space-y-3">
                     <template x-for="schema in getDomainSchemas('domain4')" :key="schema.key">
                         <div class="relative" x-data="{ showTooltip: false }">
-                            <div
-                                class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            <button
+                                type="button"
+                                class="w-full flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors text-left"
                                 @click="showTooltip = !showTooltip"
                             >
                                 <div class="w-32 sm:w-40 text-sm font-medium text-gray-700 truncate flex items-center gap-1">
@@ -242,8 +246,8 @@
                                     ></div>
                                 </div>
                                 <div class="w-12 text-right text-sm font-bold text-gray-800" x-text="schema.count + '回'"></div>
-                            </div>
-                            <!-- ツールチップ -->
+                            </button>
+                            <!-- ツールチップ（上に表示） -->
                             <div
                                 x-show="showTooltip"
                                 @click.outside="showTooltip = false"
@@ -253,7 +257,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -274,8 +278,9 @@
                 <div class="p-4 space-y-3">
                     <template x-for="schema in getDomainSchemas('domain5')" :key="schema.key">
                         <div class="relative" x-data="{ showTooltip: false }">
-                            <div
-                                class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                            <button
+                                type="button"
+                                class="w-full flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors text-left"
                                 @click="showTooltip = !showTooltip"
                             >
                                 <div class="w-32 sm:w-40 text-sm font-medium text-gray-700 truncate flex items-center gap-1">
@@ -291,8 +296,8 @@
                                     ></div>
                                 </div>
                                 <div class="w-12 text-right text-sm font-bold text-gray-800" x-text="schema.count + '回'"></div>
-                            </div>
-                            <!-- ツールチップ -->
+                            </button>
+                            <!-- ツールチップ（上に表示） -->
                             <div
                                 x-show="showTooltip"
                                 @click.outside="showTooltip = false"
@@ -302,7 +307,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
