@@ -126,6 +126,11 @@ Route::get('/early-maladaptive-schemas', function () {
     return view('early-maladaptive-schemas');
 });
 
+// スキーマカウントページ
+Route::get('/early-maladaptive-schemas/count', function () {
+    return view('schema-count');
+});
+
 
 // ===========================================
 // 管理画面ルート
