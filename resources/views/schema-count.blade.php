@@ -71,8 +71,8 @@
         <!-- スキーマカウント一覧（領域ごと） -->
         <div x-show="totalSchemaSelections > 0" class="space-y-4">
             <!-- 第1領域：切断と拒絶 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-red-500 text-white px-5 py-3">
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="bg-red-500 text-white px-5 py-3 rounded-t-xl">
                     <h3 class="font-bold">第1領域：切断と拒絶</h3>
                 </div>
                 <div class="p-4 space-y-3">
@@ -107,7 +107,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                class="absolute z-50 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -121,8 +121,8 @@
             </div>
 
             <!-- 第2領域：自律性と機能の障害 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-orange-500 text-white px-5 py-3">
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="bg-orange-500 text-white px-5 py-3 rounded-t-xl">
                     <h3 class="font-bold">第2領域：自律性と機能の障害</h3>
                 </div>
                 <div class="p-4 space-y-3">
@@ -157,7 +157,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                class="absolute z-50 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -171,8 +171,8 @@
             </div>
 
             <!-- 第3領域：制限の欠如 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-yellow-500 text-white px-5 py-3">
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="bg-yellow-500 text-white px-5 py-3 rounded-t-xl">
                     <h3 class="font-bold">第3領域：制限の欠如</h3>
                 </div>
                 <div class="p-4 space-y-3">
@@ -207,7 +207,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                class="absolute z-50 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -221,8 +221,8 @@
             </div>
 
             <!-- 第4領域：他者への追従 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-green-500 text-white px-5 py-3">
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="bg-green-500 text-white px-5 py-3 rounded-t-xl">
                     <h3 class="font-bold">第4領域：他者への追従</h3>
                 </div>
                 <div class="p-4 space-y-3">
@@ -257,7 +257,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                class="absolute z-50 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
@@ -271,8 +271,8 @@
             </div>
 
             <!-- 第5領域：過剰警戒と抑制 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="bg-blue-500 text-white px-5 py-3">
+            <div class="bg-white rounded-xl shadow-md">
+                <div class="bg-blue-500 text-white px-5 py-3 rounded-t-xl">
                     <h3 class="font-bold">第5領域：過剰警戒と抑制</h3>
                 </div>
                 <div class="p-4 space-y-3">
@@ -307,7 +307,7 @@
                                 x-transition:leave="transition ease-in duration-150"
                                 x-transition:leave-start="opacity-100 transform scale-100"
                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                class="absolute z-50 left-0 bottom-full mb-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
+                                class="absolute z-50 left-0 top-full mt-2 w-80 p-4 bg-white rounded-lg shadow-lg border border-gray-200"
                             >
                                 <div class="text-sm text-gray-600 space-y-2">
                                     <p><strong class="text-gray-700">深い思い込み：</strong><span x-text="getSchemaDetail(schema.key, 'belief')"></span></p>
