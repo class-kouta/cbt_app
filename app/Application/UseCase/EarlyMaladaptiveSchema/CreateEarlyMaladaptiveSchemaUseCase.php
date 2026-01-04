@@ -16,23 +16,42 @@ class CreateEarlyMaladaptiveSchemaUseCase
     {
         $schema = EarlyMaladaptiveSchemaEntity::createNew(
             $data->abandonment,
+            $data->abandonmentExperience,
             $data->mistrustAbuse,
+            $data->mistrustAbuseExperience,
             $data->emotionalDeprivation,
+            $data->emotionalDeprivationExperience,
             $data->defectivenessShame,
+            $data->defectivenessShameExperience,
             $data->socialIsolation,
+            $data->socialIsolationExperience,
             $data->dependenceIncompetence,
+            $data->dependenceIncompetenceExperience,
             $data->vulnerabilityToHarm,
+            $data->vulnerabilityToHarmExperience,
             $data->enmeshment,
+            $data->enmeshmentExperience,
             $data->failure,
+            $data->failureExperience,
             $data->entitlementGrandiosity,
+            $data->entitlementGrandiosityExperience,
             $data->insufficientSelfControl,
+            $data->insufficientSelfControlExperience,
             $data->subjugation,
+            $data->subjugationExperience,
             $data->selfSacrifice,
+            $data->selfSacrificeExperience,
             $data->approvalSeeking,
+            $data->approvalSeekingExperience,
             $data->negativityPessimism,
+            $data->negativityPessimismExperience,
             $data->emotionalInhibition,
+            $data->emotionalInhibitionExperience,
             $data->unrelentingStandards,
-            $data->punitiveness
+            $data->unrelentingStandardsExperience,
+            $data->punitiveness,
+            $data->punitivenessExperience,
+            $data->notes
         );
 
         return $this->repository->save($schema);
