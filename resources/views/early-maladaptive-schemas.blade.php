@@ -80,7 +80,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>幼少期に親との死別や離婚を経験した、あるいは親の機嫌によって可愛がられたり無視されたりする「気まぐれな養育」を受けたことが影響しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.abandonment_experience"
                             rows="6"
@@ -117,7 +116,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>幼少期に家族から身体的・心理的な虐待を受けたり、信頼していた人にひどく裏切られたりした過酷な体験が根底にあります。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.mistrust_abuse_experience"
                             rows="6"
@@ -154,7 +152,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親が感情的に冷淡だった、または親自身に余裕がなく、子供の感情的な欲求（甘えや共感）に関心を示さない環境で育った場合に見られます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.emotional_deprivation_experience"
                             rows="6"
@@ -191,7 +188,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親から否定的なレッテルを貼られたり、欠点ばかりを指摘されたりして、ありのままの自分を尊重された経験が乏しいことが原因です。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.defectiveness_shame_experience"
                             rows="6"
@@ -228,7 +224,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>幼少期に家族が周囲から浮いていた、自分の外見や家柄が周囲と違っていた、あるいは学校でいじめを受け「みんなとは違う」と強く意識せざるを得なかった経験が関係しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.social_isolation_experience"
                             rows="6"
@@ -274,7 +269,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親が過保護で子供の代わりに何でもやってしまった、あるいは逆に親が子供の判断を常に否定し、自信を奪い続けた場合に形成されます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.dependence_incompetence_experience"
                             rows="6"
@@ -311,7 +305,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親自身が極度の心配性で、「世の中は危ないところだ」「油断すると大変なことになる」という恐怖のメッセージを繰り返し伝えられたことが影響しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.vulnerability_to_harm_experience"
                             rows="6"
@@ -348,7 +341,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親が子供を自分の延長線上として扱い、子供が自立しようとすると寂しがったり怒ったりして、心理的な分離を許さなかった環境が原因です。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.enmeshment_experience"
                             rows="6"
@@ -385,7 +377,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>学校や家庭で「お前はどんくさい」「何をやってもダメだ」と批判され続けたり、優秀な兄弟と比較されて挫折感を味わい続けたりした経験が根底にあります。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.failure_experience"
                             rows="6"
@@ -431,7 +422,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>幼少期に甘やかされすぎて境界線を学ばなかった、あるいは逆にひどく冷遇された反動で「もう二度と我慢したくない」と強く思うようになったことが原因です。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.entitlement_grandiosity_experience"
                             rows="6"
@@ -468,7 +458,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>幼少期に適切な「しつけ」を受けなかった、または苦痛な感情に対処する力を養う機会がなく、衝動のままに動くことが許容（あるいは放置）されていたことが影響しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.insufficient_self_control_experience"
                             rows="6"
@@ -514,7 +503,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>非常に支配的な親や、怒ると手が付けられない親のもとで、自分の意思を持つことが生存への脅威だった環境で形成されます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.subjugation_experience"
                             rows="6"
@@ -551,7 +539,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親が病弱だったり、精神的に不安定だったりして、子供が親の悩みを聞いたり世話をしたりする「ヤングケアラー」のような役割を担わされていた場合によく見られます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.self_sacrifice_experience"
                             rows="6"
@@ -588,7 +575,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>「テストで100点を取った時だけ褒められる」といった条件付きの愛しか与えられず、成果を出さないと存在を無視されるような環境で育ったことが原因です。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.approval_seeking_experience"
                             rows="6"
@@ -634,7 +620,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親が常に不安げで不平不満ばかり言っていた、あるいは幼少期に予期せぬ不幸が重なり、「人生は苦しいものだ」と学習せざるを得なかったことが関係しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.negativity_pessimism_experience"
                             rows="6"
@@ -671,7 +656,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>感情表現を「子供っぽい」「はしたない」と厳しく制限されたり、感情を出すと親から拒絶されたりした厳格な家庭環境で形成されます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.emotional_inhibition_experience"
                             rows="6"
@@ -708,7 +692,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>親の期待が非常に高く、完璧にできた時だけ評価された、あるいは親自身が自分を厳しく律して休まず働いている姿を見て育った場合に生じます。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.unrelenting_standards_experience"
                             rows="6"
@@ -745,7 +728,6 @@
                         <p><strong class="text-gray-700">背景・ルーツ：</strong>失敗した時に理由を聞いてもらえず、ただ厳しく叱責されたり罰を与えられたりした経験、あるいは道徳的・宗教的に非常に潔癖で厳しい規律の中で育ったことが影響しています。</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-gray-100">
-                        <label class="block text-gray-700 font-medium mb-2">📝 このスキーマに関連する過去の経験や思い出</label>
                         <textarea
                             x-model="experiences.punitiveness_experience"
                             rows="6"
