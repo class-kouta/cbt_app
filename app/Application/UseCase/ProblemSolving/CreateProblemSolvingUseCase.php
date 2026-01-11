@@ -16,9 +16,7 @@ class CreateProblemSolvingUseCase
     {
         $problemSolving = ProblemSolvingEntity::createNew(
             $data->problemSituation,
-            $data->improvedImage,
-            $data->actionPlan,
-            $data->reflection
+            $data->improvedImage
         );
 
         return $this->problemSolvingRepository->save($problemSolving);

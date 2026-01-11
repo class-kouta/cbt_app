@@ -25,9 +25,8 @@ class UpdateProblemSolvingUseCase
             id: $id,
             problemSituation: $data->problemSituation,
             improvedImage: $data->improvedImage,
-            actionPlan: $data->actionPlan,
-            reflection: $data->reflection,
             solutions: $existingProblemSolving->getSolutions(),
+            plans: $existingProblemSolving->getPlans(),
             createdAt: $existingProblemSolving->getCreatedAt(),
             updatedAt: new DateTimeImmutable('now')
         );
