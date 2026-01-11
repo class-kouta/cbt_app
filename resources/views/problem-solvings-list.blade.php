@@ -17,6 +17,26 @@
                     <div class="text-xs text-emerald-500 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- 問題状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.problem_situation"></p>
+                    <!-- 計画の進捗 -->
+                    <div class="flex items-center gap-2 mb-2" x-show="item.plans && item.plans.length > 0">
+                        <span class="text-xs text-gray-500">計画:</span>
+                        <template x-for="plan in item.plans" :key="plan.id">
+                            <span
+                                class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold"
+                                :class="plan.reflection && plan.reflection.trim()
+                                    ? 'bg-green-500'
+                                    : (plan.action_plan && plan.action_plan.trim()
+                                        ? 'bg-yellow-500'
+                                        : 'bg-gray-300')"
+                                :title="plan.reflection && plan.reflection.trim()
+                                    ? '振り返り済み'
+                                    : (plan.action_plan && plan.action_plan.trim()
+                                        ? '実行中'
+                                        : '計画作成中')"
+                                x-text="plan.plan_number"
+                            ></span>
+                        </template>
+                    </div>
                     <!-- 未入力項目タグ -->
                     <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(item).length > 0">
                         <template x-for="field in getIncompleteFields(item)" :key="field">
@@ -93,22 +113,29 @@ function problemSolvingListApp() {
         },
 
         getIncompleteFields(item) {
-            const fieldNames = {
-                improved_image: '改善イメージ',
-                action_plan: '実行計画',
-                reflection: '振り返り'
-            };
-
             const incompleteFields = [];
-            for (const [key, label] of Object.entries(fieldNames)) {
-                if (!item[key] || item[key].trim() === '') {
-                    incompleteFields.push(label);
-                }
+
+            // 改善イメージ
+            if (!item.improved_image || item.improved_image.trim() === '') {
+                incompleteFields.push('改善イメージ');
             }
 
             // 解決策がない場合
             if (!item.solutions || item.solutions.length === 0) {
                 incompleteFields.push('解決策');
+            }
+
+            // 計画がない場合
+            if (!item.plans || item.plans.length === 0) {
+                incompleteFields.push('実行計画');
+            } else {
+                // 最新の計画の振り返りがない場合
+                const latestPlan = item.plans[item.plans.length - 1];
+                if (!latestPlan.action_plan || latestPlan.action_plan.trim() === '') {
+                    incompleteFields.push('実行計画');
+                } else if (!latestPlan.reflection || latestPlan.reflection.trim() === '') {
+                    incompleteFields.push('振り返り');
+                }
             }
 
             return incompleteFields;

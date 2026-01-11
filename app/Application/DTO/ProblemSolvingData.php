@@ -6,9 +6,7 @@ readonly class ProblemSolvingData
 {
     public function __construct(
         public string $problemSituation,
-        public ?string $improvedImage = null,
-        public ?string $actionPlan = null,
-        public ?string $reflection = null
+        public ?string $improvedImage = null
     ) {
     }
 }

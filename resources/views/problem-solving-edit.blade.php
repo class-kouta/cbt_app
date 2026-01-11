@@ -313,36 +313,123 @@
                     </button>
                 </div>
 
-                <!-- Step 4: 実行計画 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">4</span>
-                        実行計画
-                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
-                    </label>
-                    <textarea
-                        x-model="form.action_plan"
-                        rows="10"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                        placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
-                        maxlength="5000"
-                    ></textarea>
-                </div>
+                <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
+                <div class="border-t border-gray-200 pt-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            実行計画と振り返り
+                        </h3>
+                    </div>
 
-                <!-- Step 5: 振り返り -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">5</span>
-                        振り返り
-                        <span class="text-gray-400 font-normal ml-1">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</span>
-                    </label>
-                    <textarea
-                        x-model="form.reflection"
-                        rows="10"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                        placeholder="（実行後に記入してください）"
-                        maxlength="5000"
-                    ></textarea>
+                    <!-- 計画がない場合の説明 -->
+                    <div x-show="plans.length === 0" class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <p class="text-gray-600 text-sm">
+                            解決策を決めたら、実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
+                        </p>
+                    </div>
+
+                    <!-- 計画一覧 -->
+                    <div class="space-y-4">
+                        <template x-for="(plan, index) in plans" :key="plan.id || 'new-' + index">
+                            <div class="border border-teal-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                                <!-- 計画ヘッダー -->
+                                <div
+                                    class="bg-gradient-to-r from-teal-50 to-lime-50 px-4 py-3 flex items-center justify-between cursor-pointer"
+                                    @click="plan.expanded = !plan.expanded"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
+                                        <!-- ステータスバッジ -->
+                                        <span
+                                            x-show="plan.reflection && plan.reflection.trim()"
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
+                                        >
+                                            ✓ 振り返り済み
+                                        </span>
+                                        <span
+                                            x-show="plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())"
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
+                                        >
+                                            実行中
+                                        </span>
+                                        <span
+                                            x-show="!plan.action_plan || !plan.action_plan.trim()"
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+                                        >
+                                            計画作成中
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            @click.stop="deletePlan(index)"
+                                            x-show="plans.length > 1 || (plans.length === 1 && !plan.id)"
+                                            class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+                                            title="この計画を削除"
+                                        >
+                                            🗑️
+                                        </button>
+                                        <svg
+                                            class="w-5 h-5 text-gray-400 transition-transform"
+                                            :class="plan.expanded ? 'rotate-180' : ''"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- 計画コンテンツ -->
+                                <div x-show="plan.expanded" x-collapse class="px-4 py-4 space-y-4">
+                                    <!-- 実行計画 -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs mr-1">4</span>
+                                            実行計画
+                                            <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
+                                        </label>
+                                        <textarea
+                                            x-model="plan.action_plan"
+                                            rows="8"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                            placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
+                                            maxlength="5000"
+                                        ></textarea>
+                                    </div>
+
+                                    <!-- 振り返り -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
+                                            振り返り
+                                            <span class="text-gray-400 font-normal ml-1">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</span>
+                                        </label>
+                                        <textarea
+                                            x-model="plan.reflection"
+                                            rows="8"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
+                                            placeholder="（実行後に記入してください）"
+                                            maxlength="5000"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- 新しい計画を追加ボタン -->
+                    <div class="mt-4">
+                        <button
+                            type="button"
+                            @click="addNewPlan()"
+                            class="w-full py-3 px-4 border-2 border-dashed rounded-xl font-medium transition-all flex items-center justify-center gap-2 border-teal-300 text-teal-600 hover:border-teal-400 hover:bg-teal-50"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            新しい計画を追加
+                        </button>
+                    </div>
                 </div>
 
                 <!-- 保存ボタン -->
@@ -369,9 +456,7 @@ function problemSolvingFormApp(itemId) {
         isEditMode: itemId !== null,
         form: {
             problem_situation: '',
-            improved_image: '',
-            action_plan: '',
-            reflection: ''
+            improved_image: ''
         },
         solutions: [
             { content: '', effectiveness: '', feasibility: '' },
@@ -379,6 +464,8 @@ function problemSolvingFormApp(itemId) {
             { content: '', effectiveness: '', feasibility: '' }
         ],
         originalSolutions: [],
+        plans: [],
+        originalPlans: [],
         loading: false,
         submitting: false,
 
@@ -399,6 +486,9 @@ function problemSolvingFormApp(itemId) {
 
             if (this.isEditMode) {
                 await this.loadItem();
+            } else {
+                // 新規作成の場合は空の計画を1つ追加
+                this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', expanded: true }];
             }
 
             // 初期スナップショットを取得
@@ -442,9 +532,8 @@ function problemSolvingFormApp(itemId) {
             const snapshot = {
                 problem_situation: this.form.problem_situation,
                 improved_image: this.form.improved_image,
-                action_plan: this.form.action_plan,
-                reflection: this.form.reflection,
-                solutions: JSON.stringify(this.solutions)
+                solutions: JSON.stringify(this.solutions),
+                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection })))
             };
             this.autoSaveSnapshots.push(snapshot);
 
@@ -472,21 +561,17 @@ function problemSolvingFormApp(itemId) {
 
         // 指定されたスナップショットと現在の値を比較
         hasValueChanged(snapshot) {
+            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection })));
             return (
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
-                this.form.action_plan !== snapshot.action_plan ||
-                this.form.reflection !== snapshot.reflection ||
-                JSON.stringify(this.solutions) !== snapshot.solutions
+                JSON.stringify(this.solutions) !== snapshot.solutions ||
+                currentPlans !== snapshot.plans
             );
         },
 
         // 30秒ごとの自動保存チェック
         async checkAndAutoSave() {
-            // 条件チェック：
-            // 1. 「問題状況」が入力済み
-            // 2. 1分前の値から変更がある
-            // 3. 現在保存中でない
             if (
                 this.form.problem_situation.trim() &&
                 this.hasChangedFromPreviousSnapshot() &&
@@ -496,17 +581,14 @@ function problemSolvingFormApp(itemId) {
                 await this.performAutoSave();
             }
 
-            // 新しいスナップショットを取得
             this.takeSnapshot();
         },
 
         // 自動保存を実行
         async performAutoSave() {
-            // 解決策の文字数バリデーション
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
                 if (solution.content.length > 30) {
-                    // バリデーションエラーの場合は自動保存しない
                     return;
                 }
             }
@@ -515,97 +597,11 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 if (this.itemId) {
-                    // 既存の問題解決法を更新
-                    const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify(this.form)
-                    });
-
-                    if (res.ok) {
-                        // 既存の解決策を削除して新しいのを追加
-                        for (const original of this.originalSolutions) {
-                            await fetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                }
-                            });
-                        }
-
-                        // 新しい解決策を追加
-                        const newOriginalSolutions = [];
-                        for (let i = 0; i < validSolutions.length; i++) {
-                            const solution = validSolutions[i];
-                            const solutionRes = await fetch(`/api/problem-solvings/${this.itemId}/solutions`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                },
-                                body: JSON.stringify({
-                                    content: solution.content,
-                                    sort_order: i + 1,
-                                    effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
-                                    feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
-                                })
-                            });
-                            if (solutionRes.ok) {
-                                const createdSolution = await solutionRes.json();
-                                newOriginalSolutions.push(createdSolution);
-                            }
-                        }
-                        this.originalSolutions = newOriginalSolutions;
-                        this.showAutoSaveNotification();
-                    }
+                    await this.saveExistingItem();
                 } else {
-                    // 新規作成
-                    const res = await fetch('/api/problem-solvings', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify(this.form)
-                    });
-
-                    if (res.ok) {
-                        const created = await res.json();
-                        this.itemId = created.id;
-                        this.isEditMode = true;
-
-                        // 解決策を追加
-                        const newOriginalSolutions = [];
-                        for (let i = 0; i < validSolutions.length; i++) {
-                            const solution = validSolutions[i];
-                            const solutionRes = await fetch(`/api/problem-solvings/${created.id}/solutions`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                },
-                                body: JSON.stringify({
-                                    content: solution.content,
-                                    sort_order: i + 1,
-                                    effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
-                                    feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
-                                })
-                            });
-                            if (solutionRes.ok) {
-                                const createdSolution = await solutionRes.json();
-                                newOriginalSolutions.push(createdSolution);
-                            }
-                        }
-                        this.originalSolutions = newOriginalSolutions;
-
-                        // URLを編集ページに変更（リロードなし）
-                        history.replaceState(null, '', `/problem-solvings/${created.id}/edit`);
-                        this.showAutoSaveNotification();
-                    }
+                    await this.saveNewItem();
                 }
+                this.showAutoSaveNotification();
             } catch (error) {
                 console.error('自動保存に失敗しました:', error);
             } finally {
@@ -613,7 +609,6 @@ function problemSolvingFormApp(itemId) {
             }
         },
 
-        // 自動保存の通知を表示
         showAutoSaveNotification() {
             this.showAutoSaveToast = true;
             setTimeout(() => {
@@ -621,7 +616,6 @@ function problemSolvingFormApp(itemId) {
             }, 2000);
         },
 
-        // 日時をフォーマット
         formatDate(dateString) {
             const date = new Date(dateString);
             const year = date.getFullYear();
@@ -640,8 +634,6 @@ function problemSolvingFormApp(itemId) {
                     const item = await res.json();
                     this.form.problem_situation = item.problem_situation || '';
                     this.form.improved_image = item.improved_image || '';
-                    this.form.action_plan = item.action_plan || '';
-                    this.form.reflection = item.reflection || '';
 
                     this.solutions = item.solutions.map(s => ({
                         id: s.id,
@@ -651,6 +643,20 @@ function problemSolvingFormApp(itemId) {
                         sort_order: s.sort_order
                     }));
                     this.originalSolutions = JSON.parse(JSON.stringify(this.solutions));
+
+                    // 計画を読み込み
+                    if (item.plans && item.plans.length > 0) {
+                        this.plans = item.plans.map(p => ({
+                            id: p.id,
+                            plan_number: p.plan_number,
+                            action_plan: p.action_plan || '',
+                            reflection: p.reflection || '',
+                            expanded: true
+                        }));
+                    } else {
+                        this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', expanded: true }];
+                    }
+                    this.originalPlans = JSON.parse(JSON.stringify(this.plans));
 
                     // 最低3行表示
                     while (this.solutions.length < 3) {
@@ -674,6 +680,25 @@ function problemSolvingFormApp(itemId) {
             this.solutions.splice(index, 1);
         },
 
+        addNewPlan() {
+            const nextNumber = this.plans.length > 0
+                ? Math.max(...this.plans.map(p => p.plan_number)) + 1
+                : 1;
+
+            this.plans.push({
+                id: null,
+                plan_number: nextNumber,
+                action_plan: '',
+                reflection: '',
+                expanded: true
+            });
+        },
+
+        deletePlan(index) {
+            if (this.plans.length <= 1 && this.plans[index].id) return;
+            this.plans.splice(index, 1);
+        },
+
         async saveProblemSolving() {
             if (this.isEditMode) {
                 await this.updateProblemSolving();
@@ -682,39 +707,28 @@ function problemSolvingFormApp(itemId) {
             }
         },
 
-        async createProblemSolving() {
-            if (this.submitting || !this.form.problem_situation.trim()) return;
-
-            // 解決策の文字数バリデーション
+        async saveNewItem() {
             const validSolutions = this.solutions.filter(s => s.content.trim());
-            for (const solution of validSolutions) {
-                if (solution.content.length > 30) {
-                    alert('解決策は30文字以内で入力してください');
-                    return;
-                }
-            }
 
-            this.submitting = true;
+            const res = await fetch('/api/problem-solvings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(this.form)
+            });
 
-            try {
-                // まず問題解決を作成
-                const res = await fetch('/api/problem-solvings', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(this.form)
-                });
-
-                if (!res.ok) throw new Error('Failed to create');
-
+            if (res.ok) {
                 const created = await res.json();
+                this.itemId = created.id;
+                this.isEditMode = true;
 
-                // 解決策を追加（バリデーション済み）
+                // 解決策を追加
+                const newOriginalSolutions = [];
                 for (let i = 0; i < validSolutions.length; i++) {
                     const solution = validSolutions[i];
-                    await fetch(`/api/problem-solvings/${created.id}/solutions`, {
+                    const solutionRes = await fetch(`/api/problem-solvings/${created.id}/solutions`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -727,10 +741,140 @@ function problemSolvingFormApp(itemId) {
                             feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
                         })
                     });
+                    if (solutionRes.ok) {
+                        const createdSolution = await solutionRes.json();
+                        newOriginalSolutions.push(createdSolution);
+                    }
+                }
+                this.originalSolutions = newOriginalSolutions;
+
+                // 計画を追加
+                await this.savePlans(created.id);
+
+                history.replaceState(null, '', `/problem-solvings/${created.id}/edit`);
+            }
+        },
+
+        async saveExistingItem() {
+            const validSolutions = this.solutions.filter(s => s.content.trim());
+
+            const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(this.form)
+            });
+
+            if (res.ok) {
+                // 既存の解決策を削除して新しいのを追加
+                for (const original of this.originalSolutions) {
+                    await fetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
                 }
 
-                window.location.href = `/problem-solvings/${created.id}`;
+                const newOriginalSolutions = [];
+                for (let i = 0; i < validSolutions.length; i++) {
+                    const solution = validSolutions[i];
+                    const solutionRes = await fetch(`/api/problem-solvings/${this.itemId}/solutions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            content: solution.content,
+                            sort_order: i + 1,
+                            effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
+                            feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
+                        })
+                    });
+                    if (solutionRes.ok) {
+                        const createdSolution = await solutionRes.json();
+                        newOriginalSolutions.push(createdSolution);
+                    }
+                }
+                this.originalSolutions = newOriginalSolutions;
 
+                // 計画を保存
+                await this.savePlans(this.itemId);
+            }
+        },
+
+        async savePlans(problemSolvingId) {
+            // 既存の計画を更新、新規計画を追加
+            for (const plan of this.plans) {
+                if (plan.id) {
+                    // 既存の計画を更新
+                    await fetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            action_plan: plan.action_plan || null,
+                            reflection: plan.reflection || null
+                        })
+                    });
+                } else {
+                    // 新規計画を追加（action_plan か reflection が入力されている場合のみ）
+                    if ((plan.action_plan && plan.action_plan.trim()) || (plan.reflection && plan.reflection.trim())) {
+                        const planRes = await fetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                action_plan: plan.action_plan || null,
+                                reflection: plan.reflection || null
+                            })
+                        });
+                        if (planRes.ok) {
+                            const createdPlan = await planRes.json();
+                            plan.id = createdPlan.id;
+                        }
+                    }
+                }
+            }
+
+            // 削除された計画を処理
+            for (const original of this.originalPlans) {
+                if (!this.plans.find(p => p.id === original.id)) {
+                    await fetch(`/api/problem-solvings/${problemSolvingId}/plans/${original.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+                }
+            }
+
+            this.originalPlans = JSON.parse(JSON.stringify(this.plans));
+        },
+
+        async createProblemSolving() {
+            if (this.submitting || !this.form.problem_situation.trim()) return;
+
+            const validSolutions = this.solutions.filter(s => s.content.trim());
+            for (const solution of validSolutions) {
+                if (solution.content.length > 30) {
+                    alert('解決策は30文字以内で入力してください');
+                    return;
+                }
+            }
+
+            this.submitting = true;
+
+            try {
+                await this.saveNewItem();
+                window.location.href = `/problem-solvings/${this.itemId}`;
             } catch (error) {
                 console.error(error);
                 alert('保存に失敗しました');
@@ -742,7 +886,6 @@ function problemSolvingFormApp(itemId) {
         async updateProblemSolving() {
             if (this.submitting || !this.form.problem_situation.trim()) return;
 
-            // 解決策の文字数バリデーション
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
                 if (solution.content.length > 30) {
@@ -754,49 +897,8 @@ function problemSolvingFormApp(itemId) {
             this.submitting = true;
 
             try {
-                // 問題解決を更新
-                const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(this.form)
-                });
-
-                if (!res.ok) throw new Error('Failed to update');
-
-                // 既存の解決策を削除
-                for (const original of this.originalSolutions) {
-                    await fetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-                }
-
-                // 新しい解決策を追加（バリデーション済み）
-                for (let i = 0; i < validSolutions.length; i++) {
-                    const solution = validSolutions[i];
-                    await fetch(`/api/problem-solvings/${this.itemId}/solutions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            content: solution.content,
-                            sort_order: i + 1,
-                            effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
-                            feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
-                        })
-                    });
-                }
-
-                // 更新成功したら詳細ページに遷移
+                await this.saveExistingItem();
                 window.location.href = `/problem-solvings/${this.itemId}`;
-
             } catch (error) {
                 console.error(error);
                 alert('更新に失敗しました');

@@ -4,18 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\ProblemSolvingData;
 use App\Application\DTO\ProblemSolvingSolutionData;
+use App\Application\DTO\ProblemSolvingPlanData;
 use App\Application\UseCase\ProblemSolving\CreateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\UpdateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\DeleteProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\AddSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\UpdateSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
+use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
+use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
+use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\UpdateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\AddSolutionRequest;
 use App\Http\Requests\ProblemSolving\UpdateSolutionRequest;
+use App\Http\Requests\ProblemSolving\AddPlanRequest;
+use App\Http\Requests\ProblemSolving\UpdatePlanRequest;
 use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
+use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
 
 class ProblemSolvingController extends Controller
@@ -25,7 +32,7 @@ class ProblemSolvingController extends Controller
      */
     public function index(): JsonResponse
     {
-        $problemSolvings = ProblemSolving::with('solutions')
+        $problemSolvings = ProblemSolving::with(['solutions', 'plans'])
             ->orderByDesc('created_at')
             ->get()
             ->map(fn ($item) => $this->formatProblemSolving($item));
@@ -38,7 +45,7 @@ class ProblemSolvingController extends Controller
      */
     public function show(ProblemSolving $problemSolving): JsonResponse
     {
-        $problemSolving->load('solutions');
+        $problemSolving->load(['solutions', 'plans']);
         return response()->json($this->formatProblemSolving($problemSolving));
     }
 
@@ -49,9 +56,7 @@ class ProblemSolvingController extends Controller
     {
         $data = new ProblemSolvingData(
             problemSituation: (string) $request->string('problem_situation'),
-            improvedImage: $request->filled('improved_image') ? (string) $request->string('improved_image') : null,
-            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+            improvedImage: $request->filled('improved_image') ? (string) $request->string('improved_image') : null
         );
 
         $problemSolving = $createProblemSolving->handle($data);
@@ -60,9 +65,8 @@ class ProblemSolvingController extends Controller
             'id' => $problemSolving->getId(),
             'problem_situation' => $problemSolving->getProblemSituation(),
             'improved_image' => $problemSolving->getImprovedImage(),
-            'action_plan' => $problemSolving->getActionPlan(),
-            'reflection' => $problemSolving->getReflection(),
             'solutions' => [],
+            'plans' => [],
             'created_at' => $problemSolving->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $problemSolving->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -75,9 +79,7 @@ class ProblemSolvingController extends Controller
     {
         $data = new ProblemSolvingData(
             problemSituation: (string) $request->string('problem_situation'),
-            improvedImage: $request->filled('improved_image') ? (string) $request->string('improved_image') : null,
-            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+            improvedImage: $request->filled('improved_image') ? (string) $request->string('improved_image') : null
         );
 
         $updated = $updateProblemSolving->handle($problemSolving->id, $data);
@@ -86,8 +88,6 @@ class ProblemSolvingController extends Controller
             'id' => $updated->getId(),
             'problem_situation' => $updated->getProblemSituation(),
             'improved_image' => $updated->getImprovedImage(),
-            'action_plan' => $updated->getActionPlan(),
-            'reflection' => $updated->getReflection(),
             'solutions' => array_map(fn ($s) => [
                 'id' => $s->getId(),
                 'content' => $s->getContent(),
@@ -95,6 +95,12 @@ class ProblemSolvingController extends Controller
                 'feasibility' => $s->getFeasibility(),
                 'sort_order' => $s->getSortOrder(),
             ], $updated->getSolutions()),
+            'plans' => array_map(fn ($p) => [
+                'id' => $p->getId(),
+                'plan_number' => $p->getPlanNumber(),
+                'action_plan' => $p->getActionPlan(),
+                'reflection' => $p->getReflection(),
+            ], $updated->getPlans()),
             'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
         ]);
@@ -173,6 +179,62 @@ class ProblemSolvingController extends Controller
     }
 
     /**
+     * 計画を追加
+     */
+    public function addPlan(AddPlanRequest $request, ProblemSolving $problemSolving, AddPlanUseCase $addPlan): JsonResponse
+    {
+        $data = new ProblemSolvingPlanData(
+            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+        );
+
+        $plan = $addPlan->handle($problemSolving->id, $data);
+
+        return response()->json([
+            'id' => $plan->getId(),
+            'problem_solving_id' => $plan->getProblemSolvingId(),
+            'plan_number' => $plan->getPlanNumber(),
+            'action_plan' => $plan->getActionPlan(),
+            'reflection' => $plan->getReflection(),
+            'created_at' => $plan->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $plan->getUpdatedAt()->format(DATE_ATOM),
+        ], 201);
+    }
+
+    /**
+     * 計画を更新
+     */
+    public function updatePlan(UpdatePlanRequest $request, ProblemSolving $problemSolving, ProblemSolvingPlan $plan, UpdatePlanUseCase $updatePlan): JsonResponse
+    {
+        $data = new ProblemSolvingPlanData(
+            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+        );
+
+        $updated = $updatePlan->handle($plan->id, $data);
+
+        return response()->json([
+            'id' => $updated->getId(),
+            'problem_solving_id' => $updated->getProblemSolvingId(),
+            'plan_number' => $updated->getPlanNumber(),
+            'action_plan' => $updated->getActionPlan(),
+            'reflection' => $updated->getReflection(),
+            'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
+        ]);
+    }
+
+    /**
+     * 計画を削除
+     */
+    public function deletePlan(ProblemSolving $problemSolving, ProblemSolvingPlan $plan, DeletePlanUseCase $deletePlan): JsonResponse
+    {
+        $deletePlan->handle($plan->id);
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * 問題解決をJSON形式にフォーマット
      */
     private function formatProblemSolving(ProblemSolving $problemSolving): array
@@ -181,14 +243,20 @@ class ProblemSolvingController extends Controller
             'id' => $problemSolving->id,
             'problem_situation' => $problemSolving->problem_situation,
             'improved_image' => $problemSolving->improved_image,
-            'action_plan' => $problemSolving->action_plan,
-            'reflection' => $problemSolving->reflection,
             'solutions' => $problemSolving->solutions->map(fn ($s) => [
                 'id' => $s->id,
                 'content' => $s->content,
                 'effectiveness' => $s->effectiveness,
                 'feasibility' => $s->feasibility,
                 'sort_order' => $s->sort_order,
+            ])->toArray(),
+            'plans' => $problemSolving->plans->map(fn ($p) => [
+                'id' => $p->id,
+                'plan_number' => $p->plan_number,
+                'action_plan' => $p->action_plan,
+                'reflection' => $p->reflection,
+                'created_at' => $p->created_at->format(DATE_ATOM),
+                'updated_at' => $p->updated_at->format(DATE_ATOM),
             ])->toArray(),
             'created_at' => $problemSolving->created_at->format(DATE_ATOM),
             'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),

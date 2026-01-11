@@ -88,22 +88,70 @@
                 <p x-show="!item?.solutions || item.solutions.length === 0" class="text-gray-400">未入力</p>
             </div>
 
-            <!-- Step 4: 実行計画 -->
-            <div class="bg-teal-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">4</span>
-                    実行計画
+            <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
+            <div class="border-t border-gray-200 pt-4">
+                <div class="mb-4">
+                    <span class="text-sm font-semibold text-gray-700">実行計画と振り返り</span>
                 </div>
-                <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!item?.action_plan ? 'text-gray-400' : ''" x-text="item?.action_plan || '未入力'"></p>
-            </div>
 
-            <!-- Step 5: 振り返り -->
-            <div class="bg-lime-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs">5</span>
-                    振り返り
+                <!-- 計画がない場合 -->
+                <div x-show="!item?.plans || item.plans.length === 0" class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-gray-400">まだ計画がありません</p>
                 </div>
-                <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!item?.reflection ? 'text-gray-400' : ''" x-text="item?.reflection || '未入力'"></p>
+
+                <!-- 計画一覧 -->
+                <div class="space-y-4">
+                    <template x-for="(plan, index) in item?.plans" :key="plan.id">
+                        <div class="border rounded-xl overflow-hidden"
+                            :class="plan.reflection && plan.reflection.trim()
+                                ? 'border-green-200 bg-green-50'
+                                : (plan.action_plan && plan.action_plan.trim()
+                                    ? 'border-yellow-200 bg-yellow-50'
+                                    : 'border-gray-200 bg-gray-50')">
+                            <!-- 計画ヘッダー -->
+                            <div class="px-4 py-3 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
+                                    <!-- ステータスバッジ -->
+                                    <span
+                                        x-show="plan.reflection && plan.reflection.trim()"
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
+                                    >
+                                        ✓ 振り返り済み
+                                    </span>
+                                    <span
+                                        x-show="plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())"
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
+                                    >
+                                        実行中
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- 計画コンテンツ -->
+                            <div class="px-4 pb-4 space-y-4">
+                                <!-- 実行計画 -->
+                                <div class="bg-white rounded-lg p-3">
+                                    <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
+                                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-teal-500 text-white text-xs">4</span>
+                                        実行計画
+                                    </div>
+                                    <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.action_plan ? 'text-gray-400' : ''" x-text="plan.action_plan || '未入力'"></p>
+                                </div>
+
+                                <!-- 振り返り -->
+                                <div class="bg-white rounded-lg p-3">
+                                    <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center gap-1">
+                                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-lime-500 text-white text-xs">5</span>
+                                        振り返り
+                                    </div>
+                                    <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.reflection ? 'text-gray-400' : ''" x-text="plan.reflection || '未入力'"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
             </div>
         </div>
     </div>

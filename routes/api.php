@@ -43,6 +43,10 @@ Route::delete('/problem-solvings/{problemSolving}', [ProblemSolvingController::c
 Route::post('/problem-solvings/{problemSolving}/solutions', [ProblemSolvingController::class, 'addSolution']);
 Route::put('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'updateSolution']);
 Route::delete('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'deleteSolution']);
+// 計画
+Route::post('/problem-solvings/{problemSolving}/plans', [ProblemSolvingController::class, 'addPlan']);
+Route::put('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolvingController::class, 'updatePlan']);
+Route::delete('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolvingController::class, 'deletePlan']);
 
 // SimpleNotepad API（シンプルメモ帳）
 Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);

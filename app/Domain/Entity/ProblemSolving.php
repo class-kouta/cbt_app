@@ -9,49 +9,45 @@ class ProblemSolving
     private ?int $id;
     private string $problemSituation;
     private ?string $improvedImage;
-    private ?string $actionPlan;
-    private ?string $reflection;
     /** @var ProblemSolvingSolution[] */
     private array $solutions;
+    /** @var ProblemSolvingPlan[] */
+    private array $plans;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
     /**
      * @param ProblemSolvingSolution[] $solutions
+     * @param ProblemSolvingPlan[] $plans
      */
     private function __construct(
         ?int $id,
         string $problemSituation,
         ?string $improvedImage,
-        ?string $actionPlan,
-        ?string $reflection,
         array $solutions,
+        array $plans,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
         $this->id = $id;
         $this->problemSituation = $problemSituation;
         $this->improvedImage = $improvedImage;
-        $this->actionPlan = $actionPlan;
-        $this->reflection = $reflection;
         $this->solutions = $solutions;
+        $this->plans = $plans;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
 
     public static function createNew(
         string $problemSituation,
-        ?string $improvedImage = null,
-        ?string $actionPlan = null,
-        ?string $reflection = null
+        ?string $improvedImage = null
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
             null,
             $problemSituation,
             $improvedImage,
-            $actionPlan,
-            $reflection,
+            [],
             [],
             $now,
             $now
@@ -60,14 +56,14 @@ class ProblemSolving
 
     /**
      * @param ProblemSolvingSolution[] $solutions
+     * @param ProblemSolvingPlan[] $plans
      */
     public static function reconstitute(
         int $id,
         string $problemSituation,
         ?string $improvedImage,
-        ?string $actionPlan,
-        ?string $reflection,
         array $solutions,
+        array $plans,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -75,9 +71,8 @@ class ProblemSolving
             $id,
             $problemSituation,
             $improvedImage,
-            $actionPlan,
-            $reflection,
             $solutions,
+            $plans,
             $createdAt,
             $updatedAt
         );
@@ -98,22 +93,56 @@ class ProblemSolving
         return $this->improvedImage;
     }
 
-    public function getActionPlan(): ?string
-    {
-        return $this->actionPlan;
-    }
-
-    public function getReflection(): ?string
-    {
-        return $this->reflection;
-    }
-
     /**
      * @return ProblemSolvingSolution[]
      */
     public function getSolutions(): array
     {
         return $this->solutions;
+    }
+
+    /**
+     * @return ProblemSolvingPlan[]
+     */
+    public function getPlans(): array
+    {
+        return $this->plans;
+    }
+
+    /**
+     * 最新の計画を取得
+     */
+    public function getLatestPlan(): ?ProblemSolvingPlan
+    {
+        if (empty($this->plans)) {
+            return null;
+        }
+        
+        $latestPlan = null;
+        $maxNumber = 0;
+        
+        foreach ($this->plans as $plan) {
+            if ($plan->getPlanNumber() > $maxNumber) {
+                $maxNumber = $plan->getPlanNumber();
+                $latestPlan = $plan;
+            }
+        }
+        
+        return $latestPlan;
+    }
+
+    /**
+     * 新しい計画を追加できるかどうか
+     */
+    public function canAddNewPlan(): bool
+    {
+        $latest = $this->getLatestPlan();
+        
+        if ($latest === null) {
+            return true;
+        }
+        
+        return $latest->isReflectionCompleted();
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -132,9 +161,8 @@ class ProblemSolving
             $id,
             $this->problemSituation,
             $this->improvedImage,
-            $this->actionPlan,
-            $this->reflection,
             $this->solutions,
+            $this->plans,
             $this->createdAt,
             $this->updatedAt
         );
@@ -142,17 +170,14 @@ class ProblemSolving
 
     public function update(
         string $problemSituation,
-        ?string $improvedImage,
-        ?string $actionPlan,
-        ?string $reflection
+        ?string $improvedImage
     ): self {
         return new self(
             $this->id,
             $problemSituation,
             $improvedImage,
-            $actionPlan,
-            $reflection,
             $this->solutions,
+            $this->plans,
             $this->createdAt,
             new DateTimeImmutable('now')
         );
@@ -167,9 +192,24 @@ class ProblemSolving
             $this->id,
             $this->problemSituation,
             $this->improvedImage,
-            $this->actionPlan,
-            $this->reflection,
             $solutions,
+            $this->plans,
+            $this->createdAt,
+            $this->updatedAt
+        );
+    }
+
+    /**
+     * @param ProblemSolvingPlan[] $plans
+     */
+    public function withPlans(array $plans): self
+    {
+        return new self(
+            $this->id,
+            $this->problemSituation,
+            $this->improvedImage,
+            $this->solutions,
+            $plans,
             $this->createdAt,
             $this->updatedAt
         );

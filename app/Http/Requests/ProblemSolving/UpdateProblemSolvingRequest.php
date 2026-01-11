@@ -16,8 +16,6 @@ class UpdateProblemSolvingRequest extends FormRequest
         return [
             'problem_situation' => ['required', 'string', 'max:5000'],
             'improved_image' => ['nullable', 'string', 'max:2000'],
-            'action_plan' => ['nullable', 'string', 'max:5000'],
-            'reflection' => ['nullable', 'string', 'max:5000'],
         ];
     }
 
@@ -27,8 +25,6 @@ class UpdateProblemSolvingRequest extends FormRequest
             'problem_situation.required' => '問題状況を入力してください',
             'problem_situation.max' => '問題状況は5000文字以内で入力してください',
             'improved_image.max' => '改善イメージは2000文字以内で入力してください',
-            'action_plan.max' => '実行計画は5000文字以内で入力してください',
-            'reflection.max' => '振り返りは5000文字以内で入力してください',
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Entity\ProblemSolving;
 use App\Domain\Entity\ProblemSolvingSolution;
+use App\Domain\Entity\ProblemSolvingPlan;
 
 interface ProblemSolvingRepositoryInterface
 {
@@ -23,4 +24,12 @@ interface ProblemSolvingRepositoryInterface
     public function updateSolution(ProblemSolvingSolution $solution): ProblemSolvingSolution;
 
     public function deleteSolution(int $solutionId): void;
+
+    public function savePlan(int $problemSolvingId, ProblemSolvingPlan $plan): ProblemSolvingPlan;
+
+    public function findPlanById(int $planId): ?ProblemSolvingPlan;
+
+    public function updatePlan(ProblemSolvingPlan $plan): ProblemSolvingPlan;
+
+    public function deletePlan(int $planId): void;
 }
