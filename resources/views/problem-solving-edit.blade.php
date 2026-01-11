@@ -313,8 +313,24 @@
                     </button>
                 </div>
 
-                <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
-                <div class="border-t border-gray-200 pt-5">
+                <!-- Step 4: 実行計画（新規作成モード用シンプルUI） -->
+                <div x-show="!isEditMode">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">4</span>
+                        実行計画
+                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
+                    </label>
+                    <textarea
+                        x-model="plans[0].action_plan"
+                        rows="10"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
+                        maxlength="5000"
+                    ></textarea>
+                </div>
+
+                <!-- Step 4 & 5: 実行計画と振り返り（編集モード用リッチUI） -->
+                <div x-show="isEditMode" class="border-t border-gray-200 pt-5">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
                             実行計画と振り返り
@@ -397,8 +413,8 @@
                                         ></textarea>
                                     </div>
 
-                                    <!-- 振り返り（編集モードのみ表示） -->
-                                    <div x-show="isEditMode">
+                                    <!-- 振り返り -->
+                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
                                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
                                             振り返り
@@ -417,8 +433,8 @@
                         </template>
                     </div>
 
-                    <!-- 新しい計画を追加ボタン（編集モードのみ表示） -->
-                    <div class="mt-4" x-show="isEditMode">
+                    <!-- 新しい計画を追加ボタン -->
+                    <div class="mt-4">
                         <button
                             type="button"
                             @click="addNewPlan()"
