@@ -12,6 +12,131 @@
         </a>
     </div>
 
+    <!-- ストレッサーとストレス反応から転記ボタン（データがある場合のみ表示） -->
+    <div x-show="stressorAndResponses.length > 0 && !isEditMode" class="mb-4">
+        <button
+            type="button"
+            @click="showStressorModal = true"
+            class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            ストレッサーとストレス反応から転記する
+        </button>
+    </div>
+
+    <!-- ストレッサーとストレス反応選択モーダル -->
+    <div
+        x-show="showStressorModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        @keydown.escape.window="showStressorModal = false"
+    >
+        <!-- オーバーレイ -->
+        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showStressorModal = false"></div>
+
+        <!-- モーダルコンテンツ -->
+        <div class="flex min-h-full items-end justify-center p-4 sm:items-center">
+            <div
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl"
+                @click.stop
+            >
+                <!-- ヘッダー -->
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            転記元を選択
+                        </h3>
+                        <button
+                            type="button"
+                            @click="showStressorModal = false"
+                            class="text-white hover:text-indigo-100 transition-colors"
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-sm text-indigo-100 mt-1">
+                        選択すると「問題状況を具体的に把握する」に転記されます
+                    </p>
+                </div>
+
+                <!-- コンテンツ -->
+                <div class="max-h-96 overflow-y-auto">
+                    <template x-for="item in stressorAndResponses" :key="item.id">
+                        <div
+                            @click="applyStressorData(item)"
+                            class="px-6 py-4 border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors group"
+                        >
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <!-- ストレッサー（問題状況に転記） -->
+                                    <div class="mb-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 mb-1">
+                                            問題状況へ
+                                        </span>
+                                        <p class="text-sm text-gray-800 line-clamp-2" x-text="item.stressor"></p>
+                                    </div>
+                                    <!-- 作成日時 -->
+                                    <p class="text-xs text-gray-400 mt-2" x-text="formatDate(item.created_at)"></p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- フッター -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                    <button
+                        type="button"
+                        @click="showStressorModal = false"
+                        class="w-full py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                    >
+                        キャンセル
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 転記成功トースト -->
+    <div
+        x-show="showTransferToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <span>📝</span>
+        <span>転記しました！</span>
+    </div>
+
     <!-- ローディング（編集モードのみ） -->
     <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
         <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -24,17 +149,17 @@
     <!-- フォーム -->
     <div x-show="!loading || !isEditMode">
         <form @submit.prevent="saveProblemSolving()">
-            <div class="space-y-6">
+            <div class="space-y-5">
                 <!-- Step 1: 問題状況 -->
-                <div class="bg-white rounded-lg p-4 shadow-sm">
-                    <h3 class="flex items-start gap-2 text-lg font-semibold text-gray-800 mb-3">
-                        <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white text-sm font-bold">1</span>
-                        <span class="flex-1">問題状況を具体的に把握する</span>
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-2">自分、人間関係、出来事、状況などの観点から問題を整理しましょう</p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">1</span>
+                        問題状況を具体的に把握する <span class="text-red-500">*</span>
+                        <span class="text-gray-400 font-normal ml-1">自分、人間関係、出来事、状況などの観点から問題を整理</span>
+                    </label>
                     <textarea
                         x-model="form.problem_situation"
-                        rows="4"
+                        rows="10"
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：仕事の締め切りが重なって、どれから手をつけていいかわからない"
                         maxlength="5000"
@@ -44,14 +169,14 @@
                 </div>
 
                 <!-- Step 2: 改善イメージ -->
-                <div class="bg-white rounded-lg p-4 shadow-sm">
-                    <h3 class="flex items-start gap-2 text-lg font-semibold text-gray-800 mb-3">
-                        <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white text-sm font-bold">2</span>
-                        <span class="flex-1">改善イメージ</span>
-                    </h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">2</span>
+                        改善イメージ
+                    </label>
                     <textarea
                         x-model="form.improved_image"
-                        rows="3"
+                        rows="10"
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：優先順位をつけて、一つずつ片付けている。焦らず落ち着いて取り組めている。"
                         maxlength="2000"
@@ -59,12 +184,12 @@
                 </div>
 
                 <!-- Step 3: 解決策 -->
-                <div class="bg-white rounded-lg p-4 shadow-sm">
-                    <h3 class="flex items-start gap-2 text-lg font-semibold text-gray-800 mb-3">
-                        <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white text-sm font-bold">3</span>
-                        <span class="flex-1">解決策</span>
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-3">解決策を複数出して、それぞれの効果と実行可能性を評価しましょう（保存後に追加できます）</p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
+                        解決策
+                        <span class="text-gray-400 font-normal ml-1">解決策を複数出して、それぞれの効果と実行可能性を評価しましょう</span>
+                    </label>
                     <div class="space-y-3">
                         <template x-for="(solution, index) in solutions" :key="index">
                             <div class="border border-gray-300 rounded-lg p-3">
@@ -172,15 +297,15 @@
                 </div>
 
                 <!-- Step 4: 実行計画 -->
-                <div class="bg-white rounded-lg p-4 shadow-sm">
-                    <h3 class="flex items-start gap-2 text-lg font-semibold text-gray-800 mb-3">
-                        <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white text-sm font-bold">4</span>
-                        <span class="flex-1">実行計画</span>
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-2">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">4</span>
+                        実行計画
+                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
+                    </label>
                     <textarea
                         x-model="form.action_plan"
-                        rows="4"
+                        rows="10"
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
                         maxlength="5000"
@@ -188,15 +313,15 @@
                 </div>
 
                 <!-- Step 5: 振り返り -->
-                <div class="bg-white rounded-lg p-4 shadow-sm">
-                    <h3 class="flex items-start gap-2 text-lg font-semibold text-gray-800 mb-3">
-                        <span class="flex-shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500 text-white text-sm font-bold">5</span>
-                        <span class="flex-1">振り返り</span>
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-2">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">5</span>
+                        振り返り
+                        <span class="text-gray-400 font-normal ml-1">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</span>
+                    </label>
                     <textarea
                         x-model="form.reflection"
-                        rows="4"
+                        rows="10"
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="（実行後に記入してください）"
                         maxlength="5000"
@@ -249,10 +374,56 @@ function problemSolvingFormApp(itemId) {
         submitting: false,
         showSuccess: false,
 
+        // ストレッサーとストレス反応からの転記機能
+        stressorAndResponses: [],
+        showStressorModal: false,
+        showTransferToast: false,
+
         async init() {
+            // ストレッサーとストレス反応一覧を取得
+            await this.loadStressorAndResponses();
+
             if (this.isEditMode) {
                 await this.loadItem();
             }
+        },
+
+        // ストレッサーとストレス反応一覧を取得
+        async loadStressorAndResponses() {
+            try {
+                const res = await fetch('/api/stressor-and-responses');
+                if (res.ok) {
+                    this.stressorAndResponses = await res.json();
+                }
+            } catch (error) {
+                console.error('ストレッサーとストレス反応の取得に失敗しました:', error);
+            }
+        },
+
+        // ストレッサーとストレス反応のデータを転記
+        applyStressorData(item) {
+            // 問題状況 ← ストレッサー
+            this.form.problem_situation = item.stressor || '';
+
+            // モーダルを閉じる
+            this.showStressorModal = false;
+
+            // 転記成功トーストを表示
+            this.showTransferToast = true;
+            setTimeout(() => {
+                this.showTransferToast = false;
+            }, 2000);
+        },
+
+        // 日時をフォーマット
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}/${month}/${day} ${hours}:${minutes}`;
         },
 
         async loadItem() {
