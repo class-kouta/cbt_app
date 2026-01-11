@@ -137,6 +137,23 @@
         <span>転記しました！</span>
     </div>
 
+    <!-- 自動保存トースト -->
+    <div
+        x-show="showAutoSaveToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        自動保存しました
+    </div>
+
     <!-- ローディング（編集モードのみ） -->
     <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
         <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -343,14 +360,6 @@
         </form>
     </div>
 
-    <!-- 成功メッセージ（編集時のみ） -->
-    <div
-        x-show="showSuccess && isEditMode"
-        x-transition
-        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg"
-    >
-        更新しました！
-    </div>
 </div>
 
 <script>
@@ -372,7 +381,12 @@ function problemSolvingFormApp(itemId) {
         originalSolutions: [],
         loading: false,
         submitting: false,
-        showSuccess: false,
+
+        // 自動保存用
+        autoSaveSnapshots: [],
+        autoSaveInterval: null,
+        autoSaving: false,
+        showAutoSaveToast: false,
 
         // ストレッサーとストレス反応からの転記機能
         stressorAndResponses: [],
@@ -386,6 +400,14 @@ function problemSolvingFormApp(itemId) {
             if (this.isEditMode) {
                 await this.loadItem();
             }
+
+            // 初期スナップショットを取得
+            this.takeSnapshot();
+
+            // 30秒ごとに自動保存チェック
+            this.autoSaveInterval = setInterval(() => {
+                this.checkAndAutoSave();
+            }, 30000);
         },
 
         // ストレッサーとストレス反応一覧を取得
@@ -412,6 +434,190 @@ function problemSolvingFormApp(itemId) {
             this.showTransferToast = true;
             setTimeout(() => {
                 this.showTransferToast = false;
+            }, 2000);
+        },
+
+        // 現在の値のスナップショットを取得
+        takeSnapshot() {
+            const snapshot = {
+                problem_situation: this.form.problem_situation,
+                improved_image: this.form.improved_image,
+                action_plan: this.form.action_plan,
+                reflection: this.form.reflection,
+                solutions: JSON.stringify(this.solutions)
+            };
+            this.autoSaveSnapshots.push(snapshot);
+
+            // 直近2つ分のみ保持（60秒前の値と比較するため）
+            if (this.autoSaveSnapshots.length > 2) {
+                this.autoSaveSnapshots.shift();
+            }
+        },
+
+        // 60秒前のスナップショットと現在の値を比較
+        hasChangedFromPreviousSnapshot() {
+            // 2回分のスナップショットがない場合（まだ60秒経っていない）
+            if (this.autoSaveSnapshots.length < 2) {
+                // 1つ目のスナップショットと比較
+                if (this.autoSaveSnapshots.length === 1) {
+                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
+                }
+                return false;
+            }
+
+            // 60秒前（2回前）のスナップショットと比較
+            const oldSnapshot = this.autoSaveSnapshots[0];
+            return this.hasValueChanged(oldSnapshot);
+        },
+
+        // 指定されたスナップショットと現在の値を比較
+        hasValueChanged(snapshot) {
+            return (
+                this.form.problem_situation !== snapshot.problem_situation ||
+                this.form.improved_image !== snapshot.improved_image ||
+                this.form.action_plan !== snapshot.action_plan ||
+                this.form.reflection !== snapshot.reflection ||
+                JSON.stringify(this.solutions) !== snapshot.solutions
+            );
+        },
+
+        // 30秒ごとの自動保存チェック
+        async checkAndAutoSave() {
+            // 条件チェック：
+            // 1. 「問題状況」が入力済み
+            // 2. 1分前の値から変更がある
+            // 3. 現在保存中でない
+            if (
+                this.form.problem_situation.trim() &&
+                this.hasChangedFromPreviousSnapshot() &&
+                !this.submitting &&
+                !this.autoSaving
+            ) {
+                await this.performAutoSave();
+            }
+
+            // 新しいスナップショットを取得
+            this.takeSnapshot();
+        },
+
+        // 自動保存を実行
+        async performAutoSave() {
+            // 解決策の文字数バリデーション
+            const validSolutions = this.solutions.filter(s => s.content.trim());
+            for (const solution of validSolutions) {
+                if (solution.content.length > 30) {
+                    // バリデーションエラーの場合は自動保存しない
+                    return;
+                }
+            }
+
+            this.autoSaving = true;
+
+            try {
+                if (this.itemId) {
+                    // 既存の問題解決法を更新
+                    const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(this.form)
+                    });
+
+                    if (res.ok) {
+                        // 既存の解決策を削除して新しいのを追加
+                        for (const original of this.originalSolutions) {
+                            await fetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                }
+                            });
+                        }
+
+                        // 新しい解決策を追加
+                        const newOriginalSolutions = [];
+                        for (let i = 0; i < validSolutions.length; i++) {
+                            const solution = validSolutions[i];
+                            const solutionRes = await fetch(`/api/problem-solvings/${this.itemId}/solutions`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: JSON.stringify({
+                                    content: solution.content,
+                                    sort_order: i + 1,
+                                    effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
+                                    feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
+                                })
+                            });
+                            if (solutionRes.ok) {
+                                const createdSolution = await solutionRes.json();
+                                newOriginalSolutions.push(createdSolution);
+                            }
+                        }
+                        this.originalSolutions = newOriginalSolutions;
+                        this.showAutoSaveNotification();
+                    }
+                } else {
+                    // 新規作成
+                    const res = await fetch('/api/problem-solvings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(this.form)
+                    });
+
+                    if (res.ok) {
+                        const created = await res.json();
+                        this.itemId = created.id;
+                        this.isEditMode = true;
+
+                        // 解決策を追加
+                        const newOriginalSolutions = [];
+                        for (let i = 0; i < validSolutions.length; i++) {
+                            const solution = validSolutions[i];
+                            const solutionRes = await fetch(`/api/problem-solvings/${created.id}/solutions`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: JSON.stringify({
+                                    content: solution.content,
+                                    sort_order: i + 1,
+                                    effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
+                                    feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
+                                })
+                            });
+                            if (solutionRes.ok) {
+                                const createdSolution = await solutionRes.json();
+                                newOriginalSolutions.push(createdSolution);
+                            }
+                        }
+                        this.originalSolutions = newOriginalSolutions;
+
+                        // URLを編集ページに変更（リロードなし）
+                        history.replaceState(null, '', `/problem-solvings/${created.id}/edit`);
+                        this.showAutoSaveNotification();
+                    }
+                }
+            } catch (error) {
+                console.error('自動保存に失敗しました:', error);
+            } finally {
+                this.autoSaving = false;
+            }
+        },
+
+        // 自動保存の通知を表示
+        showAutoSaveNotification() {
+            this.showAutoSaveToast = true;
+            setTimeout(() => {
+                this.showAutoSaveToast = false;
             }, 2000);
         },
 
@@ -588,11 +794,8 @@ function problemSolvingFormApp(itemId) {
                     });
                 }
 
-                this.showSuccess = true;
-                setTimeout(() => {
-                    this.showSuccess = false;
-                    window.location.href = `/problem-solvings/${this.itemId}`;
-                }, 1000);
+                // 更新成功したら詳細ページに遷移
+                window.location.href = `/problem-solvings/${this.itemId}`;
 
             } catch (error) {
                 console.error(error);
