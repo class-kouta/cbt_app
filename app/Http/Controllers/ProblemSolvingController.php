@@ -67,7 +67,6 @@ class ProblemSolvingController extends Controller
             'improved_image' => $problemSolving->getImprovedImage(),
             'solutions' => [],
             'plans' => [],
-            'can_add_new_plan' => true,
             'created_at' => $problemSolving->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $problemSolving->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -102,7 +101,6 @@ class ProblemSolvingController extends Controller
                 'action_plan' => $p->getActionPlan(),
                 'reflection' => $p->getReflection(),
             ], $updated->getPlans()),
-            'can_add_new_plan' => $updated->canAddNewPlan(),
             'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
         ]);
@@ -185,26 +183,22 @@ class ProblemSolvingController extends Controller
      */
     public function addPlan(AddPlanRequest $request, ProblemSolving $problemSolving, AddPlanUseCase $addPlan): JsonResponse
     {
-        try {
-            $data = new ProblemSolvingPlanData(
-                actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-                reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
-            );
+        $data = new ProblemSolvingPlanData(
+            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+        );
 
-            $plan = $addPlan->handle($problemSolving->id, $data);
+        $plan = $addPlan->handle($problemSolving->id, $data);
 
-            return response()->json([
-                'id' => $plan->getId(),
-                'problem_solving_id' => $plan->getProblemSolvingId(),
-                'plan_number' => $plan->getPlanNumber(),
-                'action_plan' => $plan->getActionPlan(),
-                'reflection' => $plan->getReflection(),
-                'created_at' => $plan->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $plan->getUpdatedAt()->format(DATE_ATOM),
-            ], 201);
-        } catch (\RuntimeException $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
+        return response()->json([
+            'id' => $plan->getId(),
+            'problem_solving_id' => $plan->getProblemSolvingId(),
+            'plan_number' => $plan->getPlanNumber(),
+            'action_plan' => $plan->getActionPlan(),
+            'reflection' => $plan->getReflection(),
+            'created_at' => $plan->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $plan->getUpdatedAt()->format(DATE_ATOM),
+        ], 201);
     }
 
     /**
@@ -264,7 +258,6 @@ class ProblemSolvingController extends Controller
                 'created_at' => $p->created_at->format(DATE_ATOM),
                 'updated_at' => $p->updated_at->format(DATE_ATOM),
             ])->toArray(),
-            'can_add_new_plan' => $problemSolving->canAddNewPlan(),
             'created_at' => $problemSolving->created_at->format(DATE_ATOM),
             'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),
         ];

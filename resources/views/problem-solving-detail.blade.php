@@ -90,9 +90,7 @@
 
             <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
             <div class="border-t border-gray-200 pt-4">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs">4</span>
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs">5</span>
+                <div class="mb-4">
                     <span class="text-sm font-semibold text-gray-700">実行計画と振り返り</span>
                 </div>
 
@@ -113,15 +111,7 @@
                             <!-- 計画ヘッダー -->
                             <div class="px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold"
-                                        :class="plan.reflection && plan.reflection.trim()
-                                            ? 'bg-green-500'
-                                            : (plan.action_plan && plan.action_plan.trim()
-                                                ? 'bg-yellow-500'
-                                                : 'bg-gray-400')">
-                                        <span x-text="plan.plan_number"></span>
-                                    </span>
-                                    <span class="font-medium text-gray-700" x-text="'計画 ' + plan.plan_number"></span>
+                                    <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
                                     <!-- ステータスバッジ -->
                                     <span
                                         x-show="plan.reflection && plan.reflection.trim()"
@@ -162,18 +152,6 @@
                     </template>
                 </div>
 
-                <!-- 新しい計画を追加できる場合のヒント -->
-                <div x-show="item?.can_add_new_plan && item?.plans && item.plans.length > 0" class="mt-4 text-center">
-                    <a
-                        :href="'/problem-solvings/' + itemId + '/edit'"
-                        class="inline-flex items-center gap-2 text-teal-600 hover:text-teal-800 text-sm font-medium"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        新しい計画を追加できます
-                    </a>
-                </div>
             </div>
         </div>
     </div>

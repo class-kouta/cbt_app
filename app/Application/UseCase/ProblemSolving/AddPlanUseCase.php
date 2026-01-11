@@ -20,10 +20,6 @@ class AddPlanUseCase
             throw new \RuntimeException('ProblemSolving not found');
         }
 
-        if (!$problemSolving->canAddNewPlan()) {
-            throw new \RuntimeException('最新の計画の振り返りを入力してから、新しい計画を追加してください。');
-        }
-
         // 次の計画番号を計算
         $latestPlan = $problemSolving->getLatestPlan();
         $nextPlanNumber = $latestPlan ? $latestPlan->getPlanNumber() + 1 : 1;

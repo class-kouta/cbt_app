@@ -316,9 +316,7 @@
                 <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
                 <div class="border-t border-gray-200 pt-5">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold">4</span>
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-lime-500 text-white text-xs font-bold">5</span>
+                        <h3 class="text-lg font-semibold text-gray-800">
                             実行計画と振り返り
                         </h3>
                     </div>
@@ -340,10 +338,7 @@
                                     @click="plan.expanded = !plan.expanded"
                                 >
                                     <div class="flex items-center gap-3">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500 text-white text-sm font-bold">
-                                            <span x-text="plan.plan_number"></span>
-                                        </span>
-                                        <span class="font-medium text-gray-700" x-text="'計画 ' + plan.plan_number"></span>
+                                        <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
                                         <!-- ステータスバッジ -->
                                         <span
                                             x-show="plan.reflection && plan.reflection.trim()"
@@ -427,16 +422,12 @@
                         <button
                             type="button"
                             @click="addNewPlan()"
-                            :disabled="!canAddNewPlan"
-                            class="w-full py-3 px-4 border-2 border-dashed rounded-xl font-medium transition-all flex items-center justify-center gap-2"
-                            :class="canAddNewPlan
-                                ? 'border-teal-300 text-teal-600 hover:border-teal-400 hover:bg-teal-50'
-                                : 'border-gray-200 text-gray-400 cursor-not-allowed'"
+                            class="w-full py-3 px-4 border-2 border-dashed rounded-xl font-medium transition-all flex items-center justify-center gap-2 border-teal-300 text-teal-600 hover:border-teal-400 hover:bg-teal-50"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            <span x-text="canAddNewPlan ? '新しい計画を追加' : '振り返りを入力してから新しい計画を追加できます'"></span>
+                            新しい計画を追加
                         </button>
                     </div>
                 </div>
@@ -475,7 +466,6 @@ function problemSolvingFormApp(itemId) {
         originalSolutions: [],
         plans: [],
         originalPlans: [],
-        canAddNewPlan: true,
         loading: false,
         submitting: false,
 
@@ -667,7 +657,6 @@ function problemSolvingFormApp(itemId) {
                         this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', expanded: true }];
                     }
                     this.originalPlans = JSON.parse(JSON.stringify(this.plans));
-                    this.canAddNewPlan = item.can_add_new_plan;
 
                     // 最低3行表示
                     while (this.solutions.length < 3) {
@@ -692,8 +681,6 @@ function problemSolvingFormApp(itemId) {
         },
 
         addNewPlan() {
-            if (!this.canAddNewPlan) return;
-
             const nextNumber = this.plans.length > 0
                 ? Math.max(...this.plans.map(p => p.plan_number)) + 1
                 : 1;
@@ -705,24 +692,11 @@ function problemSolvingFormApp(itemId) {
                 reflection: '',
                 expanded: true
             });
-
-            // 新しい計画を追加したら、追加ボタンを無効化
-            this.canAddNewPlan = false;
         },
 
         deletePlan(index) {
             if (this.plans.length <= 1 && this.plans[index].id) return;
             this.plans.splice(index, 1);
-            this.updateCanAddNewPlan();
-        },
-
-        updateCanAddNewPlan() {
-            if (this.plans.length === 0) {
-                this.canAddNewPlan = true;
-                return;
-            }
-            const latestPlan = this.plans[this.plans.length - 1];
-            this.canAddNewPlan = latestPlan.reflection && latestPlan.reflection.trim() !== '';
         },
 
         async saveProblemSolving() {
@@ -883,7 +857,6 @@ function problemSolvingFormApp(itemId) {
             }
 
             this.originalPlans = JSON.parse(JSON.stringify(this.plans));
-            this.updateCanAddNewPlan();
         },
 
         async createProblemSolving() {
