@@ -397,8 +397,8 @@
                                         ></textarea>
                                     </div>
 
-                                    <!-- 振り返り -->
-                                    <div>
+                                    <!-- 振り返り（編集モードのみ表示） -->
+                                    <div x-show="isEditMode">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
                                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
                                             振り返り
@@ -417,8 +417,8 @@
                         </template>
                     </div>
 
-                    <!-- 新しい計画を追加ボタン -->
-                    <div class="mt-4">
+                    <!-- 新しい計画を追加ボタン（編集モードのみ表示） -->
+                    <div class="mt-4" x-show="isEditMode">
                         <button
                             type="button"
                             @click="addNewPlan()"
