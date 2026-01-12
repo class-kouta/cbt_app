@@ -42,11 +42,6 @@
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2">
                             <span
-                                class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold"
-                                :class="plan.hasReflection ? 'bg-green-500' : 'bg-yellow-500'"
-                                x-text="'計画' + plan.planNumber"
-                            ></span>
-                            <span
                                 x-show="plan.hasReflection"
                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
                             >
