@@ -577,7 +577,7 @@ function problemSolvingFormApp(itemId) {
             if (res.ok) {
                 const created = await res.json();
                 this.itemId = created.id;
-                this.isEditMode = true;
+                // 注意: isEditModeは変更しない（自動保存時にUIが切り替わるのを防ぐ）
 
                 // 解決策を追加
                 const newOriginalSolutions = [];
