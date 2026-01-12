@@ -12,131 +12,6 @@
         </a>
     </div>
 
-    <!-- ストレッサーとストレス反応から転記ボタン（データがある場合のみ表示） -->
-    <div x-show="stressorAndResponses.length > 0 && !isEditMode" class="mb-4">
-        <button
-            type="button"
-            @click="showStressorModal = true"
-            class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-        >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            ストレッサーとストレス反応から転記する
-        </button>
-    </div>
-
-    <!-- ストレッサーとストレス反応選択モーダル -->
-    <div
-        x-show="showStressorModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        @keydown.escape.window="showStressorModal = false"
-    >
-        <!-- オーバーレイ -->
-        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showStressorModal = false"></div>
-
-        <!-- モーダルコンテンツ -->
-        <div class="flex min-h-full items-end justify-center p-4 sm:items-center">
-            <div
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl"
-                @click.stop
-            >
-                <!-- ヘッダー -->
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                            転記元を選択
-                        </h3>
-                        <button
-                            type="button"
-                            @click="showStressorModal = false"
-                            class="text-white hover:text-indigo-100 transition-colors"
-                        >
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-sm text-indigo-100 mt-1">
-                        選択すると「問題状況を具体的に把握する」に転記されます
-                    </p>
-                </div>
-
-                <!-- コンテンツ -->
-                <div class="max-h-96 overflow-y-auto">
-                    <template x-for="item in stressorAndResponses" :key="item.id">
-                        <div
-                            @click="applyStressorData(item)"
-                            class="px-6 py-4 border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors group"
-                        >
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="flex-1 min-w-0">
-                                    <!-- ストレッサー（問題状況に転記） -->
-                                    <div class="mb-2">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 mb-1">
-                                            問題状況へ
-                                        </span>
-                                        <p class="text-sm text-gray-800 line-clamp-2" x-text="item.stressor"></p>
-                                    </div>
-                                    <!-- 作成日時 -->
-                                    <p class="text-xs text-gray-400 mt-2" x-text="formatDate(item.created_at)"></p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- フッター -->
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                    <button
-                        type="button"
-                        @click="showStressorModal = false"
-                        class="w-full py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                    >
-                        キャンセル
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 転記成功トースト -->
-    <div
-        x-show="showTransferToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform translate-y-2"
-        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
-    >
-        <span>📝</span>
-        <span>転記しました！</span>
-    </div>
-
     <!-- 自動保存トースト -->
     <div
         x-show="showAutoSaveToast"
@@ -210,15 +85,15 @@
                     <div class="space-y-3">
                         <template x-for="(solution, index) in solutions" :key="index">
                             <div class="border border-gray-300 rounded-lg p-3">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
-                                        <span
-                                            class="text-xs"
-                                            :class="solution.content.length > 30 ? 'text-red-500 font-semibold' : 'text-gray-400'"
-                                            x-text="solution.content.length + '/30'"
-                                        ></span>
-                                    </div>
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
+                                            <span
+                                                class="text-xs"
+                                                :class="solution.content.length > 100 ? 'text-red-500 font-semibold' : 'text-gray-400'"
+                                                x-text="solution.content.length + '/100'"
+                                            ></span>
+                                        </div>
                                     <button
                                         type="button"
                                         @click="removeSolution(index)"
@@ -232,11 +107,11 @@
                                     x-model="solution.content"
                                     rows="3"
                                     class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-3 resize-none"
-                                    :class="solution.content.length > 30 ? 'border-red-500 focus:ring-red-500' : ''"
-                                    placeholder="解決策を入力（30文字以内）"
+                                    :class="solution.content.length > 100 ? 'border-red-500 focus:ring-red-500' : ''"
+                                    placeholder="解決策を入力（100文字以内）"
                                 ></textarea>
-                                <div x-show="solution.content.length > 30" class="text-xs text-red-500 mb-2">
-                                    30文字以内で入力してください
+                                <div x-show="solution.content.length > 100" class="text-xs text-red-500 mb-2">
+                                    100文字以内で入力してください
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
@@ -354,7 +229,6 @@
                                     @click="plan.expanded = !plan.expanded"
                                 >
                                     <div class="flex items-center gap-3">
-                                        <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
                                         <!-- ステータスバッジ -->
                                         <span
                                             x-show="plan.reflection && plan.reflection.trim()"
@@ -491,15 +365,7 @@ function problemSolvingFormApp(itemId) {
         autoSaving: false,
         showAutoSaveToast: false,
 
-        // ストレッサーとストレス反応からの転記機能
-        stressorAndResponses: [],
-        showStressorModal: false,
-        showTransferToast: false,
-
         async init() {
-            // ストレッサーとストレス反応一覧を取得
-            await this.loadStressorAndResponses();
-
             if (this.isEditMode) {
                 await this.loadItem();
             } else {
@@ -514,33 +380,6 @@ function problemSolvingFormApp(itemId) {
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
-        },
-
-        // ストレッサーとストレス反応一覧を取得
-        async loadStressorAndResponses() {
-            try {
-                const res = await fetch('/api/stressor-and-responses');
-                if (res.ok) {
-                    this.stressorAndResponses = await res.json();
-                }
-            } catch (error) {
-                console.error('ストレッサーとストレス反応の取得に失敗しました:', error);
-            }
-        },
-
-        // ストレッサーとストレス反応のデータを転記
-        applyStressorData(item) {
-            // 問題状況 ← ストレッサー
-            this.form.problem_situation = item.stressor || '';
-
-            // モーダルを閉じる
-            this.showStressorModal = false;
-
-            // 転記成功トーストを表示
-            this.showTransferToast = true;
-            setTimeout(() => {
-                this.showTransferToast = false;
-            }, 2000);
         },
 
         // 現在の値のスナップショットを取得
@@ -604,7 +443,7 @@ function problemSolvingFormApp(itemId) {
         async performAutoSave() {
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
-                if (solution.content.length > 30) {
+                if (solution.content.length > 100) {
                     return;
                 }
             }
@@ -880,8 +719,8 @@ function problemSolvingFormApp(itemId) {
 
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
-                if (solution.content.length > 30) {
-                    alert('解決策は30文字以内で入力してください');
+                if (solution.content.length > 100) {
+                    alert('解決策は100文字以内で入力してください');
                     return;
                 }
             }
@@ -904,8 +743,8 @@ function problemSolvingFormApp(itemId) {
 
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
-                if (solution.content.length > 30) {
-                    alert('解決策は30文字以内で入力してください');
+                if (solution.content.length > 100) {
+                    alert('解決策は100文字以内で入力してください');
                     return;
                 }
             }

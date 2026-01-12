@@ -111,7 +111,6 @@
                             <!-- 計画ヘッダー -->
                             <div class="px-4 py-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <span class="font-medium text-gray-700" x-text="'計画' + plan.plan_number"></span>
                                     <!-- ステータスバッジ -->
                                     <span
                                         x-show="plan.reflection && plan.reflection.trim()"
@@ -124,6 +123,12 @@
                                         class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
                                     >
                                         実行中
+                                    </span>
+                                    <span
+                                        x-show="!plan.action_plan || !plan.action_plan.trim()"
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+                                    >
+                                        計画作成中
                                     </span>
                                 </div>
                             </div>
