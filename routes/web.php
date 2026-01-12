@@ -86,6 +86,11 @@ Route::get('/problem-solvings/list', function () {
     return view('problem-solvings-list');
 });
 
+// 計画一覧ページ
+Route::get('/problem-solvings/plans', function () {
+    return view('problem-solving-plans-list');
+});
+
 // 問題解決法詳細ページ
 Route::get('/problem-solvings/{id}', function ($id) {
     return view('problem-solving-detail', ['itemId' => $id]);
