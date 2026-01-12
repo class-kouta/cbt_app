@@ -21,6 +21,11 @@ Route::get('/columns/list', function () {
     return view('columns-list');
 });
 
+// 適応的思考一覧ページ
+Route::get('/columns/adaptive-thoughts', function () {
+    return view('column-adaptive-thoughts-list');
+});
+
 // コラム詳細ページ
 Route::get('/columns/{id}', function ($id) {
     return view('column-detail', ['columnId' => $id]);

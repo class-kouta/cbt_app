@@ -22,6 +22,7 @@ Route::get('/coping-tags', [CopingTagController::class, 'index']);
 
 // Column API（コラム法）
 Route::get('/columns', [ColumnController::class, 'index']);
+Route::get('/columns/adaptive-thoughts', [ColumnController::class, 'adaptiveThoughts']);
 Route::get('/columns/{column}', [ColumnController::class, 'show']);
 Route::post('/columns', [ColumnController::class, 'store']);
 Route::put('/columns/{column}', [ColumnController::class, 'update']);

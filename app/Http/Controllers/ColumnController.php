@@ -40,6 +40,28 @@ class ColumnController extends Controller
     }
 
     /**
+     * 適応的思考が入力されているコラム一覧を取得（作成日時降順）
+     */
+    public function adaptiveThoughts(): JsonResponse
+    {
+        $columns = Column::whereNotNull('adaptive_thought')
+            ->where('adaptive_thought', '!=', '')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($column) {
+                return [
+                    'id' => $column->id,
+                    'situation' => $column->situation,
+                    'adaptive_thought' => $column->adaptive_thought,
+                    'created_at' => $column->created_at->format(DATE_ATOM),
+                    'updated_at' => $column->updated_at->format(DATE_ATOM),
+                ];
+            });
+
+        return response()->json($columns);
+    }
+
+    /**
      * コラム詳細を取得
      */
     public function show(Column $column): JsonResponse
