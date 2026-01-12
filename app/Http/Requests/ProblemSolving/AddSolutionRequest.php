@@ -14,7 +14,7 @@ class AddSolutionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => ['required', 'string', 'max:1000'],
+            'content' => ['required', 'string', 'max:100'],
             'sort_order' => ['required', 'integer', 'min:1', 'max:7'],
             'effectiveness' => ['nullable', 'integer', 'min:0', 'max:100'],
             'feasibility' => ['nullable', 'integer', 'min:0', 'max:100'],
@@ -25,7 +25,7 @@ class AddSolutionRequest extends FormRequest
     {
         return [
             'content.required' => '解決策の内容を入力してください',
-            'content.max' => '解決策の内容は1000文字以内で入力してください',
+            'content.max' => '解決策の内容は100文字以内で入力してください',
             'sort_order.required' => '表示順を指定してください',
             'sort_order.min' => '表示順は1以上を指定してください',
             'sort_order.max' => '表示順は7以下を指定してください',

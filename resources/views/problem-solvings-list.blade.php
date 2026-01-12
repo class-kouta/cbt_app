@@ -17,25 +17,13 @@
                     <div class="text-xs text-emerald-500 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- 問題状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.problem_situation"></p>
-                    <!-- 計画の進捗 -->
-                    <div class="flex items-center gap-2 mb-2" x-show="item.plans && item.plans.length > 0">
-                        <span class="text-xs text-gray-500">計画:</span>
-                        <template x-for="plan in item.plans" :key="plan.id">
-                            <span
-                                class="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold"
-                                :class="plan.reflection && plan.reflection.trim()
-                                    ? 'bg-green-500'
-                                    : (plan.action_plan && plan.action_plan.trim()
-                                        ? 'bg-yellow-500'
-                                        : 'bg-gray-300')"
-                                :title="plan.reflection && plan.reflection.trim()
-                                    ? '振り返り済み'
-                                    : (plan.action_plan && plan.action_plan.trim()
-                                        ? '実行中'
-                                        : '計画作成中')"
-                                x-text="plan.plan_number"
-                            ></span>
-                        </template>
+                    <!-- 計画ステータス -->
+                    <div class="mb-2" x-show="getPlanStatus(item)">
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                            :class="getPlanStatusClass(item)"
+                            x-text="getPlanStatus(item)"
+                        ></span>
                     </div>
                     <!-- 未入力項目タグ -->
                     <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(item).length > 0">
@@ -125,20 +113,38 @@ function problemSolvingListApp() {
                 incompleteFields.push('解決策');
             }
 
+            return incompleteFields;
+        },
+
+        // 計画ステータスを取得
+        getPlanStatus(item) {
             // 計画がない場合
             if (!item.plans || item.plans.length === 0) {
-                incompleteFields.push('実行計画');
-            } else {
-                // 最新の計画の振り返りがない場合
-                const latestPlan = item.plans[item.plans.length - 1];
-                if (!latestPlan.action_plan || latestPlan.action_plan.trim() === '') {
-                    incompleteFields.push('実行計画');
-                } else if (!latestPlan.reflection || latestPlan.reflection.trim() === '') {
-                    incompleteFields.push('振り返り');
-                }
+                return '計画未策定';
             }
 
-            return incompleteFields;
+            // 計画はあるが未入力の振り返りがある場合
+            const hasIncompleteReflection = item.plans.some(plan =>
+                plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())
+            );
+
+            if (hasIncompleteReflection) {
+                return '振り返りが未入力の計画有り';
+            }
+
+            return null;
+        },
+
+        // 計画ステータスのCSSクラスを取得
+        getPlanStatusClass(item) {
+            const status = this.getPlanStatus(item);
+            if (status === '計画未策定') {
+                return 'bg-gray-200 text-gray-600';
+            }
+            if (status === '振り返りが未入力の計画有り') {
+                return 'bg-yellow-100 text-yellow-700';
+            }
+            return '';
         }
     };
 }
