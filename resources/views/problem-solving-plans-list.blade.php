@@ -66,7 +66,7 @@
                     <!-- 実行計画 -->
                     <div class="mb-3">
                         <span class="text-xs text-emerald-600 font-medium block mb-1">📝 実行計画</span>
-                        <p class="text-gray-800 line-clamp-2 break-words" x-text="plan.actionPlan || '未入力'"></p>
+                        <p class="text-gray-800 whitespace-pre-wrap break-words" x-text="plan.actionPlan || '未入力'"></p>
                     </div>
 
                     <!-- 振り返り（ある場合のみ表示） -->
