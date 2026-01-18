@@ -17,11 +17,9 @@
                     <div class="text-xs text-emerald-600 font-medium mb-2" x-text="formatDate(column.created_at)"></div>
                     <!-- 状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="column.situation"></p>
-                    <!-- 未入力項目タグ -->
-                    <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(column).length > 0">
-                        <template x-for="field in getIncompleteFields(column)" :key="field">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="'未入力: ' + field"></span>
-                        </template>
+                    <!-- 適応的思考のステータス -->
+                    <div>
+                        <span class="inline-block px-2 py-0.5 rounded text-xs" :class="hasAdaptiveThought(column) ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'" x-text="'適応的思考 : ' + (hasAdaptiveThought(column) ? '入力済' : '未入力')"></span>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
@@ -94,23 +92,8 @@ function columnListApp() {
             });
         },
 
-        getIncompleteFields(column) {
-            const fieldNames = {
-                mood: '気分',
-                automatic_thought: '自動思考',
-                evidence: '根拠',
-                counter_evidence: '反証',
-                adaptive_thought: '適応的思考',
-                current_mood: 'いまの気分'
-            };
-            
-            const incompleteFields = [];
-            for (const [key, label] of Object.entries(fieldNames)) {
-                if (!column[key] || column[key].trim() === '') {
-                    incompleteFields.push(label);
-                }
-            }
-            return incompleteFields;
+        hasAdaptiveThought(column) {
+            return column.balanced_thought && column.balanced_thought.trim() !== '';
         }
     };
 }
