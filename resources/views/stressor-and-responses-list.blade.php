@@ -18,9 +18,11 @@
                     <!-- ストレッサー -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.stressor"></p>
                     <!-- 未入力項目タグ -->
-                    <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(item).length > 0">
-                        <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600">未入力</span>
-                        <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="getIncompleteFields(item).join('、')"></span>
+                    <div x-data="{ incomplete: getIncompleteFields(item) }" class="flex flex-wrap items-center gap-1" x-show="incomplete.length > 0">
+                        <span class="text-xs text-gray-500">未入力 :</span>
+                        <template x-for="field in incomplete" :key="field">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="field"></span>
+                        </template>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>

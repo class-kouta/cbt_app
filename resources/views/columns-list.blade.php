@@ -18,8 +18,9 @@
                     <!-- 状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="column.situation"></p>
                     <!-- 適応的思考のステータス -->
-                    <div>
-                        <span class="inline-block px-2 py-0.5 rounded text-xs" :class="hasAdaptiveThought(column) ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'" x-text="'適応的思考 : ' + (hasAdaptiveThought(column) ? '入力済' : '未入力')"></span>
+                    <div x-data="{ hasThought: hasAdaptiveThought(column) }" class="flex items-center gap-1">
+                        <span class="text-xs text-gray-500">適応的思考 :</span>
+                        <span class="inline-block px-2 py-0.5 rounded text-xs" :class="hasThought ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'" x-text="hasThought ? '入力済' : '未入力'"></span>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
@@ -93,7 +94,7 @@ function columnListApp() {
         },
 
         hasAdaptiveThought(column) {
-            return column.balanced_thought && column.balanced_thought.trim() !== '';
+            return column.adaptive_thought && column.adaptive_thought.trim() !== '';
         }
     };
 }
