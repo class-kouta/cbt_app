@@ -29,6 +29,44 @@
         自動保存しました
     </div>
 
+    <!-- 手動保存トースト -->
+    <div
+        x-show="showManualSaveToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        保存しました
+    </div>
+
+    <!-- フローティング保存ボタン -->
+    <button
+        type="button"
+        @click="manualSave()"
+        :disabled="floatingSaving || !form.problem_situation.trim()"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
+        title="保存する"
+    >
+        <template x-if="!floatingSaving">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
+            </svg>
+        </template>
+        <template x-if="floatingSaving">
+            <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </template>
+    </button>
+
     <!-- ローディング（編集モードのみ） -->
     <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
         <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -358,6 +396,8 @@ function problemSolvingFormApp(itemId) {
         originalPlans: [],
         loading: false,
         submitting: false,
+        showManualSaveToast: false,
+        floatingSaving: false,
 
         // 自動保存用
         autoSaveSnapshots: [],
@@ -439,16 +479,22 @@ function problemSolvingFormApp(itemId) {
             this.takeSnapshot();
         },
 
-        // 自動保存を実行
-        async performAutoSave() {
+        // 解決策のバリデーション
+        validateSolutions() {
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
                 if (solution.content.length > 100) {
-                    return;
+                    return false;
                 }
             }
+            return true;
+        },
 
-            this.autoSaving = true;
+        // 共通の保存処理
+        async performSave(isManual = false) {
+            if (!this.validateSolutions()) {
+                return;
+            }
 
             try {
                 if (this.itemId) {
@@ -456,19 +502,46 @@ function problemSolvingFormApp(itemId) {
                 } else {
                     await this.saveNewItem();
                 }
-                this.showAutoSaveNotification();
+                this.showSaveNotification(isManual);
             } catch (error) {
-                console.error('自動保存に失敗しました:', error);
+                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+            }
+        },
+
+        // 自動保存を実行
+        async performAutoSave() {
+            this.autoSaving = true;
+            try {
+                await this.performSave(false);
             } finally {
                 this.autoSaving = false;
             }
         },
 
-        showAutoSaveNotification() {
-            this.showAutoSaveToast = true;
-            setTimeout(() => {
-                this.showAutoSaveToast = false;
-            }, 2000);
+        // 手動保存（フローティングボタン用）
+        async manualSave() {
+            if (this.floatingSaving || !this.form.problem_situation.trim()) return;
+
+            this.floatingSaving = true;
+            try {
+                await this.performSave(true);
+            } finally {
+                this.floatingSaving = false;
+            }
+        },
+
+        showSaveNotification(isManual = false) {
+            if (isManual) {
+                this.showManualSaveToast = true;
+                setTimeout(() => {
+                    this.showManualSaveToast = false;
+                }, 2000);
+            } else {
+                this.showAutoSaveToast = true;
+                setTimeout(() => {
+                    this.showAutoSaveToast = false;
+                }, 2000);
+            }
         },
 
         formatDate(dateString) {
