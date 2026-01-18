@@ -12,8 +12,8 @@
         </a>
     </div>
 
-    <!-- ストレッサーとストレス反応から転記ボタン（データがある場合のみ表示） -->
-    <div x-show="stressorAndResponses.length > 0" class="mb-4">
+    <!-- ストレッサーとストレス反応から転記ボタン（新規作成モードかつ未転記かつデータがある場合のみ表示） -->
+    <div x-show="stressorAndResponses.length > 0 && !isEditMode && !hasTransferred" class="mb-4">
         <button
             type="button"
             @click="showStressorModal = true"
@@ -81,7 +81,7 @@
                 <div class="max-h-96 overflow-y-auto">
                     <template x-for="item in stressorAndResponses" :key="item.id">
                         <div
-                            @click="applyStressorData(item)"
+                            @click="showTransferConfirm(item)"
                             class="px-6 py-4 border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors group"
                         >
                             <div class="flex items-start justify-between gap-3">
@@ -130,6 +130,74 @@
                         class="w-full py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
                     >
                         キャンセル
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 転記確認ダイアログ -->
+    <div
+        x-show="showTransferConfirmModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-[60] overflow-y-auto"
+        @keydown.escape.window="showTransferConfirmModal = false"
+    >
+        <!-- オーバーレイ -->
+        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showTransferConfirmModal = false"></div>
+
+        <!-- モーダルコンテンツ -->
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl"
+                @click.stop
+            >
+                <!-- ヘッダー -->
+                <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        確認
+                    </h3>
+                </div>
+
+                <!-- コンテンツ -->
+                <div class="px-6 py-5">
+                    <p class="text-gray-700 text-base mb-4">
+                        転記してよろしいですか？
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        「状況」「気分」「自動思考」に内容が転記されます。
+                    </p>
+                </div>
+
+                <!-- フッター -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3">
+                    <button
+                        type="button"
+                        @click="showTransferConfirmModal = false"
+                        class="flex-1 py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        type="button"
+                        @click="confirmTransfer()"
+                        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium hover:from-indigo-600 hover:to-purple-600 transition-colors"
+                    >
+                        転記する
                     </button>
                 </div>
             </div>
@@ -513,6 +581,9 @@ function columnApp(columnId) {
         stressorAndResponses: [],
         showStressorModal: false,
         showTransferToast: false,
+        hasTransferred: false, // 転記済みフラグ
+        selectedStressorItem: null, // 確認ダイアログ用に選択されたアイテム
+        showTransferConfirmModal: false, // 転記確認ダイアログの表示状態
 
         // ネガティブ感情リスト
         negativeEmotions: [
@@ -569,23 +640,46 @@ function columnApp(columnId) {
             }
         },
 
-        // ストレッサーとストレス反応のデータを転記
-        applyStressorData(item) {
-            // 状況 ← ストレッサー
-            this.newColumn.situation = item.stressor || '';
-            // 気分 ← 気分・感情
-            this.newColumn.mood = item.mood || '';
-            // 自動思考 ← 認知（自動思考）
-            this.newColumn.automatic_thought = item.cognition || '';
+        // 転記確認ダイアログを表示
+        showTransferConfirm(item) {
+            this.selectedStressorItem = item;
+            this.showTransferConfirmModal = true;
+        },
 
-            // モーダルを閉じる
+        // 転記を確認して実行
+        async confirmTransfer() {
+            if (!this.selectedStressorItem) return;
+
+            // 状況 ← ストレッサー
+            this.newColumn.situation = this.selectedStressorItem.stressor || '';
+            // 気分 ← 気分・感情
+            this.newColumn.mood = this.selectedStressorItem.mood || '';
+            // 自動思考 ← 認知（自動思考）
+            this.newColumn.automatic_thought = this.selectedStressorItem.cognition || '';
+
+            // 確認ダイアログを閉じる
+            this.showTransferConfirmModal = false;
+            // 選択モーダルも閉じる
             this.showStressorModal = false;
+            // 転記済みフラグをセット
+            this.hasTransferred = true;
 
             // 転記成功トーストを表示
             this.showTransferToast = true;
             setTimeout(() => {
                 this.showTransferToast = false;
             }, 2000);
+
+            // 転記後に自動保存を実行
+            await this.performAutoSave();
+
+            // 選択されたアイテムをクリア
+            this.selectedStressorItem = null;
+        },
+
+        // ストレッサーとストレス反応のデータを転記（後方互換性のため残す）
+        applyStressorData(item) {
+            this.showTransferConfirm(item);
         },
 
         // 日時をフォーマット
