@@ -92,7 +92,11 @@ function problemSolvingListApp() {
         },
 
         hasActionPlan(item) {
-            return item.action_plan && item.action_plan.trim() !== '';
+            // plansの中に1つでもaction_planが入力されているものがあるか
+            if (!item.plans || item.plans.length === 0) {
+                return false;
+            }
+            return item.plans.some(plan => plan.action_plan && plan.action_plan.trim() !== '');
         }
     };
 }
