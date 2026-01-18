@@ -17,19 +17,10 @@
                     <div class="text-xs text-emerald-500 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- 問題状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.problem_situation"></p>
-                    <!-- 計画ステータス -->
-                    <div class="mb-2" x-show="getPlanStatus(item)">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                            :class="getPlanStatusClass(item)"
-                            x-text="getPlanStatus(item)"
-                        ></span>
-                    </div>
-                    <!-- 未入力項目タグ -->
-                    <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(item).length > 0">
-                        <template x-for="field in getIncompleteFields(item)" :key="field">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="'未入力: ' + field"></span>
-                        </template>
+                    <!-- 実行計画ステータス -->
+                    <div x-data="{ hasPlan: hasActionPlan(item) }" class="flex items-center gap-1">
+                        <span class="text-xs text-gray-500">実行計画 :</span>
+                        <span class="inline-block px-2 py-0.5 rounded text-xs" :class="hasPlan ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'" x-text="hasPlan ? '策定済' : '未策定'"></span>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
@@ -100,51 +91,12 @@ function problemSolvingListApp() {
             });
         },
 
-        getIncompleteFields(item) {
-            const incompleteFields = [];
-
-            // 改善イメージ
-            if (!item.improved_image || item.improved_image.trim() === '') {
-                incompleteFields.push('改善イメージ');
-            }
-
-            // 解決策がない場合
-            if (!item.solutions || item.solutions.length === 0) {
-                incompleteFields.push('解決策');
-            }
-
-            return incompleteFields;
-        },
-
-        // 計画ステータスを取得
-        getPlanStatus(item) {
-            // 計画がない場合
+        hasActionPlan(item) {
+            // plansの中に1つでもaction_planが入力されているものがあるか
             if (!item.plans || item.plans.length === 0) {
-                return '計画未策定';
+                return false;
             }
-
-            // 計画はあるが未入力の振り返りがある場合
-            const hasIncompleteReflection = item.plans.some(plan =>
-                plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())
-            );
-
-            if (hasIncompleteReflection) {
-                return '振り返りが未入力の計画有り';
-            }
-
-            return null;
-        },
-
-        // 計画ステータスのCSSクラスを取得
-        getPlanStatusClass(item) {
-            const status = this.getPlanStatus(item);
-            if (status === '計画未策定') {
-                return 'bg-gray-200 text-gray-600';
-            }
-            if (status === '振り返りが未入力の計画有り') {
-                return 'bg-yellow-100 text-yellow-700';
-            }
-            return '';
+            return item.plans.some(plan => plan.action_plan && plan.action_plan.trim() !== '');
         }
     };
 }

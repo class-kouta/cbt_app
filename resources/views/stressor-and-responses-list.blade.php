@@ -17,10 +17,19 @@
                     <div class="text-xs text-emerald-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- ストレッサー -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.stressor"></p>
-                    <!-- 未入力項目タグ -->
-                    <div class="flex flex-wrap gap-1" x-show="getIncompleteFields(item).length > 0">
-                        <template x-for="field in getIncompleteFields(item)" :key="field">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-600" x-text="'未入力: ' + field"></span>
+                    <!-- 入力済み項目タグ -->
+                    <div x-data="{ completed: getCompletedFields(item) }" class="flex flex-wrap items-center gap-1">
+                        <span class="text-xs text-gray-500">入力済み :</span>
+                        <template x-if="completed.length === 4">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700">全て</span>
+                        </template>
+                        <template x-if="completed.length > 0 && completed.length < 4">
+                            <template x-for="field in completed" :key="field">
+                                <span class="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700" x-text="field"></span>
+                            </template>
+                        </template>
+                        <template x-if="completed.length === 0">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-gray-200 text-gray-500">なし</span>
                         </template>
                     </div>
                 </div>
@@ -94,7 +103,7 @@ function stressorListApp() {
             });
         },
 
-        getIncompleteFields(item) {
+        getCompletedFields(item) {
             const fieldNames = {
                 cognition: '認知',
                 mood: '気分・感情',
@@ -102,13 +111,13 @@ function stressorListApp() {
                 behavior: '行動'
             };
             
-            const incompleteFields = [];
+            const completedFields = [];
             for (const [key, label] of Object.entries(fieldNames)) {
-                if (!item[key] || item[key].trim() === '') {
-                    incompleteFields.push(label);
+                if (item[key] && item[key].trim() !== '') {
+                    completedFields.push(label);
                 }
             }
-            return incompleteFields;
+            return completedFields;
         }
     };
 }
