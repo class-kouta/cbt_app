@@ -837,61 +837,8 @@ function stressorApp(itemId) {
             this.takeSnapshot();
         },
 
-        async performAutoSave() {
-            this.autoSaving = true;
-
-            try {
-                if (this.itemId) {
-                    const res = await fetch(`/api/stressor-and-responses/${this.itemId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.formData)
-                    });
-
-                    if (res.ok) {
-                        this.showAutoSaveNotification();
-                    }
-                } else {
-                    const res = await fetch('/api/stressor-and-responses', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.formData)
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
-                        this.showAutoSaveNotification();
-                    }
-                }
-            } catch (error) {
-                console.error('自動保存に失敗しました:', error);
-            } finally {
-                this.autoSaving = false;
-            }
-        },
-
-        showAutoSaveNotification() {
-            this.showAutoSaveToast = true;
-            setTimeout(() => {
-                this.showAutoSaveToast = false;
-            }, 2000);
-        },
-
-        // 手動保存（フローティングボタン用）
-        async manualSave() {
-            if (this.floatingSaving || !this.isFormValid()) return;
-
-            this.floatingSaving = true;
-
+        // 共通の保存処理
+        async performSave(isManual = false) {
             try {
                 if (this.itemId) {
                     // 既存データの更新
@@ -905,7 +852,7 @@ function stressorApp(itemId) {
                     });
 
                     if (res.ok) {
-                        this.showManualSaveNotification();
+                        this.showSaveNotification(isManual);
                     }
                 } else {
                     // 新規作成
@@ -923,21 +870,47 @@ function stressorApp(itemId) {
                         this.itemId = data.id;
                         this.isEditMode = true;
                         history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
-                        this.showManualSaveNotification();
+                        this.showSaveNotification(isManual);
                     }
                 }
             } catch (error) {
-                console.error('保存に失敗しました:', error);
+                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+            }
+        },
+
+        async performAutoSave() {
+            this.autoSaving = true;
+            try {
+                await this.performSave(false);
+            } finally {
+                this.autoSaving = false;
+            }
+        },
+
+        // 手動保存（フローティングボタン用）
+        async manualSave() {
+            if (this.floatingSaving || !this.isFormValid()) return;
+
+            this.floatingSaving = true;
+            try {
+                await this.performSave(true);
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showManualSaveNotification() {
-            this.showManualSaveToast = true;
-            setTimeout(() => {
-                this.showManualSaveToast = false;
-            }, 2000);
+        showSaveNotification(isManual = false) {
+            if (isManual) {
+                this.showManualSaveToast = true;
+                setTimeout(() => {
+                    this.showManualSaveToast = false;
+                }, 2000);
+            } else {
+                this.showAutoSaveToast = true;
+                setTimeout(() => {
+                    this.showAutoSaveToast = false;
+                }, 2000);
+            }
         },
 
         async loadItem() {

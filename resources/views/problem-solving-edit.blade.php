@@ -479,16 +479,22 @@ function problemSolvingFormApp(itemId) {
             this.takeSnapshot();
         },
 
-        // 自動保存を実行
-        async performAutoSave() {
+        // 解決策のバリデーション
+        validateSolutions() {
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
                 if (solution.content.length > 100) {
-                    return;
+                    return false;
                 }
             }
+            return true;
+        },
 
-            this.autoSaving = true;
+        // 共通の保存処理
+        async performSave(isManual = false) {
+            if (!this.validateSolutions()) {
+                return;
+            }
 
             try {
                 if (this.itemId) {
@@ -496,54 +502,46 @@ function problemSolvingFormApp(itemId) {
                 } else {
                     await this.saveNewItem();
                 }
-                this.showAutoSaveNotification();
+                this.showSaveNotification(isManual);
             } catch (error) {
-                console.error('自動保存に失敗しました:', error);
-            } finally {
-                this.autoSaving = false;
+                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
             }
         },
 
-        showAutoSaveNotification() {
-            this.showAutoSaveToast = true;
-            setTimeout(() => {
-                this.showAutoSaveToast = false;
-            }, 2000);
+        // 自動保存を実行
+        async performAutoSave() {
+            this.autoSaving = true;
+            try {
+                await this.performSave(false);
+            } finally {
+                this.autoSaving = false;
+            }
         },
 
         // 手動保存（フローティングボタン用）
         async manualSave() {
             if (this.floatingSaving || !this.form.problem_situation.trim()) return;
 
-            // 解決策のバリデーション
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-            for (const solution of validSolutions) {
-                if (solution.content.length > 100) {
-                    return;
-                }
-            }
-
             this.floatingSaving = true;
-
             try {
-                if (this.itemId) {
-                    await this.saveExistingItem();
-                } else {
-                    await this.saveNewItem();
-                }
-                this.showManualSaveNotification();
-            } catch (error) {
-                console.error('保存に失敗しました:', error);
+                await this.performSave(true);
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showManualSaveNotification() {
-            this.showManualSaveToast = true;
-            setTimeout(() => {
-                this.showManualSaveToast = false;
-            }, 2000);
+        showSaveNotification(isManual = false) {
+            if (isManual) {
+                this.showManualSaveToast = true;
+                setTimeout(() => {
+                    this.showManualSaveToast = false;
+                }, 2000);
+            } else {
+                this.showAutoSaveToast = true;
+                setTimeout(() => {
+                    this.showAutoSaveToast = false;
+                }, 2000);
+            }
         },
 
         formatDate(dateString) {

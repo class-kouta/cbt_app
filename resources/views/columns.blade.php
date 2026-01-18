@@ -802,10 +802,8 @@ function columnApp(columnId) {
             this.takeSnapshot();
         },
 
-        // 自動保存を実行
-        async performAutoSave() {
-            this.autoSaving = true;
-
+        // 共通の保存処理
+        async performSave(isManual = false) {
             try {
                 if (this.columnId) {
                     // 既存コラムの更新
@@ -819,7 +817,7 @@ function columnApp(columnId) {
                     });
 
                     if (res.ok) {
-                        this.showAutoSaveNotification();
+                        this.showSaveNotification(isManual);
                     }
                 } else {
                     // 新規作成
@@ -839,22 +837,22 @@ function columnApp(columnId) {
                         this.isEditMode = true;
                         // URLを編集ページに変更（リロードなし）
                         history.replaceState(null, '', `/columns/${this.columnId}/edit`);
-                        this.showAutoSaveNotification();
+                        this.showSaveNotification(isManual);
                     }
                 }
             } catch (error) {
-                console.error('自動保存に失敗しました:', error);
-            } finally {
-                this.autoSaving = false;
+                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
             }
         },
 
-        // 自動保存の通知を表示
-        showAutoSaveNotification() {
-            this.showAutoSaveToast = true;
-            setTimeout(() => {
-                this.showAutoSaveToast = false;
-            }, 2000);
+        // 自動保存を実行
+        async performAutoSave() {
+            this.autoSaving = true;
+            try {
+                await this.performSave(false);
+            } finally {
+                this.autoSaving = false;
+            }
         },
 
         // 手動保存（フローティングボタン用）
@@ -862,53 +860,25 @@ function columnApp(columnId) {
             if (this.floatingSaving || !this.isFormValid()) return;
 
             this.floatingSaving = true;
-
             try {
-                if (this.columnId) {
-                    // 既存コラムの更新
-                    const res = await fetch(`/api/columns/${this.columnId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.newColumn)
-                    });
-
-                    if (res.ok) {
-                        this.showManualSaveNotification();
-                    }
-                } else {
-                    // 新規作成
-                    const res = await fetch('/api/columns', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.newColumn)
-                    });
-
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.columnId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/columns/${this.columnId}/edit`);
-                        this.showManualSaveNotification();
-                    }
-                }
-            } catch (error) {
-                console.error('保存に失敗しました:', error);
+                await this.performSave(true);
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showManualSaveNotification() {
-            this.showManualSaveToast = true;
-            setTimeout(() => {
-                this.showManualSaveToast = false;
-            }, 2000);
+        showSaveNotification(isManual = false) {
+            if (isManual) {
+                this.showManualSaveToast = true;
+                setTimeout(() => {
+                    this.showManualSaveToast = false;
+                }, 2000);
+            } else {
+                this.showAutoSaveToast = true;
+                setTimeout(() => {
+                    this.showAutoSaveToast = false;
+                }, 2000);
+            }
         },
 
         async loadColumn() {
