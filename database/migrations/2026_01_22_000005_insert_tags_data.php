@@ -25,13 +25,15 @@ return new class extends Migration
 
         $now = now();
 
-        foreach ($tags as $tag) {
-            DB::table('tags')->insert([
+        $data = array_map(function ($tag) use ($now) {
+            return [
                 'name' => $tag,
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]);
-        }
+            ];
+        }, $tags);
+
+        DB::table('tags')->insert($data);
     }
 
     /**

@@ -50,6 +50,18 @@
                 <p class="text-gray-800 whitespace-pre-wrap break-words" x-text="item?.problem_situation"></p>
             </div>
 
+            <!-- タグ -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200" x-show="item?.tags && item.tags.length > 0">
+                <div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
+                    🏷️ タグ
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="tag in (item?.tags || [])" :key="tag.id">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium" x-text="tag.name"></span>
+                    </template>
+                </div>
+            </div>
+
             <!-- Step 2: 改善イメージ -->
             <div class="bg-teal-50 rounded-lg p-4">
                 <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">

@@ -11,17 +11,10 @@ class EloquentTagRepository implements TagRepositoryInterface
 {
     public function save(TagEntity $tag): TagEntity
     {
-        if ($tag->getId() !== null) {
-            // 更新
-            $model = TagModel::findOrFail($tag->getId());
-            $model->name = $tag->getName();
-            $model->save();
-        } else {
-            // 新規作成
-            $model = new TagModel();
-            $model->name = $tag->getName();
-            $model->save();
-        }
+        $model = TagModel::updateOrCreate(
+            ['id' => $tag->getId()],
+            ['name' => $tag->getName()]
+        );
 
         return TagEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -66,14 +59,6 @@ class EloquentTagRepository implements TagRepositoryInterface
 
     public function delete(int $id): void
     {
-        $model = TagModel::find($id);
-
-        if ($model !== null) {
-            // 中間テーブルのリレーションを解除
-            $model->stressorAndResponses()->detach();
-            $model->columns()->detach();
-            $model->problemSolvings()->detach();
-            $model->delete();
-        }
+        TagModel::destroy($id);
     }
 }

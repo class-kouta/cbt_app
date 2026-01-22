@@ -50,6 +50,18 @@
                 <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="item?.stressor || '未入力'"></p>
             </div>
 
+            <!-- タグ -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200" x-show="item?.tags && item.tags.length > 0">
+                <h3 class="text-base font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    🏷️ タグ
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="tag in (item?.tags || [])" :key="tag.id">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium" x-text="tag.name"></span>
+                    </template>
+                </div>
+            </div>
+
             <!-- ストレス反応セクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-base font-semibold text-gray-700 mb-4">

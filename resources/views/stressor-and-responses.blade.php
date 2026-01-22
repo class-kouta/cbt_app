@@ -122,26 +122,6 @@
                     このストレッサーに関連するカテゴリーを選択してください
                 </p>
 
-                <!-- 選択されたタグ表示 -->
-                <div x-show="formData.tag_ids.length > 0" class="mb-3">
-                    <div class="flex flex-wrap gap-2">
-                        <template x-for="tagId in formData.tag_ids" :key="tagId">
-                            <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
-                                <span x-text="getTagName(tagId)"></span>
-                                <button
-                                    type="button"
-                                    @click="toggleTag(tagId)"
-                                    class="ml-1 text-emerald-500 hover:text-emerald-700 transition-colors"
-                                >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
-                    </div>
-                </div>
-
                 <!-- タグ選択UI -->
                 <div class="flex flex-wrap gap-2">
                     <template x-for="tag in availableTags" :key="tag.id">

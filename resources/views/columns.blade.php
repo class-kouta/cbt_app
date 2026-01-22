@@ -330,26 +330,6 @@
                     この状況に関連するカテゴリーを選択してください
                 </p>
 
-                <!-- 選択されたタグ表示 -->
-                <div x-show="newColumn.tag_ids.length > 0" class="mb-3">
-                    <div class="flex flex-wrap gap-2">
-                        <template x-for="tagId in newColumn.tag_ids" :key="tagId">
-                            <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
-                                <span x-text="getTagName(tagId)"></span>
-                                <button
-                                    type="button"
-                                    @click="toggleTag(tagId)"
-                                    class="ml-1 text-emerald-500 hover:text-emerald-700 transition-colors"
-                                >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
-                    </div>
-                </div>
-
                 <!-- タグ選択UI -->
                 <div class="flex flex-wrap gap-2">
                     <template x-for="tag in availableTags" :key="tag.id">
@@ -778,6 +758,8 @@ function columnApp(columnId) {
             this.newColumn.mood = this.selectedStressorItem.mood || '';
             // 自動思考 ← 認知（自動思考）
             this.newColumn.automatic_thought = this.selectedStressorItem.cognition || '';
+            // タグ ← タグ
+            this.newColumn.tag_ids = this.selectedStressorItem.tag_ids || [];
 
             // 確認ダイアログを閉じる
             this.showTransferConfirmModal = false;
