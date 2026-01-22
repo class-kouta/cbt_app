@@ -14,45 +14,29 @@ use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
 use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
 use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
+use App\Application\UseCase\ProblemSolving\SearchProblemSolvingUseCase;
+use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\UpdateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\AddSolutionRequest;
 use App\Http\Requests\ProblemSolving\UpdateSolutionRequest;
 use App\Http\Requests\ProblemSolving\AddPlanRequest;
 use App\Http\Requests\ProblemSolving\UpdatePlanRequest;
-use App\Http\Traits\Searchable;
 use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProblemSolvingController extends Controller
 {
-    use Searchable;
-
-    /**
-     * キーワード検索対象カラム
-     */
-    private const SEARCHABLE_COLUMNS = [
-        'problem_situation',
-        'improved_image',
-    ];
-
     /**
      * 問題解決一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
      */
-    public function index(Request $request): JsonResponse
+    public function index(SearchRequest $request, SearchProblemSolvingUseCase $searchUseCase): JsonResponse
     {
-        $query = ProblemSolving::with(['solutions', 'plans', 'tags']);
-
-        // 検索フィルターを適用（バリデーション含む）
-        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
-
-        $problemSolvings = $query->orderByDesc('created_at')
-            ->get()
-            ->map(fn ($item) => $this->formatProblemSolving($item));
+        $criteria = $request->toSearchCriteriaData();
+        $problemSolvings = $searchUseCase->handle($criteria);
 
         return response()->json($problemSolvings);
     }

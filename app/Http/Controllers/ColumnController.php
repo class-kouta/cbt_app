@@ -5,64 +5,24 @@ namespace App\Http\Controllers;
 use App\Application\DTO\ColumnData;
 use App\Application\UseCase\Column\CreateColumnUseCase;
 use App\Application\UseCase\Column\DeleteColumnUseCase;
+use App\Application\UseCase\Column\SearchColumnUseCase;
 use App\Application\UseCase\Column\UpdateColumnUseCase;
 use App\Http\Requests\Column\CreateColumnRequest;
 use App\Http\Requests\Column\UpdateColumnRequest;
-use App\Http\Traits\Searchable;
+use App\Http\Requests\Common\SearchRequest;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ColumnController extends Controller
 {
-    use Searchable;
-
-    /**
-     * キーワード検索対象カラム
-     */
-    private const SEARCHABLE_COLUMNS = [
-        'situation',
-        'mood',
-        'automatic_thought',
-        'evidence',
-        'counter_evidence',
-        'adaptive_thought',
-        'current_mood',
-        'notes',
-    ];
-
     /**
      * コラム一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
      */
-    public function index(Request $request): JsonResponse
+    public function index(SearchRequest $request, SearchColumnUseCase $searchUseCase): JsonResponse
     {
-        $query = Column::with('tags');
-
-        // 検索フィルターを適用（バリデーション含む）
-        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
-
-        $columns = $query->orderByDesc('created_at')
-            ->get()
-            ->map(function ($column) {
-                return [
-                    'id' => $column->id,
-                    'situation' => $column->situation,
-                    'mood' => $column->mood,
-                    'automatic_thought' => $column->automatic_thought,
-                    'evidence' => $column->evidence,
-                    'counter_evidence' => $column->counter_evidence,
-                    'adaptive_thought' => $column->adaptive_thought,
-                    'current_mood' => $column->current_mood,
-                    'notes' => $column->notes,
-                    'tags' => $column->tags->map(fn ($tag) => [
-                        'id' => $tag->id,
-                        'name' => $tag->name,
-                    ])->toArray(),
-                    'created_at' => $column->created_at->format(DATE_ATOM),
-                    'updated_at' => $column->updated_at->format(DATE_ATOM),
-                ];
-            });
+        $criteria = $request->toSearchCriteriaData();
+        $columns = $searchUseCase->handle($criteria);
 
         return response()->json($columns);
     }

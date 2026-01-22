@@ -5,59 +5,24 @@ namespace App\Http\Controllers;
 use App\Application\DTO\StressorAndResponseData;
 use App\Application\UseCase\StressorAndResponse\CreateStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\DeleteStressorAndResponseUseCase;
+use App\Application\UseCase\StressorAndResponse\SearchStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\UpdateStressorAndResponseUseCase;
+use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\StressorAndResponse\CreateStressorAndResponseRequest;
 use App\Http\Requests\StressorAndResponse\UpdateStressorAndResponseRequest;
-use App\Http\Traits\Searchable;
 use App\Infrastructure\Database\Models\StressorAndResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class StressorAndResponseController extends Controller
 {
-    use Searchable;
-
-    /**
-     * キーワード検索対象カラム
-     */
-    private const SEARCHABLE_COLUMNS = [
-        'stressor',
-        'cognition',
-        'mood',
-        'body_reaction',
-        'behavior',
-    ];
-
     /**
      * ストレッサーとストレス反応一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
      */
-    public function index(Request $request): JsonResponse
+    public function index(SearchRequest $request, SearchStressorAndResponseUseCase $searchUseCase): JsonResponse
     {
-        $query = StressorAndResponse::with('tags');
-
-        // 検索フィルターを適用（バリデーション含む）
-        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
-
-        $items = $query->orderByDesc('created_at')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'stressor' => $item->stressor,
-                    'cognition' => $item->cognition,
-                    'mood' => $item->mood,
-                    'body_reaction' => $item->body_reaction,
-                    'behavior' => $item->behavior,
-                    'stimulated_schemas' => $item->stimulated_schemas,
-                    'tags' => $item->tags->map(fn ($tag) => [
-                        'id' => $tag->id,
-                        'name' => $tag->name,
-                    ])->toArray(),
-                    'created_at' => $item->created_at->format(DATE_ATOM),
-                    'updated_at' => $item->updated_at->format(DATE_ATOM),
-                ];
-            });
+        $criteria = $request->toSearchCriteriaData();
+        $items = $searchUseCase->handle($criteria);
 
         return response()->json($items);
     }

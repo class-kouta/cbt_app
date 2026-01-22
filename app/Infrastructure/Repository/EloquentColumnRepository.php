@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\Column as ColumnEntity;
 use App\Domain\Repository\ColumnRepositoryInterface;
 use App\Infrastructure\Database\Models\Column as ColumnModel;
@@ -105,6 +106,62 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     createdAt: new DateTimeImmutable($model->created_at),
                     updatedAt: new DateTimeImmutable($model->updated_at),
                 );
+            })
+            ->toArray();
+    }
+
+    /**
+     * 検索条件に基づいてコラムを検索
+     *
+     * @param SearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果（配列形式）
+     */
+    public function search(SearchCriteriaData $criteria, array $searchableColumns): array
+    {
+        $query = ColumnModel::with('tags');
+
+        // キーワード検索
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $index => $column) {
+                    if ($index === 0) {
+                        $q->where($column, 'like', "%{$keyword}%");
+                    } else {
+                        $q->orWhere($column, 'like', "%{$keyword}%");
+                    }
+                }
+            });
+        }
+
+        // タグ検索
+        if ($criteria->hasTagIds()) {
+            $query->whereHas('tags', function ($q) use ($criteria) {
+                $q->whereIn('tags.id', $criteria->tagIds);
+            });
+        }
+
+        return $query->orderByDesc('created_at')
+            ->get()
+            ->map(function ($column) {
+                return [
+                    'id' => $column->id,
+                    'situation' => $column->situation,
+                    'mood' => $column->mood,
+                    'automatic_thought' => $column->automatic_thought,
+                    'evidence' => $column->evidence,
+                    'counter_evidence' => $column->counter_evidence,
+                    'adaptive_thought' => $column->adaptive_thought,
+                    'current_mood' => $column->current_mood,
+                    'notes' => $column->notes,
+                    'tags' => $column->tags->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                    ])->toArray(),
+                    'created_at' => $column->created_at->format(DATE_ATOM),
+                    'updated_at' => $column->updated_at->format(DATE_ATOM),
+                ];
             })
             ->toArray();
     }
