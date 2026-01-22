@@ -320,6 +320,52 @@
                 <div class="text-xs text-gray-400 text-right" x-text="newColumn.situation.length + '/1000'"></div>
             </div>
 
+            <!-- タグセクション -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    🏷️ タグ
+                    <span class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
+                </h3>
+                <p class="text-xs text-gray-500 mb-3">
+                    この状況に関連するカテゴリーを選択してください
+                </p>
+
+                <!-- 選択されたタグ表示 -->
+                <div x-show="newColumn.tag_ids.length > 0" class="mb-3">
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="tagId in newColumn.tag_ids" :key="tagId">
+                            <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                                <span x-text="getTagName(tagId)"></span>
+                                <button
+                                    type="button"
+                                    @click="toggleTag(tagId)"
+                                    class="ml-1 text-emerald-500 hover:text-emerald-700 transition-colors"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </span>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- タグ選択UI -->
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="tag in availableTags" :key="tag.id">
+                        <button
+                            type="button"
+                            @click="toggleTag(tag.id)"
+                            class="px-3 py-1.5 text-sm rounded-full border transition-all"
+                            :class="isTagSelected(tag.id)
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50'"
+                            x-text="tag.name"
+                        ></button>
+                    </template>
+                </div>
+            </div>
+
             <!-- (2) 気分 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -598,7 +644,8 @@ function columnApp(columnId) {
             counter_evidence: '',
             adaptive_thought: '',
             current_mood: '',
-            notes: ''
+            notes: '',
+            tag_ids: []
         },
         loading: false,
         submitting: false,
@@ -607,6 +654,9 @@ function columnApp(columnId) {
         showAutoSaveToast: false,
         showManualSaveToast: false,
         floatingSaving: false,
+
+        // タグ一覧
+        availableTags: [],
 
         // 自動保存用
         autoSaveSnapshots: [], // 30秒ごとのスナップショット（直近2つ分を保持）
@@ -652,6 +702,9 @@ function columnApp(columnId) {
         ],
 
         async init() {
+            // タグ一覧を取得
+            await this.loadTags();
+
             // ストレッサーとストレス反応一覧を取得
             await this.loadStressorAndResponses();
 
@@ -666,6 +719,35 @@ function columnApp(columnId) {
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
+        },
+
+        async loadTags() {
+            try {
+                const res = await fetch('/api/tags');
+                if (res.ok) {
+                    this.availableTags = await res.json();
+                }
+            } catch (error) {
+                console.error('タグの取得に失敗しました:', error);
+            }
+        },
+
+        toggleTag(tagId) {
+            const index = this.newColumn.tag_ids.indexOf(tagId);
+            if (index > -1) {
+                this.newColumn.tag_ids.splice(index, 1);
+            } else {
+                this.newColumn.tag_ids.push(tagId);
+            }
+        },
+
+        isTagSelected(tagId) {
+            return this.newColumn.tag_ids.includes(tagId);
+        },
+
+        getTagName(tagId) {
+            const tag = this.availableTags.find(t => t.id === tagId);
+            return tag ? tag.name : '';
         },
 
         // ストレッサーとストレス反応一覧を取得
@@ -743,7 +825,8 @@ function columnApp(columnId) {
                 counter_evidence: this.newColumn.counter_evidence,
                 adaptive_thought: this.newColumn.adaptive_thought,
                 current_mood: this.newColumn.current_mood,
-                notes: this.newColumn.notes
+                notes: this.newColumn.notes,
+                tag_ids: JSON.stringify(this.newColumn.tag_ids)
             };
             this.autoSaveSnapshots.push(snapshot);
 
@@ -779,7 +862,8 @@ function columnApp(columnId) {
                 this.newColumn.counter_evidence !== snapshot.counter_evidence ||
                 this.newColumn.adaptive_thought !== snapshot.adaptive_thought ||
                 this.newColumn.current_mood !== snapshot.current_mood ||
-                this.newColumn.notes !== snapshot.notes
+                this.newColumn.notes !== snapshot.notes ||
+                JSON.stringify(this.newColumn.tag_ids) !== snapshot.tag_ids
             );
         },
 
@@ -895,6 +979,7 @@ function columnApp(columnId) {
                     this.newColumn.adaptive_thought = column.adaptive_thought || '';
                     this.newColumn.current_mood = column.current_mood || '';
                     this.newColumn.notes = column.notes || '';
+                    this.newColumn.tag_ids = column.tag_ids || [];
                 }
             } catch (error) {
                 console.error(error);

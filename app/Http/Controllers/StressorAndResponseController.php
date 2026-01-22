@@ -18,7 +18,8 @@ class StressorAndResponseController extends Controller
      */
     public function index(): JsonResponse
     {
-        $items = StressorAndResponse::orderByDesc('created_at')
+        $items = StressorAndResponse::with('tags')
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($item) {
                 return [
@@ -29,6 +30,10 @@ class StressorAndResponseController extends Controller
                     'body_reaction' => $item->body_reaction,
                     'behavior' => $item->behavior,
                     'stimulated_schemas' => $item->stimulated_schemas,
+                    'tags' => $item->tags->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                    ])->toArray(),
                     'created_at' => $item->created_at->format(DATE_ATOM),
                     'updated_at' => $item->updated_at->format(DATE_ATOM),
                 ];
@@ -42,6 +47,8 @@ class StressorAndResponseController extends Controller
      */
     public function show(StressorAndResponse $stressorAndResponse): JsonResponse
     {
+        $stressorAndResponse->load('tags');
+
         return response()->json([
             'id' => $stressorAndResponse->id,
             'stressor' => $stressorAndResponse->stressor,
@@ -50,6 +57,11 @@ class StressorAndResponseController extends Controller
             'body_reaction' => $stressorAndResponse->body_reaction,
             'behavior' => $stressorAndResponse->behavior,
             'stimulated_schemas' => $stressorAndResponse->stimulated_schemas,
+            'tags' => $stressorAndResponse->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $stressorAndResponse->tags->pluck('id')->toArray(),
             'created_at' => $stressorAndResponse->created_at->format(DATE_ATOM),
             'updated_at' => $stressorAndResponse->updated_at->format(DATE_ATOM),
         ]);
@@ -75,6 +87,16 @@ class StressorAndResponseController extends Controller
 
         $item = $createUseCase->handle($data);
 
+        // タグの紐付け
+        $tagIds = $request->input('tag_ids', []);
+        if (!empty($tagIds)) {
+            $model = StressorAndResponse::find($item->getId());
+            $model->tags()->sync($tagIds);
+            $model->load('tags');
+        }
+
+        $model = StressorAndResponse::with('tags')->find($item->getId());
+
         return response()->json([
             'id' => $item->getId(),
             'stressor' => $item->getStressor(),
@@ -83,6 +105,11 @@ class StressorAndResponseController extends Controller
             'body_reaction' => $item->getBodyReaction(),
             'behavior' => $item->getBehavior(),
             'stimulated_schemas' => $item->getStimulatedSchemas(),
+            'tags' => $model->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $model->tags->pluck('id')->toArray(),
             'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -108,6 +135,11 @@ class StressorAndResponseController extends Controller
 
         $updatedItem = $updateUseCase->handle($stressorAndResponse->id, $data);
 
+        // タグの同期
+        $tagIds = $request->input('tag_ids', []);
+        $stressorAndResponse->tags()->sync($tagIds);
+        $stressorAndResponse->load('tags');
+
         return response()->json([
             'id' => $updatedItem->getId(),
             'stressor' => $updatedItem->getStressor(),
@@ -116,6 +148,11 @@ class StressorAndResponseController extends Controller
             'body_reaction' => $updatedItem->getBodyReaction(),
             'behavior' => $updatedItem->getBehavior(),
             'stimulated_schemas' => $updatedItem->getStimulatedSchemas(),
+            'tags' => $stressorAndResponse->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $stressorAndResponse->tags->pluck('id')->toArray(),
             'created_at' => $updatedItem->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedItem->getUpdatedAt()->format(DATE_ATOM),
         ]);
