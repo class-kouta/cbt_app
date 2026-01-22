@@ -8,12 +8,26 @@ use App\Application\UseCase\StressorAndResponse\DeleteStressorAndResponseUseCase
 use App\Application\UseCase\StressorAndResponse\UpdateStressorAndResponseUseCase;
 use App\Http\Requests\StressorAndResponse\CreateStressorAndResponseRequest;
 use App\Http\Requests\StressorAndResponse\UpdateStressorAndResponseRequest;
+use App\Http\Traits\Searchable;
 use App\Infrastructure\Database\Models\StressorAndResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StressorAndResponseController extends Controller
 {
+    use Searchable;
+
+    /**
+     * キーワード検索対象カラム
+     */
+    private const SEARCHABLE_COLUMNS = [
+        'stressor',
+        'cognition',
+        'mood',
+        'body_reaction',
+        'behavior',
+    ];
+
     /**
      * ストレッサーとストレス反応一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
@@ -22,27 +36,8 @@ class StressorAndResponseController extends Controller
     {
         $query = StressorAndResponse::with('tags');
 
-        // キーワード検索（ストレッサー、認知、気分、身体反応、行動で部分一致）
-        if ($request->filled('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where(function ($q) use ($keyword) {
-                $q->where('stressor', 'like', "%{$keyword}%")
-                    ->orWhere('cognition', 'like', "%{$keyword}%")
-                    ->orWhere('mood', 'like', "%{$keyword}%")
-                    ->orWhere('body_reaction', 'like', "%{$keyword}%")
-                    ->orWhere('behavior', 'like', "%{$keyword}%");
-            });
-        }
-
-        // タグ検索（指定されたタグIDのいずれかに紐づくアイテム）
-        if ($request->filled('tag_ids')) {
-            $tagIds = $request->input('tag_ids');
-            if (is_array($tagIds) && count($tagIds) > 0) {
-                $query->whereHas('tags', function ($q) use ($tagIds) {
-                    $q->whereIn('tags.id', $tagIds);
-                });
-            }
-        }
+        // 検索フィルターを適用（バリデーション含む）
+        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
 
         $items = $query->orderByDesc('created_at')
             ->get()

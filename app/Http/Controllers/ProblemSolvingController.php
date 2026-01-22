@@ -20,6 +20,7 @@ use App\Http\Requests\ProblemSolving\AddSolutionRequest;
 use App\Http\Requests\ProblemSolving\UpdateSolutionRequest;
 use App\Http\Requests\ProblemSolving\AddPlanRequest;
 use App\Http\Requests\ProblemSolving\UpdatePlanRequest;
+use App\Http\Traits\Searchable;
 use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
@@ -28,6 +29,16 @@ use Illuminate\Http\Request;
 
 class ProblemSolvingController extends Controller
 {
+    use Searchable;
+
+    /**
+     * キーワード検索対象カラム
+     */
+    private const SEARCHABLE_COLUMNS = [
+        'problem_situation',
+        'improved_image',
+    ];
+
     /**
      * 問題解決一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
@@ -36,24 +47,8 @@ class ProblemSolvingController extends Controller
     {
         $query = ProblemSolving::with(['solutions', 'plans', 'tags']);
 
-        // キーワード検索（問題状況、改善イメージで部分一致）
-        if ($request->filled('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where(function ($q) use ($keyword) {
-                $q->where('problem_situation', 'like', "%{$keyword}%")
-                    ->orWhere('improved_image', 'like', "%{$keyword}%");
-            });
-        }
-
-        // タグ検索（指定されたタグIDのいずれかに紐づくアイテム）
-        if ($request->filled('tag_ids')) {
-            $tagIds = $request->input('tag_ids');
-            if (is_array($tagIds) && count($tagIds) > 0) {
-                $query->whereHas('tags', function ($q) use ($tagIds) {
-                    $q->whereIn('tags.id', $tagIds);
-                });
-            }
-        }
+        // 検索フィルターを適用（バリデーション含む）
+        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
 
         $problemSolvings = $query->orderByDesc('created_at')
             ->get()

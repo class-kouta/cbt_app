@@ -8,12 +8,29 @@ use App\Application\UseCase\Column\DeleteColumnUseCase;
 use App\Application\UseCase\Column\UpdateColumnUseCase;
 use App\Http\Requests\Column\CreateColumnRequest;
 use App\Http\Requests\Column\UpdateColumnRequest;
+use App\Http\Traits\Searchable;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ColumnController extends Controller
 {
+    use Searchable;
+
+    /**
+     * キーワード検索対象カラム
+     */
+    private const SEARCHABLE_COLUMNS = [
+        'situation',
+        'mood',
+        'automatic_thought',
+        'evidence',
+        'counter_evidence',
+        'adaptive_thought',
+        'current_mood',
+        'notes',
+    ];
+
     /**
      * コラム一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
@@ -22,30 +39,8 @@ class ColumnController extends Controller
     {
         $query = Column::with('tags');
 
-        // キーワード検索（状況、感情、自動思考、根拠、反証、適応的思考、現在の感情、メモで部分一致）
-        if ($request->filled('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where(function ($q) use ($keyword) {
-                $q->where('situation', 'like', "%{$keyword}%")
-                    ->orWhere('mood', 'like', "%{$keyword}%")
-                    ->orWhere('automatic_thought', 'like', "%{$keyword}%")
-                    ->orWhere('evidence', 'like', "%{$keyword}%")
-                    ->orWhere('counter_evidence', 'like', "%{$keyword}%")
-                    ->orWhere('adaptive_thought', 'like', "%{$keyword}%")
-                    ->orWhere('current_mood', 'like', "%{$keyword}%")
-                    ->orWhere('notes', 'like', "%{$keyword}%");
-            });
-        }
-
-        // タグ検索（指定されたタグIDのいずれかに紐づくアイテム）
-        if ($request->filled('tag_ids')) {
-            $tagIds = $request->input('tag_ids');
-            if (is_array($tagIds) && count($tagIds) > 0) {
-                $query->whereHas('tags', function ($q) use ($tagIds) {
-                    $q->whereIn('tags.id', $tagIds);
-                });
-            }
-        }
+        // 検索フィルターを適用（バリデーション含む）
+        $this->applySearchFilters($query, $request, self::SEARCHABLE_COLUMNS);
 
         $columns = $query->orderByDesc('created_at')
             ->get()
