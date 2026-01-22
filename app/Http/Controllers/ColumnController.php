@@ -18,7 +18,8 @@ class ColumnController extends Controller
      */
     public function index(): JsonResponse
     {
-        $columns = Column::orderByDesc('created_at')
+        $columns = Column::with('tags')
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($column) {
                 return [
@@ -31,6 +32,10 @@ class ColumnController extends Controller
                     'adaptive_thought' => $column->adaptive_thought,
                     'current_mood' => $column->current_mood,
                     'notes' => $column->notes,
+                    'tags' => $column->tags->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                    ])->toArray(),
                     'created_at' => $column->created_at->format(DATE_ATOM),
                     'updated_at' => $column->updated_at->format(DATE_ATOM),
                 ];
@@ -66,6 +71,8 @@ class ColumnController extends Controller
      */
     public function show(Column $column): JsonResponse
     {
+        $column->load('tags');
+
         return response()->json([
             'id' => $column->id,
             'situation' => $column->situation,
@@ -76,6 +83,11 @@ class ColumnController extends Controller
             'adaptive_thought' => $column->adaptive_thought,
             'current_mood' => $column->current_mood,
             'notes' => $column->notes,
+            'tags' => $column->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $column->tags->pluck('id')->toArray(),
             'created_at' => $column->created_at->format(DATE_ATOM),
             'updated_at' => $column->updated_at->format(DATE_ATOM),
         ]);
@@ -97,20 +109,33 @@ class ColumnController extends Controller
             notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null
         );
 
-        $column = $createColumn->handle($data);
+        $columnEntity = $createColumn->handle($data);
+
+        // タグの紐付け
+        $tagIds = $request->input('tag_ids', []);
+        $model = Column::with('tags')->find($columnEntity->getId());
+        if (!empty($tagIds)) {
+            $model->tags()->sync($tagIds);
+            $model->load('tags');
+        }
 
         return response()->json([
-            'id' => $column->getId(),
-            'situation' => $column->getSituation(),
-            'mood' => $column->getMood(),
-            'automatic_thought' => $column->getAutomaticThought(),
-            'evidence' => $column->getEvidence(),
-            'counter_evidence' => $column->getCounterEvidence(),
-            'adaptive_thought' => $column->getAdaptiveThought(),
-            'current_mood' => $column->getCurrentMood(),
-            'notes' => $column->getNotes(),
-            'created_at' => $column->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $column->getUpdatedAt()->format(DATE_ATOM),
+            'id' => $columnEntity->getId(),
+            'situation' => $columnEntity->getSituation(),
+            'mood' => $columnEntity->getMood(),
+            'automatic_thought' => $columnEntity->getAutomaticThought(),
+            'evidence' => $columnEntity->getEvidence(),
+            'counter_evidence' => $columnEntity->getCounterEvidence(),
+            'adaptive_thought' => $columnEntity->getAdaptiveThought(),
+            'current_mood' => $columnEntity->getCurrentMood(),
+            'notes' => $columnEntity->getNotes(),
+            'tags' => $model->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $model->tags->pluck('id')->toArray(),
+            'created_at' => $columnEntity->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $columnEntity->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
     }
 
@@ -132,6 +157,11 @@ class ColumnController extends Controller
 
         $updatedColumn = $updateColumn->handle($column->id, $data);
 
+        // タグの同期
+        $tagIds = $request->input('tag_ids', []);
+        $column->tags()->sync($tagIds);
+        $column->load('tags');
+
         return response()->json([
             'id' => $updatedColumn->getId(),
             'situation' => $updatedColumn->getSituation(),
@@ -142,6 +172,11 @@ class ColumnController extends Controller
             'adaptive_thought' => $updatedColumn->getAdaptiveThought(),
             'current_mood' => $updatedColumn->getCurrentMood(),
             'notes' => $updatedColumn->getNotes(),
+            'tags' => $column->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $column->tags->pluck('id')->toArray(),
             'created_at' => $updatedColumn->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedColumn->getUpdatedAt()->format(DATE_ATOM),
         ]);

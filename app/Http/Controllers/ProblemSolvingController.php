@@ -32,7 +32,7 @@ class ProblemSolvingController extends Controller
      */
     public function index(): JsonResponse
     {
-        $problemSolvings = ProblemSolving::with(['solutions', 'plans'])
+        $problemSolvings = ProblemSolving::with(['solutions', 'plans', 'tags'])
             ->orderByDesc('created_at')
             ->get()
             ->map(fn ($item) => $this->formatProblemSolving($item));
@@ -45,7 +45,7 @@ class ProblemSolvingController extends Controller
      */
     public function show(ProblemSolving $problemSolving): JsonResponse
     {
-        $problemSolving->load(['solutions', 'plans']);
+        $problemSolving->load(['solutions', 'plans', 'tags']);
         return response()->json($this->formatProblemSolving($problemSolving));
     }
 
@@ -59,16 +59,29 @@ class ProblemSolvingController extends Controller
             improvedImage: $request->filled('improved_image') ? (string) $request->string('improved_image') : null
         );
 
-        $problemSolving = $createProblemSolving->handle($data);
+        $problemSolvingEntity = $createProblemSolving->handle($data);
+
+        // タグの紐付け
+        $tagIds = $request->input('tag_ids', []);
+        $model = ProblemSolving::with('tags')->find($problemSolvingEntity->getId());
+        if (!empty($tagIds)) {
+            $model->tags()->sync($tagIds);
+            $model->load('tags');
+        }
 
         return response()->json([
-            'id' => $problemSolving->getId(),
-            'problem_situation' => $problemSolving->getProblemSituation(),
-            'improved_image' => $problemSolving->getImprovedImage(),
+            'id' => $problemSolvingEntity->getId(),
+            'problem_situation' => $problemSolvingEntity->getProblemSituation(),
+            'improved_image' => $problemSolvingEntity->getImprovedImage(),
             'solutions' => [],
             'plans' => [],
-            'created_at' => $problemSolving->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $problemSolving->getUpdatedAt()->format(DATE_ATOM),
+            'tags' => $model->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $model->tags->pluck('id')->toArray(),
+            'created_at' => $problemSolvingEntity->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $problemSolvingEntity->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
     }
 
@@ -83,6 +96,11 @@ class ProblemSolvingController extends Controller
         );
 
         $updated = $updateProblemSolving->handle($problemSolving->id, $data);
+
+        // タグの同期
+        $tagIds = $request->input('tag_ids', []);
+        $problemSolving->tags()->sync($tagIds);
+        $problemSolving->load('tags');
 
         return response()->json([
             'id' => $updated->getId(),
@@ -101,6 +119,11 @@ class ProblemSolvingController extends Controller
                 'action_plan' => $p->getActionPlan(),
                 'reflection' => $p->getReflection(),
             ], $updated->getPlans()),
+            'tags' => $problemSolving->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $problemSolving->tags->pluck('id')->toArray(),
             'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
         ]);
@@ -258,6 +281,11 @@ class ProblemSolvingController extends Controller
                 'created_at' => $p->created_at->format(DATE_ATOM),
                 'updated_at' => $p->updated_at->format(DATE_ATOM),
             ])->toArray(),
+            'tags' => $problemSolving->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $problemSolving->tags->pluck('id')->toArray(),
             'created_at' => $problemSolving->created_at->format(DATE_ATOM),
             'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),
         ];

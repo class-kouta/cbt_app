@@ -51,6 +51,18 @@
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" x-text="column?.situation || '未入力'"></p>
                 </div>
 
+                <!-- タグ -->
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200" x-show="column?.tags && column.tags.length > 0">
+                    <div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
+                        🏷️ タグ
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="tag in (column?.tags || [])" :key="tag.id">
+                            <span class="inline-flex items-center px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium" x-text="tag.name"></span>
+                        </template>
+                    </div>
+                </div>
+
                 <!-- 気分 -->
                 <div class="bg-emerald-50 rounded-lg p-4">
                     <div class="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\WritingDisclosureController;
 use App\Http\Controllers\ProblemSolvingController;
@@ -19,6 +20,9 @@ Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
 
 // CopingTag API（一覧取得のみ）
 Route::get('/coping-tags', [CopingTagController::class, 'index']);
+
+// Tag API（汎用タグ一覧取得）
+Route::get('/tags', [TagController::class, 'index']);
 
 // Column API（コラム法）
 Route::get('/columns', [ColumnController::class, 'index']);

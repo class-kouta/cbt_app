@@ -98,6 +98,32 @@
                     <div class="text-xs text-gray-400 text-right" x-text="form.problem_situation.length + '/5000'"></div>
                 </div>
 
+                <!-- タグセクション -->
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        🏷️ タグ
+                        <span class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-3">
+                        この問題に関連するカテゴリーを選択してください
+                    </p>
+
+                    <!-- タグ選択UI -->
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="tag in availableTags" :key="tag.id">
+                            <button
+                                type="button"
+                                @click="toggleTag(tag.id)"
+                                class="px-3 py-1.5 text-sm rounded-full border transition-all"
+                                :class="isTagSelected(tag.id)
+                                    ? 'bg-emerald-500 text-white border-emerald-500'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50'"
+                                x-text="tag.name"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+
                 <!-- Step 2: 改善イメージ -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -372,7 +398,8 @@ function problemSolvingFormApp(itemId) {
         isEditMode: itemId !== null,
         form: {
             problem_situation: '',
-            improved_image: ''
+            improved_image: '',
+            tag_ids: []
         },
         solutions: [
             { content: '', effectiveness: '', feasibility: '' },
@@ -387,6 +414,9 @@ function problemSolvingFormApp(itemId) {
         showManualSaveToast: false,
         floatingSaving: false,
 
+        // タグ一覧
+        availableTags: [],
+
         // 自動保存用
         autoSaveSnapshots: [],
         autoSaveInterval: null,
@@ -394,6 +424,9 @@ function problemSolvingFormApp(itemId) {
         showAutoSaveToast: false,
 
         async init() {
+            // タグ一覧を取得
+            await this.loadTags();
+
             if (this.isEditMode) {
                 await this.loadItem();
             } else {
@@ -410,13 +443,43 @@ function problemSolvingFormApp(itemId) {
             }, 30000);
         },
 
+        async loadTags() {
+            try {
+                const res = await fetch('/api/tags');
+                if (res.ok) {
+                    this.availableTags = await res.json();
+                }
+            } catch (error) {
+                console.error('タグの取得に失敗しました:', error);
+            }
+        },
+
+        toggleTag(tagId) {
+            const index = this.form.tag_ids.indexOf(tagId);
+            if (index > -1) {
+                this.form.tag_ids.splice(index, 1);
+            } else {
+                this.form.tag_ids.push(tagId);
+            }
+        },
+
+        isTagSelected(tagId) {
+            return this.form.tag_ids.includes(tagId);
+        },
+
+        getTagName(tagId) {
+            const tag = this.availableTags.find(t => t.id === tagId);
+            return tag ? tag.name : '';
+        },
+
         // 現在の値のスナップショットを取得
         takeSnapshot() {
             const snapshot = {
                 problem_situation: this.form.problem_situation,
                 improved_image: this.form.improved_image,
                 solutions: JSON.stringify(this.solutions),
-                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection })))
+                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection }))),
+                tag_ids: JSON.stringify(this.form.tag_ids)
             };
             this.autoSaveSnapshots.push(snapshot);
 
@@ -449,7 +512,8 @@ function problemSolvingFormApp(itemId) {
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
                 JSON.stringify(this.solutions) !== snapshot.solutions ||
-                currentPlans !== snapshot.plans
+                currentPlans !== snapshot.plans ||
+                JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids
             );
         },
 
@@ -550,6 +614,7 @@ function problemSolvingFormApp(itemId) {
                     const item = await res.json();
                     this.form.problem_situation = item.problem_situation || '';
                     this.form.improved_image = item.improved_image || '';
+                    this.form.tag_ids = item.tag_ids || [];
 
                     this.solutions = item.solutions.map(s => ({
                         id: s.id,
