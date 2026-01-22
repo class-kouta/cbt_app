@@ -5,6 +5,57 @@
 
 @section('content')
 <div x-data="problemSolvingListApp()" x-init="init()" x-cloak>
+    <!-- 検索フォーム -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+        <!-- キーワード検索 -->
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
+            <div class="flex gap-2">
+                <input
+                    type="text"
+                    x-model="keyword"
+                    @keyup.enter="search()"
+                    placeholder="問題状況、改善イメージで検索..."
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                >
+                <button
+                    @click="search()"
+                    class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium"
+                >
+                    検索
+                </button>
+            </div>
+        </div>
+        
+        <!-- タグ検索 -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">タグで絞り込み</label>
+            <div class="flex flex-wrap gap-2">
+                <template x-for="tag in allTags" :key="tag.id">
+                    <button
+                        @click="toggleTag(tag.id)"
+                        :class="selectedTagIds.includes(tag.id) 
+                            ? 'bg-emerald-500 text-white border-emerald-500' 
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400'"
+                        class="px-3 py-1 text-sm rounded-full border transition-all"
+                        x-text="tag.name"
+                    ></button>
+                </template>
+            </div>
+        </div>
+        
+        <!-- 検索条件クリア -->
+        <div x-show="keyword || selectedTagIds.length > 0" class="mt-3 pt-3 border-t border-gray-200">
+            <button
+                @click="clearSearch()"
+                class="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+                検索条件をクリア
+            </button>
+            <span class="text-sm text-gray-500 ml-2" x-text="'（' + items.length + '件の結果）'"></span>
+        </div>
+    </div>
+
     <!-- 一覧 -->
     <div class="space-y-3">
         <template x-for="item in items" :key="item.id">
@@ -17,6 +68,12 @@
                     <div class="text-xs text-emerald-500 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <!-- 問題状況 -->
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.problem_situation"></p>
+                    <!-- タグ表示 -->
+                    <div x-show="item.tags && item.tags.length > 0" class="flex flex-wrap gap-1 mb-2">
+                        <template x-for="tag in item.tags" :key="tag.id">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-sky-100 text-sky-700" x-text="tag.name"></span>
+                        </template>
+                    </div>
                     <!-- 実行計画ステータス -->
                     <div x-data="{ hasPlan: hasActionPlan(item) }" class="flex items-center gap-1">
                         <span class="text-xs text-gray-500">実行計画 :</span>
@@ -70,16 +127,58 @@ function problemSolvingListApp() {
     return {
         items: [],
         loading: true,
+        allTags: [],
+        keyword: '',
+        selectedTagIds: [],
 
         async init() {
-            await this.loadItems();
+            await Promise.all([
+                this.loadTags(),
+                this.loadItems()
+            ]);
+        },
+
+        async loadTags() {
+            const res = await fetch('/api/tags');
+            this.allTags = await res.json();
         },
 
         async loadItems() {
             this.loading = true;
-            const res = await fetch('/api/problem-solvings');
+            
+            // クエリパラメータを構築
+            const params = new URLSearchParams();
+            if (this.keyword) {
+                params.append('keyword', this.keyword);
+            }
+            this.selectedTagIds.forEach(id => {
+                params.append('tag_ids[]', id);
+            });
+            
+            const url = '/api/problem-solvings' + (params.toString() ? '?' + params.toString() : '');
+            const res = await fetch(url);
             this.items = await res.json();
             this.loading = false;
+        },
+
+        async search() {
+            await this.loadItems();
+        },
+
+        toggleTag(tagId) {
+            const index = this.selectedTagIds.indexOf(tagId);
+            if (index === -1) {
+                this.selectedTagIds.push(tagId);
+            } else {
+                this.selectedTagIds.splice(index, 1);
+            }
+            this.search();
+        },
+
+        async clearSearch() {
+            this.keyword = '';
+            this.selectedTagIds = [];
+            await this.loadItems();
         },
 
         formatDate(dateString) {

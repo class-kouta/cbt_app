@@ -24,16 +24,38 @@ use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProblemSolvingController extends Controller
 {
     /**
      * 問題解決一覧を取得（作成日時降順）
+     * キーワード検索とタグ検索に対応
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $problemSolvings = ProblemSolving::with(['solutions', 'plans', 'tags'])
-            ->orderByDesc('created_at')
+        $query = ProblemSolving::with(['solutions', 'plans', 'tags']);
+
+        // キーワード検索（問題状況、改善イメージで部分一致）
+        if ($request->filled('keyword')) {
+            $keyword = $request->input('keyword');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('problem_situation', 'like', "%{$keyword}%")
+                    ->orWhere('improved_image', 'like', "%{$keyword}%");
+            });
+        }
+
+        // タグ検索（指定されたタグIDのいずれかに紐づくアイテム）
+        if ($request->filled('tag_ids')) {
+            $tagIds = $request->input('tag_ids');
+            if (is_array($tagIds) && count($tagIds) > 0) {
+                $query->whereHas('tags', function ($q) use ($tagIds) {
+                    $q->whereIn('tags.id', $tagIds);
+                });
+            }
+        }
+
+        $problemSolvings = $query->orderByDesc('created_at')
             ->get()
             ->map(fn ($item) => $this->formatProblemSolving($item));
 

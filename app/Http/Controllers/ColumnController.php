@@ -10,16 +10,44 @@ use App\Http\Requests\Column\CreateColumnRequest;
 use App\Http\Requests\Column\UpdateColumnRequest;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ColumnController extends Controller
 {
     /**
      * コラム一覧を取得（作成日時降順）
+     * キーワード検索とタグ検索に対応
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $columns = Column::with('tags')
-            ->orderByDesc('created_at')
+        $query = Column::with('tags');
+
+        // キーワード検索（状況、感情、自動思考、根拠、反証、適応的思考、現在の感情、メモで部分一致）
+        if ($request->filled('keyword')) {
+            $keyword = $request->input('keyword');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('situation', 'like', "%{$keyword}%")
+                    ->orWhere('mood', 'like', "%{$keyword}%")
+                    ->orWhere('automatic_thought', 'like', "%{$keyword}%")
+                    ->orWhere('evidence', 'like', "%{$keyword}%")
+                    ->orWhere('counter_evidence', 'like', "%{$keyword}%")
+                    ->orWhere('adaptive_thought', 'like', "%{$keyword}%")
+                    ->orWhere('current_mood', 'like', "%{$keyword}%")
+                    ->orWhere('notes', 'like', "%{$keyword}%");
+            });
+        }
+
+        // タグ検索（指定されたタグIDのいずれかに紐づくアイテム）
+        if ($request->filled('tag_ids')) {
+            $tagIds = $request->input('tag_ids');
+            if (is_array($tagIds) && count($tagIds) > 0) {
+                $query->whereHas('tags', function ($q) use ($tagIds) {
+                    $q->whereIn('tags.id', $tagIds);
+                });
+            }
+        }
+
+        $columns = $query->orderByDesc('created_at')
             ->get()
             ->map(function ($column) {
                 return [
