@@ -226,34 +226,22 @@
                     </button>
                 </div>
 
-                <!-- Step 4: 実行計画（新規作成モード用シンプルUI） -->
-                <div x-show="!isEditMode">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">4</span>
-                        実行計画
-                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
-                    </label>
-                    <textarea
-                        x-model="plans[0].action_plan"
-                        rows="10"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                        placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
-                        maxlength="5000"
-                    ></textarea>
-                </div>
-
-                <!-- Step 4 & 5: 実行計画と振り返り（編集モード用リッチUI） -->
-                <div x-show="isEditMode" class="border-t border-gray-200 pt-5">
+                <!-- Step 4 & 5: 実行計画と振り返り -->
+                <div class="border-t border-gray-200 pt-5">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
-                            実行計画と振り返り
+                            <span x-show="isEditMode">実行計画と振り返り</span>
+                            <span x-show="!isEditMode">実行計画</span>
                         </h3>
                     </div>
 
                     <!-- 計画がない場合の説明 -->
                     <div x-show="plans.length === 0" class="bg-gray-50 rounded-lg p-4 mb-4">
-                        <p class="text-gray-600 text-sm">
+                        <p class="text-gray-600 text-sm" x-show="isEditMode">
                             解決策を決めたら、実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
+                        </p>
+                        <p class="text-gray-600 text-sm" x-show="!isEditMode">
+                            解決策を決めたら、実行計画を立てましょう。複数の計画を追加することもできます。
                         </p>
                     </div>
 
@@ -269,7 +257,7 @@
                                     <div class="flex items-center gap-3">
                                         <!-- ステータスバッジ -->
                                         <span
-                                            x-show="plan.reflection && plan.reflection.trim()"
+                                            x-show="isEditMode && plan.reflection && plan.reflection.trim()"
                                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
                                         >
                                             ✓ 振り返り済み
@@ -325,8 +313,8 @@
                                         ></textarea>
                                     </div>
 
-                                    <!-- 振り返り -->
-                                    <div>
+                                    <!-- 振り返り（編集モードのみ表示） -->
+                                    <div x-show="isEditMode">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
                                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
                                             振り返り
