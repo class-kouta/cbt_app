@@ -4,6 +4,7 @@ namespace App\Infrastructure\Database\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProblemSolving extends Model
@@ -29,6 +30,14 @@ class ProblemSolving extends Model
     public function plans(): HasMany
     {
         return $this->hasMany(ProblemSolvingPlan::class)->orderBy('plan_number');
+    }
+
+    /**
+     * 問題解決法に紐づくタグ一覧
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'problem_solving_tag');
     }
 
     /**

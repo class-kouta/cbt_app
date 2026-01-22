@@ -148,9 +148,40 @@
 
 ---
 
+---
+## tags（汎用タグ）
+- id — bigint, 主キー
+- name — varchar(50), UNIQUE, NOT NULL
+- created_at / updated_at — timestamp
+
+**初期データ:**
+- 人間関係、勉強、キャリア、学校、恋愛、夫婦、家庭、育児、健康、お金
+
+**用途:**
+- ストレッサー、コラム法、問題解決法に共通で使用できるタグ
+- 記録をカテゴリー別に分類するためのラベル
+
+---
+## stressor_and_response_tag (中間テーブル)
+- stressor_and_response_id — bigint, 複合主キー, 外部キー → stressor_and_responses.id
+- tag_id — bigint, 複合主キー, 外部キー → tags.id
+
+---
+## column_tag (中間テーブル)
+- column_id — bigint, 複合主キー, 外部キー → columns.id
+- tag_id — bigint, 複合主キー, 外部キー → tags.id
+
+---
+## problem_solving_tag (中間テーブル)
+- problem_solving_id — bigint, 複合主キー, 外部キー → problem_solvings.id
+- tag_id — bigint, 複合主キー, 外部キー → tags.id
+
+---
+
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
-- copingsのタグは独立して管理されます。
+- copingsのタグは独立して管理されます（`coping_tags`テーブル）。
+- `tags` は汎用タグとして、ストレッサー、コラム法、問題解決法で共通利用されます。
 - `writing_disclosures` は反芻思考の外在化のための筆記開示記録として機能します。
 - `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
 - `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。
