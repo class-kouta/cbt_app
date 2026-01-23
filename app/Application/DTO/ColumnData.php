@@ -4,6 +4,9 @@ namespace App\Application\DTO;
 
 readonly class ColumnData
 {
+    /**
+     * @param array<int> $tagIds
+     */
     public function __construct(
         public string $situation,
         public ?string $mood,
@@ -13,7 +16,8 @@ readonly class ColumnData
         public ?string $adaptiveThought,
         public ?string $currentMood,
         public ?string $notes = null,
-        public ?int $stressorAndResponseId = null
+        public ?int $stressorAndResponseId = null,
+        public array $tagIds = []
     ) {
     }
 }

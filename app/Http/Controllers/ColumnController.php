@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\DTO\ColumnData;
 use App\Application\UseCase\Column\CreateColumnUseCase;
 use App\Application\UseCase\Column\DeleteColumnUseCase;
 use App\Application\UseCase\Column\SearchColumnUseCase;
@@ -82,51 +81,9 @@ class ColumnController extends Controller
      */
     public function store(CreateColumnRequest $request, CreateColumnUseCase $createColumn): JsonResponse
     {
-        $stressorAndResponseId = $request->has('stressor_and_response_id') && $request->filled('stressor_and_response_id')
-            ? (int) $request->input('stressor_and_response_id')
-            : null;
+        $result = $createColumn->handle($request->toColumnData());
 
-        $data = new ColumnData(
-            situation: (string) $request->string('situation'),
-            mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
-            automaticThought: $request->has('automatic_thought') && $request->filled('automatic_thought') ? (string) $request->string('automatic_thought') : null,
-            evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
-            counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
-            adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
-            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
-            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null,
-            stressorAndResponseId: $stressorAndResponseId
-        );
-
-        $columnEntity = $createColumn->handle($data);
-
-        // タグの紐付け
-        $tagIds = $request->input('tag_ids', []);
-        $model = Column::with('tags')->find($columnEntity->getId());
-        if (!empty($tagIds)) {
-            $model->tags()->sync($tagIds);
-            $model->load('tags');
-        }
-
-        return response()->json([
-            'id' => $columnEntity->getId(),
-            'situation' => $columnEntity->getSituation(),
-            'mood' => $columnEntity->getMood(),
-            'automatic_thought' => $columnEntity->getAutomaticThought(),
-            'evidence' => $columnEntity->getEvidence(),
-            'counter_evidence' => $columnEntity->getCounterEvidence(),
-            'adaptive_thought' => $columnEntity->getAdaptiveThought(),
-            'current_mood' => $columnEntity->getCurrentMood(),
-            'notes' => $columnEntity->getNotes(),
-            'stressor_and_response_id' => $columnEntity->getStressorAndResponseId(),
-            'tags' => $model->tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->toArray(),
-            'tag_ids' => $model->tags->pluck('id')->toArray(),
-            'created_at' => $columnEntity->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $columnEntity->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
+        return response()->json($result, 201);
     }
 
     /**
@@ -134,49 +91,10 @@ class ColumnController extends Controller
      */
     public function update(UpdateColumnRequest $request, Column $column, UpdateColumnUseCase $updateColumn): JsonResponse
     {
-        // stressor_and_response_idはリクエストに含まれていなければ既存値を維持
-        $stressorAndResponseId = $request->has('stressor_and_response_id')
-            ? ($request->filled('stressor_and_response_id') ? (int) $request->input('stressor_and_response_id') : null)
-            : $column->stressor_and_response_id;
+        $data = $request->toColumnData($column->stressor_and_response_id);
+        $result = $updateColumn->handle($column->id, $data);
 
-        $data = new ColumnData(
-            situation: (string) $request->string('situation'),
-            mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
-            automaticThought: $request->has('automatic_thought') && $request->filled('automatic_thought') ? (string) $request->string('automatic_thought') : null,
-            evidence: $request->has('evidence') && $request->filled('evidence') ? (string) $request->string('evidence') : null,
-            counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
-            adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
-            currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
-            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null,
-            stressorAndResponseId: $stressorAndResponseId
-        );
-
-        $updatedColumn = $updateColumn->handle($column->id, $data);
-
-        // タグの同期
-        $tagIds = $request->input('tag_ids', []);
-        $column->tags()->sync($tagIds);
-        $column->load('tags');
-
-        return response()->json([
-            'id' => $updatedColumn->getId(),
-            'situation' => $updatedColumn->getSituation(),
-            'mood' => $updatedColumn->getMood(),
-            'automatic_thought' => $updatedColumn->getAutomaticThought(),
-            'evidence' => $updatedColumn->getEvidence(),
-            'counter_evidence' => $updatedColumn->getCounterEvidence(),
-            'adaptive_thought' => $updatedColumn->getAdaptiveThought(),
-            'current_mood' => $updatedColumn->getCurrentMood(),
-            'notes' => $updatedColumn->getNotes(),
-            'stressor_and_response_id' => $updatedColumn->getStressorAndResponseId(),
-            'tags' => $column->tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->toArray(),
-            'tag_ids' => $column->tags->pluck('id')->toArray(),
-            'created_at' => $updatedColumn->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $updatedColumn->getUpdatedAt()->format(DATE_ATOM),
-        ]);
+        return response()->json($result);
     }
 
     /**

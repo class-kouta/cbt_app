@@ -9,6 +9,15 @@ interface ColumnRepositoryInterface
 {
     public function save(Column $column): Column;
 
+    /**
+     * コラムを保存し、タグを同期する
+     *
+     * @param Column $column コラムエンティティ
+     * @param array<int> $tagIds タグIDの配列
+     * @return array<string, mixed> 保存結果（タグ情報を含む）
+     */
+    public function saveWithTags(Column $column, array $tagIds): array;
+
     public function findById(int $id): ?Column;
 
     public function delete(int $id): void;

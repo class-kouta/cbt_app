@@ -12,11 +12,18 @@ class UpdateColumnUseCase
     {
     }
 
-    public function handle(int $id, ColumnData $data): ColumnEntity
+    /**
+     * コラムを更新し、タグを同期する
+     *
+     * @param int $id コラムID
+     * @param ColumnData $data コラムデータ
+     * @return array<string, mixed> 更新結果（タグ情報を含む）
+     */
+    public function handle(int $id, ColumnData $data): array
     {
         // 既存のコラムを取得
         $existingColumn = $this->columnRepository->findById($id);
-        
+
         if ($existingColumn === null) {
             throw new \RuntimeException('Column not found');
         }
@@ -37,6 +44,6 @@ class UpdateColumnUseCase
             updatedAt: new \DateTimeImmutable('now')
         );
 
-        return $this->columnRepository->save($updatedColumn);
+        return $this->columnRepository->saveWithTags($updatedColumn, $data->tagIds);
     }
 }
