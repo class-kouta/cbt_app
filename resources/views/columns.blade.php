@@ -82,7 +82,7 @@
                     <template x-for="item in stressorAndResponses" :key="item.id">
                         <div
                             @click="showTransferConfirm(item)"
-                            class="px-6 py-4 border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors group"
+                            class="px-6 py-4 border-b border-gray-100 cursor-pointer group"
                         >
                             <div class="flex items-start justify-between gap-3">
                                 <div class="flex-1 min-w-0">
@@ -117,7 +117,7 @@
                                     <p class="text-xs text-gray-400 mt-2" x-text="formatDate(item.created_at)"></p>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200 transition-colors">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
