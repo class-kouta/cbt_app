@@ -16,7 +16,7 @@
                     x-model="keyword"
                     @keyup.enter="search()"
                     placeholder="状況、感情、自動思考などで検索..."
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
                 >
                 <button
                     @click="search()"
