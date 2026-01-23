@@ -32,6 +32,7 @@ class UpdateColumnUseCase
             adaptiveThought: $data->adaptiveThought,
             currentMood: $data->currentMood,
             notes: $data->notes,
+            stressorAndResponseId: $data->stressorAndResponseId ?? $existingColumn->getStressorAndResponseId(),
             createdAt: $existingColumn->getCreatedAt(),
             updatedAt: new \DateTimeImmutable('now')
         );

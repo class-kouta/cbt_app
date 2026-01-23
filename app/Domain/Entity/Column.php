@@ -15,6 +15,7 @@ class Column
     private ?string $adaptiveThought;
     private ?string $currentMood;
     private ?string $notes;
+    private ?int $stressorAndResponseId;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
@@ -28,6 +29,7 @@ class Column
         ?string $adaptiveThought,
         ?string $currentMood,
         ?string $notes,
+        ?int $stressorAndResponseId,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -40,6 +42,7 @@ class Column
         $this->adaptiveThought = $adaptiveThought;
         $this->currentMood = $currentMood;
         $this->notes = $notes;
+        $this->stressorAndResponseId = $stressorAndResponseId;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -52,7 +55,8 @@ class Column
         ?string $counterEvidence,
         ?string $adaptiveThought,
         ?string $currentMood,
-        ?string $notes = null
+        ?string $notes = null,
+        ?int $stressorAndResponseId = null
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
@@ -65,6 +69,7 @@ class Column
             $adaptiveThought,
             $currentMood,
             $notes,
+            $stressorAndResponseId,
             $now,
             $now
         );
@@ -80,6 +85,7 @@ class Column
         ?string $adaptiveThought,
         ?string $currentMood,
         ?string $notes,
+        ?int $stressorAndResponseId,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -93,6 +99,7 @@ class Column
             $adaptiveThought,
             $currentMood,
             $notes,
+            $stressorAndResponseId,
             $createdAt,
             $updatedAt
         );
@@ -143,6 +150,11 @@ class Column
         return $this->notes;
     }
 
+    public function getStressorAndResponseId(): ?int
+    {
+        return $this->stressorAndResponseId;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -165,6 +177,7 @@ class Column
             $this->adaptiveThought,
             $this->currentMood,
             $this->notes,
+            $this->stressorAndResponseId,
             $this->createdAt,
             $this->updatedAt
         );

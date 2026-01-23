@@ -86,6 +86,12 @@
                         >
                             <div class="flex items-start justify-between gap-3">
                                 <div class="flex-1 min-w-0">
+                                    <!-- 転記済みバッジ -->
+                                    <div x-show="item.is_transferred" class="mb-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-600">
+                                            ✓ 転記済み
+                                        </span>
+                                    </div>
                                     <!-- ストレッサー（状況に転記） -->
                                     <div class="mb-2">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 mb-1">
@@ -625,7 +631,8 @@ function columnApp(columnId) {
             adaptive_thought: '',
             current_mood: '',
             notes: '',
-            tag_ids: []
+            tag_ids: [],
+            stressor_and_response_id: null
         },
         loading: false,
         submitting: false,
@@ -760,6 +767,8 @@ function columnApp(columnId) {
             this.newColumn.automatic_thought = this.selectedStressorItem.cognition || '';
             // タグ ← タグ
             this.newColumn.tag_ids = this.selectedStressorItem.tag_ids || [];
+            // 転記元のストレッサーとストレス反応ID
+            this.newColumn.stressor_and_response_id = this.selectedStressorItem.id;
 
             // 確認ダイアログを閉じる
             this.showTransferConfirmModal = false;
@@ -962,6 +971,11 @@ function columnApp(columnId) {
                     this.newColumn.current_mood = column.current_mood || '';
                     this.newColumn.notes = column.notes || '';
                     this.newColumn.tag_ids = column.tag_ids || [];
+                    this.newColumn.stressor_and_response_id = column.stressor_and_response_id || null;
+                    // 既存のコラムに転記元IDがある場合は転記済みフラグを立てる
+                    if (column.stressor_and_response_id) {
+                        this.hasTransferred = true;
+                    }
                 }
             } catch (error) {
                 console.error(error);

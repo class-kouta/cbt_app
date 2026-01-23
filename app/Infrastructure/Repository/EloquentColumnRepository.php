@@ -23,6 +23,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
+            $model->stressor_and_response_id = $column->getStressorAndResponseId();
             $model->save();
         } else {
             // 新規作成
@@ -35,6 +36,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
+            $model->stressor_and_response_id = $column->getStressorAndResponseId();
             $model->save();
         }
 
@@ -48,6 +50,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
             notes: $model->notes,
+            stressorAndResponseId: $model->stressor_and_response_id,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -71,6 +74,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
             notes: $model->notes,
+            stressorAndResponseId: $model->stressor_and_response_id,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -103,6 +107,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     adaptiveThought: $model->adaptive_thought,
                     currentMood: $model->current_mood,
                     notes: $model->notes,
+                    stressorAndResponseId: $model->stressor_and_response_id,
                     createdAt: new DateTimeImmutable($model->created_at),
                     updatedAt: new DateTimeImmutable($model->updated_at),
                 );
@@ -155,6 +160,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     'adaptive_thought' => $column->adaptive_thought,
                     'current_mood' => $column->current_mood,
                     'notes' => $column->notes,
+                    'stressor_and_response_id' => $column->stressor_and_response_id,
                     'tags' => $column->tags->map(fn ($tag) => [
                         'id' => $tag->id,
                         'name' => $tag->name,

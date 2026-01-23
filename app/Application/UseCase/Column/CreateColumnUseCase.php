@@ -22,7 +22,8 @@ class CreateColumnUseCase
             $data->counterEvidence,
             $data->adaptiveThought,
             $data->currentMood,
-            $data->notes
+            $data->notes,
+            $data->stressorAndResponseId
         );
 
         return $this->columnRepository->save($column);

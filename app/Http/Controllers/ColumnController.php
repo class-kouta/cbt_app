@@ -66,6 +66,7 @@ class ColumnController extends Controller
             'adaptive_thought' => $column->adaptive_thought,
             'current_mood' => $column->current_mood,
             'notes' => $column->notes,
+            'stressor_and_response_id' => $column->stressor_and_response_id,
             'tags' => $column->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
@@ -81,6 +82,10 @@ class ColumnController extends Controller
      */
     public function store(CreateColumnRequest $request, CreateColumnUseCase $createColumn): JsonResponse
     {
+        $stressorAndResponseId = $request->has('stressor_and_response_id') && $request->filled('stressor_and_response_id')
+            ? (int) $request->input('stressor_and_response_id')
+            : null;
+
         $data = new ColumnData(
             situation: (string) $request->string('situation'),
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
@@ -89,7 +94,8 @@ class ColumnController extends Controller
             counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
             adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
             currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
-            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null
+            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null,
+            stressorAndResponseId: $stressorAndResponseId
         );
 
         $columnEntity = $createColumn->handle($data);
@@ -112,6 +118,7 @@ class ColumnController extends Controller
             'adaptive_thought' => $columnEntity->getAdaptiveThought(),
             'current_mood' => $columnEntity->getCurrentMood(),
             'notes' => $columnEntity->getNotes(),
+            'stressor_and_response_id' => $columnEntity->getStressorAndResponseId(),
             'tags' => $model->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
@@ -127,6 +134,11 @@ class ColumnController extends Controller
      */
     public function update(UpdateColumnRequest $request, Column $column, UpdateColumnUseCase $updateColumn): JsonResponse
     {
+        // stressor_and_response_idはリクエストに含まれていなければ既存値を維持
+        $stressorAndResponseId = $request->has('stressor_and_response_id')
+            ? ($request->filled('stressor_and_response_id') ? (int) $request->input('stressor_and_response_id') : null)
+            : $column->stressor_and_response_id;
+
         $data = new ColumnData(
             situation: (string) $request->string('situation'),
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
@@ -135,7 +147,8 @@ class ColumnController extends Controller
             counterEvidence: $request->has('counter_evidence') && $request->filled('counter_evidence') ? (string) $request->string('counter_evidence') : null,
             adaptiveThought: $request->has('adaptive_thought') && $request->filled('adaptive_thought') ? (string) $request->string('adaptive_thought') : null,
             currentMood: $request->has('current_mood') && $request->filled('current_mood') ? (string) $request->string('current_mood') : null,
-            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null
+            notes: $request->has('notes') && $request->filled('notes') ? (string) $request->string('notes') : null,
+            stressorAndResponseId: $stressorAndResponseId
         );
 
         $updatedColumn = $updateColumn->handle($column->id, $data);
@@ -155,6 +168,7 @@ class ColumnController extends Controller
             'adaptive_thought' => $updatedColumn->getAdaptiveThought(),
             'current_mood' => $updatedColumn->getCurrentMood(),
             'notes' => $updatedColumn->getNotes(),
+            'stressor_and_response_id' => $updatedColumn->getStressorAndResponseId(),
             'tags' => $column->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,

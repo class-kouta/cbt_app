@@ -22,6 +22,7 @@ class UpdateColumnRequest extends FormRequest
             'adaptive_thought' => ['nullable', 'string', 'max:1000'],
             'current_mood' => ['nullable', 'string', 'max:500'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'stressor_and_response_id' => ['nullable', 'integer', 'exists:stressor_and_responses,id'],
         ];
     }
 

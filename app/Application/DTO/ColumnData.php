@@ -12,7 +12,8 @@ readonly class ColumnData
         public ?string $counterEvidence,
         public ?string $adaptiveThought,
         public ?string $currentMood,
-        public ?string $notes = null
+        public ?string $notes = null,
+        public ?int $stressorAndResponseId = null
     ) {
     }
 }
