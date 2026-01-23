@@ -33,7 +33,13 @@
 - evidence_against — text, NULL可（反証）
 - balanced_thought — text, NULL可（適応的思考）
 - action_plan — text, NULL可（今後の対応）
+- stressor_and_response_id — bigint, NULL可, 外部キー → stressor_and_responses.id（転記元のストレッサーとストレス反応ID）
 - created_at / updated_at — timestamp
+
+**補足:**
+- stressor_and_response_id は転記元のストレッサーとストレス反応のIDを保持
+- ストレッサーが削除された場合はSET NULLになる
+- この値があることで「転記済み」かどうかを判定できる
 
 ---
 ## writing_disclosures（筆記開示）
