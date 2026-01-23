@@ -14,6 +14,8 @@ use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
 use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
 use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
+use App\Application\UseCase\ProblemSolving\SearchProblemSolvingUseCase;
+use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\UpdateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\AddSolutionRequest;
@@ -29,13 +31,12 @@ class ProblemSolvingController extends Controller
 {
     /**
      * 問題解決一覧を取得（作成日時降順）
+     * キーワード検索とタグ検索に対応
      */
-    public function index(): JsonResponse
+    public function index(SearchRequest $request, SearchProblemSolvingUseCase $searchUseCase): JsonResponse
     {
-        $problemSolvings = ProblemSolving::with(['solutions', 'plans', 'tags'])
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(fn ($item) => $this->formatProblemSolving($item));
+        $criteria = $request->toSearchCriteriaData();
+        $problemSolvings = $searchUseCase->handle($criteria);
 
         return response()->json($problemSolvings);
     }

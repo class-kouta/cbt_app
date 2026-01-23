@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Application\DTO\StressorAndResponseData;
 use App\Application\UseCase\StressorAndResponse\CreateStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\DeleteStressorAndResponseUseCase;
+use App\Application\UseCase\StressorAndResponse\SearchStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\UpdateStressorAndResponseUseCase;
+use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\StressorAndResponse\CreateStressorAndResponseRequest;
 use App\Http\Requests\StressorAndResponse\UpdateStressorAndResponseRequest;
 use App\Infrastructure\Database\Models\StressorAndResponse;
@@ -15,29 +17,12 @@ class StressorAndResponseController extends Controller
 {
     /**
      * ストレッサーとストレス反応一覧を取得（作成日時降順）
+     * キーワード検索とタグ検索に対応
      */
-    public function index(): JsonResponse
+    public function index(SearchRequest $request, SearchStressorAndResponseUseCase $searchUseCase): JsonResponse
     {
-        $items = StressorAndResponse::with('tags')
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'stressor' => $item->stressor,
-                    'cognition' => $item->cognition,
-                    'mood' => $item->mood,
-                    'body_reaction' => $item->body_reaction,
-                    'behavior' => $item->behavior,
-                    'stimulated_schemas' => $item->stimulated_schemas,
-                    'tags' => $item->tags->map(fn ($tag) => [
-                        'id' => $tag->id,
-                        'name' => $tag->name,
-                    ])->toArray(),
-                    'created_at' => $item->created_at->format(DATE_ATOM),
-                    'updated_at' => $item->updated_at->format(DATE_ATOM),
-                ];
-            });
+        $criteria = $request->toSearchCriteriaData();
+        $items = $searchUseCase->handle($criteria);
 
         return response()->json($items);
     }
