@@ -23,6 +23,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
+            $model->stressor_and_response_id = $column->getStressorAndResponseId();
             $model->save();
         } else {
             // 新規作成
@@ -35,6 +36,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->adaptive_thought = $column->getAdaptiveThought();
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
+            $model->stressor_and_response_id = $column->getStressorAndResponseId();
             $model->save();
         }
 
@@ -48,9 +50,48 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
             notes: $model->notes,
+            stressorAndResponseId: $model->stressor_and_response_id,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
+    }
+
+    /**
+     * コラムを保存し、タグを同期する
+     *
+     * @param ColumnEntity $column コラムエンティティ
+     * @param array<int> $tagIds タグIDの配列
+     * @return array<string, mixed> 保存結果（タグ情報を含む）
+     */
+    public function saveWithTags(ColumnEntity $column, array $tagIds): array
+    {
+        // コラムを保存
+        $savedColumn = $this->save($column);
+
+        // タグを同期
+        $model = ColumnModel::with('tags')->find($savedColumn->getId());
+        $model->tags()->sync($tagIds);
+        $model->load('tags');
+
+        return [
+            'id' => $savedColumn->getId(),
+            'situation' => $savedColumn->getSituation(),
+            'mood' => $savedColumn->getMood(),
+            'automatic_thought' => $savedColumn->getAutomaticThought(),
+            'evidence' => $savedColumn->getEvidence(),
+            'counter_evidence' => $savedColumn->getCounterEvidence(),
+            'adaptive_thought' => $savedColumn->getAdaptiveThought(),
+            'current_mood' => $savedColumn->getCurrentMood(),
+            'notes' => $savedColumn->getNotes(),
+            'stressor_and_response_id' => $savedColumn->getStressorAndResponseId(),
+            'tags' => $model->tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->toArray(),
+            'tag_ids' => $model->tags->pluck('id')->toArray(),
+            'created_at' => $savedColumn->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $savedColumn->getUpdatedAt()->format(DATE_ATOM),
+        ];
     }
 
     public function findById(int $id): ?ColumnEntity
@@ -71,6 +112,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             adaptiveThought: $model->adaptive_thought,
             currentMood: $model->current_mood,
             notes: $model->notes,
+            stressorAndResponseId: $model->stressor_and_response_id,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -103,6 +145,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     adaptiveThought: $model->adaptive_thought,
                     currentMood: $model->current_mood,
                     notes: $model->notes,
+                    stressorAndResponseId: $model->stressor_and_response_id,
                     createdAt: new DateTimeImmutable($model->created_at),
                     updatedAt: new DateTimeImmutable($model->updated_at),
                 );
@@ -155,6 +198,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                     'adaptive_thought' => $column->adaptive_thought,
                     'current_mood' => $column->current_mood,
                     'notes' => $column->notes,
+                    'stressor_and_response_id' => $column->stressor_and_response_id,
                     'tags' => $column->tags->map(fn ($tag) => [
                         'id' => $tag->id,
                         'name' => $tag->name,

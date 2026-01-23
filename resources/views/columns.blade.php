@@ -82,10 +82,16 @@
                     <template x-for="item in stressorAndResponses" :key="item.id">
                         <div
                             @click="showTransferConfirm(item)"
-                            class="px-6 py-4 border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors group"
+                            class="px-6 py-4 border-b border-gray-100 cursor-pointer group"
                         >
                             <div class="flex items-start justify-between gap-3">
                                 <div class="flex-1 min-w-0">
+                                    <!-- 転記済みバッジ -->
+                                    <div x-show="item.is_transferred" class="mb-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-600">
+                                            ✓ 転記済み
+                                        </span>
+                                    </div>
                                     <!-- ストレッサー（状況に転記） -->
                                     <div class="mb-2">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 mb-1">
@@ -111,7 +117,7 @@
                                     <p class="text-xs text-gray-400 mt-2" x-text="formatDate(item.created_at)"></p>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200 transition-colors">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
@@ -625,7 +631,8 @@ function columnApp(columnId) {
             adaptive_thought: '',
             current_mood: '',
             notes: '',
-            tag_ids: []
+            tag_ids: [],
+            stressor_and_response_id: null
         },
         loading: false,
         submitting: false,
@@ -760,6 +767,8 @@ function columnApp(columnId) {
             this.newColumn.automatic_thought = this.selectedStressorItem.cognition || '';
             // タグ ← タグ
             this.newColumn.tag_ids = this.selectedStressorItem.tag_ids || [];
+            // 転記元のストレッサーとストレス反応ID
+            this.newColumn.stressor_and_response_id = this.selectedStressorItem.id;
 
             // 確認ダイアログを閉じる
             this.showTransferConfirmModal = false;
@@ -962,6 +971,11 @@ function columnApp(columnId) {
                     this.newColumn.current_mood = column.current_mood || '';
                     this.newColumn.notes = column.notes || '';
                     this.newColumn.tag_ids = column.tag_ids || [];
+                    this.newColumn.stressor_and_response_id = column.stressor_and_response_id || null;
+                    // 既存のコラムに転記元IDがある場合は転記済みフラグを立てる
+                    if (column.stressor_and_response_id) {
+                        this.hasTransferred = true;
+                    }
                 }
             } catch (error) {
                 console.error(error);

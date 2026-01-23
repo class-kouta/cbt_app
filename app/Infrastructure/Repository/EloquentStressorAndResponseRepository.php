@@ -109,7 +109,8 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
      */
     public function search(SearchCriteriaData $criteria, array $searchableColumns): array
     {
-        $query = StressorAndResponseModel::with('tags');
+        $query = StressorAndResponseModel::with('tags')
+            ->withCount('columns'); // 転記されたコラム数をカウント
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -147,6 +148,8 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
                         'id' => $tag->id,
                         'name' => $tag->name,
                     ])->toArray(),
+                    'tag_ids' => $item->tags->pluck('id')->toArray(),
+                    'is_transferred' => $item->columns_count > 0, // 転記済みかどうか
                     'created_at' => $item->created_at->format(DATE_ATOM),
                     'updated_at' => $item->updated_at->format(DATE_ATOM),
                 ];

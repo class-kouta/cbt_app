@@ -12,7 +12,13 @@ class CreateColumnUseCase
     {
     }
 
-    public function handle(ColumnData $data): ColumnEntity
+    /**
+     * コラムを作成し、タグを同期する
+     *
+     * @param ColumnData $data コラムデータ
+     * @return array<string, mixed> 作成結果（タグ情報を含む）
+     */
+    public function handle(ColumnData $data): array
     {
         $column = ColumnEntity::createNew(
             $data->situation,
@@ -22,9 +28,10 @@ class CreateColumnUseCase
             $data->counterEvidence,
             $data->adaptiveThought,
             $data->currentMood,
-            $data->notes
+            $data->notes,
+            $data->stressorAndResponseId
         );
 
-        return $this->columnRepository->save($column);
+        return $this->columnRepository->saveWithTags($column, $data->tagIds);
     }
 }

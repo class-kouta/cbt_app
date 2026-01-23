@@ -4,6 +4,7 @@ namespace App\Infrastructure\Database\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Column extends Model
@@ -19,6 +20,7 @@ class Column extends Model
         'adaptive_thought',
         'current_mood',
         'notes',
+        'stressor_and_response_id',
     ];
 
     /**
@@ -27,5 +29,13 @@ class Column extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'column_tag');
+    }
+
+    /**
+     * 転記元のストレッサーとストレス反応
+     */
+    public function stressorAndResponse(): BelongsTo
+    {
+        return $this->belongsTo(StressorAndResponse::class, 'stressor_and_response_id');
     }
 }
