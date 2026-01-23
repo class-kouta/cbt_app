@@ -681,7 +681,10 @@ function problemSolvingFormApp(itemId) {
         },
 
         async saveProblemSolving() {
-            if (this.isEditMode) {
+            // itemIdがある場合は更新、ない場合は新規作成
+            // 注意: isEditModeではなくitemIdで判定する
+            // （自動保存で新規作成された場合、isEditModeはfalseのままだが、itemIdは設定されるため）
+            if (this.itemId) {
                 await this.updateProblemSolving();
             } else {
                 await this.createProblemSolving();
