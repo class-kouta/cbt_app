@@ -5,8 +5,8 @@
 
 @section('content')
 <div x-data="anxietyDiaryApp({{ $itemId ?? 'null' }})" x-init="init()" @destroy.window="destroy()" x-cloak>
-    <!-- 編集モード時のヘッダー -->
-    <div class="flex justify-between items-center mb-4" x-show="isEditMode">
+    <!-- 編集モード時のヘッダー（最初から編集モードで開いた場合のみ表示） -->
+    <div class="flex justify-between items-center mb-4" x-show="wasInitiallyEditMode">
         <a :href="'/anxiety-diaries/' + itemId" class="text-amber-600 hover:text-amber-800 flex items-center gap-1">
             ← 詳細に戻る
         </a>
@@ -368,6 +368,7 @@ function anxietyDiaryApp(itemId) {
     return {
         itemId: itemId,
         isEditMode: itemId !== null,
+        wasInitiallyEditMode: itemId !== null, // 最初から編集モードで開いたかどうか
         formData: {
             situation: '',
             anxiety_thought: '',

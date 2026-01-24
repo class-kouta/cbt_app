@@ -8,7 +8,6 @@ use App\Application\UseCase\AnxietyDiary\SearchAnxietyDiaryUseCase;
 use App\Application\UseCase\AnxietyDiary\UpdateAnxietyDiaryUseCase;
 use App\Http\Requests\AnxietyDiary\CreateAnxietyDiaryRequest;
 use App\Http\Requests\AnxietyDiary\UpdateAnxietyDiaryRequest;
-use App\Http\Resources\AnxietyDiaryResource;
 use App\Infrastructure\Database\Models\AnxietyDiary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,9 +49,15 @@ class AnxietyDiaryController extends Controller
     {
         $item = $createUseCase->handle($request->toAnxietyDiaryData());
 
-        return (new AnxietyDiaryResource($item))
-            ->response()
-            ->setStatusCode(201);
+        return response()->json([
+            'id' => $item->getId(),
+            'situation' => $item->getSituation(),
+            'anxiety_thought' => $item->getAnxietyThought(),
+            'actual_outcome' => $item->getActualOutcome(),
+            'stressor_and_response_id' => $item->getStressorAndResponseId(),
+            'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
+        ], 201);
     }
 
     /**
@@ -63,9 +68,15 @@ class AnxietyDiaryController extends Controller
         $data = $request->toAnxietyDiaryData($anxietyDiary->stressor_and_response_id);
         $updatedItem = $updateUseCase->handle($anxietyDiary->id, $data);
 
-        return (new AnxietyDiaryResource($updatedItem))
-            ->response()
-            ->setStatusCode(200);
+        return response()->json([
+            'id' => $updatedItem->getId(),
+            'situation' => $updatedItem->getSituation(),
+            'anxiety_thought' => $updatedItem->getAnxietyThought(),
+            'actual_outcome' => $updatedItem->getActualOutcome(),
+            'stressor_and_response_id' => $updatedItem->getStressorAndResponseId(),
+            'created_at' => $updatedItem->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $updatedItem->getUpdatedAt()->format(DATE_ATOM),
+        ]);
     }
 
     /**
