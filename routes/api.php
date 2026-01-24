@@ -79,8 +79,4 @@ Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::cla
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
 
 // AnxietyDiary API（不安日記）
-Route::get('/anxiety-diaries', [AnxietyDiaryController::class, 'index']);
-Route::get('/anxiety-diaries/{anxietyDiary}', [AnxietyDiaryController::class, 'show']);
-Route::post('/anxiety-diaries', [AnxietyDiaryController::class, 'store']);
-Route::put('/anxiety-diaries/{anxietyDiary}', [AnxietyDiaryController::class, 'update']);
-Route::delete('/anxiety-diaries/{anxietyDiary}', [AnxietyDiaryController::class, 'destroy']);
+Route::apiResource('anxiety-diaries', AnxietyDiaryController::class);

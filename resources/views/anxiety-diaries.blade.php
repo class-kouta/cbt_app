@@ -4,7 +4,7 @@
 @section('page-title', '不安日記')
 
 @section('content')
-<div x-data="anxietyDiaryApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
+<div x-data="anxietyDiaryApp({{ $itemId ?? 'null' }})" x-init="init()" @destroy.window="destroy()" x-cloak>
     <!-- 編集モード時のヘッダー -->
     <div class="flex justify-between items-center mb-4" x-show="isEditMode">
         <a :href="'/anxiety-diaries/' + itemId" class="text-amber-600 hover:text-amber-800 flex items-center gap-1">
@@ -381,6 +381,9 @@ function anxietyDiaryApp(itemId) {
         showManualSaveToast: false,
         floatingSaving: false,
 
+        // 保存処理の排他制御用
+        isSaving: false,
+
         // 自動保存用
         autoSaveSnapshots: [],
         autoSaveInterval: null,
@@ -409,6 +412,14 @@ function anxietyDiaryApp(itemId) {
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
+        },
+
+        // コンポーネント破棄時のクリーンアップ
+        destroy() {
+            if (this.autoSaveInterval) {
+                clearInterval(this.autoSaveInterval);
+                this.autoSaveInterval = null;
+            }
         },
 
         // ストレッサーとストレス反応一覧を取得
@@ -514,7 +525,9 @@ function anxietyDiaryApp(itemId) {
                 this.formData.situation.trim() &&
                 this.hasChangedFromPreviousSnapshot() &&
                 !this.submitting &&
-                !this.autoSaving
+                !this.autoSaving &&
+                !this.isSaving &&
+                !this.floatingSaving
             ) {
                 await this.performAutoSave();
             }
@@ -522,8 +535,15 @@ function anxietyDiaryApp(itemId) {
             this.takeSnapshot();
         },
 
-        // 共通の保存処理
+        // 共通の保存処理（排他制御付き）
         async performSave(isManual = false) {
+            // 既に保存中の場合はスキップ（重複保存防止）
+            if (this.isSaving) {
+                console.log('保存処理中のためスキップ');
+                return false;
+            }
+
+            this.isSaving = true;
             try {
                 if (this.itemId) {
                     // 既存の更新
@@ -538,6 +558,13 @@ function anxietyDiaryApp(itemId) {
 
                     if (res.ok) {
                         this.showSaveNotification(isManual);
+                        return true;
+                    } else {
+                        // エラーレスポンスのハンドリング
+                        const errorData = await res.json().catch(() => ({}));
+                        const errorMessage = errorData.message || '保存に失敗しました';
+                        this.showSaveError(errorMessage, isManual);
+                        return false;
                     }
                 } else {
                     // 新規作成
@@ -556,10 +583,21 @@ function anxietyDiaryApp(itemId) {
                         this.isEditMode = true;
                         history.replaceState(null, '', `/anxiety-diaries/${this.itemId}/edit`);
                         this.showSaveNotification(isManual);
+                        return true;
+                    } else {
+                        // エラーレスポンスのハンドリング
+                        const errorData = await res.json().catch(() => ({}));
+                        const errorMessage = errorData.message || '保存に失敗しました';
+                        this.showSaveError(errorMessage, isManual);
+                        return false;
                     }
                 }
             } catch (error) {
                 console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+                this.showSaveError('ネットワークエラーが発生しました', isManual);
+                return false;
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -575,7 +613,7 @@ function anxietyDiaryApp(itemId) {
 
         // 手動保存（フローティングボタン用）
         async manualSave() {
-            if (this.floatingSaving || !this.isFormValid()) return;
+            if (this.floatingSaving || this.isSaving || !this.isFormValid()) return;
 
             this.floatingSaving = true;
             try {
@@ -596,6 +634,19 @@ function anxietyDiaryApp(itemId) {
                 setTimeout(() => {
                     this.showAutoSaveToast = false;
                 }, 2000);
+            }
+        },
+
+        showSaveError(message, isManual = false) {
+            // エラーメッセージをUIに表示
+            this.error = message;
+            // 3秒後にエラーメッセージを消す（自動保存の場合）
+            if (!isManual) {
+                setTimeout(() => {
+                    if (this.error === message) {
+                        this.error = '';
+                    }
+                }, 5000);
             }
         },
 
@@ -640,26 +691,51 @@ function anxietyDiaryApp(itemId) {
                 return;
             }
 
-            this.submitting = true;
-            try {
-                const res = await fetch('/api/anxiety-diaries', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(this.formData)
-                });
+            // 既に保存中の場合は待機
+            if (this.isSaving) {
+                this.error = '保存処理中です。しばらくお待ちください。';
+                return;
+            }
 
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
+            this.submitting = true;
+            this.isSaving = true;
+            try {
+                // 自動保存で既にレコードが作成されている場合は更新として処理
+                if (this.itemId) {
+                    const res = await fetch(`/api/anxiety-diaries/${this.itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(this.formData)
+                    });
+
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.message || 'エラーが発生しました');
+                    }
+                } else {
+                    const res = await fetch('/api/anxiety-diaries', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(this.formData)
+                    });
+
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.message || 'エラーが発生しました');
+                    }
                 }
 
                 window.location.href = '/anxiety-diaries/list';
             } catch (e) {
                 this.error = e.message;
                 this.submitting = false;
+                this.isSaving = false;
             }
         },
 
@@ -671,7 +747,14 @@ function anxietyDiaryApp(itemId) {
                 return;
             }
 
+            // 既に保存中の場合は待機
+            if (this.isSaving) {
+                this.error = '保存処理中です。しばらくお待ちください。';
+                return;
+            }
+
             this.submitting = true;
+            this.isSaving = true;
             try {
                 const res = await fetch(`/api/anxiety-diaries/${this.itemId}`, {
                     method: 'PUT',
@@ -691,6 +774,7 @@ function anxietyDiaryApp(itemId) {
             } catch (e) {
                 this.error = e.message;
                 this.submitting = false;
+                this.isSaving = false;
             }
         }
     };

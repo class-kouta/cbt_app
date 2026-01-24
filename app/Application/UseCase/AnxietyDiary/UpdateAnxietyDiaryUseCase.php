@@ -4,6 +4,7 @@ namespace App\Application\UseCase\AnxietyDiary;
 
 use App\Application\DTO\AnxietyDiaryData;
 use App\Domain\Entity\AnxietyDiary as AnxietyDiaryEntity;
+use App\Domain\Exception\AnxietyDiaryNotFoundException;
 use App\Domain\Repository\AnxietyDiaryRepositoryInterface;
 
 class UpdateAnxietyDiaryUseCase
@@ -17,7 +18,7 @@ class UpdateAnxietyDiaryUseCase
         $existing = $this->repository->findById($id);
 
         if ($existing === null) {
-            throw new \RuntimeException('AnxietyDiary not found');
+            throw new AnxietyDiaryNotFoundException($id);
         }
 
         $updated = AnxietyDiaryEntity::reconstitute(
@@ -25,7 +26,7 @@ class UpdateAnxietyDiaryUseCase
             situation: $data->situation,
             anxietyThought: $data->anxietyThought,
             actualOutcome: $data->actualOutcome,
-            stressorAndResponseId: $data->stressorAndResponseId ?? $existing->getStressorAndResponseId(),
+            stressorAndResponseId: $data->stressorAndResponseId,
             createdAt: $existing->getCreatedAt(),
             updatedAt: new \DateTimeImmutable('now')
         );

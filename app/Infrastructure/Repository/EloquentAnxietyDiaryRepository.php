@@ -11,23 +11,17 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
 {
     public function save(AnxietyDiaryEntity $anxietyDiary): AnxietyDiaryEntity
     {
-        if ($anxietyDiary->getId() !== null) {
-            // 更新
-            $model = AnxietyDiaryModel::findOrFail($anxietyDiary->getId());
-            $model->situation = $anxietyDiary->getSituation();
-            $model->anxiety_thought = $anxietyDiary->getAnxietyThought();
-            $model->actual_outcome = $anxietyDiary->getActualOutcome();
-            $model->stressor_and_response_id = $anxietyDiary->getStressorAndResponseId();
-            $model->save();
-        } else {
-            // 新規作成
-            $model = new AnxietyDiaryModel();
-            $model->situation = $anxietyDiary->getSituation();
-            $model->anxiety_thought = $anxietyDiary->getAnxietyThought();
-            $model->actual_outcome = $anxietyDiary->getActualOutcome();
-            $model->stressor_and_response_id = $anxietyDiary->getStressorAndResponseId();
-            $model->save();
-        }
+        $attributes = [
+            'situation' => $anxietyDiary->getSituation(),
+            'anxiety_thought' => $anxietyDiary->getAnxietyThought(),
+            'actual_outcome' => $anxietyDiary->getActualOutcome(),
+            'stressor_and_response_id' => $anxietyDiary->getStressorAndResponseId(),
+        ];
+
+        $model = AnxietyDiaryModel::updateOrCreate(
+            ['id' => $anxietyDiary->getId()],
+            $attributes
+        );
 
         return AnxietyDiaryEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -61,11 +55,7 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
 
     public function delete(int $id): void
     {
-        $model = AnxietyDiaryModel::find($id);
-
-        if ($model !== null) {
-            $model->delete();
-        }
+        AnxietyDiaryModel::destroy($id);
     }
 
     /**
@@ -103,12 +93,8 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
         // キーワード検索
         if ($keyword !== null && $keyword !== '' && count($searchableColumns) > 0) {
             $query->where(function ($q) use ($keyword, $searchableColumns) {
-                foreach ($searchableColumns as $index => $column) {
-                    if ($index === 0) {
-                        $q->where($column, 'like', "%{$keyword}%");
-                    } else {
-                        $q->orWhere($column, 'like', "%{$keyword}%");
-                    }
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', "%{$keyword}%");
                 }
             });
         }
