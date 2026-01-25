@@ -5,6 +5,21 @@
 
 @section('content')
 <div x-data="problemSolvingDetailApp({{ $itemId }})" x-init="init()" x-cloak>
+    <!-- コピー成功トースト -->
+    <div
+        x-show="showCopyToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <span>📋</span>
+        <span>コピーしました！</span>
+    </div>
+
     <!-- ヘッダー -->
     <div class="flex justify-between items-center mb-4">
         <a href="/problem-solvings/list" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
@@ -165,11 +180,20 @@
                                     <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.reflection ? 'text-gray-400' : ''" x-text="plan.reflection || '未入力'"></p>
                                 </div>
                             </div>
-                        </div>
-                    </template>
+                            </div>
+                        </template>
+                    </div>
+
                 </div>
 
-            </div>
+                <!-- コピーボタン -->
+                <button
+                    type="button"
+                    @click="copyToClipboard()"
+                    class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2 mt-4"
+                >
+                    📋 内容をコピー
+                </button>
         </div>
     </div>
 </div>
@@ -180,6 +204,7 @@ function problemSolvingDetailApp(itemId) {
         itemId: itemId,
         item: null,
         loading: true,
+        showCopyToast: false,
 
         async init() {
             await this.loadItem();
@@ -228,6 +253,96 @@ function problemSolvingDetailApp(itemId) {
             } catch (error) {
                 console.error(error);
                 alert('削除に失敗しました');
+            }
+        },
+
+        generateCopyText() {
+            const sections = [];
+            sections.push('【問題解決法】');
+            sections.push('');
+
+            sections.push('■ 問題状況');
+            sections.push(this.item?.problem_situation || '未入力');
+            sections.push('');
+
+            sections.push('■ 改善イメージ');
+            sections.push(this.item?.improved_image || '未入力');
+            sections.push('');
+
+            // 解決策
+            sections.push('■ 解決策');
+            if (this.item?.solutions && this.item.solutions.length > 0) {
+                this.item.solutions.forEach((solution, index) => {
+                    let solutionText = `${index + 1}. ${solution.content}`;
+                    const ratings = [];
+                    if (solution.effectiveness !== null) {
+                        ratings.push(`効果: ${solution.effectiveness}%`);
+                    }
+                    if (solution.feasibility !== null) {
+                        ratings.push(`実行可能: ${solution.feasibility}%`);
+                    }
+                    if (ratings.length > 0) {
+                        solutionText += ` （${ratings.join('、')}）`;
+                    }
+                    sections.push(solutionText);
+                });
+            } else {
+                sections.push('未入力');
+            }
+            sections.push('');
+
+            // 計画と振り返り
+            if (this.item?.plans && this.item.plans.length > 0) {
+                this.item.plans.forEach((plan, index) => {
+                    const planLabel = this.item.plans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
+                    sections.push(planLabel);
+                    sections.push(plan.action_plan || '未入力');
+                    sections.push('');
+
+                    const reflectionLabel = this.item.plans.length > 1 ? `■ 振り返り ${index + 1}` : '■ 振り返り';
+                    sections.push(reflectionLabel);
+                    sections.push(plan.reflection || '未入力');
+                    sections.push('');
+                });
+            } else {
+                sections.push('■ 実行計画');
+                sections.push('未入力');
+                sections.push('');
+                sections.push('■ 振り返り');
+                sections.push('未入力');
+            }
+
+            return sections.join('\n').trim();
+        },
+
+        async copyToClipboard() {
+            const text = this.generateCopyText();
+
+            try {
+                await navigator.clipboard.writeText(text);
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    this.showCopyToast = true;
+                    setTimeout(() => {
+                        this.showCopyToast = false;
+                    }, 2000);
+                } catch (err) {
+                    console.error('コピーに失敗しました:', err);
+                }
+                document.body.removeChild(textArea);
             }
         }
     };
