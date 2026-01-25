@@ -320,10 +320,10 @@
                 </div>
             </div>
 
-            <!-- TOP5ランキング -->
+            <!-- 全スキーマランキング -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden" x-show="getTopSchemas().length > 0">
                 <div class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-5 py-3">
-                    <h3 class="font-bold">🏆 TOP5 よく活性化されるスキーマ</h3>
+                    <h3 class="font-bold">🏆 よく活性化されるスキーマランキング</h3>
                 </div>
                 <div class="p-4 space-y-3">
                     <template x-for="(schema, index) in getTopSchemas()" :key="schema.key">
@@ -594,8 +594,7 @@ function schemaCountApp() {
 
             return allSchemas
                 .filter(schema => schema.count > 0)
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 5);
+                .sort((a, b) => b.count - a.count);
         }
     };
 }
