@@ -46,6 +46,21 @@
         保存しました
     </div>
 
+    <!-- コピー成功トースト -->
+    <div
+        x-show="showCopyToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <span>📋</span>
+        <span>コピーしました！</span>
+    </div>
+
     <!-- フローティング保存ボタン -->
     <button
         type="button"
@@ -374,17 +389,31 @@
                     </div>
                 </div>
 
-                <!-- 保存ボタン -->
-                <button
-                    type="submit"
-                    :disabled="submitting || !form.problem_situation.trim()"
-                    class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <span x-show="!submitting && !isEditMode">保存する</span>
-                    <span x-show="!submitting && isEditMode">更新する</span>
-                    <span x-show="submitting && !isEditMode">保存中...</span>
-                    <span x-show="submitting && isEditMode">更新中...</span>
-                </button>
+                <!-- ボタンエリア -->
+                <div class="space-y-3">
+                    <!-- 保存ボタン -->
+                    <button
+                        type="submit"
+                        :disabled="submitting || !form.problem_situation.trim()"
+                        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span x-show="!submitting && !isEditMode">保存する</span>
+                        <span x-show="!submitting && isEditMode">更新する</span>
+                        <span x-show="submitting && !isEditMode">保存中...</span>
+                        <span x-show="submitting && isEditMode">更新中...</span>
+                    </button>
+
+                    <!-- コピーボタン -->
+                    <button
+                        type="button"
+                        @click="copyToClipboard()"
+                        class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                        :disabled="!hasAnyContent()"
+                        :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
+                    >
+                        📋 入力内容をコピー
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -412,6 +441,7 @@ function problemSolvingFormApp(itemId) {
         loading: false,
         submitting: false,
         showManualSaveToast: false,
+        showCopyToast: false,
         floatingSaving: false,
 
         // タグ一覧
@@ -888,6 +918,102 @@ function problemSolvingFormApp(itemId) {
                 alert('更新に失敗しました');
             } finally {
                 this.submitting = false;
+            }
+        },
+
+        hasAnyContent() {
+            // 問題状況
+            if (this.form.problem_situation.trim()) return true;
+            // 改善イメージ
+            if (this.form.improved_image.trim()) return true;
+            // 解決策
+            if (this.solutions.some(s => s.content.trim())) return true;
+            // 計画
+            if (this.plans.some(p => (p.action_plan && p.action_plan.trim()) || (p.reflection && p.reflection.trim()))) return true;
+            return false;
+        },
+
+        generateCopyText() {
+            const sections = [];
+            sections.push('【問題解決法】');
+            sections.push('');
+
+            sections.push('■ 問題状況');
+            sections.push(this.form.problem_situation.trim() || '未入力');
+            sections.push('');
+
+            sections.push('■ 改善イメージ');
+            sections.push(this.form.improved_image.trim() || '未入力');
+            sections.push('');
+
+            // 解決策
+            const validSolutions = this.solutions.filter(s => s.content.trim());
+            sections.push('■ 解決策');
+            if (validSolutions.length > 0) {
+                validSolutions.forEach((solution, index) => {
+                    let solutionText = `${index + 1}. ${solution.content}`;
+                    const ratings = [];
+                    if (solution.effectiveness !== '' && solution.effectiveness !== null) {
+                        ratings.push(`効果: ${solution.effectiveness}%`);
+                    }
+                    if (solution.feasibility !== '' && solution.feasibility !== null) {
+                        ratings.push(`実行可能: ${solution.feasibility}%`);
+                    }
+                    if (ratings.length > 0) {
+                        solutionText += ` （${ratings.join('、')}）`;
+                    }
+                    sections.push(solutionText);
+                });
+            } else {
+                sections.push('未入力');
+            }
+            sections.push('');
+
+            // 計画と振り返り
+            this.plans.forEach((plan, index) => {
+                const planLabel = this.plans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
+                sections.push(planLabel);
+                sections.push((plan.action_plan && plan.action_plan.trim()) || '未入力');
+                sections.push('');
+
+                const reflectionLabel = this.plans.length > 1 ? `■ 振り返り ${index + 1}` : '■ 振り返り';
+                sections.push(reflectionLabel);
+                sections.push((plan.reflection && plan.reflection.trim()) || '未入力');
+                sections.push('');
+            });
+
+            return sections.join('\n').trim();
+        },
+
+        async copyToClipboard() {
+            const text = this.generateCopyText();
+
+            try {
+                await navigator.clipboard.writeText(text);
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
+            } catch (err) {
+                // フォールバック: 古いブラウザ対応
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    this.showCopyToast = true;
+                    setTimeout(() => {
+                        this.showCopyToast = false;
+                    }, 2000);
+                } catch (err) {
+                    console.error('コピーに失敗しました:', err);
+                }
+                document.body.removeChild(textArea);
             }
         }
     };
