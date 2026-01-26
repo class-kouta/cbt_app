@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\UseCase\Column\CreateColumnUseCase;
 use App\Application\UseCase\Column\DeleteColumnUseCase;
+use App\Application\UseCase\Column\ExportColumnCsvUseCase;
 use App\Application\UseCase\Column\SearchColumnUseCase;
 use App\Application\UseCase\Column\UpdateColumnUseCase;
 use App\Http\Requests\Column\CreateColumnRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\Column\UpdateColumnRequest;
 use App\Http\Requests\Common\SearchRequest;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ColumnController extends Controller
 {
@@ -105,5 +107,15 @@ class ColumnController extends Controller
         $deleteColumn->handle($column->id);
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * コラムをCSV形式でエクスポート
+     */
+    public function exportCsv(SearchRequest $request, ExportColumnCsvUseCase $exportUseCase): StreamedResponse
+    {
+        $criteria = $request->toSearchCriteriaData();
+
+        return $exportUseCase->handle($criteria);
     }
 }

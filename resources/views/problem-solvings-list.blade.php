@@ -44,13 +44,34 @@
             </div>
         </div>
         
-        <!-- 検索条件クリア -->
-        <div x-show="keyword || selectedTagIds.length > 0" class="mt-3 pt-3 border-t border-gray-200">
+        <!-- 検索条件クリア & CSV出力 -->
+        <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+            <div x-show="keyword || selectedTagIds.length > 0">
+                <button
+                    @click="clearSearch()"
+                    class="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                    検索条件をクリア
+                </button>
+            </div>
+            <div x-show="!(keyword || selectedTagIds.length > 0)"></div>
             <button
-                @click="clearSearch()"
-                class="text-sm text-gray-500 hover:text-gray-700 underline"
+                @click="exportCsv()"
+                :disabled="exporting || loading"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-emerald-400 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                検索条件をクリア
+                <template x-if="!exporting">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </template>
+                <template x-if="exporting">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                </template>
+                <span x-text="exporting ? 'エクスポート中...' : 'CSV出力'"></span>
             </button>
         </div>
     </div>
@@ -132,6 +153,7 @@ function problemSolvingListApp() {
     return {
         items: [],
         loading: true,
+        exporting: false,
         allTags: [],
         keyword: '',
         selectedTagIds: [],
@@ -266,6 +288,62 @@ function problemSolvingListApp() {
                 return false;
             }
             return item.plans.some(plan => plan.action_plan && plan.action_plan.trim() !== '');
+        },
+
+        async exportCsv() {
+            this.exporting = true;
+            
+            try {
+                // 現在の検索条件でCSVをエクスポート
+                const params = new URLSearchParams();
+                if (this.keyword) {
+                    params.append('keyword', this.keyword);
+                }
+                this.selectedTagIds.forEach(id => {
+                    params.append('tag_ids[]', id);
+                });
+                
+                const url = '/api/problem-solvings/export/csv' + (params.toString() ? '?' + params.toString() : '');
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('CSV export failed');
+                }
+                
+                const blob = await response.blob();
+                const filename = response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'problem_solvings.csv';
+                
+                // iOS/Android対応のダウンロード処理
+                if (navigator.share && navigator.canShare) {
+                    try {
+                        const file = new File([blob], filename, { type: 'text/csv' });
+                        if (navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file],
+                                title: '問題解決法',
+                            });
+                            return;
+                        }
+                    } catch (shareError) {
+                        // Web Share APIが使えない場合は従来の方法にフォールバック
+                    }
+                }
+                
+                // 従来のダウンロード方式
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error('CSV export failed:', error);
+                alert('CSVエクスポートに失敗しました');
+            } finally {
+                this.exporting = false;
+            }
         }
     };
 }

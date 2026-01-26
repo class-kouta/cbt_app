@@ -262,4 +262,67 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             'to' => $paginator->lastItem(),
         ];
     }
+
+    /**
+     * 検索条件に基づいて問題解決法を全件取得（CSV出力用）
+     *
+     * @param SearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    {
+        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags']);
+
+        // キーワード検索
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $index => $column) {
+                    if ($index === 0) {
+                        $q->where($column, 'like', "%{$keyword}%");
+                    } else {
+                        $q->orWhere($column, 'like', "%{$keyword}%");
+                    }
+                }
+            });
+        }
+
+        // タグ検索
+        if ($criteria->hasTagIds()) {
+            $query->whereHas('tags', function ($q) use ($criteria) {
+                $q->whereIn('tags.id', $criteria->tagIds);
+            });
+        }
+
+        return $query->orderByDesc('created_at')
+            ->get()
+            ->map(function ($problemSolving) {
+                return [
+                    'id' => $problemSolving->id,
+                    'problem_situation' => $problemSolving->problem_situation,
+                    'improved_image' => $problemSolving->improved_image,
+                    'solutions' => $problemSolving->solutions->map(fn ($s) => [
+                        'id' => $s->id,
+                        'content' => $s->content,
+                        'effectiveness' => $s->effectiveness,
+                        'feasibility' => $s->feasibility,
+                        'sort_order' => $s->sort_order,
+                    ])->toArray(),
+                    'plans' => $problemSolving->plans->map(fn ($p) => [
+                        'id' => $p->id,
+                        'plan_number' => $p->plan_number,
+                        'action_plan' => $p->action_plan,
+                        'reflection' => $p->reflection,
+                    ])->toArray(),
+                    'tags' => $problemSolving->tags->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                    ])->toArray(),
+                    'created_at' => $problemSolving->created_at->format(DATE_ATOM),
+                    'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),
+                ];
+            })
+            ->toArray();
+    }
 }

@@ -128,4 +128,41 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
             'to' => $paginator->lastItem(),
         ];
     }
+
+    /**
+     * 検索条件に基づいて不安日記を全件取得（CSV出力用）
+     *
+     * @param SearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    {
+        $query = AnxietyDiaryModel::query();
+
+        // キーワード検索
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', "%{$keyword}%");
+                }
+            });
+        }
+
+        return $query->orderByDesc('created_at')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'situation' => $item->situation,
+                    'anxiety_thought' => $item->anxiety_thought,
+                    'actual_outcome' => $item->actual_outcome,
+                    'stressor_and_response_id' => $item->stressor_and_response_id,
+                    'created_at' => $item->created_at->format(DATE_ATOM),
+                    'updated_at' => $item->updated_at->format(DATE_ATOM),
+                ];
+            })
+            ->toArray();
+    }
 }

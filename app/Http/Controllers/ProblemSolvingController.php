@@ -8,6 +8,7 @@ use App\Application\DTO\ProblemSolvingPlanData;
 use App\Application\UseCase\ProblemSolving\CreateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\UpdateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\DeleteProblemSolvingUseCase;
+use App\Application\UseCase\ProblemSolving\ExportProblemSolvingCsvUseCase;
 use App\Application\UseCase\ProblemSolving\AddSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\UpdateSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
@@ -26,6 +27,7 @@ use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProblemSolvingController extends Controller
 {
@@ -290,5 +292,15 @@ class ProblemSolvingController extends Controller
             'created_at' => $problemSolving->created_at->format(DATE_ATOM),
             'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),
         ];
+    }
+
+    /**
+     * 問題解決をCSV形式でエクスポート
+     */
+    public function exportCsv(SearchRequest $request, ExportProblemSolvingCsvUseCase $exportUseCase): StreamedResponse
+    {
+        $criteria = $request->toSearchCriteriaData();
+
+        return $exportUseCase->handle($criteria);
     }
 }

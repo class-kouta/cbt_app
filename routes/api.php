@@ -28,6 +28,7 @@ Route::get('/tags', [TagController::class, 'index']);
 // Column API（コラム法）
 Route::get('/columns', [ColumnController::class, 'index']);
 Route::get('/columns/adaptive-thoughts', [ColumnController::class, 'adaptiveThoughts']);
+Route::get('/columns/export/csv', [ColumnController::class, 'exportCsv']);
 Route::get('/columns/{column}', [ColumnController::class, 'show']);
 Route::post('/columns', [ColumnController::class, 'store']);
 Route::put('/columns/{column}', [ColumnController::class, 'update']);
@@ -41,6 +42,7 @@ Route::delete('/writing-disclosures/{writingDisclosure}', [WritingDisclosureCont
 
 // ProblemSolving API（問題解決法）
 Route::get('/problem-solvings', [ProblemSolvingController::class, 'index']);
+Route::get('/problem-solvings/export/csv', [ProblemSolvingController::class, 'exportCsv']);
 Route::get('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'show']);
 Route::post('/problem-solvings', [ProblemSolvingController::class, 'store']);
 Route::put('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'update']);
@@ -62,6 +64,7 @@ Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::clas
 
 // StressorAndResponse API（ストレッサーとストレス反応）
 Route::get('/stressor-and-responses', [StressorAndResponseController::class, 'index']);
+Route::get('/stressor-and-responses/export/csv', [StressorAndResponseController::class, 'exportCsv']);
 Route::get('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'show']);
 Route::post('/stressor-and-responses', [StressorAndResponseController::class, 'store']);
 Route::put('/stressor-and-responses/{stressorAndResponse}', [StressorAndResponseController::class, 'update']);
@@ -79,4 +82,5 @@ Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::cla
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
 
 // AnxietyDiary API（不安日記）
+Route::get('/anxiety-diaries/export/csv', [AnxietyDiaryController::class, 'exportCsv']);
 Route::apiResource('anxiety-diaries', AnxietyDiaryController::class);

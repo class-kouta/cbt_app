@@ -29,6 +29,15 @@ interface ProblemSolvingRepositoryInterface
      */
     public function search(SearchCriteriaData $criteria, array $searchableColumns): array;
 
+    /**
+     * 検索条件に基づいて問題解決法を全件取得（CSV出力用）
+     *
+     * @param SearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array;
+
     public function saveSolution(int $problemSolvingId, ProblemSolvingSolution $solution): ProblemSolvingSolution;
 
     public function updateSolution(ProblemSolvingSolution $solution): ProblemSolvingSolution;
