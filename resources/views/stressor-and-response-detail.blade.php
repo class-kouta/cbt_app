@@ -5,6 +5,21 @@
 
 @section('content')
 <div x-data="stressorDetailApp()" x-init="init()" x-cloak>
+    <!-- コピー成功トースト -->
+    <div
+        x-show="showCopyToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <span>📋</span>
+        <span>コピーしました！</span>
+    </div>
+
     <!-- ローディング -->
     <div x-show="loading" class="text-center py-16">
         <svg class="animate-spin h-8 w-8 mx-auto text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -148,6 +163,15 @@
                     <p class="text-gray-400">未選択</p>
                 </div>
             </div>
+
+            <!-- コピーボタン -->
+            <button
+                type="button"
+                @click="copyToClipboard()"
+                class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+            >
+                📋 内容をコピー
+            </button>
         </div>
     </div>
 
@@ -167,6 +191,7 @@ function stressorDetailApp() {
         item: null,
         loading: true,
         itemId: {{ $itemId }},
+        showCopyToast: false,
 
         async init() {
             await this.loadItem();
@@ -329,6 +354,75 @@ function stressorDetailApp() {
                 }
             };
             return schemaDetails[key]?.[type] || '';
+        },
+
+        generateCopyText() {
+            const sections = [];
+            sections.push('【ストレッサーとストレス反応】');
+            sections.push('');
+
+            sections.push('■ ストレッサー');
+            sections.push(this.item?.stressor || '未入力');
+            sections.push('');
+
+            sections.push('■ 認知（自動思考）');
+            sections.push(this.item?.cognition || '未入力');
+            sections.push('');
+
+            sections.push('■ 気分・感情');
+            sections.push(this.item?.mood || '未入力');
+            sections.push('');
+
+            sections.push('■ 身体反応');
+            sections.push(this.item?.body_reaction || '未入力');
+            sections.push('');
+
+            sections.push('■ 行動');
+            sections.push(this.item?.behavior || '未入力');
+            sections.push('');
+
+            sections.push('■ 刺激されたスキーマ');
+            if (this.item?.stimulated_schemas && this.item.stimulated_schemas.length > 0) {
+                const schemaNames = this.item.stimulated_schemas.map(key => this.getSchemaName(key));
+                sections.push(schemaNames.join('、'));
+            } else {
+                sections.push('未選択');
+            }
+
+            return sections.join('\n').trim();
+        },
+
+        async copyToClipboard() {
+            const text = this.generateCopyText();
+            let copied = false;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copied = true;
+                } catch (err) {
+                    console.error('コピーに失敗しました:', err);
+                }
+                document.body.removeChild(textArea);
+            }
+
+            if (copied) {
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
+            }
         }
     };
 }
