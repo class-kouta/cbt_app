@@ -171,31 +171,7 @@ function anxietyDiaryListApp() {
         },
 
         get visiblePages() {
-            const pages = [];
-            const maxVisible = 5;
-            
-            // 表示開始ページを計算
-            let start;
-            if (this.lastPage <= maxVisible) {
-                // 全ページ数が5以下の場合は1から表示
-                start = 1;
-            } else if (this.currentPage <= 3) {
-                // 現在ページが最初の方なら1から表示
-                start = 1;
-            } else if (this.currentPage >= this.lastPage - 2) {
-                // 現在ページが最後の方なら最後の5ページを表示
-                start = this.lastPage - maxVisible + 1;
-            } else {
-                // それ以外は現在ページを中心に表示
-                start = this.currentPage - 2;
-            }
-            
-            // ページ番号を追加（最大5つ）
-            for (let i = start; i <= Math.min(start + maxVisible - 1, this.lastPage); i++) {
-                pages.push(i);
-            }
-            
-            return pages;
+            return calculateVisiblePages(this.currentPage, this.lastPage);
         },
 
         formatDate(dateString) {
