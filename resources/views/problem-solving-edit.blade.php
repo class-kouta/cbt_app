@@ -260,7 +260,6 @@
                     <button
                         type="button"
                         @click="addSolutionRow()"
-                        x-show="solutions.length < 7"
                         class="mt-2 text-sm text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
                     >
                         <span>＋</span> 解決策を追加
@@ -682,9 +681,7 @@ function problemSolvingFormApp(itemId) {
         },
 
         addSolutionRow() {
-            if (this.solutions.length < 7) {
-                this.solutions.push({ id: null, content: '', effectiveness: '', feasibility: '' });
-            }
+            this.solutions.push({ id: null, content: '', effectiveness: '', feasibility: '' });
         },
 
         removeSolution(index) {
