@@ -2,6 +2,7 @@
 
 namespace App\Application\UseCase\AnxietyDiary;
 
+use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Repository\AnxietyDiaryRepositoryInterface;
 
 class SearchAnxietyDiaryUseCase
@@ -21,13 +22,13 @@ class SearchAnxietyDiaryUseCase
     }
 
     /**
-     * 検索条件に基づいて不安日記を検索
+     * 検索条件に基づいて不安日記を検索（ページネーション対応）
      *
-     * @param string|null $keyword 検索キーワード
-     * @return array<int, array<string, mixed>> 検索結果
+     * @param SearchCriteriaData $criteria 検索条件
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function handle(?string $keyword = null): array
+    public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->search($keyword, self::SEARCHABLE_COLUMNS);
+        return $this->repository->search($criteria, self::SEARCHABLE_COLUMNS);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\AnxietyDiary as AnxietyDiaryEntity;
 use App\Domain\Repository\AnxietyDiaryRepositoryInterface;
 use App\Infrastructure\Database\Models\AnxietyDiary as AnxietyDiaryModel;
@@ -80,18 +81,19 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
     }
 
     /**
-     * キーワード検索
+     * 検索条件に基づいて不安日記を検索（ページネーション対応）
      *
-     * @param string|null $keyword 検索キーワード
+     * @param SearchCriteriaData $criteria 検索条件
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
-     * @return array<int, array<string, mixed>> 検索結果（配列形式）
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function search(?string $keyword, array $searchableColumns): array
+    public function search(SearchCriteriaData $criteria, array $searchableColumns): array
     {
         $query = AnxietyDiaryModel::query();
 
         // キーワード検索
-        if ($keyword !== null && $keyword !== '' && count($searchableColumns) > 0) {
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
             $query->where(function ($q) use ($keyword, $searchableColumns) {
                 foreach ($searchableColumns as $column) {
                     $q->orWhere($column, 'like', "%{$keyword}%");
@@ -99,8 +101,10 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
             });
         }
 
-        return $query->orderByDesc('created_at')
-            ->get()
+        $paginator = $query->orderByDesc('created_at')
+            ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
+
+        $items = collect($paginator->items())
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
@@ -113,5 +117,15 @@ class EloquentAnxietyDiaryRepository implements AnxietyDiaryRepositoryInterface
                 ];
             })
             ->toArray();
+
+        return [
+            'data' => $items,
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
     }
 }

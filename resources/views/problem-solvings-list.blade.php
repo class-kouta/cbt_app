@@ -52,7 +52,6 @@
             >
                 検索条件をクリア
             </button>
-            <span class="text-sm text-gray-500 ml-2" x-text="'（' + items.length + '件の結果）'"></span>
         </div>
     </div>
 
@@ -101,6 +100,12 @@
                 問題解決を始める
             </a>
         </div>
+
+        <x-pagination
+            theme-color-from="emerald-500"
+            theme-color-to="teal-500"
+            theme-border-color="emerald-500"
+        />
     </div>
 
     <!-- 新規作成ボタン（フローティング） -->
@@ -130,6 +135,13 @@ function problemSolvingListApp() {
         allTags: [],
         keyword: '',
         selectedTagIds: [],
+        // ページネーション用
+        currentPage: 1,
+        perPage: 10,
+        total: 0,
+        lastPage: 1,
+        from: 0,
+        to: 0,
 
         async init() {
             await Promise.all([
@@ -154,14 +166,27 @@ function problemSolvingListApp() {
             this.selectedTagIds.forEach(id => {
                 params.append('tag_ids[]', id);
             });
+            params.append('page', this.currentPage);
+            params.append('per_page', this.perPage);
             
             const url = '/api/problem-solvings' + (params.toString() ? '?' + params.toString() : '');
             const res = await fetch(url);
-            this.items = await res.json();
+            const result = await res.json();
+            
+            // ページネーション情報を更新
+            this.items = result.data || [];
+            this.total = result.total || 0;
+            this.currentPage = result.current_page || 1;
+            this.lastPage = result.last_page || 1;
+            this.from = result.from || 0;
+            this.to = result.to || 0;
+            this.perPage = result.per_page || 10;
+            
             this.loading = false;
         },
 
         async search() {
+            this.currentPage = 1; // 検索時は1ページ目に戻る
             await this.loadItems();
         },
 
@@ -178,7 +203,52 @@ function problemSolvingListApp() {
         async clearSearch() {
             this.keyword = '';
             this.selectedTagIds = [];
+            this.currentPage = 1;
             await this.loadItems();
+        },
+
+        async goToPage(page) {
+            if (page < 1 || page > this.lastPage || page === this.currentPage) return;
+            this.currentPage = page;
+            await this.loadItems();
+            // ページ上部にスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        get visiblePages() {
+            const pages = [];
+            const maxVisible = 5;
+            
+            if (this.lastPage <= maxVisible + 2) {
+                // 全ページを表示
+                for (let i = 1; i <= this.lastPage; i++) {
+                    pages.push(i);
+                }
+            } else {
+                // 最初のページ
+                pages.push(1);
+                
+                if (this.currentPage > 3) {
+                    pages.push('...');
+                }
+                
+                // 現在のページ周辺
+                const start = Math.max(2, this.currentPage - 1);
+                const end = Math.min(this.lastPage - 1, this.currentPage + 1);
+                
+                for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                
+                if (this.currentPage < this.lastPage - 2) {
+                    pages.push('...');
+                }
+                
+                // 最後のページ
+                pages.push(this.lastPage);
+            }
+            
+            return pages;
         },
 
         formatDate(dateString) {

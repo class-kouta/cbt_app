@@ -21,11 +21,11 @@ interface ProblemSolvingRepositoryInterface
     public function findAll(): array;
 
     /**
-     * 検索条件に基づいて問題解決法を検索
+     * 検索条件に基づいて問題解決法を検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
-     * @return array<int, array<string, mixed>> 検索結果（配列形式）
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
     public function search(SearchCriteriaData $criteria, array $searchableColumns): array;
 

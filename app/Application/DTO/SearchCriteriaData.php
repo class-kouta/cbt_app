@@ -5,12 +5,21 @@ namespace App\Application\DTO;
 readonly class SearchCriteriaData
 {
     /**
+     * デフォルトの1ページあたりの表示件数
+     */
+    public const DEFAULT_PER_PAGE = 10;
+
+    /**
      * @param string|null $keyword キーワード検索文字列
      * @param array<int>|null $tagIds タグIDの配列
+     * @param int $page ページ番号（1始まり）
+     * @param int $perPage 1ページあたりの表示件数
      */
     public function __construct(
         public ?string $keyword = null,
-        public ?array $tagIds = null
+        public ?array $tagIds = null,
+        public int $page = 1,
+        public int $perPage = self::DEFAULT_PER_PAGE
     ) {
     }
 

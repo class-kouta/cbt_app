@@ -8,22 +8,22 @@ use App\Application\UseCase\AnxietyDiary\SearchAnxietyDiaryUseCase;
 use App\Application\UseCase\AnxietyDiary\UpdateAnxietyDiaryUseCase;
 use App\Http\Requests\AnxietyDiary\CreateAnxietyDiaryRequest;
 use App\Http\Requests\AnxietyDiary\UpdateAnxietyDiaryRequest;
+use App\Http\Requests\Common\SearchRequest;
 use App\Infrastructure\Database\Models\AnxietyDiary;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class AnxietyDiaryController extends Controller
 {
     /**
      * 不安日記一覧を取得（作成日時降順）
-     * キーワード検索に対応
+     * キーワード検索とページネーションに対応
      */
-    public function index(Request $request, SearchAnxietyDiaryUseCase $searchUseCase): JsonResponse
+    public function index(SearchRequest $request, SearchAnxietyDiaryUseCase $searchUseCase): JsonResponse
     {
-        $keyword = $request->input('keyword');
-        $items = $searchUseCase->handle($keyword);
+        $criteria = $request->toSearchCriteriaData();
+        $result = $searchUseCase->handle($criteria);
 
-        return response()->json($items);
+        return response()->json($result);
     }
 
     /**
