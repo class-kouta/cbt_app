@@ -394,13 +394,11 @@ function stressorDetailApp() {
 
         async copyToClipboard() {
             const text = this.generateCopyText();
+            let copied = false;
 
             try {
                 await navigator.clipboard.writeText(text);
-                this.showCopyToast = true;
-                setTimeout(() => {
-                    this.showCopyToast = false;
-                }, 2000);
+                copied = true;
             } catch (err) {
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
@@ -412,14 +410,18 @@ function stressorDetailApp() {
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    this.showCopyToast = true;
-                    setTimeout(() => {
-                        this.showCopyToast = false;
-                    }, 2000);
+                    copied = true;
                 } catch (err) {
                     console.error('コピーに失敗しました:', err);
                 }
                 document.body.removeChild(textArea);
+            }
+
+            if (copied) {
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
             }
         }
     };
