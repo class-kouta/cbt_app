@@ -15,7 +15,7 @@ class UpdateSolutionRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'max:100'],
-            'sort_order' => ['required', 'integer', 'min:1', 'max:7'],
+            'sort_order' => ['required', 'integer', 'min:1'],
             'effectiveness' => ['nullable', 'integer', 'min:0', 'max:100'],
             'feasibility' => ['nullable', 'integer', 'min:0', 'max:100'],
         ];
@@ -28,7 +28,6 @@ class UpdateSolutionRequest extends FormRequest
             'content.max' => '解決策の内容は100文字以内で入力してください',
             'sort_order.required' => '表示順を指定してください',
             'sort_order.min' => '表示順は1以上を指定してください',
-            'sort_order.max' => '表示順は7以下を指定してください',
             'effectiveness.min' => '効果は0以上を指定してください',
             'effectiveness.max' => '効果は100以下を指定してください',
             'feasibility.min' => '実行可能性は0以上を指定してください',

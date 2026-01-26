@@ -28,13 +28,7 @@ class ExportProblemSolvingCsvUseCase
         '作成日時',
         '問題状況',
         '改善イメージ',
-        '解決策1',
-        '解決策2',
-        '解決策3',
-        '解決策4',
-        '解決策5',
-        '解決策6',
-        '解決策7',
+        '解決策（全て）',
         '実行計画（全て）',
         '振り返り（全て）',
         'タグ',
@@ -54,21 +48,17 @@ class ExportProblemSolvingCsvUseCase
         $items = $this->repository->searchAll($criteria, self::SEARCHABLE_COLUMNS);
 
         $rows = array_map(function ($item) {
-            // 解決策をsort_order順にソートして7つ分のカラムに配置
+            // 解決策をsort_order順にソートして1列にまとめる
             $solutions = $item['solutions'] ?? [];
             usort($solutions, fn ($a, $b) => ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0));
 
-            $solutionColumns = [];
-            for ($i = 0; $i < 7; $i++) {
-                $solution = $solutions[$i] ?? null;
-                if ($solution) {
-                    $effectiveness = $solution['effectiveness'] !== null ? "({$solution['effectiveness']}%)" : '';
-                    $feasibility = $solution['feasibility'] !== null ? "[{$solution['feasibility']}%]" : '';
-                    $solutionColumns[] = $solution['content'] . ($effectiveness || $feasibility ? " {$effectiveness}{$feasibility}" : '');
-                } else {
-                    $solutionColumns[] = '';
-                }
+            $solutionTexts = [];
+            foreach ($solutions as $index => $solution) {
+                $effectiveness = $solution['effectiveness'] !== null ? "({$solution['effectiveness']}%)" : '';
+                $feasibility = $solution['feasibility'] !== null ? "[{$solution['feasibility']}%]" : '';
+                $solutionTexts[] = '[' . ($index + 1) . '] ' . $solution['content'] . ($effectiveness || $feasibility ? " {$effectiveness}{$feasibility}" : '');
             }
+            $allSolutions = !empty($solutionTexts) ? implode(' / ', $solutionTexts) : '';
 
             // 全てのplanをplan_number順にソートして、実行計画と振り返りを結合
             $plans = $item['plans'] ?? [];
@@ -97,7 +87,7 @@ class ExportProblemSolvingCsvUseCase
                 $this->csvExportService->formatDatetime($item['created_at']),
                 $item['problem_situation'] ?? '',
                 $item['improved_image'] ?? '',
-                ...$solutionColumns,
+                $allSolutions,
                 $allActionPlans,
                 $allReflections,
                 $this->csvExportService->joinArray($item['tags'] ?? [], 'name'),
