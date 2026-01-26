@@ -278,12 +278,8 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
             $keyword = $criteria->keyword;
             $query->where(function ($q) use ($keyword, $searchableColumns) {
-                foreach ($searchableColumns as $index => $column) {
-                    if ($index === 0) {
-                        $q->where($column, 'like', "%{$keyword}%");
-                    } else {
-                        $q->orWhere($column, 'like', "%{$keyword}%");
-                    }
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', "%{$keyword}%");
                 }
             });
         }

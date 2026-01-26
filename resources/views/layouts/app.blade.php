@@ -455,5 +455,67 @@
             </div>
         </div>
     </footer>
+
+    <!-- 共通CSVエクスポート関数 -->
+    <script>
+    /**
+     * CSVエクスポート共通関数
+     * iOS/Android両対応（Web Share API + Blob URL方式）
+     * 
+     * @param {string} apiUrl - CSVエクスポートAPIのURL
+     * @param {object} params - 検索パラメータ（keyword, tag_ids等）
+     * @param {string} defaultFilename - デフォルトのファイル名
+     * @param {string} shareTitle - Web Share APIで使用するタイトル
+     * @returns {Promise<void>}
+     */
+    async function exportCsvFromApi(apiUrl, params = {}, defaultFilename = 'export.csv', shareTitle = 'CSVエクスポート') {
+        // クエリパラメータを構築
+        const searchParams = new URLSearchParams();
+        if (params.keyword) {
+            searchParams.append('keyword', params.keyword);
+        }
+        if (params.tagIds && params.tagIds.length > 0) {
+            params.tagIds.forEach(id => {
+                searchParams.append('tag_ids[]', id);
+            });
+        }
+        
+        const url = apiUrl + (searchParams.toString() ? '?' + searchParams.toString() : '');
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error('CSV export failed');
+        }
+        
+        const blob = await response.blob();
+        const filename = response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || defaultFilename;
+        
+        // iOS/Android対応のダウンロード処理
+        if (navigator.share && navigator.canShare) {
+            try {
+                const file = new File([blob], filename, { type: 'text/csv' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: shareTitle,
+                    });
+                    return;
+                }
+            } catch (shareError) {
+                // Web Share APIが使えない場合は従来の方法にフォールバック
+            }
+        }
+        
+        // 従来のダウンロード方式
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadUrl);
+    }
+    </script>
 </body>
 </html>

@@ -35,8 +35,8 @@ class ExportProblemSolvingCsvUseCase
         '解決策5',
         '解決策6',
         '解決策7',
-        '実行計画',
-        '振り返り',
+        '実行計画（全て）',
+        '振り返り（全て）',
         'タグ',
     ];
 
@@ -70,9 +70,27 @@ class ExportProblemSolvingCsvUseCase
                 }
             }
 
-            // 最新のplanを取得（複数ある場合は最後のもの）
+            // 全てのplanをplan_number順にソートして、実行計画と振り返りを結合
             $plans = $item['plans'] ?? [];
-            $latestPlan = !empty($plans) ? end($plans) : null;
+            usort($plans, fn ($a, $b) => ($a['plan_number'] ?? 0) <=> ($b['plan_number'] ?? 0));
+
+            // 記入されている実行計画を全て結合
+            $actionPlans = array_filter(
+                array_map(fn ($p) => $p['action_plan'] ?? '', $plans),
+                fn ($v) => !empty(trim($v))
+            );
+            $allActionPlans = !empty($actionPlans)
+                ? implode(' / ', array_map(fn ($v, $k) => '[' . ($k + 1) . '] ' . $v, array_values($actionPlans), array_keys($actionPlans)))
+                : '';
+
+            // 記入されている振り返りを全て結合
+            $reflections = array_filter(
+                array_map(fn ($p) => $p['reflection'] ?? '', $plans),
+                fn ($v) => !empty(trim($v))
+            );
+            $allReflections = !empty($reflections)
+                ? implode(' / ', array_map(fn ($v, $k) => '[' . ($k + 1) . '] ' . $v, array_values($reflections), array_keys($reflections)))
+                : '';
 
             return [
                 $item['id'],
@@ -80,8 +98,8 @@ class ExportProblemSolvingCsvUseCase
                 $item['problem_situation'] ?? '',
                 $item['improved_image'] ?? '',
                 ...$solutionColumns,
-                $latestPlan['action_plan'] ?? '',
-                $latestPlan['reflection'] ?? '',
+                $allActionPlans,
+                $allReflections,
                 $this->csvExportService->joinArray($item['tags'] ?? [], 'name'),
             ];
         }, $items);

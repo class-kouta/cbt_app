@@ -315,50 +315,12 @@ function stressorListApp() {
             this.exporting = true;
             
             try {
-                // 現在の検索条件でCSVをエクスポート
-                const params = new URLSearchParams();
-                if (this.keyword) {
-                    params.append('keyword', this.keyword);
-                }
-                this.selectedTagIds.forEach(id => {
-                    params.append('tag_ids[]', id);
-                });
-                
-                const url = '/api/stressor-and-responses/export/csv' + (params.toString() ? '?' + params.toString() : '');
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error('CSV export failed');
-                }
-                
-                const blob = await response.blob();
-                const filename = response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'stressor_and_responses.csv';
-                
-                // iOS/Android対応のダウンロード処理
-                if (navigator.share && navigator.canShare) {
-                    try {
-                        const file = new File([blob], filename, { type: 'text/csv' });
-                        if (navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                files: [file],
-                                title: 'ストレッサーとストレス反応',
-                            });
-                            return;
-                        }
-                    } catch (shareError) {
-                        // Web Share APIが使えない場合は従来の方法にフォールバック
-                    }
-                }
-                
-                // 従来のダウンロード方式
-                const downloadUrl = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(downloadUrl);
+                await exportCsvFromApi(
+                    '/api/stressor-and-responses/export/csv',
+                    { keyword: this.keyword, tagIds: this.selectedTagIds },
+                    'stressor_and_responses.csv',
+                    'ストレッサーとストレス反応'
+                );
             } catch (error) {
                 console.error('CSV export failed:', error);
                 alert('CSVエクスポートに失敗しました');
