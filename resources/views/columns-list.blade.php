@@ -221,33 +221,25 @@ function columnListApp() {
             const pages = [];
             const maxVisible = 5;
             
-            if (this.lastPage <= maxVisible + 2) {
-                // 全ページを表示
-                for (let i = 1; i <= this.lastPage; i++) {
-                    pages.push(i);
-                }
+            // 表示開始ページを計算
+            let start;
+            if (this.lastPage <= maxVisible) {
+                // 全ページ数が5以下の場合は1から表示
+                start = 1;
+            } else if (this.currentPage <= 3) {
+                // 現在ページが最初の方なら1から表示
+                start = 1;
+            } else if (this.currentPage >= this.lastPage - 2) {
+                // 現在ページが最後の方なら最後の5ページを表示
+                start = this.lastPage - maxVisible + 1;
             } else {
-                // 最初のページ
-                pages.push(1);
-                
-                if (this.currentPage > 3) {
-                    pages.push('...');
-                }
-                
-                // 現在のページ周辺
-                const start = Math.max(2, this.currentPage - 1);
-                const end = Math.min(this.lastPage - 1, this.currentPage + 1);
-                
-                for (let i = start; i <= end; i++) {
-                    pages.push(i);
-                }
-                
-                if (this.currentPage < this.lastPage - 2) {
-                    pages.push('...');
-                }
-                
-                // 最後のページ
-                pages.push(this.lastPage);
+                // それ以外は現在ページを中心に表示
+                start = this.currentPage - 2;
+            }
+            
+            // ページ番号を追加（最大5つ）
+            for (let i = start; i <= Math.min(start + maxVisible - 1, this.lastPage); i++) {
+                pages.push(i);
             }
             
             return pages;
