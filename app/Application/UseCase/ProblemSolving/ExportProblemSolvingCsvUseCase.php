@@ -56,9 +56,10 @@ class ExportProblemSolvingCsvUseCase
             foreach ($solutions as $index => $solution) {
                 $effectiveness = $solution['effectiveness'] !== null ? "({$solution['effectiveness']}%)" : '';
                 $feasibility = $solution['feasibility'] !== null ? "[{$solution['feasibility']}%]" : '';
-                $solutionTexts[] = '[' . ($index + 1) . '] ' . $solution['content'] . ($effectiveness || $feasibility ? " {$effectiveness}{$feasibility}" : '');
+                $details = ($effectiveness || $feasibility) ? " {$effectiveness}{$feasibility}" : '';
+                $solutionTexts[] = '[' . ($index + 1) . '] ' . $solution['content'] . $details;
             }
-            $allSolutions = !empty($solutionTexts) ? implode(' / ', $solutionTexts) : '';
+            $allSolutions = implode(' / ', $solutionTexts);
 
             // 全てのplanをplan_number順にソートして、実行計画と振り返りを結合
             $plans = $item['plans'] ?? [];
