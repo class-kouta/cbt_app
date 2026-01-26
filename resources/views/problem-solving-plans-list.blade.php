@@ -148,30 +148,20 @@ function plansListApp() {
         async loadPlans() {
             this.loading = true;
             try {
-                const res = await fetch('/api/problem-solvings');
-                const problemSolvings = await res.json();
+                const res = await fetch('/api/problem-solvings/plans');
+                const plans = await res.json();
 
-                // 問題解決法から計画を抽出して一覧化
-                this.allPlans = [];
-                problemSolvings.forEach(ps => {
-                    if (ps.plans && ps.plans.length > 0) {
-                        ps.plans.forEach(plan => {
-                            this.allPlans.push({
-                                planId: plan.id,
-                                problemSolvingId: ps.id,
-                                problemSituation: ps.problem_situation,
-                                planNumber: plan.plan_number,
-                                actionPlan: plan.action_plan,
-                                reflection: plan.reflection,
-                                hasReflection: plan.reflection && plan.reflection.trim() !== '',
-                                createdAt: plan.created_at
-                            });
-                        });
-                    }
-                });
-
-                // 作成日時で降順ソート
-                this.allPlans.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                // APIレスポンスをフロント用の形式に変換
+                this.allPlans = plans.map(plan => ({
+                    planId: plan.id,
+                    problemSolvingId: plan.problem_solving_id,
+                    problemSituation: plan.problem_situation,
+                    planNumber: plan.plan_number,
+                    actionPlan: plan.action_plan,
+                    reflection: plan.reflection,
+                    hasReflection: plan.reflection && plan.reflection.trim() !== '',
+                    createdAt: plan.created_at
+                }));
             } catch (error) {
                 console.error('Failed to load plans:', error);
             } finally {
