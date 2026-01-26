@@ -53,6 +53,33 @@ class ProblemSolvingController extends Controller
     }
 
     /**
+     * 計画一覧を取得（全件、作成日時降順）
+     * 実行計画が入力されている計画のみを対象とする
+     */
+    public function plans(): JsonResponse
+    {
+        $plans = ProblemSolvingPlan::with('problemSolving')
+            ->whereNotNull('action_plan')
+            ->where('action_plan', '!=', '')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($plan) {
+                return [
+                    'id' => $plan->id,
+                    'problem_solving_id' => $plan->problem_solving_id,
+                    'problem_situation' => $plan->problemSolving->problem_situation ?? '',
+                    'plan_number' => $plan->plan_number,
+                    'action_plan' => $plan->action_plan,
+                    'reflection' => $plan->reflection,
+                    'created_at' => $plan->created_at->format(DATE_ATOM),
+                    'updated_at' => $plan->updated_at->format(DATE_ATOM),
+                ];
+            });
+
+        return response()->json($plans);
+    }
+
+    /**
      * 問題解決を作成
      */
     public function store(CreateProblemSolvingRequest $request, CreateProblemSolvingUseCase $createProblemSolving): JsonResponse
