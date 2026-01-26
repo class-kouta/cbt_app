@@ -13,16 +13,6 @@
     
     <!-- ページネーションボタン -->
     <div x-show="lastPage > 1" class="flex justify-center items-center gap-2 flex-wrap">
-        <!-- 最初へ -->
-        <button
-            @click="goToPage(1)"
-            :disabled="currentPage === 1"
-            :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
-        >
-            «
-        </button>
-        
         <!-- 前へ -->
         <button
             @click="goToPage(currentPage - 1)"
@@ -36,11 +26,10 @@
         <!-- ページ番号 -->
         <template x-for="page in visiblePages" :key="page">
             <button
-                @click="page !== '...' && goToPage(page)"
-                :disabled="page === '...'"
+                @click="goToPage(page)"
                 :class="page === currentPage 
                     ? 'bg-gradient-to-r from-{{ $themeColorFrom }} to-{{ $themeColorTo }} text-white border-{{ $themeBorderColor }}' 
-                    : (page === '...' ? 'cursor-default' : 'hover:bg-gray-100 border-gray-300')"
+                    : 'hover:bg-gray-100 border-gray-300'"
                 class="px-3 py-2 text-sm border rounded-lg transition-all min-w-[40px]"
                 x-text="page"
             ></button>
@@ -54,16 +43,6 @@
             class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
         >
             ›
-        </button>
-        
-        <!-- 最後へ -->
-        <button
-            @click="goToPage(lastPage)"
-            :disabled="currentPage === lastPage"
-            :class="currentPage === lastPage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
-        >
-            »
         </button>
     </div>
 </div>

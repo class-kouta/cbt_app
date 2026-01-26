@@ -240,39 +240,7 @@ function columnListApp() {
         },
 
         get visiblePages() {
-            const pages = [];
-            const maxVisible = 5;
-            
-            if (this.lastPage <= maxVisible + 2) {
-                // 全ページを表示
-                for (let i = 1; i <= this.lastPage; i++) {
-                    pages.push(i);
-                }
-            } else {
-                // 最初のページ
-                pages.push(1);
-                
-                if (this.currentPage > 3) {
-                    pages.push('...');
-                }
-                
-                // 現在のページ周辺
-                const start = Math.max(2, this.currentPage - 1);
-                const end = Math.min(this.lastPage - 1, this.currentPage + 1);
-                
-                for (let i = start; i <= end; i++) {
-                    pages.push(i);
-                }
-                
-                if (this.currentPage < this.lastPage - 2) {
-                    pages.push('...');
-                }
-                
-                // 最後のページ
-                pages.push(this.lastPage);
-            }
-            
-            return pages;
+            return calculateVisiblePages(this.currentPage, this.lastPage);
         },
 
         formatDate(dateString) {

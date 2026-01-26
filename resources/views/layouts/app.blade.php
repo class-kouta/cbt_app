@@ -34,6 +34,34 @@
     </style>
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        /**
+         * ページネーションで表示するページ番号の配列を計算する
+         * @param {number} currentPage - 現在のページ
+         * @param {number} lastPage - 最後のページ
+         * @param {number} maxVisible - 表示するページ数（デフォルト5）
+         * @returns {number[]} 表示するページ番号の配列
+         */
+        function calculateVisiblePages(currentPage, lastPage, maxVisible = 5) {
+            const pages = [];
+            
+            // 表示開始ページを計算
+            const offset = Math.floor(maxVisible / 2);
+            let start = Math.max(1, currentPage - offset);
+
+            // 表示範囲が最終ページを超える場合は開始ページを調整
+            if (start + maxVisible - 1 > lastPage) {
+                start = Math.max(1, lastPage - maxVisible + 1);
+            }
+            
+            // ページ番号を追加（最大maxVisible個）
+            for (let i = start; i <= Math.min(start + maxVisible - 1, lastPage); i++) {
+                pages.push(i);
+            }
+            
+            return pages;
+        }
+    </script>
 </head>
 <body class="@yield('body-class', 'bg-gray-100') min-h-screen flex flex-col">
     <!-- Fixed Header -->
