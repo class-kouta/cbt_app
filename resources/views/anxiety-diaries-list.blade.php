@@ -35,7 +35,6 @@
             >
                 検索条件をクリア
             </button>
-            <span class="text-sm text-gray-500 ml-2" x-text="'（' + items.length + '件の結果）'"></span>
         </div>
     </div>
 
@@ -80,6 +79,70 @@
                 不安日記を作成する
             </a>
         </div>
+
+        <!-- ページネーション -->
+        <div x-show="!loading && total > 0" class="mt-6 bg-white rounded-xl shadow-md p-4">
+            <!-- 件数表示 -->
+            <div class="text-center text-sm text-gray-600 mb-4">
+                <span x-text="'全' + total.toLocaleString() + '件中　' + (from || 0) + ' ～ ' + (to || 0) + '件目を表示'"></span>
+            </div>
+            
+            <!-- ページネーションボタン -->
+            <div x-show="lastPage > 1" class="flex justify-center items-center gap-2 flex-wrap">
+                <!-- 最初へ -->
+                <button
+                    @click="goToPage(1)"
+                    :disabled="currentPage === 1"
+                    :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
+                >
+                    «
+                </button>
+                
+                <!-- 前へ -->
+                <button
+                    @click="goToPage(currentPage - 1)"
+                    :disabled="currentPage === 1"
+                    :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
+                >
+                    ‹
+                </button>
+                
+                <!-- ページ番号 -->
+                <template x-for="page in visiblePages" :key="page">
+                    <button
+                        @click="page !== '...' && goToPage(page)"
+                        :disabled="page === '...'"
+                        :class="page === currentPage 
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500' 
+                            : (page === '...' ? 'cursor-default' : 'hover:bg-gray-100 border-gray-300')"
+                        class="px-3 py-2 text-sm border rounded-lg transition-all min-w-[40px]"
+                        x-text="page"
+                    ></button>
+                </template>
+                
+                <!-- 次へ -->
+                <button
+                    @click="goToPage(currentPage + 1)"
+                    :disabled="currentPage === lastPage"
+                    :class="currentPage === lastPage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
+                >
+                    ›
+                </button>
+                
+                <!-- 最後へ -->
+                <button
+                    @click="goToPage(lastPage)"
+                    :disabled="currentPage === lastPage"
+                    :class="currentPage === lastPage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg transition-all"
+                >
+                    »
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- 新規作成ボタン（フローティング） -->
@@ -107,6 +170,13 @@ function anxietyDiaryListApp() {
         items: [],
         loading: true,
         keyword: '',
+        // ページネーション用
+        currentPage: 1,
+        perPage: 10,
+        total: 0,
+        lastPage: 1,
+        from: 0,
+        to: 0,
 
         async init() {
             await this.loadItems();
@@ -120,20 +190,78 @@ function anxietyDiaryListApp() {
             if (this.keyword) {
                 params.append('keyword', this.keyword);
             }
+            params.append('page', this.currentPage);
+            params.append('per_page', this.perPage);
             
             const url = '/api/anxiety-diaries' + (params.toString() ? '?' + params.toString() : '');
             const res = await fetch(url);
-            this.items = await res.json();
+            const result = await res.json();
+            
+            // ページネーション情報を更新
+            this.items = result.data || [];
+            this.total = result.total || 0;
+            this.currentPage = result.current_page || 1;
+            this.lastPage = result.last_page || 1;
+            this.from = result.from || 0;
+            this.to = result.to || 0;
+            this.perPage = result.per_page || 10;
+            
             this.loading = false;
         },
 
         async search() {
+            this.currentPage = 1; // 検索時は1ページ目に戻る
             await this.loadItems();
         },
 
         async clearSearch() {
             this.keyword = '';
+            this.currentPage = 1;
             await this.loadItems();
+        },
+
+        async goToPage(page) {
+            if (page < 1 || page > this.lastPage || page === this.currentPage) return;
+            this.currentPage = page;
+            await this.loadItems();
+            // ページ上部にスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        get visiblePages() {
+            const pages = [];
+            const maxVisible = 5;
+            
+            if (this.lastPage <= maxVisible + 2) {
+                // 全ページを表示
+                for (let i = 1; i <= this.lastPage; i++) {
+                    pages.push(i);
+                }
+            } else {
+                // 最初のページ
+                pages.push(1);
+                
+                if (this.currentPage > 3) {
+                    pages.push('...');
+                }
+                
+                // 現在のページ周辺
+                const start = Math.max(2, this.currentPage - 1);
+                const end = Math.min(this.lastPage - 1, this.currentPage + 1);
+                
+                for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                
+                if (this.currentPage < this.lastPage - 2) {
+                    pages.push('...');
+                }
+                
+                // 最後のページ
+                pages.push(this.lastPage);
+            }
+            
+            return pages;
         },
 
         formatDate(dateString) {

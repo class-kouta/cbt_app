@@ -154,11 +154,11 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
     }
 
     /**
-     * 検索条件に基づいてコラムを検索
+     * 検索条件に基づいてコラムを検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
-     * @return array<int, array<string, mixed>> 検索結果（配列形式）
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
     public function search(SearchCriteriaData $criteria, array $searchableColumns): array
     {
@@ -185,8 +185,10 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             });
         }
 
-        return $query->orderByDesc('created_at')
-            ->get()
+        $paginator = $query->orderByDesc('created_at')
+            ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
+
+        $items = collect($paginator->items())
             ->map(function ($column) {
                 return [
                     'id' => $column->id,
@@ -208,5 +210,15 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
                 ];
             })
             ->toArray();
+
+        return [
+            'data' => $items,
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
     }
 }
