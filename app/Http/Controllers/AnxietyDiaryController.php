@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\UseCase\AnxietyDiary\CreateAnxietyDiaryUseCase;
 use App\Application\UseCase\AnxietyDiary\DeleteAnxietyDiaryUseCase;
+use App\Application\UseCase\AnxietyDiary\ExportAnxietyDiaryCsvUseCase;
 use App\Application\UseCase\AnxietyDiary\SearchAnxietyDiaryUseCase;
 use App\Application\UseCase\AnxietyDiary\UpdateAnxietyDiaryUseCase;
 use App\Http\Requests\AnxietyDiary\CreateAnxietyDiaryRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\AnxietyDiary\UpdateAnxietyDiaryRequest;
 use App\Http\Requests\Common\SearchRequest;
 use App\Infrastructure\Database\Models\AnxietyDiary;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnxietyDiaryController extends Controller
 {
@@ -87,5 +89,15 @@ class AnxietyDiaryController extends Controller
         $deleteUseCase->handle($anxietyDiary->id);
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * 不安日記をCSV形式でエクスポート
+     */
+    public function exportCsv(SearchRequest $request, ExportAnxietyDiaryCsvUseCase $exportUseCase): StreamedResponse
+    {
+        $criteria = $request->toSearchCriteriaData();
+
+        return $exportUseCase->handle($criteria);
     }
 }

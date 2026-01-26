@@ -168,4 +168,54 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
             'to' => $paginator->lastItem(),
         ];
     }
+
+    /**
+     * 検索条件に基づいてストレッサーとストレス反応を全件取得（CSV出力用）
+     *
+     * @param SearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    {
+        $query = StressorAndResponseModel::with('tags');
+
+        // キーワード検索
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', "%{$keyword}%");
+                }
+            });
+        }
+
+        // タグ検索
+        if ($criteria->hasTagIds()) {
+            $query->whereHas('tags', function ($q) use ($criteria) {
+                $q->whereIn('tags.id', $criteria->tagIds);
+            });
+        }
+
+        return $query->orderByDesc('created_at')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'stressor' => $item->stressor,
+                    'cognition' => $item->cognition,
+                    'mood' => $item->mood,
+                    'body_reaction' => $item->body_reaction,
+                    'behavior' => $item->behavior,
+                    'stimulated_schemas' => $item->stimulated_schemas,
+                    'tags' => $item->tags->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                    ])->toArray(),
+                    'created_at' => $item->created_at->format(DATE_ATOM),
+                    'updated_at' => $item->updated_at->format(DATE_ATOM),
+                ];
+            })
+            ->toArray();
+    }
 }

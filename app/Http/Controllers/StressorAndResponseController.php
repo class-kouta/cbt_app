@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application\DTO\StressorAndResponseData;
 use App\Application\UseCase\StressorAndResponse\CreateStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\DeleteStressorAndResponseUseCase;
+use App\Application\UseCase\StressorAndResponse\ExportStressorAndResponseCsvUseCase;
 use App\Application\UseCase\StressorAndResponse\SearchStressorAndResponseUseCase;
 use App\Application\UseCase\StressorAndResponse\UpdateStressorAndResponseUseCase;
 use App\Http\Requests\Common\SearchRequest;
@@ -12,6 +13,7 @@ use App\Http\Requests\StressorAndResponse\CreateStressorAndResponseRequest;
 use App\Http\Requests\StressorAndResponse\UpdateStressorAndResponseRequest;
 use App\Infrastructure\Database\Models\StressorAndResponse;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StressorAndResponseController extends Controller
 {
@@ -151,5 +153,15 @@ class StressorAndResponseController extends Controller
         $deleteUseCase->handle($stressorAndResponse->id);
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * ストレッサーとストレス反応をCSV形式でエクスポート
+     */
+    public function exportCsv(SearchRequest $request, ExportStressorAndResponseCsvUseCase $exportUseCase): StreamedResponse
+    {
+        $criteria = $request->toSearchCriteriaData();
+
+        return $exportUseCase->handle($criteria);
     }
 }
