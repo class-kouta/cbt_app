@@ -148,8 +148,10 @@ function plansListApp() {
         async loadPlans() {
             this.loading = true;
             try {
-                const res = await fetch('/api/problem-solvings');
-                const problemSolvings = await res.json();
+                // per_page=1000で十分な数を取得（計画一覧は全件表示）
+                const res = await fetch('/api/problem-solvings?per_page=1000');
+                const result = await res.json();
+                const problemSolvings = result.data || [];
 
                 // 問題解決法から計画を抽出して一覧化
                 this.allPlans = [];
