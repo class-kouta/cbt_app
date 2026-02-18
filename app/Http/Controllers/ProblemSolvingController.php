@@ -288,6 +288,25 @@ class ProblemSolvingController extends Controller
     }
 
     /**
+     * 振り返り未記入かつ作成から1週間以上経過した実行計画が存在するかチェック
+     */
+    public function hasOverdueReflection(): JsonResponse
+    {
+        $oneWeekAgo = now()->subWeek();
+
+        $exists = ProblemSolvingPlan::whereNotNull('action_plan')
+            ->where('action_plan', '!=', '')
+            ->where(function ($query) {
+                $query->whereNull('reflection')
+                    ->orWhere('reflection', '');
+            })
+            ->where('created_at', '<=', $oneWeekAgo)
+            ->exists();
+
+        return response()->json(['has_overdue' => $exists]);
+    }
+
+    /**
      * 問題解決をJSON形式にフォーマット
      */
     private function formatProblemSolving(ProblemSolving $problemSolving): array
