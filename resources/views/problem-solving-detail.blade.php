@@ -173,9 +173,22 @@
 
                                 <!-- 振り返り -->
                                 <div class="bg-white rounded-lg p-3">
-                                    <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center gap-1">
-                                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-lime-500 text-white text-xs">5</span>
-                                        振り返り
+                                    <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center justify-between">
+                                        <div class="flex items-center gap-1">
+                                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-lime-500 text-white text-xs">5</span>
+                                            振り返り
+                                        </div>
+                                        <span
+                                            x-show="plan.improvement_level"
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
+                                            :class="{
+                                                'bg-red-100 text-red-700': plan.improvement_level <= 3,
+                                                'bg-yellow-100 text-yellow-700': plan.improvement_level >= 4 && plan.improvement_level <= 6,
+                                                'bg-green-100 text-green-700': plan.improvement_level >= 7
+                                            }"
+                                        >
+                                            📊 改善Lv.<span x-text="plan.improvement_level"></span>
+                                        </span>
                                     </div>
                                     <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.reflection ? 'text-gray-400' : ''" x-text="plan.reflection || '未入力'"></p>
                                 </div>

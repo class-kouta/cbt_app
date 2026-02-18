@@ -27,7 +27,8 @@ class AddPlanUseCase
         $plan = ProblemSolvingPlanEntity::createNew(
             $nextPlanNumber,
             $data->actionPlan,
-            $data->reflection
+            $data->reflection,
+            $data->improvementLevel
         );
 
         return $this->problemSolvingRepository->savePlan($problemSolvingId, $plan);

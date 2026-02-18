@@ -15,10 +15,12 @@ class ProblemSolvingPlan extends Model
         'plan_number',
         'action_plan',
         'reflection',
+        'improvement_level',
     ];
 
     protected $casts = [
         'plan_number' => 'integer',
+        'improvement_level' => 'integer',
     ];
 
     /**

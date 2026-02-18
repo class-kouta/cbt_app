@@ -107,6 +107,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         $model->plan_number = $plan->getPlanNumber();
         $model->action_plan = $plan->getActionPlan();
         $model->reflection = $plan->getReflection();
+        $model->improvement_level = $plan->getImprovementLevel();
         $model->save();
 
         return $this->toPlanEntity($model);
@@ -128,6 +129,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         $model = ProblemSolvingPlanModel::findOrFail($plan->getId());
         $model->action_plan = $plan->getActionPlan();
         $model->reflection = $plan->getReflection();
+        $model->improvement_level = $plan->getImprovementLevel();
         $model->save();
 
         return $this->toPlanEntity($model);
@@ -180,6 +182,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             planNumber: (int) $model->plan_number,
             actionPlan: $model->action_plan,
             reflection: $model->reflection,
+            improvementLevel: $model->improvement_level,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -238,6 +241,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                         'plan_number' => $p->plan_number,
                         'action_plan' => $p->action_plan,
                         'reflection' => $p->reflection,
+                        'improvement_level' => $p->improvement_level,
                         'created_at' => $p->created_at->format(DATE_ATOM),
                         'updated_at' => $p->updated_at->format(DATE_ATOM),
                     ])->toArray(),
@@ -310,6 +314,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                         'plan_number' => $p->plan_number,
                         'action_plan' => $p->action_plan,
                         'reflection' => $p->reflection,
+                        'improvement_level' => $p->improvement_level,
                     ])->toArray(),
                     'tags' => $problemSolving->tags->map(fn ($tag) => [
                         'id' => $tag->id,
