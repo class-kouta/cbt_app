@@ -30,7 +30,7 @@ class ExportProblemSolvingCsvUseCase
         '改善イメージ',
         '解決策（全て）※[番号] 内容 (効果%)[実行可能%]',
         '実行計画（全て）',
-        '振り返り（全て）',
+        '振り返り（全て）※改善レベル付き',
         'タグ',
     ];
 
@@ -74,14 +74,20 @@ class ExportProblemSolvingCsvUseCase
                 ? implode(' / ', array_map(fn ($v, $k) => '[' . ($k + 1) . '] ' . $v, array_values($actionPlans), array_keys($actionPlans)))
                 : '';
 
-            // 記入されている振り返りを全て結合
-            $reflections = array_filter(
-                array_map(fn ($p) => $p['reflection'] ?? '', $plans),
-                fn ($v) => !empty(trim($v))
-            );
-            $allReflections = !empty($reflections)
-                ? implode(' / ', array_map(fn ($v, $k) => '[' . ($k + 1) . '] ' . $v, array_values($reflections), array_keys($reflections)))
-                : '';
+            // 記入されている振り返りを全て結合（改善レベル付き）
+            $reflectionTexts = [];
+            foreach ($plans as $index => $plan) {
+                $reflection = $plan['reflection'] ?? '';
+                if (!empty(trim($reflection))) {
+                    $text = '[' . ($index + 1) . '] ' . $reflection;
+                    $level = $plan['improvement_level'] ?? null;
+                    if ($level !== null) {
+                        $text .= ' (改善Lv.' . $level . ')';
+                    }
+                    $reflectionTexts[] = $text;
+                }
+            }
+            $allReflections = implode(' / ', $reflectionTexts);
 
             return [
                 $item['id'],
