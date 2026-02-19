@@ -11,7 +11,7 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
-use App\Http\Controllers\AnxietyDiaryController;
+
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -82,7 +82,3 @@ Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::c
 Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
 Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
-
-// AnxietyDiary API（不安日記）
-Route::get('/anxiety-diaries/export/csv', [AnxietyDiaryController::class, 'exportCsv']);
-Route::apiResource('anxiety-diaries', AnxietyDiaryController::class);

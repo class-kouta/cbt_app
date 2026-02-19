@@ -131,7 +131,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true, anxietyOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -423,44 +423,6 @@
                             </div>
                         </div>
 
-                        <!-- 不安日記（多段） -->
-                        <div>
-                            <button
-                                @click="anxietyOpen = !anxietyOpen"
-                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
-                            >
-                                <span class="font-medium text-lg">不安日記</span>
-                                <svg
-                                    class="w-5 h-5 transition-transform duration-200"
-                                    :class="anxietyOpen ? 'rotate-180' : ''"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="anxietyOpen" x-collapse class="">
-                                @if(request()->is('anxiety-diaries'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">新規作成</span>
-                                    </span>
-                                @else
-                                    <a href="/anxiety-diaries" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">新規作成</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('anxiety-diaries/list'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">一覧</span>
-                                    </span>
-                                @else
-                                    <a href="/anxiety-diaries/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">一覧</span>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
                     </nav>
                 </div>
             </div>
