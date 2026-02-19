@@ -22,7 +22,8 @@ class UpdatePlanUseCase
 
         $updatedPlan = $existingPlan->update(
             $data->actionPlan,
-            $data->reflection
+            $data->reflection,
+            $data->improvementLevel
         );
 
         return $this->problemSolvingRepository->updatePlan($updatedPlan);

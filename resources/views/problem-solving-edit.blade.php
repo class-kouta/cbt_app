@@ -367,6 +367,30 @@
                                             placeholder="（実行後に記入してください）"
                                             maxlength="5000"
                                         ></textarea>
+
+                                        <!-- 改善レベル -->
+                                        <div class="mt-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                📊 改善レベル
+                                                <span class="text-gray-400 font-normal ml-1">実行後の改善度合いを1〜10で評価</span>
+                                            </label>
+                                            <select
+                                                x-model="plan.improvement_level"
+                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
+                                            >
+                                                <option value="">選択してください</option>
+                                                <option value="1">1 - ほとんど改善なし</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10 - 大幅に改善</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -460,7 +484,7 @@ function problemSolvingFormApp(itemId) {
                 await this.loadItem();
             } else {
                 // 新規作成の場合は空の計画を1つ追加
-                this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', expanded: true }];
+                this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
             }
 
             // 初期スナップショットを取得
@@ -507,7 +531,7 @@ function problemSolvingFormApp(itemId) {
                 problem_situation: this.form.problem_situation,
                 improved_image: this.form.improved_image,
                 solutions: JSON.stringify(this.solutions),
-                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection }))),
+                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level }))),
                 tag_ids: JSON.stringify(this.form.tag_ids)
             };
             this.autoSaveSnapshots.push(snapshot);
@@ -536,7 +560,7 @@ function problemSolvingFormApp(itemId) {
 
         // 指定されたスナップショットと現在の値を比較
         hasValueChanged(snapshot) {
-            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection })));
+            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level })));
             return (
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
@@ -661,10 +685,11 @@ function problemSolvingFormApp(itemId) {
                             plan_number: p.plan_number,
                             action_plan: p.action_plan || '',
                             reflection: p.reflection || '',
+                            improvement_level: p.improvement_level !== null && p.improvement_level !== undefined ? String(p.improvement_level) : '',
                             expanded: true
                         }));
                     } else {
-                        this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', expanded: true }];
+                        this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
                     }
                     this.originalPlans = JSON.parse(JSON.stringify(this.plans));
 
@@ -698,6 +723,7 @@ function problemSolvingFormApp(itemId) {
                 plan_number: nextNumber,
                 action_plan: '',
                 reflection: '',
+                improvement_level: '',
                 expanded: true
             });
         },
@@ -830,7 +856,8 @@ function problemSolvingFormApp(itemId) {
                         },
                         body: JSON.stringify({
                             action_plan: plan.action_plan || null,
-                            reflection: plan.reflection || null
+                            reflection: plan.reflection || null,
+                            improvement_level: plan.improvement_level ? parseInt(plan.improvement_level) : null
                         })
                     });
                 } else {
@@ -844,7 +871,8 @@ function problemSolvingFormApp(itemId) {
                             },
                             body: JSON.stringify({
                                 action_plan: plan.action_plan || null,
-                                reflection: plan.reflection || null
+                                reflection: plan.reflection || null,
+                                improvement_level: plan.improvement_level ? parseInt(plan.improvement_level) : null
                             })
                         });
                         if (planRes.ok) {

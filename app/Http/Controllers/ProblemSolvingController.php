@@ -71,6 +71,7 @@ class ProblemSolvingController extends Controller
                     'plan_number' => $plan->plan_number,
                     'action_plan' => $plan->action_plan,
                     'reflection' => $plan->reflection,
+                    'improvement_level' => $plan->improvement_level,
                     'created_at' => $plan->created_at->format(DATE_ATOM),
                     'updated_at' => $plan->updated_at->format(DATE_ATOM),
                 ];
@@ -148,6 +149,7 @@ class ProblemSolvingController extends Controller
                 'plan_number' => $p->getPlanNumber(),
                 'action_plan' => $p->getActionPlan(),
                 'reflection' => $p->getReflection(),
+                'improvement_level' => $p->getImprovementLevel(),
             ], $updated->getPlans()),
             'tags' => $problemSolving->tags->map(fn ($tag) => [
                 'id' => $tag->id,
@@ -238,7 +240,8 @@ class ProblemSolvingController extends Controller
     {
         $data = new ProblemSolvingPlanData(
             actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null,
+            improvementLevel: $request->filled('improvement_level') ? (int) $request->integer('improvement_level') : null
         );
 
         $plan = $addPlan->handle($problemSolving->id, $data);
@@ -249,6 +252,7 @@ class ProblemSolvingController extends Controller
             'plan_number' => $plan->getPlanNumber(),
             'action_plan' => $plan->getActionPlan(),
             'reflection' => $plan->getReflection(),
+            'improvement_level' => $plan->getImprovementLevel(),
             'created_at' => $plan->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $plan->getUpdatedAt()->format(DATE_ATOM),
         ], 201);
@@ -261,7 +265,8 @@ class ProblemSolvingController extends Controller
     {
         $data = new ProblemSolvingPlanData(
             actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null,
+            improvementLevel: $request->filled('improvement_level') ? (int) $request->integer('improvement_level') : null
         );
 
         $updated = $updatePlan->handle($plan->id, $data);
@@ -272,6 +277,7 @@ class ProblemSolvingController extends Controller
             'plan_number' => $updated->getPlanNumber(),
             'action_plan' => $updated->getActionPlan(),
             'reflection' => $updated->getReflection(),
+            'improvement_level' => $updated->getImprovementLevel(),
             'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
         ]);
@@ -327,6 +333,7 @@ class ProblemSolvingController extends Controller
                 'plan_number' => $p->plan_number,
                 'action_plan' => $p->action_plan,
                 'reflection' => $p->reflection,
+                'improvement_level' => $p->improvement_level,
                 'created_at' => $p->created_at->format(DATE_ATOM),
                 'updated_at' => $p->updated_at->format(DATE_ATOM),
             ])->toArray(),

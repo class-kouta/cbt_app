@@ -11,6 +11,7 @@ class ProblemSolvingPlan
     private int $planNumber;
     private ?string $actionPlan;
     private ?string $reflection;
+    private ?int $improvementLevel;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
@@ -20,6 +21,7 @@ class ProblemSolvingPlan
         int $planNumber,
         ?string $actionPlan,
         ?string $reflection,
+        ?int $improvementLevel,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -28,6 +30,7 @@ class ProblemSolvingPlan
         $this->planNumber = $planNumber;
         $this->actionPlan = $actionPlan;
         $this->reflection = $reflection;
+        $this->improvementLevel = $improvementLevel;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -35,7 +38,8 @@ class ProblemSolvingPlan
     public static function createNew(
         int $planNumber,
         ?string $actionPlan = null,
-        ?string $reflection = null
+        ?string $reflection = null,
+        ?int $improvementLevel = null
     ): self {
         $now = new DateTimeImmutable('now');
         return new self(
@@ -44,6 +48,7 @@ class ProblemSolvingPlan
             $planNumber,
             $actionPlan,
             $reflection,
+            $improvementLevel,
             $now,
             $now
         );
@@ -55,6 +60,7 @@ class ProblemSolvingPlan
         int $planNumber,
         ?string $actionPlan,
         ?string $reflection,
+        ?int $improvementLevel,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -64,6 +70,7 @@ class ProblemSolvingPlan
             $planNumber,
             $actionPlan,
             $reflection,
+            $improvementLevel,
             $createdAt,
             $updatedAt
         );
@@ -94,6 +101,11 @@ class ProblemSolvingPlan
         return $this->reflection;
     }
 
+    public function getImprovementLevel(): ?int
+    {
+        return $this->improvementLevel;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -112,6 +124,7 @@ class ProblemSolvingPlan
             $this->planNumber,
             $this->actionPlan,
             $this->reflection,
+            $this->improvementLevel,
             $this->createdAt,
             $this->updatedAt
         );
@@ -125,6 +138,7 @@ class ProblemSolvingPlan
             $this->planNumber,
             $this->actionPlan,
             $this->reflection,
+            $this->improvementLevel,
             $this->createdAt,
             $this->updatedAt
         );
@@ -132,7 +146,8 @@ class ProblemSolvingPlan
 
     public function update(
         ?string $actionPlan,
-        ?string $reflection
+        ?string $reflection,
+        ?int $improvementLevel = null
     ): self {
         return new self(
             $this->id,
@@ -140,6 +155,7 @@ class ProblemSolvingPlan
             $this->planNumber,
             $actionPlan,
             $reflection,
+            $improvementLevel,
             $this->createdAt,
             new DateTimeImmutable('now')
         );

@@ -16,6 +16,7 @@ class AddPlanRequest extends FormRequest
         return [
             'action_plan' => ['nullable', 'string', 'max:5000'],
             'reflection' => ['nullable', 'string', 'max:5000'],
+            'improvement_level' => ['nullable', 'integer', 'min:1', 'max:10'],
         ];
     }
 }
