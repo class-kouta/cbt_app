@@ -179,15 +179,16 @@
                                             振り返り
                                         </div>
                                         <span
-                                            x-show="plan.improvement_level"
+                                            x-show="plan.reflection && plan.reflection.trim()"
                                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
                                             :class="{
-                                                'bg-red-100 text-red-700': plan.improvement_level <= 3,
-                                                'bg-yellow-100 text-yellow-700': plan.improvement_level >= 4 && plan.improvement_level <= 6,
-                                                'bg-green-100 text-green-700': plan.improvement_level >= 7
+                                                'bg-gray-100 text-gray-500': !plan.improvement_level,
+                                                'bg-red-100 text-red-700': plan.improvement_level && plan.improvement_level <= 3,
+                                                'bg-yellow-100 text-yellow-700': plan.improvement_level && plan.improvement_level >= 4 && plan.improvement_level <= 6,
+                                                'bg-green-100 text-green-700': plan.improvement_level && plan.improvement_level >= 7
                                             }"
                                         >
-                                            📊 改善Lv.<span x-text="plan.improvement_level"></span>
+                                            📊 改善Lv.<span x-text="plan.improvement_level || '-'"></span>
                                         </span>
                                     </div>
                                     <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.reflection ? 'text-gray-400' : ''" x-text="plan.reflection || '未入力'"></p>

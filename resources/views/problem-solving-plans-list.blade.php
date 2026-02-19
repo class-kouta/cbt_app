@@ -74,15 +74,15 @@
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-xs text-green-600 font-medium">💭 振り返り</span>
                             <span
-                                x-show="plan.improvementLevel"
                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
                                 :class="{
-                                    'bg-red-100 text-red-700': plan.improvementLevel <= 3,
-                                    'bg-yellow-100 text-yellow-700': plan.improvementLevel >= 4 && plan.improvementLevel <= 6,
-                                    'bg-green-100 text-green-700': plan.improvementLevel >= 7
+                                    'bg-gray-100 text-gray-500': !plan.improvementLevel,
+                                    'bg-red-100 text-red-700': plan.improvementLevel && plan.improvementLevel <= 3,
+                                    'bg-yellow-100 text-yellow-700': plan.improvementLevel && plan.improvementLevel >= 4 && plan.improvementLevel <= 6,
+                                    'bg-green-100 text-green-700': plan.improvementLevel && plan.improvementLevel >= 7
                                 }"
                             >
-                                📊 改善Lv.<span x-text="plan.improvementLevel"></span>
+                                📊 改善Lv.<span x-text="plan.improvementLevel || '-'"></span>
                             </span>
                         </div>
                         <p class="text-gray-800 text-sm line-clamp-2 break-words" x-text="plan.reflection"></p>
