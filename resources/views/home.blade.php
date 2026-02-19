@@ -7,12 +7,12 @@
 
 @section('content')
 <!-- 振り返り放置通知バナー -->
-<div x-data="overdueReflectionBanner('{{ route('api.problem-solvings.has-overdue-reflection') }}')" x-init="init()" x-cloak>
+<div x-data="overdueReflectionBanner('{{ route('api.problem-solvings.has-overdue-reflection', [], false) }}')" x-init="init()" x-cloak>
     <div x-show="hasOverdue" class="max-w-4xl mx-auto mb-4">
         <div class="bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3 flex items-start gap-3">
             <span class="text-yellow-500 text-xl flex-shrink-0 mt-0.5">⚠️</span>
             <p class="text-sm text-yellow-800">
-                振り返りしてない実行計画があります。<a href="{{ route('problem-solving-plans.list', ['filter' => 'pending']) }}" class="text-yellow-900 font-bold underline hover:text-yellow-700">計画一覧</a>から確認できます。
+                振り返りしてない実行計画があります。<a href="{{ route('problem-solving-plans.list', ['filter' => 'pending'], false) }}" class="text-yellow-900 font-bold underline hover:text-yellow-700">計画一覧</a>から確認できます。
             </p>
         </div>
     </div>
