@@ -6,6 +6,18 @@
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')
 
 @section('content')
+<!-- 振り返り放置通知バナー -->
+<div x-data="overdueReflectionBanner('{{ route('api.problem-solvings.has-overdue-reflection') }}')" x-init="init()" x-cloak>
+    <div x-show="hasOverdue" class="max-w-4xl mx-auto mb-4">
+        <div class="bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3 flex items-start gap-3">
+            <span class="text-yellow-500 text-xl flex-shrink-0 mt-0.5">⚠️</span>
+            <p class="text-sm text-yellow-800">
+                振り返りしてない実行計画があります。<a href="{{ route('problem-solving-plans.list', ['filter' => 'pending']) }}" class="text-yellow-900 font-bold underline hover:text-yellow-700">計画一覧</a>から確認できます。
+            </p>
+        </div>
+    </div>
+</div>
+
 <!-- Cards Grid - Always 2 columns for mobile friendliness -->
 <div class="max-w-4xl mx-auto grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
     <!-- Stressor and Stress Response Card -->
@@ -156,4 +168,21 @@
         </div>
     </a>
 </div>
+<script>
+function overdueReflectionBanner(apiUrl) {
+    return {
+        hasOverdue: false,
+        async init() {
+            try {
+                const res = await fetch(apiUrl);
+                if (!res.ok) return;
+                const data = await res.json();
+                this.hasOverdue = data.has_overdue;
+            } catch (e) {
+                // API失敗時は非表示のまま
+            }
+        }
+    };
+}
+</script>
 @endsection

@@ -94,7 +94,7 @@ Route::get('/problem-solvings/list', function () {
 // 計画一覧ページ
 Route::get('/problem-solvings/plans', function () {
     return view('problem-solving-plans-list');
-});
+})->name('problem-solving-plans.list');
 
 // 問題解決法詳細ページ
 Route::get('/problem-solvings/{id}', function ($id) {

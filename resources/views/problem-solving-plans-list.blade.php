@@ -139,7 +139,7 @@ function plansListApp() {
     return {
         allPlans: [],
         loading: true,
-        filter: 'all',
+        filter: new URLSearchParams(window.location.search).get('filter') || 'all',
 
         async init() {
             await this.loadPlans();
