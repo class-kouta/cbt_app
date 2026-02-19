@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Application\DTO\PlanSearchCriteriaData;
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\ProblemSolving as ProblemSolvingEntity;
 use App\Domain\Entity\ProblemSolvingSolution as ProblemSolvingSolutionEntity;
@@ -186,6 +187,55 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
+    }
+
+    /**
+     * @param PlanSearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム（計画テーブル内）
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchPlans(PlanSearchCriteriaData $criteria, array $searchableColumns): array
+    {
+        $query = ProblemSolvingPlanModel::with('problemSolving')
+            ->whereNotNull('action_plan')
+            ->where('action_plan', '!=', '');
+
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere("problem_solving_plans.{$column}", 'like', "%{$keyword}%");
+                }
+                $q->orWhereHas('problemSolving', function ($subQ) use ($keyword) {
+                    $subQ->where('problem_situation', 'like', "%{$keyword}%");
+                });
+            });
+        }
+
+        if ($criteria->hasImprovementLevelFilter()) {
+            $query->whereNotNull('improvement_level')
+                ->whereBetween('improvement_level', [
+                    $criteria->improvementLevelMin,
+                    $criteria->improvementLevelMax,
+                ]);
+        }
+
+        return $query->orderByDesc('created_at')
+            ->get()
+            ->map(function ($plan) {
+                return [
+                    'id' => $plan->id,
+                    'problem_solving_id' => $plan->problem_solving_id,
+                    'problem_situation' => $plan->problemSolving->problem_situation ?? '',
+                    'plan_number' => $plan->plan_number,
+                    'action_plan' => $plan->action_plan,
+                    'reflection' => $plan->reflection,
+                    'improvement_level' => $plan->improvement_level,
+                    'created_at' => $plan->created_at->format(DATE_ATOM),
+                    'updated_at' => $plan->updated_at->format(DATE_ATOM),
+                ];
+            })
+            ->toArray();
     }
 
     /**

@@ -15,8 +15,10 @@ use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
 use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
 use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
+use App\Application\UseCase\ProblemSolving\SearchPlanUseCase;
 use App\Application\UseCase\ProblemSolving\SearchProblemSolvingUseCase;
 use App\Http\Requests\Common\SearchRequest;
+use App\Http\Requests\ProblemSolving\SearchPlanRequest;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\UpdateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\AddSolutionRequest;
@@ -55,27 +57,12 @@ class ProblemSolvingController extends Controller
     /**
      * 計画一覧を取得（全件、作成日時降順）
      * 実行計画が入力されている計画のみを対象とする
+     * キーワード検索・改善レベル範囲検索に対応
      */
-    public function plans(): JsonResponse
+    public function plans(SearchPlanRequest $request, SearchPlanUseCase $searchPlanUseCase): JsonResponse
     {
-        $plans = ProblemSolvingPlan::with('problemSolving')
-            ->whereNotNull('action_plan')
-            ->where('action_plan', '!=', '')
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function ($plan) {
-                return [
-                    'id' => $plan->id,
-                    'problem_solving_id' => $plan->problem_solving_id,
-                    'problem_situation' => $plan->problemSolving->problem_situation ?? '',
-                    'plan_number' => $plan->plan_number,
-                    'action_plan' => $plan->action_plan,
-                    'reflection' => $plan->reflection,
-                    'improvement_level' => $plan->improvement_level,
-                    'created_at' => $plan->created_at->format(DATE_ATOM),
-                    'updated_at' => $plan->updated_at->format(DATE_ATOM),
-                ];
-            });
+        $criteria = $request->toPlanSearchCriteriaData();
+        $plans = $searchPlanUseCase->handle($criteria);
 
         return response()->json($plans);
     }

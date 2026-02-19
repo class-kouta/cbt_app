@@ -2,6 +2,7 @@
 
 namespace App\Domain\Repository;
 
+use App\Application\DTO\PlanSearchCriteriaData;
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\ProblemSolving;
 use App\Domain\Entity\ProblemSolvingSolution;
@@ -43,6 +44,15 @@ interface ProblemSolvingRepositoryInterface
     public function updateSolution(ProblemSolvingSolution $solution): ProblemSolvingSolution;
 
     public function deleteSolution(int $solutionId): void;
+
+    /**
+     * 検索条件に基づいて計画を検索
+     *
+     * @param PlanSearchCriteriaData $criteria 検索条件
+     * @param array<int, string> $searchableColumns キーワード検索対象カラム
+     * @return array<int, array<string, mixed>> 検索結果
+     */
+    public function searchPlans(PlanSearchCriteriaData $criteria, array $searchableColumns): array;
 
     public function savePlan(int $problemSolvingId, ProblemSolvingPlan $plan): ProblemSolvingPlan;
 
