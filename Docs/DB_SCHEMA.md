@@ -57,9 +57,24 @@
 - id — bigint, 主キー
 - problem_situation — text, NOT NULL（問題状況）
 - improved_image — text, NULL可（改善イメージ）
+- created_at / updated_at — timestamp
+
+**補足:**
+- 実行計画と振り返りは `problem_solving_plans` テーブルに移行済み（複数計画対応）
+
+---
+## problem_solving_plans（問題解決法の実行計画・振り返り）
+- id — bigint, 主キー
+- problem_solving_id — bigint, 外部キー → problem_solvings.id（CASCADE DELETE）
+- plan_number — unsigned integer, NOT NULL, DEFAULT 1（計画番号、1から始まる）
 - action_plan — text, NULL可（実行計画）
 - reflection — text, NULL可（振り返り）
+- improvement_level — unsigned tinyint, NULL可（改善レベル 1-10）
+
 - created_at / updated_at — timestamp
+
+ユニーク制約:
+- (problem_solving_id, plan_number)
 
 ---
 ## problem_solving_solutions（問題解決法の解決策）

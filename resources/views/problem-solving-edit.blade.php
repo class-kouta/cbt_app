@@ -560,7 +560,7 @@ function problemSolvingFormApp(itemId) {
 
         // 指定されたスナップショットと現在の値を比較
         hasValueChanged(snapshot) {
-            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection })));
+            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level })));
             return (
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
