@@ -131,7 +131,22 @@ Route::get('/support-networks', function () {
     return view('support-networks');
 });
 
-// スキーマ療法（早期不適応スキーマ）ページ
+// スキーマ療法ページ
+Route::get('/schema-therapy', function () {
+    return view('schema-therapy');
+});
+
+// 安全なイメージと安全な何かページ
+Route::get('/schema-therapy/safe-image', function () {
+    return view('schema-therapy-safe-image');
+});
+
+// 年表ページ
+Route::get('/schema-therapy/chronology', function () {
+    return view('schema-therapy-chronology');
+});
+
+// 早期不適応スキーマページ
 Route::get('/early-maladaptive-schemas', function () {
     return view('early-maladaptive-schemas');
 });
