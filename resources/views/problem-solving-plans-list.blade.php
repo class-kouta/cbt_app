@@ -29,7 +29,7 @@
                     :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'min-' + n">
-                        <option :value="n" x-text="n"></option>
+                        <option :value="n" x-text="n" :selected="n === improvementLevelMin"></option>
                     </template>
                 </select>
                 <span class="text-gray-500 text-sm font-medium">〜</span>
@@ -39,7 +39,7 @@
                     :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'max-' + n">
-                        <option :value="n" x-text="n"></option>
+                        <option :value="n" x-text="n" :selected="n === improvementLevelMax"></option>
                     </template>
                 </select>
             </div>
