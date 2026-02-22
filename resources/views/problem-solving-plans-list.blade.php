@@ -10,21 +10,13 @@
         <!-- キーワード検索 -->
         <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
-            <div class="flex gap-2">
-                <input
-                    type="text"
-                    x-model="keyword"
-                    @keyup.enter="search()"
-                    placeholder="実行計画、振り返り、問題状況で検索..."
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
-                >
-                <button
-                    @click="search()"
-                    class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium"
-                >
-                    検索
-                </button>
-            </div>
+            <input
+                type="text"
+                x-model="keyword"
+                @keyup.enter="search()"
+                placeholder="実行計画、振り返り、問題状況で検索..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
+            >
         </div>
 
         <!-- 改善レベル範囲検索 -->
@@ -33,43 +25,43 @@
             <div class="flex items-center gap-2">
                 <select
                     x-model.number="improvementLevelMin"
-                    @change="search()"
-                    class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'min-' + n">
-                        <option :value="n" x-text="n" :disabled="n > improvementLevelMax"></option>
+                        <option :value="n" x-text="n"></option>
                     </template>
                 </select>
                 <span class="text-gray-500 text-sm font-medium">〜</span>
                 <select
                     x-model.number="improvementLevelMax"
-                    @change="search()"
-                    class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'max-' + n">
-                        <option :value="n" x-text="n" :disabled="n < improvementLevelMin"></option>
+                        <option :value="n" x-text="n"></option>
                     </template>
                 </select>
-                <div class="flex gap-1 ml-2">
-                    <span
-                        class="inline-block w-3 h-3 rounded-full bg-red-400"
-                        title="1〜3: 低い"
-                    ></span>
-                    <span
-                        class="inline-block w-3 h-3 rounded-full bg-yellow-400"
-                        title="4〜6: 中程度"
-                    ></span>
-                    <span
-                        class="inline-block w-3 h-3 rounded-full bg-green-400"
-                        title="7〜10: 高い"
-                    ></span>
-                </div>
             </div>
+            <p
+                x-show="hasRangeError"
+                class="text-red-500 text-xs mt-1"
+            >
+                改善レベルの下限は上限以下にしてください
+            </p>
         </div>
 
-        <!-- 検索条件クリア -->
-        <div x-show="hasSearchCondition" class="mt-3 pt-3 border-t border-gray-200">
+        <!-- 検索ボタン & 検索条件クリア -->
+        <div class="mt-3 pt-3 border-t border-gray-200 flex items-center gap-3">
             <button
+                @click="search()"
+                :disabled="hasRangeError"
+                class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                検索
+            </button>
+            <button
+                x-show="hasSearchCondition"
                 @click="clearSearch()"
                 class="text-sm text-gray-500 hover:text-gray-700 underline"
             >
@@ -281,6 +273,7 @@ function plansListApp() {
         },
 
         async search() {
+            if (this.hasRangeError) return;
             await this.loadPlans();
         },
 
@@ -293,6 +286,10 @@ function plansListApp() {
 
         get hasSearchCondition() {
             return this.keyword !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
+        },
+
+        get hasRangeError() {
+            return this.improvementLevelMin > this.improvementLevelMax;
         },
 
         get filteredPlans() {
