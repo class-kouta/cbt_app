@@ -141,26 +141,6 @@ Route::get('/early-maladaptive-schemas/count', function () {
     return view('schema-count');
 });
 
-// 不安日記作成ページ
-Route::get('/anxiety-diaries', function () {
-    return view('anxiety-diaries');
-});
-
-// 不安日記一覧ページ
-Route::get('/anxiety-diaries/list', function () {
-    return view('anxiety-diaries-list');
-});
-
-// 不安日記詳細ページ
-Route::get('/anxiety-diaries/{id}', function ($id) {
-    return view('anxiety-diary-detail', ['itemId' => $id]);
-})->where('id', '[0-9]+');
-
-// 不安日記編集ページ
-Route::get('/anxiety-diaries/{id}/edit', function ($id) {
-    return view('anxiety-diaries', ['itemId' => $id]);
-})->where('id', '[0-9]+');
-
 
 // ===========================================
 // 管理画面ルート
