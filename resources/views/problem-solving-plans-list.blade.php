@@ -5,6 +5,71 @@
 
 @section('content')
 <div x-data="plansListApp()" x-init="init()" x-cloak>
+    <!-- 検索フォーム -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+        <!-- キーワード検索 -->
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
+            <input
+                type="text"
+                x-model="keyword"
+                @keyup.enter="search()"
+                placeholder="実行計画、振り返り、問題状況で検索..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
+            >
+        </div>
+
+        <!-- 改善レベル範囲検索 -->
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">📊 改善レベルで絞り込み</label>
+            <div class="flex items-center gap-2">
+                <select
+                    x-model.number="improvementLevelMin"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
+                >
+                    <template x-for="n in 10" :key="'min-' + n">
+                        <option :value="n" x-text="n" :selected="n === improvementLevelMin"></option>
+                    </template>
+                </select>
+                <span class="text-gray-500 text-sm font-medium">〜</span>
+                <select
+                    x-model.number="improvementLevelMax"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                    :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
+                >
+                    <template x-for="n in 10" :key="'max-' + n">
+                        <option :value="n" x-text="n" :selected="n === improvementLevelMax"></option>
+                    </template>
+                </select>
+            </div>
+            <p
+                x-show="hasRangeError"
+                class="text-red-500 text-xs mt-1"
+            >
+                改善レベルの下限は上限以下にしてください
+            </p>
+        </div>
+
+        <!-- 検索ボタン & 検索条件クリア -->
+        <div class="mt-3 pt-3 border-t border-gray-200 flex items-center gap-3">
+            <button
+                @click="search()"
+                :disabled="hasRangeError"
+                class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                検索
+            </button>
+            <button
+                x-show="hasSearchCondition"
+                @click="clearSearch()"
+                class="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+                検索条件をクリア
+            </button>
+        </div>
+    </div>
+
     <!-- フィルター -->
     <div class="mb-4 flex gap-2">
         <button
@@ -106,8 +171,8 @@
             <p class="text-gray-600 text-lg mt-2">読み込み中...</p>
         </div>
 
-        <!-- 空の状態 -->
-        <div x-show="!loading && allPlans.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <!-- 空の状態（検索条件なし） -->
+        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-6xl mb-4">📋</p>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
             <a href="/problem-solvings" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
@@ -119,6 +184,18 @@
         <div x-show="!loading && allPlans.length > 0 && filteredPlans.length === 0" class="text-center py-12 bg-white rounded-xl shadow-md">
             <p class="text-4xl mb-4" x-text="filter === 'completed' ? '🎉' : '⏳'"></p>
             <p class="text-gray-600" x-text="filter === 'completed' ? '振り返り済みの計画はまだありません' : '振り返り待ちの計画はありません'"></p>
+        </div>
+
+        <!-- 検索結果が空の場合 -->
+        <div x-show="!loading && allPlans.length === 0 && hasSearchCondition" class="text-center py-12 bg-white rounded-xl shadow-md">
+            <p class="text-4xl mb-4">🔍</p>
+            <p class="text-gray-600 mb-2">条件に一致する計画が見つかりませんでした</p>
+            <button
+                @click="clearSearch()"
+                class="inline-block mt-2 text-emerald-600 hover:text-emerald-700 underline text-sm"
+            >
+                検索条件をクリアする
+            </button>
         </div>
     </div>
 
@@ -153,6 +230,9 @@ function plansListApp() {
         allPlans: [],
         loading: true,
         filter: new URLSearchParams(window.location.search).get('filter') || 'all',
+        keyword: '',
+        improvementLevelMin: 1,
+        improvementLevelMax: 10,
 
         async init() {
             await this.loadPlans();
@@ -161,10 +241,19 @@ function plansListApp() {
         async loadPlans() {
             this.loading = true;
             try {
-                const res = await fetch('/api/problem-solvings/plans');
+                const params = new URLSearchParams();
+                if (this.keyword) {
+                    params.append('keyword', this.keyword);
+                }
+                if (this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10) {
+                    params.append('improvement_level_min', this.improvementLevelMin);
+                    params.append('improvement_level_max', this.improvementLevelMax);
+                }
+
+                const url = '/api/problem-solvings/plans' + (params.toString() ? '?' + params.toString() : '');
+                const res = await fetch(url);
                 const plans = await res.json();
 
-                // APIレスポンスをフロント用の形式に変換
                 this.allPlans = plans.map(plan => ({
                     planId: plan.id,
                     problemSolvingId: plan.problem_solving_id,
@@ -181,6 +270,26 @@ function plansListApp() {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async search() {
+            if (this.hasRangeError) return;
+            await this.loadPlans();
+        },
+
+        async clearSearch() {
+            this.keyword = '';
+            this.improvementLevelMin = 1;
+            this.improvementLevelMax = 10;
+            await this.loadPlans();
+        },
+
+        get hasSearchCondition() {
+            return this.keyword !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
+        },
+
+        get hasRangeError() {
+            return this.improvementLevelMin > this.improvementLevelMax;
         },
 
         get filteredPlans() {
