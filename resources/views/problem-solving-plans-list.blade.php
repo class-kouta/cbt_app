@@ -5,6 +5,79 @@
 
 @section('content')
 <div x-data="plansListApp()" x-init="init()" x-cloak>
+    <!-- 検索フォーム -->
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+        <!-- キーワード検索 -->
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
+            <div class="flex gap-2">
+                <input
+                    type="text"
+                    x-model="keyword"
+                    @keyup.enter="search()"
+                    placeholder="実行計画、振り返り、問題状況で検索..."
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
+                >
+                <button
+                    @click="search()"
+                    class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium"
+                >
+                    検索
+                </button>
+            </div>
+        </div>
+
+        <!-- 改善レベル範囲検索 -->
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">📊 改善レベルで絞り込み</label>
+            <div class="flex items-center gap-2">
+                <select
+                    x-model.number="improvementLevelMin"
+                    @change="search()"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                >
+                    <template x-for="n in 10" :key="'min-' + n">
+                        <option :value="n" x-text="n" :disabled="n > improvementLevelMax"></option>
+                    </template>
+                </select>
+                <span class="text-gray-500 text-sm font-medium">〜</span>
+                <select
+                    x-model.number="improvementLevelMax"
+                    @change="search()"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                >
+                    <template x-for="n in 10" :key="'max-' + n">
+                        <option :value="n" x-text="n" :disabled="n < improvementLevelMin"></option>
+                    </template>
+                </select>
+                <div class="flex gap-1 ml-2">
+                    <span
+                        class="inline-block w-3 h-3 rounded-full bg-red-400"
+                        title="1〜3: 低い"
+                    ></span>
+                    <span
+                        class="inline-block w-3 h-3 rounded-full bg-yellow-400"
+                        title="4〜6: 中程度"
+                    ></span>
+                    <span
+                        class="inline-block w-3 h-3 rounded-full bg-green-400"
+                        title="7〜10: 高い"
+                    ></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 検索条件クリア -->
+        <div x-show="hasSearchCondition" class="mt-3 pt-3 border-t border-gray-200">
+            <button
+                @click="clearSearch()"
+                class="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+                検索条件をクリア
+            </button>
+        </div>
+    </div>
+
     <!-- フィルター -->
     <div class="mb-4 flex gap-2">
         <button
@@ -106,8 +179,8 @@
             <p class="text-gray-600 text-lg mt-2">読み込み中...</p>
         </div>
 
-        <!-- 空の状態 -->
-        <div x-show="!loading && allPlans.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <!-- 空の状態（検索条件なし） -->
+        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-6xl mb-4">📋</p>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
             <a href="/problem-solvings" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
@@ -119,6 +192,18 @@
         <div x-show="!loading && allPlans.length > 0 && filteredPlans.length === 0" class="text-center py-12 bg-white rounded-xl shadow-md">
             <p class="text-4xl mb-4" x-text="filter === 'completed' ? '🎉' : '⏳'"></p>
             <p class="text-gray-600" x-text="filter === 'completed' ? '振り返り済みの計画はまだありません' : '振り返り待ちの計画はありません'"></p>
+        </div>
+
+        <!-- 検索結果が空の場合 -->
+        <div x-show="!loading && allPlans.length === 0 && hasSearchCondition" class="text-center py-12 bg-white rounded-xl shadow-md">
+            <p class="text-4xl mb-4">🔍</p>
+            <p class="text-gray-600 mb-2">条件に一致する計画が見つかりませんでした</p>
+            <button
+                @click="clearSearch()"
+                class="inline-block mt-2 text-emerald-600 hover:text-emerald-700 underline text-sm"
+            >
+                検索条件をクリアする
+            </button>
         </div>
     </div>
 
@@ -153,6 +238,9 @@ function plansListApp() {
         allPlans: [],
         loading: true,
         filter: new URLSearchParams(window.location.search).get('filter') || 'all',
+        keyword: '',
+        improvementLevelMin: 1,
+        improvementLevelMax: 10,
 
         async init() {
             await this.loadPlans();
@@ -161,10 +249,19 @@ function plansListApp() {
         async loadPlans() {
             this.loading = true;
             try {
-                const res = await fetch('/api/problem-solvings/plans');
+                const params = new URLSearchParams();
+                if (this.keyword) {
+                    params.append('keyword', this.keyword);
+                }
+                if (this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10) {
+                    params.append('improvement_level_min', this.improvementLevelMin);
+                    params.append('improvement_level_max', this.improvementLevelMax);
+                }
+
+                const url = '/api/problem-solvings/plans' + (params.toString() ? '?' + params.toString() : '');
+                const res = await fetch(url);
                 const plans = await res.json();
 
-                // APIレスポンスをフロント用の形式に変換
                 this.allPlans = plans.map(plan => ({
                     planId: plan.id,
                     problemSolvingId: plan.problem_solving_id,
@@ -181,6 +278,21 @@ function plansListApp() {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async search() {
+            await this.loadPlans();
+        },
+
+        async clearSearch() {
+            this.keyword = '';
+            this.improvementLevelMin = 1;
+            this.improvementLevelMax = 10;
+            await this.loadPlans();
+        },
+
+        get hasSearchCondition() {
+            return this.keyword !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
         },
 
         get filteredPlans() {
