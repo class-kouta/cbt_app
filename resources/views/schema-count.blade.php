@@ -488,12 +488,26 @@ function schemaCountApp() {
 
         async loadData() {
             try {
-                const res = await fetch('/api/stressor-and-responses');
-                if (res.ok) {
-                    this.records = await res.json();
-                    this.totalRecords = this.records.length;
-                    this.calculateCounts();
-                }
+                let allRecords = [];
+                let page = 1;
+                let lastPage = 1;
+
+                do {
+                    const res = await fetch(`/api/stressor-and-responses?per_page=100&page=${page}`);
+                    if (!res.ok) break;
+
+                    const data = await res.json();
+                    allRecords = allRecords.concat(data.data);
+                    lastPage = data.last_page;
+
+                    if (page === 1) {
+                        this.totalRecords = data.total;
+                    }
+                    page++;
+                } while (page <= lastPage);
+
+                this.records = allRecords;
+                this.calculateCounts();
             } catch (error) {
                 console.error('データの取得に失敗しました:', error);
             } finally {
