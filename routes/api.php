@@ -87,4 +87,4 @@ Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladapt
 // SafePlace API（スキーマ療法 - 安全なイメージと安全な何か）
 Route::get('/safe-places', [SafePlaceController::class, 'show']);
 Route::post('/safe-places', [SafePlaceController::class, 'store']);
-Route::put('/safe-places/{safePlace}', [SafePlaceController::class, 'update']);
+Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
