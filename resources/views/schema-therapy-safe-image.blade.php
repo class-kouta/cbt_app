@@ -7,7 +7,7 @@
 
 @section('content')
 <div x-data="safePlaceApp()" x-init="init()" x-cloak class="max-w-4xl mx-auto">
-    <!-- 保存成功トースト -->
+    <!-- 手動保存トースト -->
     <div
         x-show="showSaveToast"
         x-transition:enter="transition ease-out duration-300"
@@ -22,6 +22,23 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         保存しました
+    </div>
+
+    <!-- 自動保存トースト -->
+    <div
+        x-show="showAutoSaveToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        自動保存しました
     </div>
 
     <!-- エラートースト -->
@@ -52,10 +69,11 @@
             </a>
             <button
                 type="button"
-                @click="toggleEdit()"
-                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                @click="isEditing ? saveAndStopEditing() : startEditing()"
+                :disabled="isEditing && saving"
+                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 :class="isEditing
-                    ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                     : 'bg-green-600 text-white hover:bg-green-700'"
             >
                 <template x-if="!isEditing">
@@ -63,12 +81,18 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                     </svg>
                 </template>
-                <template x-if="isEditing">
+                <template x-if="isEditing && !saving">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 </template>
-                <span x-text="isEditing ? 'キャンセル' : '編集する'"></span>
+                <template x-if="isEditing && saving">
+                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </template>
+                <span x-text="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"></span>
             </button>
         </div>
 
@@ -180,10 +204,15 @@ function safePlaceApp() {
         },
         loading: true,
         saving: false,
+        autoSaving: false,
         isEditing: false,
         showSaveToast: false,
+        showAutoSaveToast: false,
         showErrorToast: false,
         errorMessage: '',
+
+        autoSaveInterval: null,
+        autoSaveSnapshots: [],
 
         async init() {
             await this.loadData();
@@ -208,15 +237,79 @@ function safePlaceApp() {
             }
         },
 
-        toggleEdit() {
-            if (this.isEditing) {
-                this.formData.safe_image = this.originalData.safe_image;
-                this.formData.safe_something = this.originalData.safe_something;
-            }
-            this.isEditing = !this.isEditing;
+        startEditing() {
+            this.isEditing = true;
+            this.takeSnapshot();
+            this.autoSaveInterval = setInterval(() => {
+                this.checkAndAutoSave();
+            }, 30000);
         },
 
-        async save() {
+        async saveAndStopEditing() {
+            await this.performSave(true);
+            this.stopEditing();
+        },
+
+        stopEditing() {
+            this.isEditing = false;
+            if (this.autoSaveInterval) {
+                clearInterval(this.autoSaveInterval);
+                this.autoSaveInterval = null;
+            }
+            this.autoSaveSnapshots = [];
+        },
+
+        takeSnapshot() {
+            const snapshot = {
+                safe_image: this.formData.safe_image,
+                safe_something: this.formData.safe_something
+            };
+            this.autoSaveSnapshots.push(snapshot);
+            if (this.autoSaveSnapshots.length > 2) {
+                this.autoSaveSnapshots.shift();
+            }
+        },
+
+        hasChangedFromPreviousSnapshot() {
+            if (this.autoSaveSnapshots.length < 2) {
+                if (this.autoSaveSnapshots.length === 1) {
+                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
+                }
+                return false;
+            }
+            return this.hasValueChanged(this.autoSaveSnapshots[0]);
+        },
+
+        hasValueChanged(snapshot) {
+            return (
+                this.formData.safe_image !== snapshot.safe_image ||
+                this.formData.safe_something !== snapshot.safe_something
+            );
+        },
+
+        async checkAndAutoSave() {
+            if (!this.isEditing) return;
+
+            if (
+                this.hasChangedFromPreviousSnapshot() &&
+                !this.saving &&
+                !this.autoSaving
+            ) {
+                await this.performAutoSave();
+            }
+            this.takeSnapshot();
+        },
+
+        async performAutoSave() {
+            this.autoSaving = true;
+            try {
+                await this.performSave(false);
+            } finally {
+                this.autoSaving = false;
+            }
+        },
+
+        async performSave(isManual) {
             if (this.saving) return;
 
             this.saving = true;
@@ -247,30 +340,32 @@ function safePlaceApp() {
                     this.recordId = data.id;
                     this.originalData.safe_image = this.formData.safe_image;
                     this.originalData.safe_something = this.formData.safe_something;
-                    this.isEditing = false;
 
-                    this.showSaveToast = true;
-                    setTimeout(() => {
-                        this.showSaveToast = false;
-                    }, 2000);
+                    if (isManual) {
+                        this.showSaveToast = true;
+                        setTimeout(() => { this.showSaveToast = false; }, 2000);
+                    } else {
+                        this.showAutoSaveToast = true;
+                        setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
+                    }
                 } else {
                     const errorData = await res.json();
                     this.errorMessage = errorData.message || '保存に失敗しました';
                     this.showErrorToast = true;
-                    setTimeout(() => {
-                        this.showErrorToast = false;
-                    }, 3000);
+                    setTimeout(() => { this.showErrorToast = false; }, 3000);
                 }
             } catch (error) {
                 console.error('保存に失敗しました:', error);
                 this.errorMessage = '保存に失敗しました';
                 this.showErrorToast = true;
-                setTimeout(() => {
-                    this.showErrorToast = false;
-                }, 3000);
+                setTimeout(() => { this.showErrorToast = false; }, 3000);
             } finally {
                 this.saving = false;
             }
+        },
+
+        async save() {
+            await this.performSave(true);
         }
     };
 }
