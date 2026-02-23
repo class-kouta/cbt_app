@@ -132,28 +132,29 @@ Route::get('/support-networks', function () {
 });
 
 // スキーマ療法ページ
-Route::get('/schema-therapy', function () {
-    return view('schema-therapy');
-});
+Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
+    Route::get('/', function () {
+        return view('schema-therapy');
+    })->name('index');
 
-// 安全なイメージと安全な何かページ
-Route::get('/schema-therapy/safe-image', function () {
-    return view('schema-therapy-safe-image');
-});
+    Route::get('/safe-image', function () {
+        return view('schema-therapy-safe-image');
+    })->name('safe-image');
 
-// 年表ページ
-Route::get('/schema-therapy/chronology', function () {
-    return view('schema-therapy-chronology');
+    Route::get('/chronology', function () {
+        return view('schema-therapy-chronology');
+    })->name('chronology');
 });
 
 // 早期不適応スキーマページ
-Route::get('/early-maladaptive-schemas', function () {
-    return view('early-maladaptive-schemas');
-});
+Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->group(function () {
+    Route::get('/', function () {
+        return view('early-maladaptive-schemas');
+    })->name('index');
 
-// スキーマカウントページ
-Route::get('/early-maladaptive-schemas/count', function () {
-    return view('schema-count');
+    Route::get('/count', function () {
+        return view('schema-count');
+    })->name('count');
 });
 
 
