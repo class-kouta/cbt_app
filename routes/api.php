@@ -11,6 +11,7 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
+use App\Http\Controllers\ChronologyController;
 use App\Http\Controllers\SafePlaceController;
 
 
@@ -88,3 +89,10 @@ Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladapt
 Route::get('/safe-places', [SafePlaceController::class, 'show']);
 Route::post('/safe-places', [SafePlaceController::class, 'store']);
 Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
+
+// Chronology API（スキーマ療法 - 年表）
+Route::get('/chronologies', [ChronologyController::class, 'index']);
+Route::get('/chronologies/{chronology}', [ChronologyController::class, 'show']);
+Route::post('/chronologies', [ChronologyController::class, 'store']);
+Route::put('/chronologies/{chronology}', [ChronologyController::class, 'update']);
+Route::delete('/chronologies/{chronology}', [ChronologyController::class, 'destroy']);

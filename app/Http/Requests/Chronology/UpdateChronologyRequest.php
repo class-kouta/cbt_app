@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Requests\Chronology;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateChronologyRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'when_period' => ['required', 'string', 'max:200'],
+            'environment_event' => ['nullable', 'string', 'max:10000'],
+            'experience_feeling' => ['nullable', 'string', 'max:10000'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'when_period.required' => '「いつ」を入力してください',
+            'when_period.max' => '「いつ」は200文字以内で入力してください',
+            'environment_event.max' => '「環境・出来事」は10000文字以内で入力してください',
+            'experience_feeling.max' => '「体験・感じたこと・思ったこと」は10000文字以内で入力してください',
+        ];
+    }
+}
