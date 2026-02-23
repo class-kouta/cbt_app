@@ -144,6 +144,14 @@ Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
     Route::get('/chronology', function () {
         return view('schema-therapy-chronology');
     })->name('chronology');
+
+    Route::get('/chronology/create', function () {
+        return view('schema-therapy-chronology-edit');
+    })->name('chronology.create');
+
+    Route::get('/chronology/{id}/edit', function ($id) {
+        return view('schema-therapy-chronology-edit', ['itemId' => $id]);
+    })->where('id', '[0-9]+')->name('chronology.edit');
 });
 
 // 早期不適応スキーマページ

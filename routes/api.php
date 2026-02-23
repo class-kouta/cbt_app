@@ -11,6 +11,7 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
+use App\Http\Controllers\ChronologyController;
 
 
 // Coping API
@@ -82,3 +83,10 @@ Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::c
 Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
 Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
+
+// Chronology API（スキーマ療法 - 年表）
+Route::get('/chronologies', [ChronologyController::class, 'index']);
+Route::get('/chronologies/{chronology}', [ChronologyController::class, 'show']);
+Route::post('/chronologies', [ChronologyController::class, 'store']);
+Route::put('/chronologies/{chronology}', [ChronologyController::class, 'update']);
+Route::delete('/chronologies/{chronology}', [ChronologyController::class, 'destroy']);
