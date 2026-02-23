@@ -206,7 +206,7 @@ function chronologyEditApp(itemId) {
                     this.formData.experience_feeling = data.experience_feeling || '';
                 }
             } catch (error) {
-                console.error(error);
+                // エラー詳細はセキュリティ上コンソールに出力しない
             } finally {
                 this.loading = false;
             }
@@ -296,7 +296,7 @@ function chronologyEditApp(itemId) {
                     }
                 }
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+                // エラー詳細はセキュリティ上コンソールに出力しない
             }
         },
 

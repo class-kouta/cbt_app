@@ -11,19 +11,14 @@ class EloquentChronologyRepository implements ChronologyRepositoryInterface
 {
     public function save(ChronologyEntity $chronology): ChronologyEntity
     {
-        if ($chronology->getId() !== null) {
-            $model = ChronologyModel::findOrFail($chronology->getId());
-            $model->when_period = $chronology->getWhenPeriod();
-            $model->environment_event = $chronology->getEnvironmentEvent();
-            $model->experience_feeling = $chronology->getExperienceFeeling();
-            $model->save();
-        } else {
-            $model = new ChronologyModel();
-            $model->when_period = $chronology->getWhenPeriod();
-            $model->environment_event = $chronology->getEnvironmentEvent();
-            $model->experience_feeling = $chronology->getExperienceFeeling();
-            $model->save();
-        }
+        $model = ChronologyModel::updateOrCreate(
+            ['id' => $chronology->getId()],
+            [
+                'when_period' => $chronology->getWhenPeriod(),
+                'environment_event' => $chronology->getEnvironmentEvent(),
+                'experience_feeling' => $chronology->getExperienceFeeling(),
+            ]
+        );
 
         return ChronologyEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -55,10 +50,6 @@ class EloquentChronologyRepository implements ChronologyRepositoryInterface
 
     public function delete(int $id): void
     {
-        $model = ChronologyModel::find($id);
-
-        if ($model !== null) {
-            $model->delete();
-        }
+        ChronologyModel::destroy($id);
     }
 }

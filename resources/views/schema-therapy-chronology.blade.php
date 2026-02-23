@@ -14,16 +14,19 @@
             >
                 <div class="p-4">
                     <!-- いつ -->
-                    <div class="text-sm text-green-600 font-medium mb-2" x-text="item.when_period"></div>
+                    <div class="mb-2">
+                        <span class="text-xs text-gray-500">いつ</span>
+                        <p class="text-gray-800 break-words overflow-wrap-anywhere text-sm" x-text="item.when_period"></p>
+                    </div>
                     <!-- 環境・出来事 -->
                     <div x-show="item.environment_event" class="mb-2">
                         <span class="text-xs text-gray-500">環境・出来事</span>
-                        <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere text-sm" x-text="item.environment_event"></p>
+                        <p class="text-gray-800 break-words overflow-wrap-anywhere text-sm whitespace-pre-wrap" x-text="item.environment_event"></p>
                     </div>
                     <!-- 体験・感じたこと -->
                     <div x-show="item.experience_feeling">
-                        <span class="text-xs text-gray-500">体験・感じたこと</span>
-                        <p class="text-gray-600 line-clamp-2 break-words overflow-wrap-anywhere text-sm" x-text="item.experience_feeling"></p>
+                        <span class="text-xs text-gray-500">体験・感じたこと・思ったこと</span>
+                        <p class="text-gray-600 break-words overflow-wrap-anywhere text-sm whitespace-pre-wrap" x-text="item.experience_feeling"></p>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-1"></div>
@@ -41,8 +44,20 @@
             </div>
         </div>
 
+        <!-- エラー状態 -->
+        <div x-show="!loading && errorOccurred" class="text-center py-16 bg-white rounded-xl shadow-md">
+            <p class="text-6xl mb-4">😢</p>
+            <p class="text-gray-600 text-lg mb-2">データの取得に失敗しました</p>
+            <button
+                @click="loadChronologies()"
+                class="inline-block mt-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-6 rounded-lg font-medium hover:from-green-600 hover:to-emerald-600 transition-all"
+            >
+                再読み込み
+            </button>
+        </div>
+
         <!-- 空の状態 -->
-        <div x-show="!loading && chronologies.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <div x-show="!loading && !errorOccurred && chronologies.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-6xl mb-4">📜</p>
             <p class="text-gray-600 text-lg mb-2">まだ年表がありません</p>
             <a href="/schema-therapy/chronology/create" class="inline-block mt-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-6 rounded-lg font-medium hover:from-green-600 hover:to-emerald-600 transition-all">
@@ -61,20 +76,12 @@
     </a>
 </div>
 
-<style>
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>
-
 <script>
 function chronologyListApp() {
     return {
         chronologies: [],
         loading: true,
+        errorOccurred: false,
 
         async init() {
             await this.loadChronologies();
@@ -82,13 +89,16 @@ function chronologyListApp() {
 
         async loadChronologies() {
             this.loading = true;
+            this.errorOccurred = false;
             try {
                 const res = await fetch('/api/chronologies');
                 if (res.ok) {
                     this.chronologies = await res.json();
+                } else {
+                    this.errorOccurred = true;
                 }
             } catch (error) {
-                console.error('年表の取得に失敗しました:', error);
+                this.errorOccurred = true;
             } finally {
                 this.loading = false;
             }
