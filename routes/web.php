@@ -131,14 +131,30 @@ Route::get('/support-networks', function () {
     return view('support-networks');
 });
 
-// スキーマ療法（早期不適応スキーマ）ページ
-Route::get('/early-maladaptive-schemas', function () {
-    return view('early-maladaptive-schemas');
+// スキーマ療法ページ
+Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
+    Route::get('/', function () {
+        return view('schema-therapy');
+    })->name('index');
+
+    Route::get('/safe-image', function () {
+        return view('schema-therapy-safe-image');
+    })->name('safe-image');
+
+    Route::get('/chronology', function () {
+        return view('schema-therapy-chronology');
+    })->name('chronology');
 });
 
-// スキーマカウントページ
-Route::get('/early-maladaptive-schemas/count', function () {
-    return view('schema-count');
+// 早期不適応スキーマページ
+Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->group(function () {
+    Route::get('/', function () {
+        return view('early-maladaptive-schemas');
+    })->name('index');
+
+    Route::get('/count', function () {
+        return view('schema-count');
+    })->name('count');
 });
 
 

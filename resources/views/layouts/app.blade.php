@@ -332,43 +332,17 @@
                             </div>
                         </div>
 
-                        <!-- 早期不適応スキーマ（多段） -->
-                        <div class="border-b border-gray-500/30" x-data="{ schemaOpen: true }">
-                            <button
-                                @click="schemaOpen = !schemaOpen"
-                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
-                            >
-                                <span class="font-medium text-lg">早期不適応スキーマ</span>
-                                <svg
-                                    class="w-5 h-5 transition-transform duration-200"
-                                    :class="schemaOpen ? 'rotate-180' : ''"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="schemaOpen" x-collapse class="">
-                                @if(request()->is('early-maladaptive-schemas'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">囚われ度チェック</span>
-                                    </span>
-                                @else
-                                    <a href="/early-maladaptive-schemas" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">囚われ度チェック</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('early-maladaptive-schemas/count'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">スキーマカウント</span>
-                                    </span>
-                                @else
-                                    <a href="/early-maladaptive-schemas/count" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">スキーマカウント</span>
-                                    </a>
-                                @endif
-                            </div>
+                        <!-- スキーマ療法 -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('schema-therapy') || request()->is('schema-therapy/*'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">スキーマ療法</span>
+                                </span>
+                            @else
+                                <a href="/schema-therapy" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">スキーマ療法</span>
+                                </a>
+                            @endif
                         </div>
 
                         <!-- サポートネットワーク -->
