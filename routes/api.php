@@ -11,6 +11,7 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
+use App\Http\Controllers\SafePlaceController;
 
 
 // Coping API
@@ -82,3 +83,8 @@ Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::c
 Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
 Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
+
+// SafePlace API（スキーマ療法 - 安全なイメージと安全な何か）
+Route::get('/safe-places', [SafePlaceController::class, 'show']);
+Route::post('/safe-places', [SafePlaceController::class, 'store']);
+Route::put('/safe-places/{safePlace}', [SafePlaceController::class, 'update']);
