@@ -451,6 +451,7 @@ function chronologyEditApp(itemId) {
             if (!this.itemId || this.deleting) return;
 
             this.deleting = true;
+            this.error = '';
             try {
                 const res = await fetch(`/api/chronologies/${this.itemId}`, {
                     method: 'DELETE',
@@ -462,9 +463,13 @@ function chronologyEditApp(itemId) {
                         clearInterval(this.autoSaveInterval);
                     }
                     window.location.href = '/schema-therapy/chronology';
+                } else {
+                    this.error = '削除中にエラーが発生しました。';
+                    this.showDeleteModal = false;
                 }
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
+                this.error = '削除中にエラーが発生しました。';
+                this.showDeleteModal = false;
             } finally {
                 this.deleting = false;
             }
