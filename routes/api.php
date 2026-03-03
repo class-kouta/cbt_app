@@ -92,6 +92,7 @@ Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);
+Route::get('/chronologies/export/csv', [ChronologyController::class, 'exportCsv']);
 Route::get('/chronologies/{chronology}', [ChronologyController::class, 'show']);
 Route::post('/chronologies', [ChronologyController::class, 'store']);
 Route::put('/chronologies/{chronology}', [ChronologyController::class, 'update']);

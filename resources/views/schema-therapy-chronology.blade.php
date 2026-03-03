@@ -5,6 +5,29 @@
 
 @section('content')
 <div x-data="chronologyListApp()" x-init="init()" x-cloak>
+    <!-- カウント表示 & CSV出力 -->
+    <div x-show="!loading && !errorOccurred && chronologies.length > 0" class="mb-4 flex justify-between items-center">
+        <span class="text-sm text-gray-500">📜 全 <span class="font-semibold text-gray-700" x-text="chronologies.length"></span> 件</span>
+        <button
+            @click="exportCsv()"
+            :disabled="exporting"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-green-400 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <template x-if="!exporting">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+            </template>
+            <template x-if="exporting">
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                </svg>
+            </template>
+            <span x-text="exporting ? 'エクスポート中...' : 'CSV出力'"></span>
+        </button>
+    </div>
+
     <!-- 一覧 -->
     <div class="space-y-3">
         <template x-for="item in chronologies" :key="item.id">
@@ -31,16 +54,6 @@
                         </div>
                     </div>
                 </a>
-                <!-- 削除ボタン -->
-                <div class="px-4 pb-3 flex justify-end">
-                    <button
-                        @click="confirmDelete(item.id)"
-                        class="text-red-400 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
-                        title="削除"
-                    >
-                        🗑️
-                    </button>
-                </div>
                 <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-1"></div>
             </div>
         </template>
@@ -78,82 +91,6 @@
         </div>
     </div>
 
-    <!-- 削除確認モーダル -->
-    <div
-        x-show="showDeleteModal"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        @keydown.escape.window="showDeleteModal = false"
-    >
-        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showDeleteModal = false"></div>
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl"
-                @click.stop
-            >
-                <div class="bg-gradient-to-r from-red-500 to-rose-500 px-6 py-4">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        🗑️ 削除確認
-                    </h3>
-                </div>
-                <div class="px-6 py-5">
-                    <p class="text-gray-700 text-base">この年表を削除しますか？</p>
-                    <p class="text-sm text-gray-500 mt-2">この操作は取り消せません。</p>
-                </div>
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3">
-                    <button
-                        type="button"
-                        @click="showDeleteModal = false"
-                        class="flex-1 py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                    >
-                        キャンセル
-                    </button>
-                    <button
-                        type="button"
-                        @click="executeDelete()"
-                        :disabled="deleting"
-                        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-lg font-medium hover:from-red-600 hover:to-rose-600 transition-colors disabled:opacity-50"
-                    >
-                        <span x-show="!deleting">削除する</span>
-                        <span x-show="deleting" class="flex items-center justify-center gap-2">
-                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            削除中...
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 削除成功トースト -->
-    <div
-        x-show="showDeleteToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform translate-y-2"
-        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
-    >
-        <span>🗑️</span>
-        <span>削除しました</span>
-    </div>
-
     <!-- 新規作成ボタン（フローティング） -->
     <a
         href="/schema-therapy/chronology/create"
@@ -170,10 +107,7 @@ function chronologyListApp() {
         chronologies: [],
         loading: true,
         errorOccurred: false,
-        showDeleteModal: false,
-        deleteTargetId: null,
-        deleting: false,
-        showDeleteToast: false,
+        exporting: false,
 
         async init() {
             await this.loadChronologies();
@@ -196,34 +130,19 @@ function chronologyListApp() {
             }
         },
 
-        confirmDelete(id) {
-            this.deleteTargetId = id;
-            this.showDeleteModal = true;
-        },
-
-        async executeDelete() {
-            if (!this.deleteTargetId || this.deleting) return;
-
-            this.deleting = true;
+        async exportCsv() {
+            this.exporting = true;
             try {
-                const res = await fetch(`/api/chronologies/${this.deleteTargetId}`, {
-                    method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                if (res.ok || res.status === 204) {
-                    this.chronologies = this.chronologies.filter(c => c.id !== this.deleteTargetId);
-                    this.showDeleteModal = false;
-                    this.showDeleteToast = true;
-                    setTimeout(() => {
-                        this.showDeleteToast = false;
-                    }, 2000);
-                }
+                await exportCsvFromApi(
+                    '/api/chronologies/export/csv',
+                    {},
+                    'chronologies.csv',
+                    '年表'
+                );
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
+                alert('CSVエクスポートに失敗しました');
             } finally {
-                this.deleting = false;
-                this.deleteTargetId = null;
+                this.exporting = false;
             }
         }
     };

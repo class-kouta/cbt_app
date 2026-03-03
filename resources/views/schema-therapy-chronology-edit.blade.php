@@ -10,6 +10,13 @@
         <a href="/schema-therapy/chronology" class="text-green-600 hover:text-green-800 flex items-center gap-1">
             ← 一覧に戻る
         </a>
+        <button
+            @click="confirmDelete()"
+            class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 flex items-center gap-1 text-sm"
+            title="削除"
+        >
+            🗑️ <span class="hidden sm:inline">削除</span>
+        </button>
     </div>
 
     <!-- ローディング（編集モードのみ） -->
@@ -160,6 +167,67 @@
         </div>
     </form>
     </div>
+
+    <!-- 削除確認モーダル -->
+    <div
+        x-show="showDeleteModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        @keydown.escape.window="showDeleteModal = false"
+    >
+        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showDeleteModal = false"></div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-2xl"
+                @click.stop
+            >
+                <div class="bg-gradient-to-r from-red-500 to-rose-500 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        🗑️ 削除確認
+                    </h3>
+                </div>
+                <div class="px-6 py-5">
+                    <p class="text-gray-700 text-base">この年表を削除しますか？</p>
+                    <p class="text-sm text-gray-500 mt-2">この操作は取り消せません。</p>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex gap-3">
+                    <button
+                        type="button"
+                        @click="showDeleteModal = false"
+                        class="flex-1 py-2.5 px-4 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        type="button"
+                        @click="executeDelete()"
+                        :disabled="deleting"
+                        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-lg font-medium hover:from-red-600 hover:to-rose-600 transition-colors disabled:opacity-50"
+                    >
+                        <span x-show="!deleting">削除する</span>
+                        <span x-show="deleting" class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            削除中...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -178,6 +246,8 @@ function chronologyEditApp(itemId) {
         showAutoSaveToast: false,
         showManualSaveToast: false,
         floatingSaving: false,
+        showDeleteModal: false,
+        deleting: false,
 
         autoSaveSnapshots: [],
         autoSaveInterval: null,
@@ -370,6 +440,38 @@ function chronologyEditApp(itemId) {
             } catch (e) {
                 this.error = e.message;
                 this.submitting = false;
+            }
+        },
+
+        confirmDelete() {
+            this.showDeleteModal = true;
+        },
+
+        async executeDelete() {
+            if (!this.itemId || this.deleting) return;
+
+            this.deleting = true;
+            this.error = '';
+            try {
+                const res = await fetch(`/api/chronologies/${this.itemId}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (res.ok || res.status === 204) {
+                    if (this.autoSaveInterval) {
+                        clearInterval(this.autoSaveInterval);
+                    }
+                    window.location.href = '/schema-therapy/chronology';
+                } else {
+                    this.error = '削除中にエラーが発生しました。';
+                    this.showDeleteModal = false;
+                }
+            } catch (error) {
+                this.error = '削除中にエラーが発生しました。';
+                this.showDeleteModal = false;
+            } finally {
+                this.deleting = false;
             }
         },
 
