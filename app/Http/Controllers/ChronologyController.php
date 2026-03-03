@@ -6,10 +6,12 @@ use App\Application\DTO\ChronologyData;
 use App\Application\UseCase\Chronology\CreateChronologyUseCase;
 use App\Application\UseCase\Chronology\UpdateChronologyUseCase;
 use App\Application\UseCase\Chronology\DeleteChronologyUseCase;
+use App\Application\UseCase\Chronology\ExportChronologyCsvUseCase;
 use App\Http\Requests\Chronology\CreateChronologyRequest;
 use App\Http\Requests\Chronology\UpdateChronologyRequest;
 use App\Infrastructure\Database\Models\Chronology;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChronologyController extends Controller
 {
@@ -95,5 +97,10 @@ class ChronologyController extends Controller
         $deleteChronology->handle($chronology->id);
 
         return response()->json(null, 204);
+    }
+
+    public function exportCsv(ExportChronologyCsvUseCase $exportUseCase): StreamedResponse
+    {
+        return $exportUseCase->handle();
     }
 }

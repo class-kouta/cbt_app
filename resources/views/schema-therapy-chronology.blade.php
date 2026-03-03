@@ -5,9 +5,27 @@
 
 @section('content')
 <div x-data="chronologyListApp()" x-init="init()" x-cloak>
-    <!-- カウント表示 -->
-    <div x-show="!loading && !errorOccurred && chronologies.length > 0" class="mb-4">
+    <!-- カウント表示 & CSV出力 -->
+    <div x-show="!loading && !errorOccurred && chronologies.length > 0" class="mb-4 flex justify-between items-center">
         <span class="text-sm text-gray-500">📜 全 <span class="font-semibold text-gray-700" x-text="chronologies.length"></span> 件</span>
+        <button
+            @click="exportCsv()"
+            :disabled="exporting"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-green-400 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            <template x-if="!exporting">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+            </template>
+            <template x-if="exporting">
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                </svg>
+            </template>
+            <span x-text="exporting ? 'エクスポート中...' : 'CSV出力'"></span>
+        </button>
     </div>
 
     <!-- 一覧 -->
@@ -89,6 +107,7 @@ function chronologyListApp() {
         chronologies: [],
         loading: true,
         errorOccurred: false,
+        exporting: false,
 
         async init() {
             await this.loadChronologies();
@@ -108,6 +127,22 @@ function chronologyListApp() {
                 this.errorOccurred = true;
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async exportCsv() {
+            this.exporting = true;
+            try {
+                await exportCsvFromApi(
+                    '/api/chronologies/export/csv',
+                    {},
+                    'chronologies.csv',
+                    '年表'
+                );
+            } catch (error) {
+                alert('CSVエクスポートに失敗しました');
+            } finally {
+                this.exporting = false;
             }
         }
     };
