@@ -177,7 +177,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     <span class="inline-flex items-center gap-1.5">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pink-500 text-white text-xs font-bold">4</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold">4</span>
                         ヘルシーモード(幸せな子どもモード)
                     </span>
                 </label>
@@ -187,7 +187,7 @@
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
-                        ? 'border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white'
+                        ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
                         : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                     placeholder="ヘルシーモード(幸せな子どもモード)について自由に書いてください..."
                     maxlength="10000"
