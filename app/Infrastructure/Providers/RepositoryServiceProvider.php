@@ -14,6 +14,7 @@ use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
 use App\Domain\Repository\SafePlaceRepositoryInterface;
 use App\Domain\Repository\TagRepositoryInterface;
 use App\Domain\Repository\ChronologyRepositoryInterface;
+use App\Domain\Repository\ModeMapRepositoryInterface;
 
 use App\Infrastructure\Repository\EloquentCopingRepository;
 use App\Infrastructure\Repository\EloquentCopingTagRepository;
@@ -27,6 +28,7 @@ use App\Infrastructure\Repository\EloquentEarlyMaladaptiveSchemaRepository;
 use App\Infrastructure\Repository\EloquentSafePlaceRepository;
 use App\Infrastructure\Repository\EloquentTagRepository;
 use App\Infrastructure\Repository\EloquentChronologyRepository;
+use App\Infrastructure\Repository\EloquentModeMapRepository;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -46,5 +48,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SafePlaceRepositoryInterface::class, EloquentSafePlaceRepository::class);
         $this->app->bind(TagRepositoryInterface::class, EloquentTagRepository::class);
         $this->app->bind(ChronologyRepositoryInterface::class, EloquentChronologyRepository::class);
+        $this->app->bind(ModeMapRepositoryInterface::class, EloquentModeMapRepository::class);
     }
 }
