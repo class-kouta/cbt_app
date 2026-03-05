@@ -117,7 +117,7 @@
                 </label>
                 <textarea
                     x-model="formData.wounded_child_mode"
-                    rows="6"
+                    rows="20"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
@@ -139,7 +139,7 @@
                 </label>
                 <textarea
                     x-model="formData.hurtful_adult_mode"
-                    rows="6"
+                    rows="20"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
@@ -161,7 +161,7 @@
                 </label>
                 <textarea
                     x-model="formData.unacceptable_coping_mode"
-                    rows="6"
+                    rows="20"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
@@ -183,7 +183,7 @@
                 </label>
                 <textarea
                     x-model="formData.healthy_happy_child_mode"
-                    rows="6"
+                    rows="20"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
@@ -205,7 +205,7 @@
                 </label>
                 <textarea
                     x-model="formData.healthy_adult_mode"
-                    rows="6"
+                    rows="20"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
