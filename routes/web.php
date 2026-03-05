@@ -145,6 +145,10 @@ Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
         return view('schema-therapy-chronology');
     })->name('chronology');
 
+    Route::get('/mode-map', function () {
+        return view('schema-therapy-mode-map');
+    })->name('mode-map');
+
     Route::get('/chronology/create', function () {
         return view('schema-therapy-chronology-edit');
     })->name('chronology.create');
@@ -164,7 +168,6 @@ Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->
         return view('schema-count');
     })->name('count');
 });
-
 
 // ===========================================
 // 管理画面ルート

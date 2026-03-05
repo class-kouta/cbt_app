@@ -1,19 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChronologyController;
+use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
-use App\Http\Controllers\TagController;
-use App\Http\Controllers\ColumnController;
-use App\Http\Controllers\WritingDisclosureController;
+use App\Http\Controllers\EarlyMaladaptiveSchemaController;
+use App\Http\Controllers\ModeMapController;
 use App\Http\Controllers\ProblemSolvingController;
+use App\Http\Controllers\SafePlaceController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
-use App\Http\Controllers\EarlyMaladaptiveSchemaController;
-use App\Http\Controllers\ChronologyController;
-use App\Http\Controllers\SafePlaceController;
-
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\WritingDisclosureController;
+use Illuminate\Support\Facades\Route;
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
@@ -89,6 +89,11 @@ Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladapt
 Route::get('/safe-places', [SafePlaceController::class, 'show']);
 Route::post('/safe-places', [SafePlaceController::class, 'store']);
 Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
+
+// ModeMap API（スキーマ療法 - モードマップ簡易版）
+Route::get('/mode-maps', [ModeMapController::class, 'show']);
+Route::post('/mode-maps', [ModeMapController::class, 'store']);
+Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);
