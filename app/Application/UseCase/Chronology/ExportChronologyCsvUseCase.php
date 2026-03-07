@@ -14,12 +14,12 @@ class ExportChronologyCsvUseCase
         'いつ',
         '環境・出来事',
         '体験・感じたこと・思ったこと',
+        'タグ',
     ];
 
     public function __construct(
         private readonly CsvExportService $csvExportService
-    ) {
-    }
+    ) {}
 
     public function handle(): StreamedResponse
     {
@@ -28,17 +28,23 @@ class ExportChronologyCsvUseCase
             ->map(fn ($item) => $item->toArray())
             ->toArray();
 
-        $rows = array_map(function ($item) {
+        $sentimentLabels = [
+            'positive' => 'ポジティブ',
+            'negative' => 'ネガティブ',
+        ];
+
+        $rows = array_map(function ($item) use ($sentimentLabels) {
             return [
                 $item['id'],
                 $this->csvExportService->formatDatetime($item['created_at']),
                 $item['when_period'] ?? '',
                 $item['environment_event'] ?? '',
                 $item['experience_feeling'] ?? '',
+                $sentimentLabels[$item['sentiment_type'] ?? ''] ?? '',
             ];
         }, $items);
 
-        $filename = 'chronologies_' . $this->csvExportService->getDateSuffix() . '.csv';
+        $filename = 'chronologies_'.$this->csvExportService->getDateSuffix().'.csv';
 
         return $this->csvExportService->export(self::CSV_HEADERS, $rows, $filename);
     }

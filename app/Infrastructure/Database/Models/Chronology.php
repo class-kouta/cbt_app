@@ -13,6 +13,7 @@ class Chronology extends Model
         'when_period',
         'environment_event',
         'experience_feeling',
+        'sentiment_type',
     ];
 
     protected $casts = [

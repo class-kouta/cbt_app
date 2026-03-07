@@ -17,6 +17,7 @@ class EloquentChronologyRepository implements ChronologyRepositoryInterface
                 'when_period' => $chronology->getWhenPeriod(),
                 'environment_event' => $chronology->getEnvironmentEvent(),
                 'experience_feeling' => $chronology->getExperienceFeeling(),
+                'sentiment_type' => $chronology->getSentimentType(),
             ]
         );
 
@@ -25,6 +26,7 @@ class EloquentChronologyRepository implements ChronologyRepositoryInterface
             whenPeriod: (string) $model->when_period,
             environmentEvent: $model->environment_event,
             experienceFeeling: $model->experience_feeling,
+            sentimentType: $model->sentiment_type,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -43,6 +45,7 @@ class EloquentChronologyRepository implements ChronologyRepositoryInterface
             whenPeriod: (string) $model->when_period,
             environmentEvent: $model->environment_event,
             experienceFeeling: $model->experience_feeling,
+            sentimentType: $model->sentiment_type,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );

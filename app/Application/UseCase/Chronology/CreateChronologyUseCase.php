@@ -8,17 +8,17 @@ use App\Domain\Repository\ChronologyRepositoryInterface;
 
 class CreateChronologyUseCase
 {
-    public function __construct(private readonly ChronologyRepositoryInterface $chronologyRepository)
-    {
-    }
+    public function __construct(private readonly ChronologyRepositoryInterface $chronologyRepository) {}
 
     public function handle(ChronologyData $data): ChronologyEntity
     {
         $chronology = ChronologyEntity::createNew(
             $data->whenPeriod,
             $data->environmentEvent,
-            $data->experienceFeeling
+            $data->experienceFeeling,
+            $data->sentimentType
         );
+
         return $this->chronologyRepository->save($chronology);
     }
 }

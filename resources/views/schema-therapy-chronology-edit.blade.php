@@ -139,6 +139,37 @@
                 <div class="text-xs text-gray-400 text-right" x-text="formData.experience_feeling.length + '/10000'"></div>
             </div>
 
+            <!-- タグ（ポジティブ / ネガティブ） -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold mr-1">4</span>
+                    タグ
+                    <span class="text-gray-400 font-normal ml-1">この出来事の印象</span>
+                </label>
+                <div class="flex gap-3">
+                    <button
+                        type="button"
+                        @click="formData.sentiment_type = formData.sentiment_type === 'positive' ? '' : 'positive'"
+                        :class="formData.sentiment_type === 'positive'
+                            ? 'bg-orange-100 border-orange-400 text-orange-700 ring-2 ring-orange-300'
+                            : 'bg-white border-gray-300 text-gray-600 hover:border-orange-300 hover:bg-orange-50'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 font-medium transition-all"
+                    >
+                        😊 ポジティブ
+                    </button>
+                    <button
+                        type="button"
+                        @click="formData.sentiment_type = formData.sentiment_type === 'negative' ? '' : 'negative'"
+                        :class="formData.sentiment_type === 'negative'
+                            ? 'bg-blue-100 border-blue-400 text-blue-700 ring-2 ring-blue-300'
+                            : 'bg-white border-gray-300 text-gray-600 hover:border-blue-300 hover:bg-blue-50'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 font-medium transition-all"
+                    >
+                        😢 ネガティブ
+                    </button>
+                </div>
+            </div>
+
             <!-- エラーメッセージ -->
             <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
 
@@ -238,7 +269,8 @@ function chronologyEditApp(itemId) {
         formData: {
             when_period: '',
             environment_event: '',
-            experience_feeling: ''
+            experience_feeling: '',
+            sentiment_type: ''
         },
         loading: false,
         submitting: false,
@@ -274,6 +306,7 @@ function chronologyEditApp(itemId) {
                     this.formData.when_period = data.when_period || '';
                     this.formData.environment_event = data.environment_event || '';
                     this.formData.experience_feeling = data.experience_feeling || '';
+                    this.formData.sentiment_type = data.sentiment_type || '';
                 }
             } catch (error) {
                 // エラー詳細はセキュリティ上コンソールに出力しない
@@ -290,7 +323,8 @@ function chronologyEditApp(itemId) {
             const snapshot = {
                 when_period: this.formData.when_period,
                 environment_event: this.formData.environment_event,
-                experience_feeling: this.formData.experience_feeling
+                experience_feeling: this.formData.experience_feeling,
+                sentiment_type: this.formData.sentiment_type
             };
             this.autoSaveSnapshots.push(snapshot);
 
@@ -315,7 +349,8 @@ function chronologyEditApp(itemId) {
             return (
                 this.formData.when_period !== snapshot.when_period ||
                 this.formData.environment_event !== snapshot.environment_event ||
-                this.formData.experience_feeling !== snapshot.experience_feeling
+                this.formData.experience_feeling !== snapshot.experience_feeling ||
+                this.formData.sentiment_type !== snapshot.sentiment_type
             );
         },
 

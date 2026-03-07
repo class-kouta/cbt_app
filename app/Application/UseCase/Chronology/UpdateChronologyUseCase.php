@@ -9,9 +9,7 @@ use DomainException;
 
 class UpdateChronologyUseCase
 {
-    public function __construct(private readonly ChronologyRepositoryInterface $chronologyRepository)
-    {
-    }
+    public function __construct(private readonly ChronologyRepositoryInterface $chronologyRepository) {}
 
     public function handle(int $id, ChronologyData $data): ChronologyEntity
     {
@@ -24,8 +22,10 @@ class UpdateChronologyUseCase
         $updatedChronology = $chronology->update(
             $data->whenPeriod,
             $data->environmentEvent,
-            $data->experienceFeeling
+            $data->experienceFeeling,
+            $data->sentimentType
         );
+
         return $this->chronologyRepository->save($updatedChronology);
     }
 }

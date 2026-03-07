@@ -37,10 +37,24 @@
                     class="block hover:bg-gray-50 transition-colors"
                 >
                     <div class="p-4">
-                        <!-- いつ -->
-                        <div class="mb-2">
-                            <span class="text-xs text-gray-500">いつ</span>
-                            <p class="text-gray-800 break-words overflow-wrap-anywhere text-sm" x-text="item.when_period"></p>
+                        <!-- いつ & タグ -->
+                        <div class="mb-2 flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <span class="text-xs text-gray-500">いつ</span>
+                                <p class="text-gray-800 break-words overflow-wrap-anywhere text-sm" x-text="item.when_period"></p>
+                            </div>
+                            <span
+                                x-show="item.sentiment_type === 'positive'"
+                                class="shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"
+                            >
+                                😊 ポジティブ
+                            </span>
+                            <span
+                                x-show="item.sentiment_type === 'negative'"
+                                class="shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
+                            >
+                                😢 ネガティブ
+                            </span>
                         </div>
                         <!-- 環境・出来事 -->
                         <div x-show="item.environment_event" class="mb-2">
@@ -54,7 +68,14 @@
                         </div>
                     </div>
                 </a>
-                <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-1"></div>
+                <div
+                    class="h-1"
+                    :class="{
+                        'bg-gradient-to-r from-orange-400 to-amber-400': item.sentiment_type === 'positive',
+                        'bg-gradient-to-r from-blue-400 to-indigo-400': item.sentiment_type === 'negative',
+                        'bg-gradient-to-r from-green-500 to-emerald-500': !item.sentiment_type
+                    }"
+                ></div>
             </div>
         </template>
 
