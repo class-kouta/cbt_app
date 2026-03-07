@@ -11,15 +11,10 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
 {
     public function save(SchemaModeMonitoringEntity $schemaModeMonitoring): SchemaModeMonitoringEntity
     {
-        if ($schemaModeMonitoring->getId() !== null) {
-            $model = SchemaModeMonitoringModel::findOrFail($schemaModeMonitoring->getId());
-            $model->content = $schemaModeMonitoring->getContent();
-            $model->save();
-        } else {
-            $model = new SchemaModeMonitoringModel();
-            $model->content = $schemaModeMonitoring->getContent();
-            $model->save();
-        }
+        $model = SchemaModeMonitoringModel::updateOrCreate(
+            ['id' => $schemaModeMonitoring->getId()],
+            ['content' => $schemaModeMonitoring->getContent()]
+        );
 
         return SchemaModeMonitoringEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -45,12 +40,23 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
         );
     }
 
+    public function findAllOrderByCreatedAtDesc(): array
+    {
+        return SchemaModeMonitoringModel::orderByDesc('created_at')
+            ->get()
+            ->map(function ($model) {
+                return [
+                    'id' => $model->id,
+                    'content' => $model->content,
+                    'created_at' => $model->created_at->format(DATE_ATOM),
+                    'updated_at' => $model->updated_at->format(DATE_ATOM),
+                ];
+            })
+            ->toArray();
+    }
+
     public function delete(int $id): void
     {
-        $model = SchemaModeMonitoringModel::find($id);
-
-        if ($model !== null) {
-            $model->delete();
-        }
+        SchemaModeMonitoringModel::destroy($id);
     }
 }

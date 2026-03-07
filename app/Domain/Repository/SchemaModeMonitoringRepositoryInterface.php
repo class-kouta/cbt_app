@@ -10,5 +10,10 @@ interface SchemaModeMonitoringRepositoryInterface
 
     public function findById(int $id): ?SchemaModeMonitoring;
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAllOrderByCreatedAtDesc(): array;
+
     public function delete(int $id): void;
 }

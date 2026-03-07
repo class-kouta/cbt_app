@@ -98,6 +98,7 @@ Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
 
 // SchemaModeMonitoring API（スキーマ療法 - セルフモニタリング）
 Route::get('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'index']);
+Route::get('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'show']);
 Route::post('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'store']);
 Route::put('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'update']);
 Route::delete('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'destroy']);

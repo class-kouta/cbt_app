@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\SchemaModeMonitoringData;
 use App\Application\UseCase\SchemaModeMonitoring\CreateSchemaModeMonitoringUseCase;
+use App\Application\UseCase\SchemaModeMonitoring\ListSchemaModeMonitoringsUseCase;
 use App\Application\UseCase\SchemaModeMonitoring\UpdateSchemaModeMonitoringUseCase;
 use App\Application\UseCase\SchemaModeMonitoring\DeleteSchemaModeMonitoringUseCase;
 use App\Http\Requests\SchemaModeMonitoring\CreateSchemaModeMonitoringRequest;
@@ -16,20 +17,24 @@ class SchemaModeMonitoringController extends Controller
     /**
      * セルフモニタリング一覧を取得（作成日時降順）
      */
-    public function index(): JsonResponse
+    public function index(ListSchemaModeMonitoringsUseCase $listUseCase): JsonResponse
     {
-        $items = SchemaModeMonitoring::orderByDesc('created_at')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'content' => $item->content,
-                    'created_at' => $item->created_at->format(DATE_ATOM),
-                    'updated_at' => $item->updated_at->format(DATE_ATOM),
-                ];
-            });
+        $items = $listUseCase->handle();
 
         return response()->json($items);
+    }
+
+    /**
+     * セルフモニタリング詳細を取得
+     */
+    public function show(SchemaModeMonitoring $schemaModeMonitoring): JsonResponse
+    {
+        return response()->json([
+            'id' => $schemaModeMonitoring->id,
+            'content' => $schemaModeMonitoring->content,
+            'created_at' => $schemaModeMonitoring->created_at->format(DATE_ATOM),
+            'updated_at' => $schemaModeMonitoring->updated_at->format(DATE_ATOM),
+        ]);
     }
 
     /**

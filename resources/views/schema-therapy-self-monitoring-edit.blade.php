@@ -231,15 +231,17 @@ function selfMonitoringEditApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch('/api/schema-mode-monitorings');
-                const items = await res.json();
-                const item = items.find(i => i.id === this.itemId);
+                const res = await fetch(`/api/schema-mode-monitorings/${this.itemId}`);
+                if (!res.ok) {
+                    throw new Error('Failed to load item.');
+                }
+                const item = await res.json();
 
                 if (item) {
                     this.content = item.content || '';
                 }
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
+                this.error = 'データの読み込みに失敗しました。';
             } finally {
                 this.loading = false;
             }
@@ -281,48 +283,53 @@ function selfMonitoringEditApp(itemId) {
             this.takeSnapshot();
         },
 
-        async performSave(isManual = false) {
+        async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
             try {
-                if (this.itemId) {
-                    const res = await fetch(`/api/schema-mode-monitorings/${this.itemId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ content: this.content })
-                    });
+                const isUpdate = !!this.itemId;
+                const url = isUpdate
+                    ? `/api/schema-mode-monitorings/${this.itemId}`
+                    : '/api/schema-mode-monitorings';
+                const method = isUpdate ? 'PUT' : 'POST';
 
-                    if (res.ok) {
-                        this.showSaveNotification(isManual);
-                    }
-                } else {
-                    const res = await fetch('/api/schema-mode-monitorings', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ content: this.content })
-                    });
+                const res = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ content: this.content })
+                });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/schema-therapy/self-monitoring/${this.itemId}/edit`);
-                        this.showSaveNotification(isManual);
-                    }
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || 'エラーが発生しました');
                 }
+
+                if (!isUpdate) {
+                    const data = await res.json();
+                    this.itemId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/schema-therapy/self-monitoring/${this.itemId}/edit`);
+                }
+
+                if (redirectOnSuccess) {
+                    window.location.href = '/schema-therapy/self-monitoring';
+                    return;
+                }
+
+                this.showSaveNotification(isManual);
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
+                if (redirectOnSuccess) {
+                    this.error = error.message;
+                    this.submitting = false;
+                }
             }
         },
 
         async performAutoSave() {
             this.autoSaving = true;
             try {
-                await this.performSave(false);
+                await this.performSave({ isManual: false });
             } finally {
                 this.autoSaving = false;
             }
@@ -333,7 +340,7 @@ function selfMonitoringEditApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave({ isManual: true });
             } finally {
                 this.floatingSaving = false;
             }
@@ -354,14 +361,6 @@ function selfMonitoringEditApp(itemId) {
         },
 
         async saveItem() {
-            if (this.isEditMode) {
-                await this.updateItem();
-            } else {
-                await this.createItem();
-            }
-        },
-
-        async createItem() {
             this.error = '';
 
             if (!this.isFormValid()) {
@@ -370,57 +369,7 @@ function selfMonitoringEditApp(itemId) {
             }
 
             this.submitting = true;
-            try {
-                const res = await fetch('/api/schema-mode-monitorings', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ content: this.content })
-                });
-
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
-                }
-
-                window.location.href = '/schema-therapy/self-monitoring';
-            } catch (e) {
-                this.error = e.message;
-                this.submitting = false;
-            }
-        },
-
-        async updateItem() {
-            this.error = '';
-
-            if (!this.isFormValid()) {
-                this.error = '内容を入力してください';
-                return;
-            }
-
-            this.submitting = true;
-            try {
-                const res = await fetch(`/api/schema-mode-monitorings/${this.itemId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ content: this.content })
-                });
-
-                if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
-                }
-
-                window.location.href = '/schema-therapy/self-monitoring';
-            } catch (e) {
-                this.error = e.message;
-                this.submitting = false;
-            }
+            await this.performSave({ isManual: true, redirectOnSuccess: true });
         },
 
         confirmDelete() {
