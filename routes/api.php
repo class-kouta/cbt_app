@@ -12,6 +12,7 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\SchemaModeMonitoringController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +96,13 @@ Route::get('/mode-maps', [ModeMapController::class, 'show']);
 Route::get('/mode-maps/export/csv', [ModeMapController::class, 'exportCsv']);
 Route::post('/mode-maps', [ModeMapController::class, 'store']);
 Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
+
+// SchemaModeMonitoring API（スキーマ療法 - セルフモニタリング）
+Route::get('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'index']);
+Route::get('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'show']);
+Route::post('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'store']);
+Route::put('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'update']);
+Route::delete('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'destroy']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);
