@@ -13,10 +13,9 @@ class CsvExportService
     /**
      * CSVをストリームレスポンスとして出力
      *
-     * @param array<string> $headers CSVヘッダー行
-     * @param array<int, array<int, mixed>> $rows CSVデータ行
-     * @param string $filename ファイル名
-     * @return StreamedResponse
+     * @param  array<string>  $headers  CSVヘッダー行
+     * @param  array<int, array<int, mixed>>  $rows  CSVデータ行
+     * @param  string  $filename  ファイル名
      */
     public function export(array $headers, array $rows, string $filename): StreamedResponse
     {
@@ -29,16 +28,29 @@ class CsvExportService
             // ヘッダー行
             fputcsv($handle, $headers);
 
-            // データ行
+            // データ行（CSV Injection対策済み）
             foreach ($rows as $row) {
-                fputcsv($handle, $row);
+                fputcsv($handle, array_map([$this, 'sanitizeCsvValue'], $row));
             }
 
             fclose($handle);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
+    }
+
+    /**
+     * CSV Injection（数式インジェクション）対策
+     * スプレッドシートで数式として解釈される先頭文字をエスケープ
+     */
+    public function sanitizeCsvValue(mixed $value): mixed
+    {
+        if (is_string($value) && $value !== '' && in_array($value[0], ['=', '+', '-', '@'], true)) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 
     /**
@@ -56,9 +68,9 @@ class CsvExportService
     /**
      * 配列をカンマ区切り文字列に変換
      *
-     * @param array<mixed>|null $items
+     * @param  array<mixed>|null  $items
      */
-    public function joinArray(?array $items, string $key = null): string
+    public function joinArray(?array $items, ?string $key = null): string
     {
         if (empty($items)) {
             return '';

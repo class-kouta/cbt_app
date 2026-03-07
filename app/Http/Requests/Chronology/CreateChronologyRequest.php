@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Chronology;
 
+use App\Domain\Entity\Chronology;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateChronologyRequest extends FormRequest
 {
@@ -17,7 +19,7 @@ class CreateChronologyRequest extends FormRequest
             'when_period' => ['required', 'string', 'max:200'],
             'environment_event' => ['nullable', 'string', 'max:10000'],
             'experience_feeling' => ['nullable', 'string', 'max:10000'],
-            'sentiment_type' => ['nullable', 'string', 'in:positive,negative'],
+            'sentiment_type' => ['nullable', 'string', Rule::in(Chronology::VALID_SENTIMENTS)],
         ];
     }
 

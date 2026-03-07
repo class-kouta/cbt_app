@@ -36,6 +36,10 @@ class Chronology
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
+        if ($sentimentType !== null && ! in_array($sentimentType, self::VALID_SENTIMENTS, true)) {
+            throw new \InvalidArgumentException('Invalid sentiment type.');
+        }
+
         $this->id = $id;
         $this->whenPeriod = $whenPeriod;
         $this->environmentEvent = $environmentEvent;
