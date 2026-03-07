@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\ModeMapData;
 use App\Application\UseCase\ModeMap\CreateModeMapUseCase;
+use App\Application\UseCase\ModeMap\ExportModeMapCsvUseCase;
 use App\Application\UseCase\ModeMap\UpdateModeMapUseCase;
 use App\Domain\Entity\ModeMap;
 use App\Domain\Repository\ModeMapRepositoryInterface;
 use App\Http\Requests\ModeMap\CreateModeMapRequest;
 use App\Http\Requests\ModeMap\UpdateModeMapRequest;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ModeMapController extends Controller
 {
@@ -57,6 +59,11 @@ class ModeMapController extends Controller
         );
 
         return $this->toResponse($updateModeMap->handle($id, $data));
+    }
+
+    public function exportCsv(ExportModeMapCsvUseCase $exportUseCase): StreamedResponse
+    {
+        return $exportUseCase->handle();
     }
 
     private function toResponse(ModeMap $modeMap, int $status = 200): JsonResponse

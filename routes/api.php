@@ -92,6 +92,7 @@ Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
 
 // ModeMap API（スキーマ療法 - モードマップ簡易版）
 Route::get('/mode-maps', [ModeMapController::class, 'show']);
+Route::get('/mode-maps/export/csv', [ModeMapController::class, 'exportCsv']);
 Route::post('/mode-maps', [ModeMapController::class, 'store']);
 Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
 
