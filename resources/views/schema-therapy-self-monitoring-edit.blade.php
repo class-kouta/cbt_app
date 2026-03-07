@@ -215,6 +215,7 @@ function selfMonitoringEditApp(itemId) {
         autoSaveSnapshots: [],
         autoSaveInterval: null,
         autoSaving: false,
+        _saveInProgress: false,
 
         async init() {
             if (this.isEditMode) {
@@ -275,7 +276,8 @@ function selfMonitoringEditApp(itemId) {
                 this.content.trim() &&
                 this.hasChangedFromPreviousSnapshot() &&
                 !this.submitting &&
-                !this.autoSaving
+                !this.autoSaving &&
+                !this.floatingSaving
             ) {
                 await this.performAutoSave();
             }
@@ -284,6 +286,10 @@ function selfMonitoringEditApp(itemId) {
         },
 
         async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
+            if (this._saveInProgress) {
+                return;
+            }
+            this._saveInProgress = true;
             try {
                 const isUpdate = !!this.itemId;
                 const url = isUpdate
@@ -323,6 +329,8 @@ function selfMonitoringEditApp(itemId) {
                     this.error = error.message;
                     this.submitting = false;
                 }
+            } finally {
+                this._saveInProgress = false;
             }
         },
 
@@ -336,7 +344,7 @@ function selfMonitoringEditApp(itemId) {
         },
 
         async manualSave() {
-            if (this.floatingSaving || !this.isFormValid()) return;
+            if (this.floatingSaving || this.autoSaving || this.submitting || !this.isFormValid()) return;
 
             this.floatingSaving = true;
             try {
@@ -369,6 +377,18 @@ function selfMonitoringEditApp(itemId) {
             }
 
             this.submitting = true;
+
+            if (this._saveInProgress) {
+                await new Promise(resolve => {
+                    const check = setInterval(() => {
+                        if (!this._saveInProgress) {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 50);
+                });
+            }
+
             await this.performSave({ isManual: true, redirectOnSuccess: true });
         },
 
