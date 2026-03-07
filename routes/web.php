@@ -156,6 +156,21 @@ Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
     Route::get('/chronology/{id}/edit', function ($id) {
         return view('schema-therapy-chronology-edit', ['itemId' => $id]);
     })->where('id', '[0-9]+')->name('chronology.edit');
+
+    // セルフモニタリング一覧ページ
+    Route::get('/self-monitoring', function () {
+        return view('schema-therapy-self-monitoring-list');
+    })->name('self-monitoring');
+
+    // セルフモニタリング作成ページ
+    Route::get('/self-monitoring/create', function () {
+        return view('schema-therapy-self-monitoring-edit');
+    })->name('self-monitoring.create');
+
+    // セルフモニタリング編集ページ
+    Route::get('/self-monitoring/{id}/edit', function ($id) {
+        return view('schema-therapy-self-monitoring-edit', ['itemId' => $id]);
+    })->where('id', '[0-9]+')->name('self-monitoring.edit');
 });
 
 // 早期不適応スキーマページ
