@@ -17,6 +17,7 @@ class CreateChronologyRequest extends FormRequest
             'when_period' => ['required', 'string', 'max:200'],
             'environment_event' => ['nullable', 'string', 'max:10000'],
             'experience_feeling' => ['nullable', 'string', 'max:10000'],
+            'sentiment_type' => ['nullable', 'string', 'in:positive,negative'],
         ];
     }
 
@@ -27,6 +28,7 @@ class CreateChronologyRequest extends FormRequest
             'when_period.max' => '「いつ」は200文字以内で入力してください',
             'environment_event.max' => '「環境・出来事」は10000文字以内で入力してください',
             'experience_feeling.max' => '「体験・感じたこと・思ったこと」は10000文字以内で入力してください',
+            'sentiment_type.in' => 'タグはポジティブまたはネガティブを選択してください',
         ];
     }
 }

@@ -2,16 +2,29 @@
 
 namespace App\Domain\Entity;
 
-use DateTimeImmutable;
 use App\Domain\ValueObject\ChronologyWhenPeriod;
+use DateTimeImmutable;
 
 class Chronology
 {
+    public const SENTIMENT_POSITIVE = 'positive';
+
+    public const SENTIMENT_NEGATIVE = 'negative';
+
+    public const VALID_SENTIMENTS = [self::SENTIMENT_POSITIVE, self::SENTIMENT_NEGATIVE];
+
     private ?int $id;
+
     private ChronologyWhenPeriod $whenPeriod;
+
     private ?string $environmentEvent;
+
     private ?string $experienceFeeling;
+
+    private ?string $sentimentType;
+
     private DateTimeImmutable $createdAt;
+
     private DateTimeImmutable $updatedAt;
 
     private function __construct(
@@ -19,6 +32,7 @@ class Chronology
         ChronologyWhenPeriod $whenPeriod,
         ?string $environmentEvent,
         ?string $experienceFeeling,
+        ?string $sentimentType,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ) {
@@ -26,6 +40,7 @@ class Chronology
         $this->whenPeriod = $whenPeriod;
         $this->environmentEvent = $environmentEvent;
         $this->experienceFeeling = $experienceFeeling;
+        $this->sentimentType = $sentimentType;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -33,14 +48,17 @@ class Chronology
     public static function createNew(
         string $whenPeriod,
         ?string $environmentEvent,
-        ?string $experienceFeeling
+        ?string $experienceFeeling,
+        ?string $sentimentType = null
     ): self {
         $now = new DateTimeImmutable('now');
+
         return new self(
             null,
             new ChronologyWhenPeriod($whenPeriod),
             $environmentEvent,
             $experienceFeeling,
+            $sentimentType,
             $now,
             $now
         );
@@ -51,6 +69,7 @@ class Chronology
         string $whenPeriod,
         ?string $environmentEvent,
         ?string $experienceFeeling,
+        ?string $sentimentType,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
@@ -59,6 +78,7 @@ class Chronology
             new ChronologyWhenPeriod($whenPeriod),
             $environmentEvent,
             $experienceFeeling,
+            $sentimentType,
             $createdAt,
             $updatedAt
         );
@@ -84,6 +104,11 @@ class Chronology
         return $this->experienceFeeling;
     }
 
+    public function getSentimentType(): ?string
+    {
+        return $this->sentimentType;
+    }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
@@ -101,6 +126,7 @@ class Chronology
             $this->whenPeriod,
             $this->environmentEvent,
             $this->experienceFeeling,
+            $this->sentimentType,
             $this->createdAt,
             $this->updatedAt
         );
@@ -109,13 +135,15 @@ class Chronology
     public function update(
         string $whenPeriod,
         ?string $environmentEvent,
-        ?string $experienceFeeling
+        ?string $experienceFeeling,
+        ?string $sentimentType = null
     ): self {
         return new self(
             $this->id,
             new ChronologyWhenPeriod($whenPeriod),
             $environmentEvent,
             $experienceFeeling,
+            $sentimentType,
             $this->createdAt,
             new DateTimeImmutable('now')
         );
