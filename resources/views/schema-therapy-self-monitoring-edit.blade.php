@@ -66,7 +66,7 @@
     <button
         type="button"
         @click="manualSave()"
-        :disabled="floatingSaving || !isFormValid()"
+        :disabled="floatingSaving || autoSaving || submitting || !isFormValid()"
         class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
         title="保存する"
     >
@@ -215,6 +215,7 @@ function selfMonitoringEditApp(itemId) {
         autoSaveSnapshots: [],
         autoSaveInterval: null,
         autoSaving: false,
+        _saveInProgress: false,
 
         async init() {
             if (this.isEditMode) {
@@ -275,7 +276,8 @@ function selfMonitoringEditApp(itemId) {
                 this.content.trim() &&
                 this.hasChangedFromPreviousSnapshot() &&
                 !this.submitting &&
-                !this.autoSaving
+                !this.autoSaving &&
+                !this.floatingSaving
             ) {
                 await this.performAutoSave();
             }
@@ -284,6 +286,10 @@ function selfMonitoringEditApp(itemId) {
         },
 
         async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
+            if (this._saveInProgress) {
+                return;
+            }
+            this._saveInProgress = true;
             try {
                 const isUpdate = !!this.itemId;
                 const url = isUpdate
@@ -323,6 +329,8 @@ function selfMonitoringEditApp(itemId) {
                     this.error = error.message;
                     this.submitting = false;
                 }
+            } finally {
+                this._saveInProgress = false;
             }
         },
 
@@ -336,7 +344,7 @@ function selfMonitoringEditApp(itemId) {
         },
 
         async manualSave() {
-            if (this.floatingSaving || !this.isFormValid()) return;
+            if (this.floatingSaving || this.autoSaving || this.submitting || !this.isFormValid()) return;
 
             this.floatingSaving = true;
             try {
@@ -369,6 +377,11 @@ function selfMonitoringEditApp(itemId) {
             }
 
             this.submitting = true;
+
+            while (this._saveInProgress) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
             await this.performSave({ isManual: true, redirectOnSuccess: true });
         },
 
