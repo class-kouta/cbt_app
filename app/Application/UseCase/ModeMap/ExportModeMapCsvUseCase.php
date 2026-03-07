@@ -31,14 +31,20 @@ class ExportModeMapCsvUseCase
             ->toArray();
 
         $rows = array_map(function ($item) {
+            $sanitize = function ($value) {
+                if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@'])) {
+                    return "'" . $value;
+                }
+                return $value;
+            };
             return [
                 $item['id'],
                 $this->csvExportService->formatDatetime($item['created_at']),
-                $item['wounded_child_mode'] ?? '',
-                $item['hurtful_adult_mode'] ?? '',
-                $item['unacceptable_coping_mode'] ?? '',
-                $item['healthy_happy_child_mode'] ?? '',
-                $item['healthy_adult_mode'] ?? '',
+                $sanitize($item['wounded_child_mode'] ?? ''),
+                $sanitize($item['hurtful_adult_mode'] ?? ''),
+                $sanitize($item['unacceptable_coping_mode'] ?? ''),
+                $sanitize($item['healthy_happy_child_mode'] ?? ''),
+                $sanitize($item['healthy_adult_mode'] ?? ''),
             ];
         }, $items);
 

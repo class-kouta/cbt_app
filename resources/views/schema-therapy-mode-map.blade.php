@@ -465,7 +465,10 @@ function modeMapApp() {
                     'モードマップ'
                 );
             } catch (error) {
-                alert('CSVエクスポートに失敗しました');
+                console.error('CSVエクスポートに失敗しました:', error);
+                this.errorMessage = 'CSVエクスポートに失敗しました';
+                this.showErrorToast = true;
+                setTimeout(() => { this.showErrorToast = false; }, 3000);
             } finally {
                 this.exporting = false;
             }
