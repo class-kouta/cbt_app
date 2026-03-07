@@ -66,7 +66,7 @@
     <button
         type="button"
         @click="manualSave()"
-        :disabled="floatingSaving || !isFormValid()"
+        :disabled="floatingSaving || autoSaving || submitting || !isFormValid()"
         class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
         title="保存する"
     >
@@ -378,15 +378,8 @@ function selfMonitoringEditApp(itemId) {
 
             this.submitting = true;
 
-            if (this._saveInProgress) {
-                await new Promise(resolve => {
-                    const check = setInterval(() => {
-                        if (!this._saveInProgress) {
-                            clearInterval(check);
-                            resolve();
-                        }
-                    }, 50);
-                });
+            while (this._saveInProgress) {
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
 
             await this.performSave({ isManual: true, redirectOnSuccess: true });
