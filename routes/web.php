@@ -157,6 +157,26 @@ Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
         return view('schema-therapy-chronology-edit', ['itemId' => $id]);
     })->where('id', '[0-9]+')->name('chronology.edit');
 
+    // ハッピースキーママップ
+    Route::get('/happy-schema-map', function () {
+        return view('schema-therapy-happy-schema-map');
+    })->name('happy-schema-map');
+
+    // ヘルシーサイドとスキーマサイドの対話のワーク
+    Route::get('/healthy-schema-dialogue', function () {
+        return view('schema-therapy-healthy-schema-dialogue');
+    })->name('healthy-schema-dialogue');
+
+    // ハッピースキーマと行動計画
+    Route::get('/happy-schema-action-plan', function () {
+        return view('schema-therapy-happy-schema-action-plan');
+    })->name('happy-schema-action-plan');
+
+    // モードワーク
+    Route::get('/mode-work', function () {
+        return view('schema-therapy-mode-work');
+    })->name('mode-work');
+
     // セルフモニタリング一覧ページ
     Route::get('/self-monitoring', function () {
         return view('schema-therapy-self-monitoring-list');
