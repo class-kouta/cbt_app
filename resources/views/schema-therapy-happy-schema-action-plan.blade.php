@@ -226,7 +226,6 @@ function happySchemaActionPlanApp() {
         exporting: false,
 
         autoSaveInterval: null,
-        autoSaveSnapshots: [],
 
         async init() {
             await this.loadData();
@@ -252,7 +251,6 @@ function happySchemaActionPlanApp() {
 
         startEditing() {
             this.isEditing = true;
-            this.takeSnapshot();
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
@@ -269,45 +267,17 @@ function happySchemaActionPlanApp() {
                 clearInterval(this.autoSaveInterval);
                 this.autoSaveInterval = null;
             }
-            this.autoSaveSnapshots = [];
-        },
-
-        takeSnapshot() {
-            const snapshot = { ...this.formData };
-            this.autoSaveSnapshots.push(snapshot);
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-            return this.hasValueChanged(this.autoSaveSnapshots[0]);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.formData.happy_schema !== snapshot.happy_schema ||
-                this.formData.action_plan !== snapshot.action_plan
-            );
         },
 
         async checkAndAutoSave() {
             if (!this.isEditing) return;
 
-            if (
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.saving &&
-                !this.autoSaving
-            ) {
+            const hasChanged = this.formData.happy_schema !== this.originalData.happy_schema ||
+                               this.formData.action_plan !== this.originalData.action_plan;
+
+            if (hasChanged && !this.saving && !this.autoSaving) {
                 await this.performAutoSave();
             }
-            this.takeSnapshot();
         },
 
         async performAutoSave() {
@@ -324,26 +294,19 @@ function happySchemaActionPlanApp() {
 
             this.saving = true;
             try {
-                let res;
-                if (this.recordId) {
-                    res = await fetch(`/api/happy-schema-action-plans/${this.recordId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.formData)
-                    });
-                } else {
-                    res = await fetch('/api/happy-schema-action-plans', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(this.formData)
-                    });
-                }
+                const url = this.recordId
+                    ? `/api/happy-schema-action-plans/${this.recordId}`
+                    : '/api/happy-schema-action-plans';
+                const method = this.recordId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(this.formData)
+                });
 
                 if (res.ok) {
                     const data = await res.json();

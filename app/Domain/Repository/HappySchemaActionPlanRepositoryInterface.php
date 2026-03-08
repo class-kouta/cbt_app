@@ -11,4 +11,7 @@ interface HappySchemaActionPlanRepositoryInterface
     public function findById(int $id): ?HappySchemaActionPlan;
 
     public function findFirst(): ?HappySchemaActionPlan;
+
+    /** @return HappySchemaActionPlan[] */
+    public function findAllOrderedByLatest(): array;
 }

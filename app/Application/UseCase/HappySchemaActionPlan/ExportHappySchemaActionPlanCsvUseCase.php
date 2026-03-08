@@ -3,7 +3,8 @@
 namespace App\Application\UseCase\HappySchemaActionPlan;
 
 use App\Application\Service\CsvExportService;
-use App\Infrastructure\Database\Models\HappySchemaActionPlan;
+use App\Domain\Entity\HappySchemaActionPlan as HappySchemaActionPlanEntity;
+use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportHappySchemaActionPlanCsvUseCase
@@ -16,31 +17,23 @@ class ExportHappySchemaActionPlanCsvUseCase
     ];
 
     public function __construct(
-        private readonly CsvExportService $csvExportService
+        private readonly CsvExportService $csvExportService,
+        private readonly HappySchemaActionPlanRepositoryInterface $repository
     ) {
     }
 
     public function handle(): StreamedResponse
     {
-        $items = HappySchemaActionPlan::orderByDesc('created_at')
-            ->get()
-            ->map(fn ($item) => $item->toArray())
-            ->toArray();
+        $plans = $this->repository->findAllOrderedByLatest();
 
-        $rows = array_map(function ($item) {
-            $sanitize = function ($value) {
-                if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@'])) {
-                    return "'" . $value;
-                }
-                return $value;
-            };
+        $rows = array_map(function (HappySchemaActionPlanEntity $plan) {
             return [
-                $item['id'],
-                $this->csvExportService->formatDatetime($item['created_at']),
-                $sanitize($item['happy_schema'] ?? ''),
-                $sanitize($item['action_plan'] ?? ''),
+                $plan->getId(),
+                $this->csvExportService->formatDatetime($plan->getCreatedAt()->format('Y-m-d H:i:s')),
+                $plan->getHappySchema() ?? '',
+                $plan->getActionPlan() ?? '',
             ];
-        }, $items);
+        }, $plans);
 
         $filename = 'happy_schema_action_plans_' . $this->csvExportService->getDateSuffix() . '.csv';
 

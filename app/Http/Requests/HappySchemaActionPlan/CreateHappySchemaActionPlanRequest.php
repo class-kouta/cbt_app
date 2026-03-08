@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateHappySchemaActionPlanRequest extends FormRequest
 {
+    use HappySchemaActionPlanRules;
+
     public function authorize(): bool
     {
         return true;
@@ -13,17 +15,11 @@ class CreateHappySchemaActionPlanRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'happy_schema' => ['nullable', 'string', 'max:10000'],
-            'action_plan' => ['nullable', 'string', 'max:10000'],
-        ];
+        return $this->happySchemaActionPlanRules();
     }
 
     public function messages(): array
     {
-        return [
-            'happy_schema.max' => 'ハッピースキーマは10000文字以下にしてください',
-            'action_plan.max' => 'ハッピースキーマに基づく行動計画は10000文字以下にしてください',
-        ];
+        return $this->happySchemaActionPlanMessages();
     }
 }

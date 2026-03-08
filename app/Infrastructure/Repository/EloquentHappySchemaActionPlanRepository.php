@@ -35,13 +35,22 @@ class EloquentHappySchemaActionPlanRepository implements HappySchemaActionPlanRe
 
     public function findFirst(): ?HappySchemaActionPlanEntity
     {
-        $model = HappySchemaActionPlanModel::first();
+        $model = HappySchemaActionPlanModel::latest()->first();
 
         if ($model === null) {
             return null;
         }
 
         return $this->toEntity($model);
+    }
+
+    /** @return HappySchemaActionPlanEntity[] */
+    public function findAllOrderedByLatest(): array
+    {
+        return HappySchemaActionPlanModel::orderByDesc('created_at')
+            ->get()
+            ->map(fn ($model) => $this->toEntity($model))
+            ->all();
     }
 
     private function toEntity(HappySchemaActionPlanModel $model): HappySchemaActionPlanEntity
