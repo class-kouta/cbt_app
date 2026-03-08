@@ -131,7 +131,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, schemaTherapyOpen: true, supportOpen: true, notepadOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -332,17 +332,97 @@
                             </div>
                         </div>
 
-                        <!-- スキーマ療法 -->
+                        <!-- スキーマ療法（多段） -->
                         <div class="border-b border-gray-500/30">
-                            @if(request()->is('schema-therapy') || request()->is('schema-therapy/*'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">スキーマ療法</span>
-                                </span>
-                            @else
-                                <a href="/schema-therapy" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">スキーマ療法</span>
-                                </a>
-                            @endif
+                            <button
+                                @click="schemaTherapyOpen = !schemaTherapyOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">スキーマ療法</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="schemaTherapyOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="schemaTherapyOpen" x-collapse class="">
+                                @if(request()->is('schema-therapy/safe-image'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">安全なイメージと安全な何か</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/safe-image" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">安全なイメージと安全な何か</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/chronology') || request()->is('schema-therapy/chronology/*'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">年表</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/chronology" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">年表</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('early-maladaptive-schemas') && !request()->is('early-maladaptive-schemas/count'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">早期不適応的スキーマ</span>
+                                    </span>
+                                @else
+                                    <a href="/early-maladaptive-schemas" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">早期不適応的スキーマ</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/mode-map'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">モードマップ</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/mode-map" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">モードマップ</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/self-monitoring') || request()->is('schema-therapy/self-monitoring/*'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">スキーマとモードのセルフモニタリング</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/self-monitoring" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">スキーマとモードのセルフモニタリング</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/happy-schema-action-plan'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">ハッピースキーマと行動計画</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/happy-schema-action-plan" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">ハッピースキーマと行動計画</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/mode-work'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">モードワーク</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/mode-work" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">モードワーク</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('early-maladaptive-schemas/count'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">スキーマカウント</span>
+                                    </span>
+                                @else
+                                    <a href="/early-maladaptive-schemas/count" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">スキーマカウント</span>
+                                    </a>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- サポートネットワーク -->
