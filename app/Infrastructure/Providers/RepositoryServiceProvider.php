@@ -14,6 +14,7 @@ use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
 use App\Domain\Repository\SafePlaceRepositoryInterface;
 use App\Domain\Repository\TagRepositoryInterface;
 use App\Domain\Repository\ChronologyRepositoryInterface;
+use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
 use App\Domain\Repository\ModeMapRepositoryInterface;
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
 
@@ -29,6 +30,7 @@ use App\Infrastructure\Repository\EloquentEarlyMaladaptiveSchemaRepository;
 use App\Infrastructure\Repository\EloquentSafePlaceRepository;
 use App\Infrastructure\Repository\EloquentTagRepository;
 use App\Infrastructure\Repository\EloquentChronologyRepository;
+use App\Infrastructure\Repository\EloquentHappySchemaActionPlanRepository;
 use App\Infrastructure\Repository\EloquentModeMapRepository;
 use App\Infrastructure\Repository\EloquentSchemaModeMonitoringRepository;
 
@@ -51,6 +53,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TagRepositoryInterface::class, EloquentTagRepository::class);
         $this->app->bind(ChronologyRepositoryInterface::class, EloquentChronologyRepository::class);
         $this->app->bind(ModeMapRepositoryInterface::class, EloquentModeMapRepository::class);
+        $this->app->bind(HappySchemaActionPlanRepositoryInterface::class, EloquentHappySchemaActionPlanRepository::class);
         $this->app->bind(SchemaModeMonitoringRepositoryInterface::class, EloquentSchemaModeMonitoringRepository::class);
     }
 }
