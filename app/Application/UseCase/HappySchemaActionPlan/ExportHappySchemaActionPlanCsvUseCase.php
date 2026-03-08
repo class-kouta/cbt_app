@@ -11,7 +11,6 @@ class ExportHappySchemaActionPlanCsvUseCase
 {
     private const CSV_HEADERS = [
         'ID',
-        '作成日時',
         'ハッピースキーマ',
         'ハッピースキーマに基づく行動計画',
     ];
@@ -29,7 +28,6 @@ class ExportHappySchemaActionPlanCsvUseCase
         $rows = array_map(function (HappySchemaActionPlanEntity $plan) {
             return [
                 $plan->getId(),
-                $this->csvExportService->formatDatetime($plan->getCreatedAt()->format('Y-m-d H:i:s')),
                 $plan->getHappySchema() ?? '',
                 $plan->getActionPlan() ?? '',
             ];
