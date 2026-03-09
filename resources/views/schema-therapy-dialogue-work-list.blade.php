@@ -22,9 +22,11 @@
                 :href="'/schema-therapy/dialogue-work/' + item.id + '/edit'"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-purple-300"
             >
-                <div class="p-4">
-                    <div class="text-xs text-purple-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
-                    <p class="text-gray-800 line-clamp-3 break-words overflow-wrap-anywhere whitespace-pre-wrap" x-text="item.content"></p>
+                <div class="p-4 flex items-center justify-between">
+                    <div class="text-sm text-purple-600 font-medium" x-text="formatDate(item.created_at)"></div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </div>
                 <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-1"></div>
             </a>
@@ -72,15 +74,6 @@
         ＋
     </a>
 </div>
-
-<style>
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>
 
 <script>
 function dialogueWorkListApp() {
