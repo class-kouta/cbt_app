@@ -99,47 +99,44 @@
         </form>
     </div>
 
-    <!-- 固定フローティングボタン群（右下） -->
-    <div class="fixed bottom-6 right-6 flex flex-col items-center gap-3 z-30">
-        <!-- ヘルシーサイドボタン -->
+    <!-- ヘルシーサイド・スキーマサイドボタン（右上固定） -->
+    <div class="fixed top-20 right-4 flex flex-col items-end gap-2 z-30">
         <button
             type="button"
             @click="insertHealthySide()"
-            class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-semibold text-sm hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
+            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-semibold text-sm hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
         >
             ヘルシーサイド
         </button>
-
-        <!-- スキーマサイドボタン -->
         <button
             type="button"
             @click="insertSchemaSide()"
-            class="px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full font-semibold text-sm hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
+            class="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full font-semibold text-sm hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
         >
             スキーマサイド
         </button>
-
-        <!-- 保存ボタン（丸アイコン） -->
-        <button
-            type="button"
-            @click="manualSave()"
-            :disabled="submitting || floatingSaving || !isFormValid()"
-            class="w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-purple-600 hover:to-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            title="保存する"
-        >
-            <template x-if="!floatingSaving && !submitting">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
-                </svg>
-            </template>
-            <template x-if="floatingSaving || submitting">
-                <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </template>
-        </button>
     </div>
+
+    <!-- 保存ボタン（右下固定） -->
+    <button
+        type="button"
+        @click="manualSave()"
+        :disabled="submitting || floatingSaving || !isFormValid()"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-purple-600 hover:to-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
+        title="保存する"
+    >
+        <template x-if="!floatingSaving && !submitting">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
+            </svg>
+        </template>
+        <template x-if="floatingSaving || submitting">
+            <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </template>
+    </button>
 
     <!-- 削除確認モーダル -->
     <div
