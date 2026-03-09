@@ -131,7 +131,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true, schemaOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -332,17 +332,55 @@
                             </div>
                         </div>
 
-                        <!-- スキーマ療法 -->
+                        <!-- スキーマ療法（多段） -->
                         <div class="border-b border-gray-500/30">
-                            @if(request()->is('schema-therapy') || request()->is('schema-therapy/*'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">スキーマ療法</span>
-                                </span>
-                            @else
-                                <a href="/schema-therapy" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">スキーマ療法</span>
-                                </a>
-                            @endif
+                            <button
+                                @click="schemaOpen = !schemaOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">スキーマ療法</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="schemaOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="schemaOpen" x-collapse class="">
+                                @php
+                                $schemaLinks = [
+                                    ['label' => 'トップ', 'patterns' => 'schema-therapy', 'exclude' => 'schema-therapy/*', 'href' => '/schema-therapy'],
+                                    ['label' => '安全なイメージと安全な何か', 'patterns' => 'schema-therapy/safe-image', 'href' => '/schema-therapy/safe-image'],
+                                    ['label' => '年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
+                                    ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
+                                    ['label' => 'モードマップ', 'patterns' => 'schema-therapy/mode-map', 'href' => '/schema-therapy/mode-map'],
+                                    ['label' => 'セルフモニタリング', 'patterns' => 'schema-therapy/self-monitoring*', 'href' => '/schema-therapy/self-monitoring'],
+                                    ['label' => 'ハッピースキーマと行動計画', 'patterns' => 'schema-therapy/happy-schema-action-plan', 'href' => '/schema-therapy/happy-schema-action-plan'],
+                                    ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
+                                    ['label' => 'スキーマカウント', 'patterns' => 'early-maladaptive-schemas/count', 'href' => '/early-maladaptive-schemas/count'],
+                                ];
+                                @endphp
+                                @foreach ($schemaLinks as $link)
+                                    @php
+                                        $isActive = request()->is($link['patterns']);
+                                        if (isset($link['exclude'])) {
+                                            $isActive = $isActive && !request()->is($link['exclude']);
+                                        }
+                                    @endphp
+                                    @if ($isActive)
+                                        <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                            <span class="text-base">{{ $link['label'] }}</span>
+                                        </span>
+                                    @else
+                                        <a href="{{ $link['href'] }}" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                            <span class="text-base">{{ $link['label'] }}</span>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
 
                         <!-- サポートネットワーク -->
