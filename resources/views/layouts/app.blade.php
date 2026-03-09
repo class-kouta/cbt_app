@@ -350,87 +350,36 @@
                                 </svg>
                             </button>
                             <div x-show="schemaOpen" x-collapse class="">
-                                @if(request()->is('schema-therapy') && !request()->is('schema-therapy/*'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">トップ</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">トップ</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/safe-image'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">安全なイメージと安全な何か</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/safe-image" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">安全なイメージと安全な何か</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/chronology') || request()->is('schema-therapy/chronology/*'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">年表</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/chronology" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">年表</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('early-maladaptive-schemas') && !request()->is('early-maladaptive-schemas/*'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">早期不適応的スキーマ</span>
-                                    </span>
-                                @else
-                                    <a href="/early-maladaptive-schemas" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">早期不適応的スキーマ</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/mode-map'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">モードマップ</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/mode-map" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">モードマップ</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/self-monitoring') || request()->is('schema-therapy/self-monitoring/*'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">セルフモニタリング</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/self-monitoring" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">セルフモニタリング</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/happy-schema-action-plan'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">ハッピースキーマと行動計画</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/happy-schema-action-plan" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">ハッピースキーマと行動計画</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('schema-therapy/mode-work'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">モードワーク</span>
-                                    </span>
-                                @else
-                                    <a href="/schema-therapy/mode-work" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">モードワーク</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('early-maladaptive-schemas/count'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">スキーマカウント</span>
-                                    </span>
-                                @else
-                                    <a href="/early-maladaptive-schemas/count" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">スキーマカウント</span>
-                                    </a>
-                                @endif
+                                @php
+                                $schemaLinks = [
+                                    ['label' => 'トップ', 'patterns' => 'schema-therapy', 'exclude' => 'schema-therapy/*', 'href' => '/schema-therapy'],
+                                    ['label' => '安全なイメージと安全な何か', 'patterns' => 'schema-therapy/safe-image', 'href' => '/schema-therapy/safe-image'],
+                                    ['label' => '年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
+                                    ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
+                                    ['label' => 'モードマップ', 'patterns' => 'schema-therapy/mode-map', 'href' => '/schema-therapy/mode-map'],
+                                    ['label' => 'セルフモニタリング', 'patterns' => 'schema-therapy/self-monitoring*', 'href' => '/schema-therapy/self-monitoring'],
+                                    ['label' => 'ハッピースキーマと行動計画', 'patterns' => 'schema-therapy/happy-schema-action-plan', 'href' => '/schema-therapy/happy-schema-action-plan'],
+                                    ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
+                                    ['label' => 'スキーマカウント', 'patterns' => 'early-maladaptive-schemas/count', 'href' => '/early-maladaptive-schemas/count'],
+                                ];
+                                @endphp
+                                @foreach ($schemaLinks as $link)
+                                    @php
+                                        $isActive = request()->is($link['patterns']);
+                                        if (isset($link['exclude'])) {
+                                            $isActive = $isActive && !request()->is($link['exclude']);
+                                        }
+                                    @endphp
+                                    @if ($isActive)
+                                        <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                            <span class="text-base">{{ $link['label'] }}</span>
+                                        </span>
+                                    @else
+                                        <a href="{{ $link['href'] }}" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                            <span class="text-base">{{ $link['label'] }}</span>
+                                        </a>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
 
