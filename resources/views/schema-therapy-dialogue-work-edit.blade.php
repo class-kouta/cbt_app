@@ -85,7 +85,7 @@
                         x-ref="contentArea"
                         x-model="content"
                         rows="100"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-mono text-sm leading-relaxed"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-mono text-base leading-relaxed"
                         placeholder="ヘルシーサイドとスキーマサイドの対話を書いてみましょう..."
                         maxlength="50000"
                         required
