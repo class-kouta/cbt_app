@@ -7,6 +7,7 @@ use App\Application\UseCase\DialogueWork\CreateDialogueWorkUseCase;
 use App\Application\UseCase\DialogueWork\ListDialogueWorksUseCase;
 use App\Application\UseCase\DialogueWork\UpdateDialogueWorkUseCase;
 use App\Application\UseCase\DialogueWork\DeleteDialogueWorkUseCase;
+use App\Domain\Repository\DialogueWorkRepositoryInterface;
 use App\Http\Requests\DialogueWork\CreateDialogueWorkRequest;
 use App\Http\Requests\DialogueWork\UpdateDialogueWorkRequest;
 use App\Infrastructure\Database\Models\DialogueWork;
@@ -21,13 +22,17 @@ class DialogueWorkController extends Controller
         return response()->json($items);
     }
 
-    public function show(DialogueWork $dialogueWork): JsonResponse
-    {
+    public function show(
+        DialogueWork $dialogueWork,
+        DialogueWorkRepositoryInterface $repository
+    ): JsonResponse {
+        $entity = $repository->findById($dialogueWork->id);
+
         return response()->json([
-            'id' => $dialogueWork->id,
-            'content' => $dialogueWork->content,
-            'created_at' => $dialogueWork->created_at->format(DATE_ATOM),
-            'updated_at' => $dialogueWork->updated_at->format(DATE_ATOM),
+            'id' => $entity->getId(),
+            'content' => $entity->getContent(),
+            'created_at' => $entity->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $entity->getUpdatedAt()->format(DATE_ATOM),
         ]);
     }
 
