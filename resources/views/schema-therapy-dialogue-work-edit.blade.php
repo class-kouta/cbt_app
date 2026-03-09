@@ -4,13 +4,14 @@
 @section('page-title', '対話のワーク')
 
 @section('content')
-<div x-data="dialogueWorkEditApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
-    <!-- 編集モード時のヘッダー -->
-    <div class="flex justify-between items-center mb-4" x-show="isEditMode">
-        <a href="/schema-therapy/dialogue-work" class="text-purple-600 hover:text-purple-800 flex items-center gap-1">
+<div x-data="dialogueWorkEditApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak class="pb-24">
+    <!-- ヘッダー -->
+    <div class="flex justify-between items-center mb-4">
+        <a href="/schema-therapy/dialogue-work" class="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm">
             ← 一覧に戻る
         </a>
         <button
+            x-show="isEditMode"
             @click="confirmDelete()"
             class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 flex items-center gap-1 text-sm"
             title="削除"
@@ -19,14 +20,7 @@
         </button>
     </div>
 
-    <!-- 新規作成時のヘッダー -->
-    <div class="flex justify-between items-center mb-4" x-show="!isEditMode">
-        <a href="/schema-therapy/dialogue-work" class="text-purple-600 hover:text-purple-800 flex items-center gap-1">
-            ← 一覧に戻る
-        </a>
-    </div>
-
-    <!-- ローディング（編集モードのみ） -->
+    <!-- ローディング -->
     <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
         <svg class="animate-spin h-8 w-8 text-purple-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -69,52 +63,80 @@
         保存しました
     </div>
 
-    <!-- 説明（新規作成時のみ表示） -->
-    <div x-show="!isEditMode && !loading" class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-        <p class="text-purple-800 text-sm">
-            💬 ヘルシーサイドとスキーマサイドの対話を書き出してみましょう。ボタンを使って話者を切り替えながら、内なる対話を外在化できます。
-        </p>
-    </div>
-
-    <!-- フォーム -->
+    <!-- メインコンテンツ -->
     <div x-show="!loading || !isEditMode">
-        <form @submit.prevent="saveItem()">
-            <div class="space-y-4">
-                <div>
-                    <textarea
-                        x-ref="contentArea"
-                        x-model="content"
-                        rows="100"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-mono text-base leading-relaxed"
-                        placeholder="ヘルシーサイドとスキーマサイドの対話を書いてみましょう..."
-                        maxlength="50000"
-                        required
-                    ></textarea>
-                    <div class="text-xs text-gray-400 text-right" x-text="content.length + '/50000'"></div>
+        <!-- 話者追加ボタン -->
+        <div class="flex gap-3 mb-4">
+            <button
+                type="button"
+                @click="addEntry('healthy')"
+                class="flex-1 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-semibold text-base hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+            >
+                ヘルシーサイド
+            </button>
+            <button
+                type="button"
+                @click="addEntry('schema')"
+                class="flex-1 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold text-base hover:from-rose-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg"
+            >
+                スキーマサイド
+            </button>
+        </div>
+
+        <!-- 対話エントリ一覧 -->
+        <div class="space-y-3" x-ref="entriesContainer">
+            <template x-for="(entry, index) in entries" :key="entry.id">
+                <div
+                    class="rounded-xl shadow-sm border overflow-hidden"
+                    :class="entry.type === 'healthy'
+                        ? 'border-blue-200 bg-blue-50/50'
+                        : 'border-rose-200 bg-rose-50/50'"
+                >
+                    <!-- ラベルヘッダー -->
+                    <div
+                        class="px-4 py-2 flex items-center justify-between"
+                        :class="entry.type === 'healthy'
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
+                            : 'bg-gradient-to-r from-rose-500 to-pink-500'"
+                    >
+                        <span class="text-white font-semibold text-sm" x-text="entry.type === 'healthy' ? 'ヘルシーサイド' : 'スキーマサイド'"></span>
+                        <button
+                            type="button"
+                            @click="removeEntry(index)"
+                            class="text-white/70 hover:text-white transition-colors"
+                            title="削除"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- テキスト入力 -->
+                    <div class="p-3">
+                        <textarea
+                            x-model="entry.text"
+                            rows="4"
+                            class="w-full border rounded-lg px-3 py-2 text-base leading-relaxed resize-y focus:ring-2 focus:border-transparent transition-all"
+                            :class="entry.type === 'healthy'
+                                ? 'border-blue-200 focus:ring-blue-400 bg-white'
+                                : 'border-rose-200 focus:ring-rose-400 bg-white'"
+                            placeholder="ここに書いてください..."
+                            @input="onEntryInput($event, index)"
+                        ></textarea>
+                    </div>
                 </div>
+            </template>
+        </div>
 
-                <!-- エラーメッセージ -->
-                <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
-            </div>
-        </form>
-    </div>
+        <!-- 空の状態 -->
+        <div x-show="entries.length === 0" class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+            <p class="text-4xl mb-3">💬</p>
+            <p class="text-gray-500 text-base">上のボタンをタップして</p>
+            <p class="text-gray-500 text-base">対話を始めましょう</p>
+        </div>
 
-    <!-- ヘルシーサイド・スキーマサイドボタン（右上固定） -->
-    <div class="fixed top-20 right-4 flex flex-col items-end gap-2 z-30">
-        <button
-            type="button"
-            @click="insertHealthySide()"
-            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-semibold text-sm hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
-        >
-            ヘルシーサイド
-        </button>
-        <button
-            type="button"
-            @click="insertSchemaSide()"
-            class="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full font-semibold text-sm hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
-        >
-            スキーマサイド
-        </button>
+        <!-- エラーメッセージ -->
+        <div x-show="error" class="mt-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
     </div>
 
     <!-- 保存ボタン（右下固定） -->
@@ -202,10 +224,12 @@
 
 <script>
 function dialogueWorkEditApp(itemId) {
+    let nextId = 1;
+
     return {
         itemId: itemId,
         isEditMode: itemId !== null,
-        content: '',
+        entries: [],
         loading: false,
         submitting: false,
         error: '',
@@ -241,8 +265,8 @@ function dialogueWorkEditApp(itemId) {
                 }
                 const item = await res.json();
 
-                if (item) {
-                    this.content = item.content || '';
+                if (item && item.content) {
+                    this.parseContent(item.content);
                 }
             } catch (error) {
                 this.error = 'データの読み込みに失敗しました。';
@@ -251,33 +275,66 @@ function dialogueWorkEditApp(itemId) {
             }
         },
 
-        isFormValid() {
-            return this.content.trim().length > 0;
+        parseContent(raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) {
+                    this.entries = parsed.map(e => ({
+                        id: nextId++,
+                        type: e.type || 'healthy',
+                        text: e.text || ''
+                    }));
+                    return;
+                }
+            } catch (e) {}
+
+            if (raw.trim()) {
+                this.entries = [{ id: nextId++, type: 'healthy', text: raw }];
+            }
         },
 
-        insertHealthySide() {
-            this.content += '\nヘルシーサイド：\n';
-            this.scrollToBottom();
+        serializeContent() {
+            return JSON.stringify(this.entries.map(e => ({
+                type: e.type,
+                text: e.text
+            })));
         },
 
-        insertSchemaSide() {
-            this.content += '\nスキーマサイド：\n';
-            this.scrollToBottom();
-        },
-
-        scrollToBottom() {
+        addEntry(type) {
+            this.entries.push({ id: nextId++, type: type, text: '' });
             this.$nextTick(() => {
-                const textarea = this.$refs.contentArea;
-                if (textarea) {
-                    textarea.scrollTop = textarea.scrollHeight;
-                    textarea.focus();
-                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                const container = this.$refs.entriesContainer;
+                if (container) {
+                    const cards = container.querySelectorAll('textarea');
+                    const lastTextarea = cards[cards.length - 1];
+                    if (lastTextarea) {
+                        lastTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        lastTextarea.focus();
+                    }
                 }
             });
         },
 
+        removeEntry(index) {
+            this.entries.splice(index, 1);
+        },
+
+        onEntryInput(event, index) {
+            const textarea = event.target;
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        },
+
+        isFormValid() {
+            return this.entries.length > 0 && this.entries.some(e => e.text.trim().length > 0);
+        },
+
+        getSnapshotString() {
+            return JSON.stringify(this.entries.map(e => ({ type: e.type, text: e.text })));
+        },
+
         takeSnapshot() {
-            this.autoSaveSnapshots.push(this.content);
+            this.autoSaveSnapshots.push(this.getSnapshotString());
 
             if (this.autoSaveSnapshots.length > 2) {
                 this.autoSaveSnapshots.shift();
@@ -285,19 +342,19 @@ function dialogueWorkEditApp(itemId) {
         },
 
         hasChangedFromPreviousSnapshot() {
+            const current = this.getSnapshotString();
             if (this.autoSaveSnapshots.length < 2) {
                 if (this.autoSaveSnapshots.length === 1) {
-                    return this.content !== this.autoSaveSnapshots[0];
+                    return current !== this.autoSaveSnapshots[0];
                 }
                 return false;
             }
-
-            return this.content !== this.autoSaveSnapshots[0];
+            return current !== this.autoSaveSnapshots[0];
         },
 
         async checkAndAutoSave() {
             if (
-                this.content.trim() &&
+                this.isFormValid() &&
                 this.hasChangedFromPreviousSnapshot() &&
                 !this.submitting &&
                 !this.autoSaving &&
@@ -327,7 +384,7 @@ function dialogueWorkEditApp(itemId) {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ content: this.content })
+                    body: JSON.stringify({ content: this.serializeContent() })
                 });
 
                 if (!res.ok) {
@@ -390,23 +447,6 @@ function dialogueWorkEditApp(itemId) {
                     this.showAutoSaveToast = false;
                 }, 2000);
             }
-        },
-
-        async saveItem() {
-            this.error = '';
-
-            if (!this.isFormValid()) {
-                this.error = '内容を入力してください';
-                return;
-            }
-
-            this.submitting = true;
-
-            while (this._saveInProgress) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-
-            await this.performSave({ isManual: true, redirectOnSuccess: true });
         },
 
         confirmDelete() {
