@@ -37,7 +37,7 @@ $features = [
         </a>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+    <div class="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6">
         @foreach ($features as $feature)
             <x-feature-card :href="$feature['href']" :title="$feature['title']">
                 <x-slot name="icon">{!! $feature['icon'] !!}</x-slot>

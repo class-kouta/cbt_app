@@ -121,7 +121,7 @@
                 </label>
                 <textarea
                     x-model="formData.content"
-                    rows="12"
+                    rows="24"
                     :disabled="!isEditing"
                     class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
                     :class="isEditing
