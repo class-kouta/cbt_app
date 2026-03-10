@@ -3,30 +3,31 @@
 @section('title', 'ヘルシーサイドとスキーマサイドの対話のワーク - ココロの避難所')
 @section('page-title', '対話のワーク')
 
+@section('body-class', 'bg-gradient-to-b from-sky-100 to-sky-50')
+
 @section('content')
-<div x-data="dialogueWorkEditApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak class="pb-24">
+<div x-data="dialogueWorkEditApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak class="pb-28">
     <!-- ヘッダー -->
-    <div class="flex justify-between items-center mb-4">
-        <a href="/schema-therapy/dialogue-work" class="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm">
+    <div class="flex justify-between items-center mb-3">
+        <a href="/schema-therapy/dialogue-work" class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
             ← 一覧に戻る
         </a>
         <button
             x-show="isEditMode"
             @click="confirmDelete()"
-            class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 flex items-center gap-1 text-sm"
-            title="削除"
+            class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50/80 flex items-center gap-1 text-sm"
         >
             🗑️ <span class="hidden sm:inline">削除</span>
         </button>
     </div>
 
     <!-- ローディング -->
-    <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
-        <svg class="animate-spin h-8 w-8 text-purple-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <div x-show="loading && isEditMode" class="text-center py-16">
+        <svg class="animate-spin h-8 w-8 text-sky-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <p class="text-gray-600 mt-2">読み込み中...</p>
+        <p class="text-gray-500 mt-2 text-sm">読み込み中...</p>
     </div>
 
     <!-- 自動保存トースト -->
@@ -66,73 +67,97 @@
     <!-- メインコンテンツ -->
     <div x-show="!loading || !isEditMode">
         <!-- 話者追加ボタン -->
-        <div class="flex gap-3 mb-4">
+        <div class="flex gap-3 mb-5">
             <button
                 type="button"
                 @click="addEntry('healthy')"
-                class="flex-1 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-semibold text-base hover:from-blue-600 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+                class="flex-1 py-3 bg-white border-2 border-blue-400 text-blue-600 rounded-full font-bold text-sm hover:bg-blue-50 transition-all shadow-sm"
             >
-                ヘルシーサイド
+                + ヘルシーサイド
             </button>
             <button
                 type="button"
                 @click="addEntry('schema')"
-                class="flex-1 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-semibold text-base hover:from-rose-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg"
+                class="flex-1 py-3 bg-white border-2 border-rose-400 text-rose-600 rounded-full font-bold text-sm hover:bg-rose-50 transition-all shadow-sm"
             >
-                スキーマサイド
+                + スキーマサイド
             </button>
         </div>
 
-        <!-- 対話エントリ一覧 -->
-        <div class="space-y-3" x-ref="entriesContainer">
+        <!-- チャット風対話エリア -->
+        <div class="space-y-4" x-ref="entriesContainer">
             <template x-for="(entry, index) in entries" :key="entry.id">
                 <div
-                    class="rounded-xl shadow-sm border overflow-hidden"
-                    :class="entry.type === 'healthy'
-                        ? 'border-blue-200 bg-blue-50/50'
-                        : 'border-rose-200 bg-rose-50/50'"
+                    class="flex"
+                    :class="entry.type === 'healthy' ? 'justify-start' : 'justify-end'"
                 >
-                    <!-- ラベルヘッダー -->
                     <div
-                        class="px-4 py-2 flex items-center justify-between"
-                        :class="entry.type === 'healthy'
-                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                            : 'bg-gradient-to-r from-rose-500 to-pink-500'"
+                        class="max-w-[85%] sm:max-w-[75%]"
+                        :class="entry.type === 'healthy' ? 'pr-4' : 'pl-4'"
                     >
-                        <span class="text-white font-semibold text-sm" x-text="entry.type === 'healthy' ? 'ヘルシーサイド' : 'スキーマサイド'"></span>
-                        <button
-                            type="button"
-                            @click="removeEntry(index)"
-                            class="text-white/70 hover:text-white transition-colors"
-                            title="削除"
+                        <!-- 名前ラベル -->
+                        <div
+                            class="flex items-center gap-1.5 mb-1"
+                            :class="entry.type === 'healthy' ? '' : 'justify-end'"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <!-- テキスト入力 -->
-                    <div class="p-3">
-                        <textarea
-                            x-model="entry.text"
-                            rows="4"
-                            class="w-full border rounded-lg px-3 py-2 text-base leading-relaxed resize-y focus:ring-2 focus:border-transparent transition-all"
-                            :class="entry.type === 'healthy'
-                                ? 'border-blue-200 focus:ring-blue-400 bg-white'
-                                : 'border-rose-200 focus:ring-rose-400 bg-white'"
-                            placeholder="ここに書いてください..."
-                            @input="onEntryInput($event, index)"
-                        ></textarea>
+                            <!-- アイコン -->
+                            <div
+                                class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0"
+                                :class="entry.type === 'healthy' ? 'bg-blue-500' : 'bg-rose-500'"
+                                :style="entry.type === 'healthy' ? 'order: 0' : 'order: 1'"
+                            >
+                                <span x-text="entry.type === 'healthy' ? 'H' : 'S'"></span>
+                            </div>
+                            <span
+                                class="text-xs font-bold"
+                                :class="entry.type === 'healthy' ? 'text-blue-600' : 'text-rose-600'"
+                                :style="entry.type === 'healthy' ? 'order: 1' : 'order: 0'"
+                                x-text="entry.type === 'healthy' ? 'ヘルシーサイド' : 'スキーマサイド'"
+                            ></span>
+                        </div>
+
+                        <!-- 吹き出し -->
+                        <div class="relative">
+                            <div
+                                class="rounded-2xl shadow-sm p-0.5"
+                                :class="entry.type === 'healthy'
+                                    ? 'bg-white rounded-tl-sm'
+                                    : 'bg-emerald-400 rounded-tr-sm'"
+                            >
+                                <textarea
+                                    x-model="entry.text"
+                                    rows="3"
+                                    class="w-full rounded-2xl px-3.5 py-2.5 text-base leading-relaxed resize-none focus:outline-none"
+                                    :class="entry.type === 'healthy'
+                                        ? 'bg-white text-gray-800 placeholder-gray-400 rounded-tl-sm'
+                                        : 'bg-emerald-400 text-white placeholder-emerald-100 rounded-tr-sm'"
+                                    :placeholder="entry.type === 'healthy' ? 'ヘルシーサイドの言葉...' : 'スキーマサイドの言葉...'"
+                                    @input="autoResize($event)"
+                                    @focus="autoResize($event)"
+                                ></textarea>
+                            </div>
+                            <!-- 削除ボタン -->
+                            <button
+                                type="button"
+                                @click="removeEntry(index)"
+                                class="absolute -top-2 rounded-full w-5 h-5 bg-gray-400 hover:bg-red-500 text-white flex items-center justify-center transition-colors shadow-sm"
+                                :class="entry.type === 'healthy' ? '-right-2' : '-left-2'"
+                            >
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </template>
         </div>
 
         <!-- 空の状態 -->
-        <div x-show="entries.length === 0" class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
-            <p class="text-4xl mb-3">💬</p>
-            <p class="text-gray-500 text-base">上のボタンをタップして</p>
-            <p class="text-gray-500 text-base">対話を始めましょう</p>
+        <div x-show="entries.length === 0" class="text-center py-24">
+            <p class="text-5xl mb-4">💬</p>
+            <p class="text-gray-400 text-base mb-1">上のボタンをタップして</p>
+            <p class="text-gray-400 text-base">対話を始めましょう</p>
         </div>
 
         <!-- エラーメッセージ -->
@@ -319,10 +344,10 @@ function dialogueWorkEditApp(itemId) {
             this.entries.splice(index, 1);
         },
 
-        onEntryInput(event, index) {
-            const textarea = event.target;
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
+        autoResize(event) {
+            const el = event.target;
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
         },
 
         isFormValid() {
