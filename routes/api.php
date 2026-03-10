@@ -14,6 +14,7 @@ use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\SchemaModeMonitoringController;
+use App\Http\Controllers\DialogueWorkController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -110,6 +111,13 @@ Route::get('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitor
 Route::post('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'store']);
 Route::put('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'update']);
 Route::delete('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'destroy']);
+
+// DialogueWork API（スキーマ療法 - ヘルシーサイドとスキーマサイドの対話のワーク）
+Route::get('/dialogue-works', [DialogueWorkController::class, 'index']);
+Route::get('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'show']);
+Route::post('/dialogue-works', [DialogueWorkController::class, 'store']);
+Route::put('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'update']);
+Route::delete('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'destroy']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

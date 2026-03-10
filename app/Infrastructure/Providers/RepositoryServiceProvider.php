@@ -17,6 +17,7 @@ use App\Domain\Repository\ChronologyRepositoryInterface;
 use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
 use App\Domain\Repository\ModeMapRepositoryInterface;
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
+use App\Domain\Repository\DialogueWorkRepositoryInterface;
 
 use App\Infrastructure\Repository\EloquentCopingRepository;
 use App\Infrastructure\Repository\EloquentCopingTagRepository;
@@ -33,6 +34,7 @@ use App\Infrastructure\Repository\EloquentChronologyRepository;
 use App\Infrastructure\Repository\EloquentHappySchemaActionPlanRepository;
 use App\Infrastructure\Repository\EloquentModeMapRepository;
 use App\Infrastructure\Repository\EloquentSchemaModeMonitoringRepository;
+use App\Infrastructure\Repository\EloquentDialogueWorkRepository;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -55,5 +57,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ModeMapRepositoryInterface::class, EloquentModeMapRepository::class);
         $this->app->bind(HappySchemaActionPlanRepositoryInterface::class, EloquentHappySchemaActionPlanRepository::class);
         $this->app->bind(SchemaModeMonitoringRepositoryInterface::class, EloquentSchemaModeMonitoringRepository::class);
+        $this->app->bind(DialogueWorkRepositoryInterface::class, EloquentDialogueWorkRepository::class);
     }
 }
