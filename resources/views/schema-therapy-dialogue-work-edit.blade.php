@@ -138,7 +138,7 @@
         <!-- 空の状態 -->
         <div x-show="entries.length === 0" class="text-center py-24">
             <p class="text-5xl mb-4">💬</p>
-            <p class="text-gray-400 text-base mb-1">上のボタンをタップして</p>
+            <p class="text-gray-400 text-base mb-1">下のボタンをタップして</p>
             <p class="text-gray-400 text-base">対話を始めましょう</p>
         </div>
 

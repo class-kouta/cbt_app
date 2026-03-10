@@ -108,7 +108,9 @@ function dialogueWorkListApp() {
             return date.toLocaleDateString('ja-JP', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
             });
         }
     };
