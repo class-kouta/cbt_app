@@ -332,6 +332,12 @@ function modeDialogueWorkEditApp(itemId) {
         _saveInProgress: false,
 
         async init() {
+            window.addEventListener('beforeunload', () => {
+                if (this.autoSaveInterval) {
+                    clearInterval(this.autoSaveInterval);
+                }
+            });
+
             if (this.isEditMode) {
                 await this.loadItem();
             }

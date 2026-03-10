@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\ModeDialogueWork;
 
+use App\Enums\ModeCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateModeDialogueWorkRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class CreateModeDialogueWorkRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'max:50000'],
-            'mode_category' => ['required', 'string', 'in:傷ついた子どもモード,傷つける子どもモード,いたたけない対処モード'],
+            'mode_category' => ['required', 'string', Rule::in(ModeCategory::values())],
             'mode_name' => ['required', 'string', 'max:100'],
         ];
     }

@@ -8,7 +8,7 @@ class UpdateModeDialogueWorkRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->route('modeDialogueWork')->type === 'mode';
     }
 
     public function rules(): array

@@ -29,6 +29,10 @@ class ModeDialogueWorkController extends Controller
 
     public function show(DialogueWork $modeDialogueWork): JsonResponse
     {
+        if ($modeDialogueWork->type !== 'mode') {
+            abort(404);
+        }
+
         return response()->json([
             'id' => $modeDialogueWork->id,
             'content' => $modeDialogueWork->content,
@@ -76,6 +80,10 @@ class ModeDialogueWorkController extends Controller
 
     public function destroy(DialogueWork $modeDialogueWork): JsonResponse
     {
+        if ($modeDialogueWork->type !== 'mode') {
+            abort(404);
+        }
+
         $modeDialogueWork->delete();
 
         return response()->json(null, 204);
