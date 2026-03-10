@@ -42,7 +42,8 @@ class EloquentDialogueWorkRepository implements DialogueWorkRepositoryInterface
 
     public function findAllOrderByCreatedAtDesc(): array
     {
-        return DialogueWorkModel::orderByDesc('created_at')
+        return DialogueWorkModel::where('type', 'schema')
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($model) {
                 return [
