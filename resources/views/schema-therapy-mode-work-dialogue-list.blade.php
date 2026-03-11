@@ -25,9 +25,8 @@
                 <div class="p-4 flex items-center justify-between">
                     <div>
                         <div class="text-sm font-semibold text-teal-700 mb-1">
-                            ヘルシーな大人モード × <span x-text="item.mode_name"></span>
+                            <span x-text="item.mode_name + 'との対話'"></span>
                         </div>
-                        <div class="text-xs text-gray-400" x-text="item.mode_category"></div>
                         <div class="text-xs text-gray-500 mt-1" x-text="formatDate(item.created_at)"></div>
                     </div>
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

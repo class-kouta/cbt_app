@@ -67,8 +67,6 @@
     <!-- ========== STEP 1: モード選択＋名付け ========== -->
     <div x-show="step === 'setup' && !loading">
         <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
-            <h2 class="text-lg font-bold text-gray-800 mb-6 text-center">対話するモードの設定</h2>
-
             <!-- モード選択 -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -76,11 +74,12 @@
                 </label>
                 <select
                     x-model="modeCategory"
+                    @change="modePrefix = ''"
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white transition-colors"
                 >
                     <option value="">-- 選択してください --</option>
                     <option value="傷ついた子どもモード">傷ついた子どもモード</option>
-                    <option value="傷つける子どもモード">傷つける子どもモード</option>
+                    <option value="傷つける大人モード">傷つける大人モード</option>
                     <option value="いたたけない対処モード">いたたけない対処モード</option>
                 </select>
             </div>
@@ -92,18 +91,24 @@
                 </label>
                 <input
                     type="text"
-                    x-model="modeName"
-                    placeholder="例：子どもモード、大人モード、モード..."
+                    x-model="modePrefix"
+                    :placeholder="modePrefixPlaceholder"
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-colors"
                     maxlength="100"
                 >
-                <p class="text-xs text-gray-400 mt-1.5">
-                    対話相手は「ヘルシーな大人モード」と、ここで入力した名前になります
+                <p class="text-sm text-teal-600 mt-2 font-medium" x-show="modePrefix.trim()">
+                    → <span x-text="fullModeName"></span>
+                </p>
+                <p class="text-xs text-gray-400 mt-1" x-show="!modePrefix.trim()">
+                    入力すると「○○<span x-text="modeSuffix"></span>」という名前になります
                 </p>
             </div>
 
             <!-- 開始ボタン -->
-            <div x-show="modeCategory && modeName.trim()" x-transition class="text-center">
+            <div
+                x-show="modeCategory && modePrefix.trim()"
+                class="text-center"
+            >
                 <button
                     @click="startDialogue()"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-3 px-8 rounded-full font-bold text-base hover:from-teal-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl"
@@ -116,17 +121,6 @@
 
     <!-- ========== STEP 2: 対話ワーク ========== -->
     <div x-show="step === 'dialogue' && (!loading || !isEditMode)">
-        <!-- モード情報バッジ -->
-        <div class="mb-4 flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center gap-1 bg-teal-100 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full">
-                <span x-text="modeCategory"></span>
-            </span>
-            <span class="text-gray-400 text-xs">→</span>
-            <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
-                ヘルシーな大人モード × <span x-text="modeName"></span>
-            </span>
-        </div>
-
         <!-- チャット風対話エリア -->
         <div class="space-y-4" x-ref="entriesContainer">
             <template x-for="(entry, index) in entries" :key="entry.id">
@@ -154,7 +148,7 @@
                                 class="text-xs font-bold"
                                 :class="entry.type === 'healthy' ? 'text-teal-600' : 'text-amber-600'"
                                 :style="entry.type === 'healthy' ? 'order: 1' : 'order: 0'"
-                                x-text="entry.type === 'healthy' ? 'ヘルシーな大人モード' : modeName"
+                                x-text="entry.type === 'healthy' ? 'ヘルシーな大人モード' : fullModeName"
                             ></span>
                         </div>
 
@@ -164,16 +158,16 @@
                                 class="rounded-2xl shadow-sm p-0.5"
                                 :class="entry.type === 'healthy'
                                     ? 'bg-white rounded-tl-sm'
-                                    : 'bg-amber-400 rounded-tr-sm'"
+                                    : 'bg-white rounded-tr-sm'"
                             >
                                 <textarea
                                     x-model="entry.text"
                                     rows="3"
-                                    class="w-full rounded-2xl px-3.5 py-2.5 text-base leading-relaxed resize-none focus:outline-none"
+                                    class="w-full rounded-2xl px-3.5 py-2.5 text-base leading-relaxed resize-none focus:outline-none bg-white text-gray-800 placeholder-gray-400"
                                     :class="entry.type === 'healthy'
-                                        ? 'bg-white text-gray-800 placeholder-gray-400 rounded-tl-sm'
-                                        : 'bg-amber-400 text-white placeholder-amber-100 rounded-tr-sm'"
-                                    :placeholder="entry.type === 'healthy' ? 'ヘルシーな大人モードの言葉...' : modeName + 'の言葉...'"
+                                        ? 'rounded-tl-sm'
+                                        : 'rounded-tr-sm'"
+                                    :placeholder="entry.type === 'healthy' ? 'ヘルシーな大人モードの言葉...' : fullModeName + 'の言葉...'"
                                     @input="autoResize($event)"
                                     @focus="autoResize($event)"
                                 ></textarea>
@@ -211,16 +205,16 @@
             <button
                 type="button"
                 @click="addEntry('healthy')"
-                class="flex-1 py-2.5 bg-white border-2 border-teal-400 text-teal-600 rounded-full font-bold text-sm hover:bg-teal-50 transition-all truncate px-2"
+                class="flex-1 py-2.5 bg-white border-2 border-teal-400 text-teal-600 rounded-full font-bold text-xs hover:bg-teal-50 transition-all px-2"
             >
                 + ヘルシーな大人モード
             </button>
             <button
                 type="button"
                 @click="addEntry('mode')"
-                class="flex-1 py-2.5 bg-white border-2 border-amber-400 text-amber-600 rounded-full font-bold text-sm hover:bg-amber-50 transition-all truncate px-2"
+                class="flex-1 py-2.5 bg-white border-2 border-amber-400 text-amber-600 rounded-full font-bold text-xs hover:bg-amber-50 transition-all px-2"
             >
-                + <span x-text="modeName"></span>
+                + <span x-text="fullModeName"></span>
             </button>
             <button
                 type="button"
@@ -310,12 +304,24 @@
 function modeDialogueWorkEditApp(itemId) {
     let nextId = 1;
 
+    const SUFFIX_MAP = {
+        '傷ついた子どもモード': '子どもモード',
+        '傷つける大人モード': '大人モード',
+        'いたたけない対処モード': 'モード'
+    };
+
+    const PLACEHOLDER_MAP = {
+        '傷ついた子どもモード': '例：寂しがりな',
+        '傷つける大人モード': '例：人格否定してくる',
+        'いたたけない対処モード': '例：ぐずぐず先延ばし'
+    };
+
     return {
         itemId: itemId,
         isEditMode: itemId !== null,
         step: itemId !== null ? 'dialogue' : 'setup',
         modeCategory: '',
-        modeName: '',
+        modePrefix: '',
         entries: [],
         loading: false,
         submitting: false,
@@ -330,6 +336,20 @@ function modeDialogueWorkEditApp(itemId) {
         autoSaveInterval: null,
         autoSaving: false,
         _saveInProgress: false,
+
+        get modeSuffix() {
+            return SUFFIX_MAP[this.modeCategory] || '';
+        },
+
+        get fullModeName() {
+            const prefix = this.modePrefix.trim();
+            if (!prefix || !this.modeSuffix) return '';
+            return prefix + this.modeSuffix;
+        },
+
+        get modePrefixPlaceholder() {
+            return PLACEHOLDER_MAP[this.modeCategory] || '';
+        },
 
         async init() {
             window.addEventListener('beforeunload', () => {
@@ -363,7 +383,13 @@ function modeDialogueWorkEditApp(itemId) {
                 const item = await res.json();
 
                 this.modeCategory = item.mode_category || '';
-                this.modeName = item.mode_name || '';
+                const savedName = item.mode_name || '';
+                const suffix = SUFFIX_MAP[this.modeCategory] || '';
+                if (suffix && savedName.endsWith(suffix)) {
+                    this.modePrefix = savedName.slice(0, -suffix.length);
+                } else {
+                    this.modePrefix = savedName;
+                }
 
                 if (item && item.content) {
                     this.parseContent(item.content);
@@ -482,7 +508,7 @@ function modeDialogueWorkEditApp(itemId) {
                 const body = { content: this.serializeContent() };
                 if (!isUpdate) {
                     body.mode_category = this.modeCategory;
-                    body.mode_name = this.modeName;
+                    body.mode_name = this.fullModeName;
                 }
 
                 const res = await fetch(url, {

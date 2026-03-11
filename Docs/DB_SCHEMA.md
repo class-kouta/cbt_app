@@ -214,7 +214,7 @@
 ## dialogue_works（対話ワーク）
 - id — bigint, 主キー
 - type — varchar(20), NOT NULL, DEFAULT 'schema'（対話ワーク種別: schema or mode）
-- mode_category — varchar(50), NULL可（モードカテゴリ: 傷ついた子どもモード/傷つける子どもモード/いたたけない対処モード）
+- mode_category — varchar(50), NULL可（モードカテゴリ: 傷ついた子どもモード/傷つける大人モード/いたたけない対処モード）
 - mode_name — varchar(100), NULL可（ユーザーがつけたモードの具体的な名前）
 - content — text, NOT NULL（対話ワーク内容、JSON形式で対話エントリ配列を保持）
 - created_at / updated_at — timestamp
