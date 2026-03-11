@@ -119,6 +119,24 @@
         </div>
     </a>
 
+    <!-- Mindfulness Meditation Card -->
+    <a href="/mindfulness" class="block group">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+            <div class="flex flex-col items-center text-center">
+                <!-- Mindfulness Icon (lotus / meditation) -->
+                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M12 21C12 21 4 16 4 10C4 7 6 4 9 4C10.5 4 11.5 5 12 6C12.5 5 13.5 4 15 4C18 4 20 7 20 10C20 16 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="8" r="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 10V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M9 17C9 17 10.5 15 12 15C13.5 15 15 17 15 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">マインドフルネス瞑想</h2>
+            </div>
+        </div>
+    </a>
+
     <!-- Schema Therapy Card -->
     <a href="/schema-therapy" class="block group">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">

@@ -131,6 +131,11 @@ Route::get('/support-networks', function () {
     return view('support-networks');
 });
 
+// マインドフルネス瞑想ページ
+Route::get('/mindfulness', function () {
+    return view('mindfulness');
+});
+
 // スキーマ療法ページ
 Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
     Route::get('/', function () {
