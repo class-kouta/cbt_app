@@ -145,6 +145,45 @@
                             @endif
                         </div>
 
+                        <!-- 筆記開示（多段） -->
+                        <div class="border-b border-gray-500/30">
+                            <button
+                                @click="writingOpen = !writingOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">筆記開示</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="writingOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="writingOpen" x-collapse class="">
+                                @if(request()->is('writing-disclosures'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/writing-disclosures" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('writing-disclosures/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/writing-disclosures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
                         <!-- ストレッサーとストレス反応（多段） -->
                         <div class="border-b border-gray-500/30">
                             <button
@@ -184,13 +223,13 @@
                             </div>
                         </div>
 
-                        <!-- コラム法（多段） -->
+                        <!-- 認知再構成法(コラム法)（多段） -->
                         <div class="border-b border-gray-500/30">
                             <button
                                 @click="columnOpen = !columnOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
                             >
-                                <span class="font-medium text-lg">コラム法</span>
+                                <span class="font-medium text-lg">認知再構成法(コラム法)</span>
                                 <svg
                                     class="w-5 h-5 transition-transform duration-200"
                                     :class="columnOpen ? 'rotate-180' : ''"
@@ -227,58 +266,6 @@
                                 @else
                                     <a href="/columns/adaptive-thoughts" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">適応的思考</span>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- コーピングリスト -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('copings'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">コーピングリスト</span>
-                                </span>
-                            @else
-                                <a href="/copings" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">コーピングリスト</span>
-                                </a>
-                            @endif
-                        </div>
-
-                        <!-- 筆記開示（多段） -->
-                        <div class="border-b border-gray-500/30">
-                            <button
-                                @click="writingOpen = !writingOpen"
-                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
-                            >
-                                <span class="font-medium text-lg">筆記開示</span>
-                                <svg
-                                    class="w-5 h-5 transition-transform duration-200"
-                                    :class="writingOpen ? 'rotate-180' : ''"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="writingOpen" x-collapse class="">
-                                @if(request()->is('writing-disclosures'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">新規作成</span>
-                                    </span>
-                                @else
-                                    <a href="/writing-disclosures" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">新規作成</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('writing-disclosures/list'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">一覧</span>
-                                    </span>
-                                @else
-                                    <a href="/writing-disclosures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">一覧</span>
                                     </a>
                                 @endif
                             </div>
@@ -332,6 +319,32 @@
                             </div>
                         </div>
 
+                        <!-- サポートネットワーク -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('support-networks'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                </span>
+                            @else
+                                <a href="/support-networks" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                </a>
+                            @endif
+                        </div>
+
+                        <!-- コーピングリスト -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('copings'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">コーピングリスト</span>
+                                </span>
+                            @else
+                                <a href="/copings" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">コーピングリスト</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <!-- スキーマ療法（多段） -->
                         <div class="border-b border-gray-500/30">
                             <button
@@ -381,19 +394,6 @@
                                     @endif
                                 @endforeach
                             </div>
-                        </div>
-
-                        <!-- サポートネットワーク -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('support-networks'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">サポートネットワーク</span>
-                                </span>
-                            @else
-                                <a href="/support-networks" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">サポートネットワーク</span>
-                                </a>
-                            @endif
                         </div>
 
                         <!-- メモ帳（多段） -->
