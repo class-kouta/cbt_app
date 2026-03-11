@@ -104,7 +104,7 @@
                                 class="rounded-2xl shadow-sm p-0.5"
                                 :class="entry.type === 'healthy'
                                     ? 'bg-white rounded-tl-sm'
-                                    : 'bg-emerald-400 rounded-tr-sm'"
+                                    : 'bg-white rounded-tr-sm'"
                             >
                                 <textarea
                                     x-model="entry.text"
@@ -112,7 +112,7 @@
                                     class="w-full rounded-2xl px-3.5 py-2.5 text-base leading-relaxed resize-none focus:outline-none"
                                     :class="entry.type === 'healthy'
                                         ? 'bg-white text-gray-800 placeholder-gray-400 rounded-tl-sm'
-                                        : 'bg-emerald-400 text-white placeholder-emerald-100 rounded-tr-sm'"
+                                        : 'bg-white text-gray-800 placeholder-gray-400 rounded-tr-sm'"
                                     :placeholder="entry.type === 'healthy' ? 'ヘルシーサイドの言葉...' : 'スキーマサイドの言葉...'"
                                     @input="autoResize($event)"
                                     @focus="autoResize($event)"
