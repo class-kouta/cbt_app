@@ -187,10 +187,20 @@ Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
         return view('schema-therapy-healthy-adult-image');
     })->name('mode-work.healthy-adult-image');
 
-    // モードワーク - 対話のワーク（ハリボテ）
+    // モードワーク - 対話のワーク一覧
     Route::get('/mode-work/dialogue', function () {
-        return view('schema-therapy-mode-work-dialogue');
+        return view('schema-therapy-mode-work-dialogue-list');
     })->name('mode-work.dialogue');
+
+    // モードワーク - 対話のワーク作成
+    Route::get('/mode-work/dialogue/create', function () {
+        return view('schema-therapy-mode-work-dialogue-edit');
+    })->name('mode-work.dialogue.create');
+
+    // モードワーク - 対話のワーク編集
+    Route::get('/mode-work/dialogue/{id}/edit', function ($id) {
+        return view('schema-therapy-mode-work-dialogue-edit', ['itemId' => $id]);
+    })->where('id', '[0-9]+')->name('mode-work.dialogue.edit');
 
     // セルフモニタリング一覧ページ
     Route::get('/self-monitoring', function () {

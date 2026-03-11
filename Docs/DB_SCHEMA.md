@@ -210,6 +210,29 @@
 
 ---
 
+---
+## dialogue_works（対話ワーク）
+- id — bigint, 主キー
+- type — varchar(20), NOT NULL, DEFAULT 'schema'（対話ワーク種別: schema or mode）
+- mode_category — varchar(50), NULL可（モードカテゴリ: 傷ついた子どもモード/傷つける大人モード/いたたけない対処モード）
+- mode_name — varchar(100), NULL可（ユーザーがつけたモードの具体的な名前）
+- content — text, NOT NULL（対話ワーク内容、JSON形式で対話エントリ配列を保持）
+- created_at / updated_at — timestamp
+
+インデックス:
+- type（種別フィルタ用）
+
+**用途:**
+- スキーマ療法における対話ワークを記録
+- type='schema': ヘルシーサイドとスキーマサイドの対話のワーク
+- type='mode': モードワークの対話のワーク（ヘルシーな大人モードとユーザー指定モードの対話）
+
+**補足:**
+- `type='mode'`の場合、`mode_category`と`mode_name`は必須です。
+- `type='schema'`の場合、これらのフィールドは使用されず`NULL`になります。
+
+---
+
 ### 補足メモ
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます（`coping_tags`テーブル）。

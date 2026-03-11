@@ -16,6 +16,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\SchemaModeMonitoringController;
 use App\Http\Controllers\DialogueWorkController;
 use App\Http\Controllers\HealthyAdultModeImageController;
+use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -119,6 +120,13 @@ Route::get('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'sh
 Route::post('/dialogue-works', [DialogueWorkController::class, 'store']);
 Route::put('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'update']);
 Route::delete('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'destroy']);
+
+// ModeDialogueWork API（スキーマ療法 - モードワーク対話のワーク）
+Route::get('/mode-dialogue-works', [ModeDialogueWorkController::class, 'index']);
+Route::get('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkController::class, 'show']);
+Route::post('/mode-dialogue-works', [ModeDialogueWorkController::class, 'store']);
+Route::put('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkController::class, 'update']);
+Route::delete('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkController::class, 'destroy']);
 
 // HealthyAdultModeImage API（スキーマ療法 - ヘルシーな大人モードのイメージ）
 Route::get('/healthy-adult-mode-images', [HealthyAdultModeImageController::class, 'show']);

@@ -11,6 +11,9 @@ class DialogueWork extends Model
 
     protected $fillable = [
         'content',
+        'type',
+        'mode_category',
+        'mode_name',
     ];
 
     protected $casts = [
