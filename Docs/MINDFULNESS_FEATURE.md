@@ -166,14 +166,43 @@ heroku addons:create bucketeer:hobbyist --app <your-app-name>
 heroku config | grep BUCKETEER
 ```
 
+#### S3バケットポリシーの設定
+
+音声ファイルへの公開アクセスは、オブジェクトACL（`--acl public-read`）ではなく、**バケットポリシー**で制御する。
+AWSセキュリティベストプラクティスに従い、S3ブロックパブリックアクセス設定と組み合わせて、特定パスのみ公開する。
+
+バケットポリシーの例:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadMindfulnessAudio",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::<BUCKETEER_BUCKET_NAME>/audio/mindfulness/*"
+        }
+    ]
+}
+```
+
+設定手順:
+
+1. AWSコンソール > S3 > 対象バケット > 「アクセス許可」タブ
+2. 「ブロックパブリックアクセス」で「新しいパブリックバケットポリシーをブロック」のみ**オフ**にする
+3. 「バケットポリシー」に上記JSONを設定する
+
+これにより `audio/mindfulness/*` 配下のファイルのみ公開され、バケット内の他のファイルは非公開のまま保護される。
+
 #### S3への音声ファイルアップロード
 
 ```bash
 AWS_ACCESS_KEY_ID=<BUCKETEER_AWS_ACCESS_KEY_ID> \
 AWS_SECRET_ACCESS_KEY=<BUCKETEER_AWS_SECRET_ACCESS_KEY> \
 aws s3 sync ./audio/mindfulness s3://<BUCKETEER_BUCKET_NAME>/audio/mindfulness \
-    --content-type "audio/mpeg" \
-    --acl public-read
+    --content-type "audio/mpeg"
 ```
 
 #### Review Apps対応（app.json）
@@ -199,22 +228,41 @@ composer require league/flysystem-aws-s3-v3
 
 #### config/filesystems.php の S3 ディスク設定変更
 
-Bucketeerの環境変数を優先し、ローカル開発用のAWS環境変数にフォールバックする。
+S3ディスク設定は `AWS_*` プレフィックスの環境変数のみを参照する（Laravelデフォルトのまま変更しない）。
 
 ```php
 's3' => [
     'driver' => 's3',
-    'key' => env('BUCKETEER_AWS_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
-    'secret' => env('BUCKETEER_AWS_SECRET_ACCESS_KEY', env('AWS_SECRET_ACCESS_KEY')),
-    'region' => env('BUCKETEER_AWS_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
-    'bucket' => env('BUCKETEER_BUCKET_NAME', env('AWS_BUCKET')),
+    'key' => env('AWS_ACCESS_KEY_ID'),
+    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+    'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    'bucket' => env('AWS_BUCKET'),
     'url' => env('AWS_URL'),
     'endpoint' => env('AWS_ENDPOINT'),
     'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-    'throw' => false,
-    'report' => false,
+    'throw' => true,
+    'report' => true,
 ],
 ```
+
+> **注意**: `env()` を二重にネストしてはいけない（例: `env('BUCKETEER_...', env('AWS_...'))`）。
+> `php artisan config:cache` 実行後は `env()` が `null` を返すため、フォールバックとして `env()` を入れ子にすると本番環境で意図しない動作を引き起こす。
+
+> **注意**: `'throw' => true` と `'report' => true` を設定し、S3操作の失敗時に例外をスローしてログに記録する。
+> `false` にするとエラーがサイレントに無視され、音声が再生されない原因の特定が困難になる。
+
+#### Heroku上でのBucketeer環境変数の設定
+
+BucketeerがプロビジョニングするBucketeer専用の環境変数を、Laravelが参照する `AWS_*` 環境変数にマッピングする。
+
+```bash
+heroku config:set AWS_ACCESS_KEY_ID=$(heroku config:get BUCKETEER_AWS_ACCESS_KEY_ID) --app <your-app-name>
+heroku config:set AWS_SECRET_ACCESS_KEY=$(heroku config:get BUCKETEER_AWS_SECRET_ACCESS_KEY) --app <your-app-name>
+heroku config:set AWS_DEFAULT_REGION=$(heroku config:get BUCKETEER_AWS_REGION) --app <your-app-name>
+heroku config:set AWS_BUCKET=$(heroku config:get BUCKETEER_BUCKET_NAME) --app <your-app-name>
+```
+
+これにより、`config/filesystems.php` は単一の `env()` 呼び出しのまま、Heroku・ローカルどちらの環境でも正しく動作する。
 
 #### config/services.php にマインドフルネス設定を追加
 
@@ -249,6 +297,47 @@ use App\Http\Controllers\MindfulnessController;
 Route::get('/mindfulness/audio-url', [MindfulnessController::class, 'getAudioUrl']);
 ```
 
+#### Form Request
+
+バリデーションロジックはコントローラから分離し、Form Requestに定義する。
+
+```php
+// app/Http/Requests/Mindfulness/GetAudioUrlRequest.php
+
+<?php
+
+namespace App\Http\Requests\Mindfulness;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class GetAudioUrlRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'sound' => ['required', 'string', Rule::in(['rain', 'forest', 'ocean'])],
+            'duration' => ['required', 'integer', Rule::in([5, 10, 15, 20, 25])],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'sound.required' => '音の種類を選択してください',
+            'sound.in' => '無効な音の種類です',
+            'duration.required' => '再生時間を選択してください',
+            'duration.in' => '無効な再生時間です',
+        ];
+    }
+}
+```
+
 #### コントローラ
 
 ```php
@@ -258,23 +347,17 @@ Route::get('/mindfulness/audio-url', [MindfulnessController::class, 'getAudioUrl
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Mindfulness\GetAudioUrlRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MindfulnessController extends Controller
 {
-    private const VALID_SOUNDS = ['rain', 'forest', 'ocean'];
-    private const VALID_DURATIONS = [5, 10, 15, 20, 25];
-
-    public function getAudioUrl(Request $request): JsonResponse
+    public function getAudioUrl(GetAudioUrlRequest $request): JsonResponse
     {
-        $sound = $request->input('sound');
-        $duration = (int) $request->input('duration');
-
-        if (!in_array($sound, self::VALID_SOUNDS) || !in_array($duration, self::VALID_DURATIONS)) {
-            return response()->json(['error' => '無効なパラメータです'], 400);
-        }
+        $validated = $request->validated();
+        $sound = $validated['sound'];
+        $duration = $validated['duration'];
 
         $path = "audio/mindfulness/{$sound}_{$duration}.mp3";
 
@@ -291,6 +374,7 @@ class MindfulnessController extends Controller
 ```
 
 `MINDFULNESS_AUDIO_BASE_URL` が設定されていればそのURLを使い、未設定なら `Storage::disk('s3')->url()` で生成する。
+バリデーションエラー時は Laravel が自動的に 422 レスポンスを返す。
 
 ### 4. フロントエンド実装
 
@@ -465,6 +549,9 @@ public/audio/
 app/Http/Controllers/
   └── MindfulnessController.php
 
+app/Http/Requests/Mindfulness/
+  └── GetAudioUrlRequest.php
+
 resources/views/
   └── mindfulness.blade.php
 ```
@@ -510,18 +597,21 @@ app.json                        ... Bucketeerアドオン追加
 ### Phase 1: インフラ準備
 
 1. Bucketeerアドオンの追加
-2. `config/filesystems.php` のS3設定変更
-3. `config/services.php` にマインドフルネス設定追加
-4. `.env.example` に環境変数追加
-5. `composer require league/flysystem-aws-s3-v3`
-6. 音声ファイルを `.mp3` に変換
-7. S3に音声ファイルをアップロード
+2. Bucketeerの環境変数を `AWS_*` にマッピング（`heroku config:set`）
+3. S3バケットポリシーの設定（`audio/mindfulness/*` の公開）
+4. `config/filesystems.php` の S3 設定で `throw` と `report` を `true` に変更
+5. `config/services.php` にマインドフルネス設定追加
+6. `.env.example` に環境変数追加
+7. `composer require league/flysystem-aws-s3-v3`
+8. 音声ファイルを `.mp3` に変換
+9. S3に音声ファイルをアップロード
 
 ### Phase 2: バックエンド実装
 
-1. `MindfulnessController` の作成
-2. `routes/web.php` にルート追加
-3. `routes/api.php` にAPI追加
+1. `GetAudioUrlRequest`（Form Request）の作成
+2. `MindfulnessController` の作成
+3. `routes/web.php` にルート追加
+4. `routes/api.php` にAPI追加
 
 ### Phase 3: フロントエンド実装
 
