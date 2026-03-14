@@ -6,12 +6,6 @@
 @section('content')
 <div x-data="problemSolvingFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
 
-    <div class="flex justify-between items-center mb-4" x-show="isEditMode">
-        <a :href="'/problem-solvings/' + itemId" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
-            ← 詳細に戻る
-        </a>
-    </div>
-
     <!-- 自動保存トースト -->
     <div
         x-show="showAutoSaveToast"
@@ -61,8 +55,15 @@
         <span>コピーしました！</span>
     </div>
 
-    <!-- フローティング保存ボタン -->
+    <!-- フローティング保存ボタン（編集中のみ表示） -->
     <button
+        x-show="isEditing"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-90"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-90"
         type="button"
         @click="manualSave()"
         :disabled="floatingSaving || !form.problem_situation.trim()"
@@ -82,8 +83,56 @@
         </template>
     </button>
 
-    <!-- ローディング（編集モードのみ） -->
-    <div x-show="loading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
+    <!-- ヘッダー -->
+    <div class="flex justify-between items-center mb-4">
+        <a x-show="hasExistingRecord" :href="backUrl" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
+            ← <span x-text="backLabel"></span>
+        </a>
+        <div x-show="!hasExistingRecord"></div>
+        <div class="flex items-center gap-2">
+            <!-- 編集トグルボタン（既存レコードのみ） -->
+            <button
+                x-show="hasExistingRecord"
+                type="button"
+                @click="isEditing ? saveAndStopEditing() : startEditing()"
+                :disabled="isEditing && (submitting || floatingSaving)"
+                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="isEditing
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-green-600 text-white hover:bg-green-700'"
+            >
+                <template x-if="!isEditing">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                </template>
+                <template x-if="isEditing && !submitting && !floatingSaving">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </template>
+                <template x-if="isEditing && (submitting || floatingSaving)">
+                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </template>
+                <span x-text="isEditing ? ((submitting || floatingSaving) ? '保存中...' : '保存して編集をやめる') : '編集する'"></span>
+            </button>
+            <!-- 削除ボタン（既存レコードのみ） -->
+            <button
+                x-show="hasExistingRecord"
+                @click="deleteItem()"
+                class="text-red-400 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
+                title="削除"
+            >
+                🗑️
+            </button>
+        </div>
+    </div>
+
+    <!-- ローディング -->
+    <div x-show="loading && hasExistingRecord" class="text-center py-16 bg-white rounded-xl shadow-md">
         <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -92,39 +141,43 @@
     </div>
 
     <!-- フォーム -->
-    <div x-show="!loading || !isEditMode">
+    <div x-show="!loading || !hasExistingRecord">
         <form @submit.prevent="saveProblemSolving()">
             <div class="space-y-5">
                 <!-- Step 1: 問題状況 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">1</span>
-                        問題状況を具体的に把握する <span class="text-red-500">*</span>
+                        問題状況を具体的に把握する <span x-show="isEditing" class="text-red-500">*</span>
                         <span class="text-gray-400 font-normal ml-1">自分、人間関係、出来事、状況などの観点から問題を整理</span>
                     </label>
                     <textarea
                         x-model="form.problem_situation"
                         rows="10"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        :disabled="!isEditing"
+                        class="w-full border rounded-lg px-4 py-3 transition-all"
+                        :class="isEditing
+                            ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                            : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                         placeholder="例：仕事の締め切りが重なって、どれから手をつけていいかわからない"
                         maxlength="5000"
-                        required
+                        :required="isEditing"
                     ></textarea>
-                    <div class="text-xs text-gray-400 text-right" x-text="form.problem_situation.length + '/5000'"></div>
+                    <div x-show="isEditing" class="text-xs text-gray-400 text-right" x-text="form.problem_situation.length + '/5000'"></div>
                 </div>
 
                 <!-- タグセクション -->
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
                         🏷️ タグ
-                        <span class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
+                        <span x-show="isEditing" class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
                     </h3>
-                    <p class="text-xs text-gray-500 mb-3">
+                    <p x-show="isEditing" class="text-xs text-gray-500 mb-3">
                         この問題に関連するカテゴリーを選択してください
                     </p>
 
-                    <!-- タグ選択UI -->
-                    <div class="flex flex-wrap gap-2">
+                    <!-- 編集中：タグ選択UI -->
+                    <div x-show="isEditing" class="flex flex-wrap gap-2">
                         <template x-for="tag in availableTags" :key="tag.id">
                             <button
                                 type="button"
@@ -137,6 +190,14 @@
                             ></button>
                         </template>
                     </div>
+
+                    <!-- 閲覧中：選択済みタグ表示 -->
+                    <div x-show="!isEditing" class="flex flex-wrap gap-2">
+                        <template x-for="tag in selectedTagObjects" :key="tag.id">
+                            <span class="inline-flex items-center px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium" x-text="tag.name"></span>
+                        </template>
+                        <span x-show="form.tag_ids.length === 0" class="text-gray-400 text-sm">タグなし</span>
+                    </div>
                 </div>
 
                 <!-- Step 2: 改善イメージ -->
@@ -148,7 +209,11 @@
                     <textarea
                         x-model="form.improved_image"
                         rows="10"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        :disabled="!isEditing"
+                        class="w-full border rounded-lg px-4 py-3 transition-all"
+                        :class="isEditing
+                            ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                            : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                         placeholder="例：優先順位をつけて、一つずつ片付けている。焦らず落ち着いて取り組めている。"
                         maxlength="2000"
                     ></textarea>
@@ -163,17 +228,19 @@
                     </label>
                     <div class="space-y-3">
                         <template x-for="(solution, index) in solutions" :key="index">
-                            <div class="border border-gray-300 rounded-lg p-3">
+                            <div class="border rounded-lg p-3" :class="isEditing ? 'border-gray-300' : 'border-gray-200 bg-gray-50'">
                                     <div class="flex items-center justify-between gap-2 mb-2">
                                         <div class="flex items-center gap-2">
                                             <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
                                             <span
+                                                x-show="isEditing"
                                                 class="text-xs"
                                                 :class="solution.content.length > 100 ? 'text-red-500 font-semibold' : 'text-gray-400'"
                                                 x-text="solution.content.length + '/100'"
                                             ></span>
                                         </div>
                                     <button
+                                        x-show="isEditing"
                                         type="button"
                                         @click="removeSolution(index)"
                                         class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
@@ -185,11 +252,14 @@
                                 <textarea
                                     x-model="solution.content"
                                     rows="3"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-3 resize-none"
-                                    :class="solution.content.length > 100 ? 'border-red-500 focus:ring-red-500' : ''"
+                                    :disabled="!isEditing"
+                                    class="w-full border rounded-lg px-3 py-2 mb-3 resize-none transition-all"
+                                    :class="isEditing
+                                        ? (solution.content.length > 100 ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white')
+                                        : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                     placeholder="解決策を入力（100文字以内）"
                                 ></textarea>
-                                <div x-show="solution.content.length > 100" class="text-xs text-red-500 mb-2">
+                                <div x-show="isEditing && solution.content.length > 100" class="text-xs text-red-500 mb-2">
                                     100文字以内で入力してください
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
@@ -197,7 +267,11 @@
                                         <label class="block text-xs text-gray-600 mb-1">効果的か</label>
                                         <select
                                             x-model="solution.effectiveness"
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                            :disabled="!isEditing"
+                                            class="w-full border rounded-lg px-3 py-2 transition-all"
+                                            :class="isEditing
+                                                ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                         >
                                             <option value="">選択してください</option>
                                             <option value="0">0%</option>
@@ -227,7 +301,11 @@
                                         <label class="block text-xs text-gray-600 mb-1">実行可能か</label>
                                         <select
                                             x-model="solution.feasibility"
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                            :disabled="!isEditing"
+                                            class="w-full border rounded-lg px-3 py-2 transition-all"
+                                            :class="isEditing
+                                                ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                         >
                                             <option value="">選択してください</option>
                                             <option value="0">0%</option>
@@ -257,7 +335,10 @@
                             </div>
                         </template>
                     </div>
+                    <!-- 閲覧中：解決策が0件の場合 -->
+                    <p x-show="!isEditing && solutions.filter(s => s.content.trim()).length === 0" class="text-gray-400 mt-2">未入力</p>
                     <button
+                        x-show="isEditing"
                         type="button"
                         @click="addSolutionRow()"
                         class="mt-2 text-sm text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
@@ -270,25 +351,25 @@
                 <div class="border-t border-gray-200 pt-5">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
-                            <span x-show="isEditMode">実行計画と振り返り</span>
-                            <span x-show="!isEditMode">実行計画</span>
+                            実行計画と振り返り
                         </h3>
                     </div>
 
                     <!-- 計画がない場合の説明 -->
                     <div x-show="plans.length === 0" class="bg-gray-50 rounded-lg p-4 mb-4">
-                        <p class="text-gray-600 text-sm" x-show="isEditMode">
+                        <p class="text-gray-600 text-sm">
                             解決策を決めたら、実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
-                        </p>
-                        <p class="text-gray-600 text-sm" x-show="!isEditMode">
-                            解決策を決めたら、実行計画を立てましょう。複数の計画を追加することもできます。
                         </p>
                     </div>
 
                     <!-- 計画一覧 -->
                     <div class="space-y-4">
                         <template x-for="(plan, index) in plans" :key="plan.id || 'new-' + index">
-                            <div class="border border-teal-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                            <div
+                                :id="plan.id ? 'plan-' + plan.id : null"
+                                class="border border-teal-200 rounded-xl overflow-hidden bg-white shadow-sm"
+                                :class="scrollTargetPlanId && plan.id && String(plan.id) === String(scrollTargetPlanId) ? 'ring-2 ring-emerald-400 ring-offset-2' : ''"
+                            >
                                 <!-- 計画ヘッダー -->
                                 <div
                                     class="bg-gradient-to-r from-teal-50 to-lime-50 px-4 py-3 flex items-center justify-between cursor-pointer"
@@ -297,7 +378,7 @@
                                     <div class="flex items-center gap-3">
                                         <!-- ステータスバッジ -->
                                         <span
-                                            x-show="isEditMode && plan.reflection && plan.reflection.trim()"
+                                            x-show="plan.reflection && plan.reflection.trim()"
                                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
                                         >
                                             ✓ 振り返り済み
@@ -319,7 +400,7 @@
                                         <button
                                             type="button"
                                             @click.stop="deletePlan(index)"
-                                            x-show="plans.length > 1 || (plans.length === 1 && !plan.id)"
+                                            x-show="isEditing && (plans.length > 1 || (plans.length === 1 && !plan.id))"
                                             class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
                                             title="この計画を削除"
                                         >
@@ -347,14 +428,18 @@
                                         <textarea
                                             x-model="plan.action_plan"
                                             rows="8"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                            :disabled="!isEditing"
+                                            class="w-full border rounded-lg px-4 py-3 transition-all"
+                                            :class="isEditing
+                                                ? 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white'
+                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                             placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
                                             maxlength="5000"
                                         ></textarea>
                                     </div>
 
-                                    <!-- 振り返り（編集モードのみ表示） -->
-                                    <div x-show="isEditMode">
+                                    <!-- 振り返り -->
+                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
                                             <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
                                             振り返り
@@ -363,7 +448,11 @@
                                         <textarea
                                             x-model="plan.reflection"
                                             rows="8"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
+                                            :disabled="!isEditing"
+                                            class="w-full border rounded-lg px-4 py-3 transition-all"
+                                            :class="isEditing
+                                                ? 'border-gray-300 focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white'
+                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                             placeholder="（実行後に記入してください）"
                                             maxlength="5000"
                                         ></textarea>
@@ -376,7 +465,11 @@
                                             </label>
                                             <select
                                                 x-model="plan.improvement_level"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-lime-500 focus:border-transparent transition-all"
+                                                :disabled="!isEditing"
+                                                class="w-full border rounded-lg px-4 py-3 transition-all"
+                                                :class="isEditing
+                                                    ? 'border-gray-300 focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white'
+                                                    : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
                                             >
                                                 <option value="">選択してください</option>
                                                 <option value="1">1 - ほとんど改善なし</option>
@@ -397,8 +490,8 @@
                         </template>
                     </div>
 
-                    <!-- 新しい計画を追加ボタン -->
-                    <div class="mt-4">
+                    <!-- 新しい計画を追加ボタン（編集中のみ） -->
+                    <div x-show="isEditing" class="mt-4">
                         <button
                             type="button"
                             @click="addNewPlan()"
@@ -414,16 +507,17 @@
 
                 <!-- ボタンエリア -->
                 <div class="space-y-3">
-                    <!-- 保存ボタン -->
+                    <!-- 保存ボタン（編集中のみ） -->
                     <button
+                        x-show="isEditing"
                         type="submit"
                         :disabled="submitting || !form.problem_situation.trim()"
                         class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <span x-show="!submitting && !isEditMode">保存する</span>
-                        <span x-show="!submitting && isEditMode">更新する</span>
-                        <span x-show="submitting && !isEditMode">保存中...</span>
-                        <span x-show="submitting && isEditMode">更新中...</span>
+                        <span x-show="!submitting && !hasExistingRecord">保存する</span>
+                        <span x-show="!submitting && hasExistingRecord">更新する</span>
+                        <span x-show="submitting && !hasExistingRecord">保存中...</span>
+                        <span x-show="submitting && hasExistingRecord">更新中...</span>
                     </button>
 
                     <!-- コピーボタン -->
@@ -434,7 +528,7 @@
                         :disabled="!hasAnyContent()"
                         :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
                     >
-                        📋 入力内容をコピー
+                        📋 内容をコピー
                     </button>
                 </div>
             </div>
@@ -447,7 +541,8 @@
 function problemSolvingFormApp(itemId) {
     return {
         itemId: itemId,
-        isEditMode: itemId !== null,
+        hasExistingRecord: itemId !== null,
+        isEditing: itemId === null,
         form: {
             problem_situation: '',
             improved_image: '',
@@ -467,33 +562,102 @@ function problemSolvingFormApp(itemId) {
         showCopyToast: false,
         floatingSaving: false,
 
-        // タグ一覧
         availableTags: [],
 
-        // 自動保存用
         autoSaveSnapshots: [],
         autoSaveInterval: null,
         autoSaving: false,
         showAutoSaveToast: false,
 
+        fromPage: 'list',
+        scrollTargetPlanId: null,
+
+        get backUrl() {
+            return this.fromPage === 'plans' ? '/problem-solvings/plans' : '/problem-solvings/list';
+        },
+
+        get backLabel() {
+            return this.fromPage === 'plans' ? '計画一覧に戻る' : '問題解決法一覧に戻る';
+        },
+
+        get selectedTagObjects() {
+            return this.availableTags.filter(t => this.form.tag_ids.includes(t.id));
+        },
+
         async init() {
-            // タグ一覧を取得
+            const urlParams = new URLSearchParams(window.location.search);
+            this.fromPage = urlParams.get('from') || 'list';
+            this.scrollTargetPlanId = urlParams.get('plan_id') || null;
+
             await this.loadTags();
 
-            if (this.isEditMode) {
+            if (this.hasExistingRecord) {
                 await this.loadItem();
+                this.scrollToPlanIfNeeded();
             } else {
-                // 新規作成の場合は空の計画を1つ追加
                 this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
+                this.startAutoSave();
             }
 
-            // 初期スナップショットを取得
             this.takeSnapshot();
+        },
 
-            // 30秒ごとに自動保存チェック
+        scrollToPlanIfNeeded() {
+            if (!this.scrollTargetPlanId) return;
+
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    const planEl = document.getElementById('plan-' + this.scrollTargetPlanId);
+                    if (planEl) {
+                        planEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
+            });
+        },
+
+        startEditing() {
+            this.isEditing = true;
+            this.takeSnapshot();
+            this.startAutoSave();
+        },
+
+        async saveAndStopEditing() {
+            if (!this.form.problem_situation.trim()) return;
+            if (!this.validateSolutions()) {
+                alert('解決策は100文字以内で入力してください');
+                return;
+            }
+
+            this.submitting = true;
+            try {
+                await this.performSave(true);
+                this.stopEditing();
+            } catch (error) {
+                console.error('保存に失敗しました:', error);
+                alert('保存に失敗しました');
+            } finally {
+                this.submitting = false;
+            }
+        },
+
+        stopEditing() {
+            this.isEditing = false;
+            this.stopAutoSave();
+        },
+
+        startAutoSave() {
+            this.stopAutoSave();
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
+        },
+
+        stopAutoSave() {
+            if (this.autoSaveInterval) {
+                clearInterval(this.autoSaveInterval);
+                this.autoSaveInterval = null;
+            }
+            this.autoSaveSnapshots = [];
         },
 
         async loadTags() {
@@ -525,7 +689,6 @@ function problemSolvingFormApp(itemId) {
             return tag ? tag.name : '';
         },
 
-        // 現在の値のスナップショットを取得
         takeSnapshot() {
             const snapshot = {
                 problem_situation: this.form.problem_situation,
@@ -536,29 +699,23 @@ function problemSolvingFormApp(itemId) {
             };
             this.autoSaveSnapshots.push(snapshot);
 
-            // 直近2つ分のみ保持（60秒前の値と比較するため）
             if (this.autoSaveSnapshots.length > 2) {
                 this.autoSaveSnapshots.shift();
             }
         },
 
-        // 60秒前のスナップショットと現在の値を比較
         hasChangedFromPreviousSnapshot() {
-            // 2回分のスナップショットがない場合（まだ60秒経っていない）
             if (this.autoSaveSnapshots.length < 2) {
-                // 1つ目のスナップショットと比較
                 if (this.autoSaveSnapshots.length === 1) {
                     return this.hasValueChanged(this.autoSaveSnapshots[0]);
                 }
                 return false;
             }
 
-            // 60秒前（2回前）のスナップショットと比較
             const oldSnapshot = this.autoSaveSnapshots[0];
             return this.hasValueChanged(oldSnapshot);
         },
 
-        // 指定されたスナップショットと現在の値を比較
         hasValueChanged(snapshot) {
             const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level })));
             return (
@@ -570,8 +727,9 @@ function problemSolvingFormApp(itemId) {
             );
         },
 
-        // 30秒ごとの自動保存チェック
         async checkAndAutoSave() {
+            if (!this.isEditing) return;
+
             if (
                 this.form.problem_situation.trim() &&
                 this.hasChangedFromPreviousSnapshot() &&
@@ -584,7 +742,6 @@ function problemSolvingFormApp(itemId) {
             this.takeSnapshot();
         },
 
-        // 解決策のバリデーション
         validateSolutions() {
             const validSolutions = this.solutions.filter(s => s.content.trim());
             for (const solution of validSolutions) {
@@ -595,7 +752,6 @@ function problemSolvingFormApp(itemId) {
             return true;
         },
 
-        // 共通の保存処理
         async performSave(isManual = false) {
             if (!this.validateSolutions()) {
                 return;
@@ -613,7 +769,6 @@ function problemSolvingFormApp(itemId) {
             }
         },
 
-        // 自動保存を実行
         async performAutoSave() {
             this.autoSaving = true;
             try {
@@ -623,7 +778,6 @@ function problemSolvingFormApp(itemId) {
             }
         },
 
-        // 手動保存（フローティングボタン用）
         async manualSave() {
             if (this.floatingSaving || !this.form.problem_situation.trim()) return;
 
@@ -678,7 +832,6 @@ function problemSolvingFormApp(itemId) {
                     }));
                     this.originalSolutions = JSON.parse(JSON.stringify(this.solutions));
 
-                    // 計画を読み込み
                     if (item.plans && item.plans.length > 0) {
                         this.plans = item.plans.map(p => ({
                             id: p.id,
@@ -693,7 +846,6 @@ function problemSolvingFormApp(itemId) {
                     }
                     this.originalPlans = JSON.parse(JSON.stringify(this.plans));
 
-                    // 最低3行表示
                     while (this.solutions.length < 3) {
                         this.solutions.push({ id: null, content: '', effectiveness: '', feasibility: '' });
                     }
@@ -734,9 +886,6 @@ function problemSolvingFormApp(itemId) {
         },
 
         async saveProblemSolving() {
-            // itemIdがある場合は更新、ない場合は新規作成
-            // 注意: isEditModeではなくitemIdで判定する
-            // （自動保存で新規作成された場合、isEditModeはfalseのままだが、itemIdは設定されるため）
             if (this.itemId) {
                 await this.updateProblemSolving();
             } else {
@@ -759,9 +908,8 @@ function problemSolvingFormApp(itemId) {
             if (res.ok) {
                 const created = await res.json();
                 this.itemId = created.id;
-                // 注意: isEditModeは変更しない（自動保存時にUIが切り替わるのを防ぐ）
+                this.hasExistingRecord = true;
 
-                // 解決策を追加
                 const newOriginalSolutions = [];
                 for (let i = 0; i < validSolutions.length; i++) {
                     const solution = validSolutions[i];
@@ -785,10 +933,9 @@ function problemSolvingFormApp(itemId) {
                 }
                 this.originalSolutions = newOriginalSolutions;
 
-                // 計画を追加
                 await this.savePlans(created.id);
 
-                history.replaceState(null, '', `/problem-solvings/${created.id}/edit`);
+                history.replaceState(null, '', `/problem-solvings/${created.id}`);
             }
         },
 
@@ -805,7 +952,6 @@ function problemSolvingFormApp(itemId) {
             });
 
             if (res.ok) {
-                // 既存の解決策を削除して新しいのを追加
                 for (const original of this.originalSolutions) {
                     await fetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
                         method: 'DELETE',
@@ -838,16 +984,13 @@ function problemSolvingFormApp(itemId) {
                 }
                 this.originalSolutions = newOriginalSolutions;
 
-                // 計画を保存
                 await this.savePlans(this.itemId);
             }
         },
 
         async savePlans(problemSolvingId) {
-            // 既存の計画を更新、新規計画を追加
             for (const plan of this.plans) {
                 if (plan.id) {
-                    // 既存の計画を更新
                     await fetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
                         method: 'PUT',
                         headers: {
@@ -861,7 +1004,6 @@ function problemSolvingFormApp(itemId) {
                         })
                     });
                 } else {
-                    // 新規計画を追加（action_plan か reflection が入力されている場合のみ）
                     if ((plan.action_plan && plan.action_plan.trim()) || (plan.reflection && plan.reflection.trim())) {
                         const planRes = await fetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
                             method: 'POST',
@@ -883,7 +1025,6 @@ function problemSolvingFormApp(itemId) {
                 }
             }
 
-            // 削除された計画を処理
             for (const original of this.originalPlans) {
                 if (!this.plans.find(p => p.id === original.id)) {
                     await fetch(`/api/problem-solvings/${problemSolvingId}/plans/${original.id}`, {
@@ -913,7 +1054,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveNewItem();
-                window.location.href = `/problem-solvings/${this.itemId}`;
+                this.stopEditing();
             } catch (error) {
                 console.error(error);
                 alert('保存に失敗しました');
@@ -937,7 +1078,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveExistingItem();
-                window.location.href = `/problem-solvings/${this.itemId}`;
+                this.stopEditing();
             } catch (error) {
                 console.error(error);
                 alert('更新に失敗しました');
@@ -946,14 +1087,32 @@ function problemSolvingFormApp(itemId) {
             }
         },
 
+        async deleteItem() {
+            if (!confirm('この記録を削除しますか？')) return;
+
+            try {
+                const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (res.ok) {
+                    window.location.href = this.backUrl;
+                } else {
+                    alert('削除に失敗しました');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('削除に失敗しました');
+            }
+        },
+
         hasAnyContent() {
-            // 問題状況
             if (this.form.problem_situation.trim()) return true;
-            // 改善イメージ
             if (this.form.improved_image.trim()) return true;
-            // 解決策
             if (this.solutions.some(s => s.content.trim())) return true;
-            // 計画
             if (this.plans.some(p => (p.action_plan && p.action_plan.trim()) || (p.reflection && p.reflection.trim()))) return true;
             return false;
         },
@@ -971,7 +1130,6 @@ function problemSolvingFormApp(itemId) {
             sections.push(this.form.improved_image.trim() || '未入力');
             sections.push('');
 
-            // 解決策
             const validSolutions = this.solutions.filter(s => s.content.trim());
             sections.push('■ 解決策');
             if (validSolutions.length > 0) {
@@ -994,7 +1152,6 @@ function problemSolvingFormApp(itemId) {
             }
             sections.push('');
 
-            // 計画と振り返り
             this.plans.forEach((plan, index) => {
                 const planLabel = this.plans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
                 sections.push(planLabel);
@@ -1020,7 +1177,6 @@ function problemSolvingFormApp(itemId) {
                     this.showCopyToast = false;
                 }, 2000);
             } catch (err) {
-                // フォールバック: 古いブラウザ対応
                 const textArea = document.createElement('textarea');
                 textArea.value = text;
                 textArea.style.position = 'fixed';

@@ -99,7 +99,7 @@
     <div class="space-y-3">
         <template x-for="plan in filteredPlans" :key="plan.planId">
             <a
-                :href="'/problem-solvings/' + plan.problemSolvingId"
+                :href="'/problem-solvings/' + plan.problemSolvingId + '?from=plans&plan_id=' + plan.planId"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
