@@ -556,7 +556,7 @@ function problemSolvingFormApp(itemId) {
         originalSolutions: [],
         plans: [],
         originalPlans: [],
-        loading: false,
+        loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
         showCopyToast: false,
@@ -589,10 +589,17 @@ function problemSolvingFormApp(itemId) {
             this.fromPage = urlParams.get('from') || 'list';
             this.scrollTargetPlanId = urlParams.get('plan_id') || null;
 
+            if (this.hasExistingRecord && this.fromPage === 'plans') {
+                this.isEditing = true;
+            }
+
             await this.loadTags();
 
             if (this.hasExistingRecord) {
                 await this.loadItem();
+                if (this.isEditing) {
+                    this.startAutoSave();
+                }
                 this.scrollToPlanIfNeeded();
             } else {
                 this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
