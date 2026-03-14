@@ -208,8 +208,10 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_DEFAULT_REGION=auto
 AWS_BUCKET=cbt-app-audio
-AWS_ENDPOINT=https://<アカウントID>.r2.cloudflarestorage.com
-AWS_URL=https://pub-xxxxxxxxxxxxxxxx.r2.dev
+# ↓ Cloudflareダッシュボード > R2 > 概要 に表示される「S3 API」のエンドポイントURL
+AWS_ENDPOINT=https://<YOUR_CLOUDFLARE_ACCOUNT_ID>.r2.cloudflarestorage.com
+# ↓ Cloudflareダッシュボード > R2 > バケット > 設定 > パブリックアクセスで発行されるURL
+AWS_URL=https://<YOUR_R2_PUBLIC_SUBDOMAIN>.r2.dev
 AWS_USE_PATH_STYLE_ENDPOINT=true
 
 # マインドフルネス音声配信URL（R2パブリックURL or ローカルパス）
@@ -218,15 +220,15 @@ MINDFULNESS_AUDIO_BASE_URL=
 
 **各環境変数の説明:**
 
-| 環境変数 | 説明 |
-|---------|------|
-| `AWS_ACCESS_KEY_ID` | R2 APIトークンのアクセスキーID |
-| `AWS_SECRET_ACCESS_KEY` | R2 APIトークンのシークレットアクセスキー |
-| `AWS_DEFAULT_REGION` | R2では `auto` を指定 |
-| `AWS_BUCKET` | R2バケット名 |
-| `AWS_ENDPOINT` | R2のS3互換エンドポイント |
-| `AWS_URL` | R2パブリックアクセスURL（R2.devサブドメイン） |
-| `AWS_USE_PATH_STYLE_ENDPOINT` | R2では `true` を指定 |
+| 環境変数 | 説明 | 取得場所 |
+|---------|------|---------|
+| `AWS_ACCESS_KEY_ID` | R2 APIトークンのアクセスキーID | R2ダッシュボード > 「R2 APIトークンの管理」 > トークン作成後に表示 |
+| `AWS_SECRET_ACCESS_KEY` | R2 APIトークンのシークレットアクセスキー | 同上（作成時に一度だけ表示） |
+| `AWS_DEFAULT_REGION` | R2では `auto` を指定 | 固定値 |
+| `AWS_BUCKET` | R2バケット名 | R2ダッシュボード > バケット一覧 |
+| `AWS_ENDPOINT` | R2のS3互換エンドポイント | R2ダッシュボード > 概要 > 「S3 API」欄 |
+| `AWS_URL` | R2パブリックアクセスURL（R2.devサブドメイン） | R2ダッシュボード > バケット > 設定 > パブリックアクセス |
+| `AWS_USE_PATH_STYLE_ENDPOINT` | R2では `true` を指定 | 固定値 |
 | `MINDFULNESS_AUDIO_BASE_URL` | ローカル開発時に `http://localhost:8081` を指定 |
 
 ### 2-5. `.gitignore` に追加
