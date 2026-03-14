@@ -96,14 +96,14 @@ Route::get('/problem-solvings/plans', function () {
     return view('problem-solving-plans-list');
 })->name('problem-solving-plans.list');
 
-// 問題解決法詳細ページ
+// 問題解決法詳細・編集ページ（統合）
 Route::get('/problem-solvings/{id}', function ($id) {
-    return view('problem-solving-detail', ['itemId' => $id]);
+    return view('problem-solving-edit', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
-// 問題解決法編集ページ
+// 旧編集URLからのリダイレクト
 Route::get('/problem-solvings/{id}/edit', function ($id) {
-    return view('problem-solving-edit', ['itemId' => $id]);
+    return redirect('/problem-solvings/' . $id);
 })->where('id', '[0-9]+');
 
 // ストレッサーとストレス反応作成ページ

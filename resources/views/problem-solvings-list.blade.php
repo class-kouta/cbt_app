@@ -80,7 +80,7 @@
     <div class="space-y-3">
         <template x-for="item in items" :key="item.id">
             <a
-                :href="'/problem-solvings/' + item.id"
+                :href="'/problem-solvings/' + item.id + '?from=list'"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
