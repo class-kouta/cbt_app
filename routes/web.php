@@ -133,7 +133,10 @@ Route::get('/support-networks', function () {
 
 // マインドフルネス瞑想ページ
 Route::get('/mindfulness', function () {
-    return view('mindfulness');
+    return view('mindfulness', [
+        'sounds' => \App\Enums\MindfulnessSound::toFrontendArray(),
+        'durations' => \App\Enums\MindfulnessDuration::values(),
+    ]);
 });
 
 // スキーマ療法ページ

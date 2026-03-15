@@ -2,26 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MindfulnessDuration;
+use App\Enums\MindfulnessSound;
 use App\Http\Requests\Mindfulness\GetAudioUrlRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class MindfulnessController extends Controller
 {
-    private const SOUND_FILE_NAMES = [
-        'forest' => '森と木陰と風、鳥の鳴き声',
-        'stream' => '夕暮れの小川、鈴虫と風',
-        'jungle' => '雷雨のジャングルと動物達',
-    ];
-
     public function getAudioUrl(GetAudioUrlRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $sound = $validated['sound'];
-        $duration = $validated['duration'];
+        $sound = MindfulnessSound::from($validated['sound']);
+        $duration = MindfulnessDuration::from((int) $validated['duration']);
 
-        $fileName = self::SOUND_FILE_NAMES[$sound];
-        $path = "mindfulness/{$fileName}_{$duration}m.wav";
+        $path = "mindfulness/{$sound->value}_{$duration->value}m.wav";
 
         $baseUrl = config('services.mindfulness.audio_base_url');
         if ($baseUrl) {

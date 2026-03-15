@@ -178,12 +178,8 @@
 <script>
 function mindfulnessPlayer() {
     return {
-        sounds: [
-            { id: 'forest', label: '森と木陰と風、鳥の鳴き声', emoji: '🌲' },
-            { id: 'stream', label: '夕暮れの小川、鈴虫と風', emoji: '🌅' },
-            { id: 'jungle', label: '雷雨のジャングルと動物達', emoji: '🌴' },
-        ],
-        durations: [5, 10, 15],
+        sounds: @json($sounds),
+        durations: @json($durations),
         selectedSound: null,
         selectedDuration: null,
         audio: null,
@@ -195,6 +191,7 @@ function mindfulnessPlayer() {
         progressPercent: 0,
         errorMessage: '',
         progressInterval: null,
+        _listeners: {},
 
         async play() {
             if (!this.selectedSound || !this.selectedDuration) return;
@@ -211,26 +208,28 @@ function mindfulnessPlayer() {
 
                 this.audio = new Audio(data.url);
 
-                this.audio.addEventListener('loadedmetadata', () => {
+                this._listeners.loadedmetadata = () => {
                     this.totalDuration = this.audio.duration;
                     this.isLoading = false;
                     this.isPlaying = true;
                     this.startProgressUpdate();
-                });
-
-                this.audio.addEventListener('ended', () => {
+                };
+                this._listeners.ended = () => {
                     this.isPlaying = false;
                     this.isPaused = false;
                     this.progressPercent = 100;
                     this.stopProgressUpdate();
-                });
-
-                this.audio.addEventListener('error', () => {
+                };
+                this._listeners.error = () => {
                     this.isLoading = false;
                     this.isPlaying = false;
                     this.errorMessage = '音声の読み込みに失敗しました。しばらくしてからもう一度お試しください。';
                     this.stopProgressUpdate();
-                });
+                };
+
+                this.audio.addEventListener('loadedmetadata', this._listeners.loadedmetadata);
+                this.audio.addEventListener('ended', this._listeners.ended);
+                this.audio.addEventListener('error', this._listeners.error);
 
                 this.audio.play();
             } catch (e) {
@@ -261,8 +260,12 @@ function mindfulnessPlayer() {
             if (this.audio) {
                 this.audio.pause();
                 this.audio.currentTime = 0;
+                for (const [event, handler] of Object.entries(this._listeners)) {
+                    this.audio.removeEventListener(event, handler);
+                }
                 this.audio = null;
             }
+            this._listeners = {};
             this.isPlaying = false;
             this.isPaused = false;
             this.isLoading = false;

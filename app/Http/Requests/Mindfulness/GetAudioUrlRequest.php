@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Mindfulness;
 
+use App\Enums\MindfulnessDuration;
+use App\Enums\MindfulnessSound;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,8 +17,8 @@ class GetAudioUrlRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sound' => ['required', 'string', Rule::in(['forest', 'stream', 'jungle'])],
-            'duration' => ['required', 'integer', Rule::in([5, 10, 15])],
+            'sound' => ['required', 'string', Rule::in(MindfulnessSound::values())],
+            'duration' => ['required', 'integer', Rule::in(MindfulnessDuration::values())],
         ];
     }
 
