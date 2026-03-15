@@ -324,7 +324,7 @@ class MindfulnessController extends Controller
         $sound = MindfulnessSound::from($validated['sound']);
         $duration = MindfulnessDuration::from((int) $validated['duration']);
 
-        $path = "mindfulness/{$sound->value}_{$duration->value}m.wav";
+        $path = "mindfulness/{$sound->label()}_{$duration->value}m.wav";
 
         $baseUrl = config('services.mindfulness.audio_base_url');
         if ($baseUrl) {
