@@ -17,6 +17,7 @@ use App\Http\Controllers\SchemaModeMonitoringController;
 use App\Http\Controllers\DialogueWorkController;
 use App\Http\Controllers\HealthyAdultModeImageController;
 use App\Http\Controllers\ModeDialogueWorkController;
+use App\Http\Controllers\MindfulnessController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -132,6 +133,9 @@ Route::delete('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkContro
 Route::get('/healthy-adult-mode-images', [HealthyAdultModeImageController::class, 'show']);
 Route::post('/healthy-adult-mode-images', [HealthyAdultModeImageController::class, 'store']);
 Route::put('/healthy-adult-mode-images/{id}', [HealthyAdultModeImageController::class, 'update']);
+
+// Mindfulness API（マインドフルネス瞑想 - 音声URL取得）
+Route::get('/mindfulness/audio-url', [MindfulnessController::class, 'getAudioUrl']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

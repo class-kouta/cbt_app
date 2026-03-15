@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'mindfulness' => [
+        'audio_base_url' => env('MINDFULNESS_AUDIO_BASE_URL'),
+    ],
+
 ];

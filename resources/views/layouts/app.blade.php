@@ -345,6 +345,19 @@
                             @endif
                         </div>
 
+                        <!-- マインドフルネス瞑想 -->
+                        <div class="border-b border-gray-500/30">
+                            @if(request()->is('mindfulness'))
+                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                </span>
+                            @else
+                                <a href="/mindfulness" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <!-- スキーマ療法（多段） -->
                         <div class="border-b border-gray-500/30">
                             <button

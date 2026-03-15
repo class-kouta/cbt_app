@@ -164,7 +164,7 @@ ocean_25.mp3
 Laravel から R2（S3互換）にアクセスするためのパッケージをインストールします。
 
 ```bash
-composer require league/flysystem-aws-s3-v3 "^3.0"
+composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
 ```
 
 ### 2-2. `config/filesystems.php` の設定確認
@@ -196,7 +196,7 @@ S3 ディスク設定はデフォルトのまま利用可能ですが、**`throw
 ],
 ```
 
-`MINDFULNESS_AUDIO_BASE_URL` が設定されている場合はその URL をベースとして音声ファイルの URL を組み立て、未設定の場合は `Storage::disk('s3')->url()` で生成します。ローカル開発環境ではこの環境変数にローカルサーバーの URL を指定します。
+`MINDFULNESS_AUDIO_BASE_URL` が設定されている場合はその URL をベースとして音声ファイルの URL を組み立て、未設定の場合は `Storage::disk('s3')->url()` で生成します。ローカル開発環境でも R2 から直接音声を配信するため、通常は空のままで OK です。
 
 ### 2-4. `.env.example` に環境変数を追加
 
@@ -214,7 +214,7 @@ AWS_ENDPOINT=https://<YOUR_CLOUDFLARE_ACCOUNT_ID>.r2.cloudflarestorage.com
 AWS_URL=https://<YOUR_R2_PUBLIC_SUBDOMAIN>.r2.dev
 AWS_USE_PATH_STYLE_ENDPOINT=true
 
-# マインドフルネス音声配信URL（R2パブリックURL or ローカルパス）
+# マインドフルネス音声配信URL（通常は空でR2から直接配信。ローカルファイル使用時のみ設定）
 MINDFULNESS_AUDIO_BASE_URL=
 ```
 
@@ -229,11 +229,11 @@ MINDFULNESS_AUDIO_BASE_URL=
 | `AWS_ENDPOINT` | R2のS3互換エンドポイント | R2ダッシュボード > 概要 > 「S3 API」欄 |
 | `AWS_URL` | R2パブリックアクセスURL（R2.devサブドメイン） | R2ダッシュボード > バケット > 設定 > パブリックアクセス |
 | `AWS_USE_PATH_STYLE_ENDPOINT` | R2では `true` を指定 | 固定値 |
-| `MINDFULNESS_AUDIO_BASE_URL` | ローカル開発時に `http://localhost:8081` を指定 |
+| `MINDFULNESS_AUDIO_BASE_URL` | 通常は空（R2から直接配信）。ローカルファイルを使う場合のみ `http://localhost:8081` を指定 |
 
-### 2-5. `.gitignore` に追加
+### 2-5. `.gitignore` に追加（任意）
 
-ローカルテスト用の音声ファイルをリポジトリに含めないようにします。
+ローカルファイルで動作確認する場合のみ、テスト用の音声ファイルをリポジトリに含めないよう追加します。R2 から直接配信する場合は不要です。
 
 ```
 public/audio/
@@ -401,9 +401,26 @@ git push heroku main
 
 ## ローカル開発環境での動作確認
 
-ローカル開発では R2 を使わず、`public/` ディレクトリに音声ファイルを配置してテストできます。
+ローカル開発でも本番同様に **Cloudflare R2 から直接音声を配信** します。`.env` の R2 関連の環境変数（`AWS_*`）を正しく設定するだけで、本番と同じ音声ファイルを再生できます。
 
 ### 手順
+
+1. `.env` に R2 の接続情報を設定（`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` 等）
+
+2. `MINDFULNESS_AUDIO_BASE_URL` は **空のまま** にする
+
+```env
+MINDFULNESS_AUDIO_BASE_URL=
+```
+
+`MINDFULNESS_AUDIO_BASE_URL` が空の場合、コントローラは `Storage::disk('s3')->url()` で R2 パブリック URL を生成します。
+例: `https://pub-xxxxxxxxxxxxxxxx.r2.dev/audio/mindfulness/rain_5.mp3`
+
+> **メリット**: ローカルに音声ファイルを配置する手間がなく、本番と完全に同じ音声・URL構成で動作確認できます。
+
+### （任意）ローカルファイルで確認したい場合
+
+R2 にアクセスできない環境や、オフラインで開発したい場合は、従来どおりローカルファイルを使うこともできます。
 
 1. `public/audio/mindfulness/` ディレクトリを作成
 
@@ -421,6 +438,12 @@ MINDFULNESS_AUDIO_BASE_URL=http://localhost:8081
 
 コントローラが `MINDFULNESS_AUDIO_BASE_URL` を参照し、ローカルの音声ファイルURLを返します。
 例: `http://localhost:8081/audio/mindfulness/rain_5.mp3`
+
+4. `.gitignore` に `public/audio/` を追加してリポジトリに含めないようにする
+
+```
+public/audio/
+```
 
 ---
 
@@ -475,7 +498,7 @@ $url = Storage::disk('s3')->temporaryUrl($path, now()->addHour());
 6. `config/filesystems.php` の `throw`/`report` を `true` に変更
 7. `config/services.php` にマインドフルネス設定追加
 8. `.env.example` に環境変数追加
-9. `.gitignore` に `public/audio/` 追加
+9. （任意）ローカルファイルを使う場合のみ `.gitignore` に `public/audio/` 追加
 
 ### Phase 2: バックエンド実装
 
