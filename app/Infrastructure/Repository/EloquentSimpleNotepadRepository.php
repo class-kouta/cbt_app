@@ -11,17 +11,13 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
 {
     public function save(SimpleNotepadEntity $simpleNotepad): SimpleNotepadEntity
     {
-        if ($simpleNotepad->getId() !== null) {
-            $model = SimpleNotepadModel::findOrFail($simpleNotepad->getId());
-            $model->title = $simpleNotepad->getTitle();
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
-        } else {
-            $model = new SimpleNotepadModel();
-            $model->title = $simpleNotepad->getTitle();
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
-        }
+        $model = SimpleNotepadModel::updateOrCreate(
+            ['id' => $simpleNotepad->getId()],
+            [
+                'title' => $simpleNotepad->getTitle(),
+                'content' => $simpleNotepad->getContent(),
+            ]
+        );
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->getKey(),

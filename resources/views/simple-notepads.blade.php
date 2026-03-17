@@ -225,7 +225,7 @@ function simpleNotepadApp(itemId) {
         errorMessage: '',
 
         autoSaveInterval: null,
-        autoSaveSnapshots: [],
+        lastSavedState: null,
 
         async init() {
             if (this.isEditMode) {
@@ -252,7 +252,10 @@ function simpleNotepadApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.takeSnapshot();
+            this.lastSavedState = {
+                title: this.formData.title,
+                content: this.formData.content
+            };
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
             }, 30000);
@@ -269,59 +272,31 @@ function simpleNotepadApp(itemId) {
                 clearInterval(this.autoSaveInterval);
                 this.autoSaveInterval = null;
             }
-            this.autoSaveSnapshots = [];
-        },
-
-        takeSnapshot() {
-            const snapshot = {
-                title: this.formData.title,
-                content: this.formData.content
-            };
-            this.autoSaveSnapshots.push(snapshot);
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-            return this.hasValueChanged(this.autoSaveSnapshots[0]);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.formData.title !== snapshot.title ||
-                this.formData.content !== snapshot.content
-            );
+            this.lastSavedState = null;
         },
 
         async checkAndAutoSave() {
-            if (!this.isEditing) return;
+            if (!this.isEditing || this.saving) return;
 
-            if (
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.saving
-            ) {
-                await this.performAutoSave();
+            const currentState = {
+                title: this.formData.title,
+                content: this.formData.content
+            };
+
+            if (JSON.stringify(currentState) !== JSON.stringify(this.lastSavedState)) {
+                const success = await this.performSave(false);
+                if (success) {
+                    this.lastSavedState = currentState;
+                }
             }
-            this.takeSnapshot();
-        },
-
-        async performAutoSave() {
-            await this.performSave(false);
         },
 
         async performSave(isManual) {
-            if (this.saving) return;
+            if (this.saving) return false;
 
             if (!this.formData.content.trim()) {
                 this.error = '内容を入力してください';
-                return;
+                return false;
             }
 
             this.saving = true;
@@ -347,24 +322,33 @@ function simpleNotepadApp(itemId) {
                         this.showAutoSaveToast = true;
                         setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
                     }
+                    return true;
                 } else {
                     const errorData = await res.json();
                     this.errorMessage = errorData.message || '保存に失敗しました';
                     this.showErrorToast = true;
                     setTimeout(() => { this.showErrorToast = false; }, 3000);
+                    return false;
                 }
             } catch (error) {
                 console.error('保存に失敗しました:', error);
                 this.errorMessage = '保存に失敗しました';
                 this.showErrorToast = true;
                 setTimeout(() => { this.showErrorToast = false; }, 3000);
+                return false;
             } finally {
                 this.saving = false;
             }
         },
 
         async save() {
-            await this.performSave(true);
+            const success = await this.performSave(true);
+            if (success) {
+                this.lastSavedState = {
+                    title: this.formData.title,
+                    content: this.formData.content
+                };
+            }
         },
 
         async createSimpleNotepad() {
