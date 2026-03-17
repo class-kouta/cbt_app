@@ -37,26 +37,17 @@
 
 ## 3. 認証アーキテクチャ設計
 
-### 3.1 ユーザーロール設計
+### 3.1 ユーザーロール設計（将来の拡張方針）
 
-将来的な管理者・専門医ユーザーの追加を見据え、`users` テーブルに `role` カラムを追加するシンプルなロールベース設計を採用します。
+現時点では一般会員のみの実装とし、`role` カラムは追加しません。将来的に管理者・専門医ユーザーの区分が必要になった際に、以下のいずれかの方式で拡張できます。
 
-```
-users テーブル
-├── role: 'member'     ... 一般会員（デフォルト）
-├── role: 'admin'      ... 管理者（将来追加）
-└── role: 'specialist' ... 専門医（将来追加）
-```
+| 方式 | メリット | デメリット | 推奨タイミング |
+|------|---------|----------|-------------|
+| `role` カラム方式 | シンプル、実装コスト低 | 複雑な権限管理には不向き | ロールが2〜3種類の段階 |
+| 多対多ロールテーブル方式 | 柔軟な権限管理が可能 | 実装コストが高い | ロールが複数かつ権限が細分化された段階 |
+| Spatie Permission パッケージ | 高機能な RBAC | 外部依存が増える | 大規模な権限管理が必要な段階 |
 
-#### 設計判断
-
-| 方式 | メリット | デメリット | 採用 |
-|------|---------|----------|------|
-| `role` カラム方式 | シンプル、実装コスト低、現状の要件に十分 | 複雑な権限管理には不向き | **○ 採用** |
-| 多対多ロールテーブル方式 | 柔軟な権限管理が可能 | 現時点ではオーバーエンジニアリング | × |
-| Spatie Permission パッケージ | 高機能な RBAC | 外部依存が増える、現時点では不要 | × |
-
-**将来への拡張パス**: ロールごとの権限が複雑化した段階で、`role` カラム方式から多対多テーブル方式や Spatie Permission への移行は比較的容易です。その際は `role` カラムを残しつつ、権限テーブルを追加する段階的移行が可能です。
+**最もシンプルな拡張方法**: `users` テーブルに `role` カラム（varchar, DEFAULT 'member'）を追加するだけで、`admin` / `specialist` 等のロール区分が実現可能です。詳細はセクション 6 を参照してください。
 
 ### 3.2 認証フロー設計
 
@@ -66,7 +57,7 @@ users テーブル
 [ユーザー] → [登録フォーム (Blade)] → [POST /register]
     → [Fortify: CreateNewUser Action]
         → [バリデーション]
-        → [User モデル作成 (role: 'member')]
+        → [User モデル作成]
         → [自動ログイン]
     → [リダイレクト → ホーム画面]
 ```
@@ -120,8 +111,7 @@ app/
 │   ├── Entity/
 │   │   └── User.php                          # ユーザーエンティティ（新規）
 │   ├── ValueObject/
-│   │   ├── Email.php                          # メールアドレス値オブジェクト（新規）
-│   │   └── UserRole.php                       # ユーザーロール値オブジェクト（新規）
+│   │   └── Email.php                          # メールアドレス値オブジェクト（新規）
 │   └── Repository/
 │       └── UserRepositoryInterface.php        # ユーザーリポジトリIF（新規）
 ├── Application/
@@ -155,11 +145,9 @@ app/
 
 ## 4. データベース設計変更
 
-### 4.1 `users` テーブルの変更
+### 4.1 `users` テーブル
 
-現在の `users` テーブルに `role` カラムを追加します。
-
-**変更前:**
+現時点では `users` テーブルのスキーマ変更は不要です。Laravel 標準の `users` テーブル構成をそのまま利用します。
 
 | カラム | 型 | 備考 |
 |-------|-----|------|
@@ -171,34 +159,7 @@ app/
 | remember_token | varchar | NULL可 |
 | created_at / updated_at | timestamp | |
 
-**変更後:**
-
-| カラム | 型 | 備考 |
-|-------|-----|------|
-| id | bigint | 主キー |
-| name | varchar | |
-| email | varchar | UNIQUE |
-| email_verified_at | timestamp | NULL可 |
-| password | varchar | |
-| **role** | **varchar(20)** | **NOT NULL, DEFAULT 'member'（新規追加）** |
-| remember_token | varchar | NULL可 |
-| created_at / updated_at | timestamp | |
-
-**`role` カラムの取りうる値:**
-
-| 値 | 説明 | 備考 |
-|----|------|------|
-| `member` | 一般会員 | デフォルト値。今回実装 |
-| `admin` | 管理者 | 将来実装 |
-| `specialist` | 専門医 | 将来実装 |
-
-**マイグレーションファイル例:**
-
-```php
-Schema::table('users', function (Blueprint $table) {
-    $table->string('role', 20)->default('member')->after('password');
-});
-```
+**将来の拡張時**: 管理者・専門医ユーザーの区分が必要になった段階で `role` カラム（varchar, DEFAULT 'member'）を追加します。
 
 ### 4.2 `user_id` カラムの追加対象テーブル
 
@@ -262,12 +223,11 @@ Schema::table('copings', function (Blueprint $table) {
 
 ### 4.3 マイグレーションファイルの構成
 
-1つのマイグレーションファイルで `users` テーブルの `role` カラム追加を行い、別の1つのマイグレーションファイルで全テーブルへの `user_id` カラム追加をまとめて行います。
+1つのマイグレーションファイルで全テーブルへの `user_id` カラム追加をまとめて行います。
 
 ```
 database/migrations/
-├── xxxx_xx_xx_000001_add_role_to_users_table.php
-└── xxxx_xx_xx_000002_add_user_id_to_all_data_tables.php
+└── xxxx_xx_xx_000001_add_user_id_to_all_data_tables.php
 ```
 
 ---
@@ -316,7 +276,6 @@ docker compose exec app php artisan vendor:publish --provider="Laravel\Sanctum\S
 #### 2-1. マイグレーション作成・実行
 
 ```bash
-docker compose exec app php artisan make:migration add_role_to_users_table
 docker compose exec app php artisan make:migration add_user_id_to_all_data_tables
 docker compose exec app php artisan migrate
 ```
@@ -348,28 +307,12 @@ protected $fillable = [
     'name',
     'email',
     'password',
-    'role',
 ];
 
 protected $casts = [
     'email_verified_at' => 'datetime',
     'password' => 'hashed',
 ];
-
-public function isMember(): bool
-{
-    return $this->role === 'member';
-}
-
-public function isAdmin(): bool
-{
-    return $this->role === 'admin';
-}
-
-public function isSpecialist(): bool
-{
-    return $this->role === 'specialist';
-}
 ```
 
 #### 4-2. Fortify Actions の設定
@@ -389,7 +332,6 @@ public function create(array $input): User
         'name' => $input['name'],
         'email' => $input['email'],
         'password' => Hash::make($input['password']),
-        'role' => 'member',
     ]);
 }
 ```
@@ -433,8 +375,8 @@ public function destroy(DeleteAccountRequest $request): RedirectResponse
 {
     $user = $request->user();
 
-    Auth::logout();
     $user->delete(); // CASCADE により紐づく全データも削除
+    Auth::logout();
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();
@@ -442,6 +384,8 @@ public function destroy(DeleteAccountRequest $request): RedirectResponse
     return redirect('/')->with('message', 'アカウントを削除しました。');
 }
 ```
+
+**処理順序の補足**: `$user->delete()` を `Auth::logout()` より先に実行しています。万が一 `delete()` が失敗した場合、ユーザーはログイン状態のままエラーを確認しリトライできます。逆順（logout → delete）だと、delete 失敗時にユーザーがログアウトされているのにアカウントが残る中途半端な状態になるため、クリティカルな処理（データ削除）を先に実行する方針としています。
 
 #### 4-5. Blade ビューの作成
 
@@ -527,64 +471,25 @@ class UserScope implements Scope
 
 ## 6. 管理者・専門医ユーザー対応（将来計画）
 
-### 6.1 管理者ログイン
+現時点では一般会員のみの実装ですが、将来的にロール区分が必要になった場合の拡張方針をまとめます。
 
-管理者ログイン機能を追加する際の方針:
+### 6.1 拡張時の作業概要
 
-1. 既存の `users` テーブルの `role` カラムに `'admin'` を設定したユーザーを作成
-2. 管理者専用ミドルウェア `EnsureUserIsAdmin` を作成
-3. 管理者画面のルートにミドルウェアを適用
-4. 現在の管理画面 URL（`/siteAdmPanel63/*`）を管理者認証で保護
+1. `users` テーブルに `role` カラム（varchar(20), DEFAULT 'member'）を追加するマイグレーションを作成
+2. ロール判定用のミドルウェアを作成（例: `EnsureUserIsAdmin`）
+3. 対象ルートにミドルウェアを適用
 
-```php
-// 将来の管理者ミドルウェア例
-class EnsureUserIsAdmin
-{
-    public function handle(Request $request, Closure $next): Response
-    {
-        if ($request->user()?->role !== 'admin') {
-            abort(403);
-        }
-        return $next($request);
-    }
-}
-```
+### 6.2 管理者ログイン
 
-### 6.2 専門医ユーザーログイン
+- `role` を `'admin'` に設定したユーザーを作成
+- 管理者専用ミドルウェアで `role` を検証
+- 現在の管理画面 URL（`/siteAdmPanel63/*`）を管理者認証で保護
 
-専門医ユーザー機能を追加する際の方針:
+### 6.3 専門医ユーザーログイン
 
-1. `users` テーブルの `role` カラムに `'specialist'` を設定
-2. 専門医専用の追加プロフィールが必要な場合は `specialist_profiles` テーブルを追加（1対1）
-3. 専門医専用ミドルウェア `EnsureUserIsSpecialist` を作成
-4. 専門医がアクセスできる画面・API を定義
-
-### 6.3 ロール拡張時のマイグレーション戦略
-
-`role` カラムに新しい値を追加するだけで対応可能です。
-
-```php
-// role の値は PHP の Enum で管理
-enum UserRole: string
-{
-    case Member = 'member';
-    case Admin = 'admin';
-    case Specialist = 'specialist';
-}
-```
-
-将来、さらに複雑な権限管理が必要になった場合:
-
-```
-roles テーブル
-├── id, name, guard_name
-
-role_user テーブル（多対多中間テーブル）
-├── role_id, user_id
-
-permissions テーブル（必要に応じて）
-├── id, name, guard_name
-```
+- `role` を `'specialist'` に設定
+- 専門医専用の追加プロフィールが必要な場合は `specialist_profiles` テーブルを追加（1対1）
+- 専門医専用ミドルウェアでアクセス制御
 
 ---
 
@@ -599,15 +504,7 @@ permissions テーブル（必要に応じて）
 
 ### 7.2 手順
 
-#### Step 1: マイグレーション実行（`role` カラム追加）
-
-```bash
-docker compose exec app php artisan migrate
-```
-
-このマイグレーションにより `users` テーブルに `role` カラムが追加されます。
-
-#### Step 2: 開発者の会員アカウントを作成
+#### Step 1: 開発者の会員アカウントを作成
 
 Tinker（Laravel の対話型コンソール）を使ってアカウントを作成します。
 
@@ -625,14 +522,13 @@ $user = User::create([
     'name' => 'あなたの名前',
     'email' => 'your-email@example.com',
     'password' => Hash::make('your-secure-password'),
-    'role' => 'member',
 ]);
 
 echo "作成されたユーザーID: " . $user->id;
 // → 出力される ID をメモしてください（例: 1）
 ```
 
-#### Step 3: マイグレーション実行（`user_id` カラム追加）
+#### Step 2: マイグレーション実行（`user_id` カラム追加）
 
 `user_id` カラムを追加するマイグレーションでは、既存データの `user_id` を自動的に設定する処理を含めます。
 
@@ -691,7 +587,7 @@ public function up(): void
 docker compose exec app php artisan migrate
 ```
 
-#### Step 4: データの紐付けを確認
+#### Step 3: データの紐付けを確認
 
 ```bash
 docker compose exec app php artisan tinker
@@ -710,7 +606,7 @@ foreach ($tables as $table) {
 
 全件が `user_id` 設定済みであることを確認してください。
 
-#### Step 5: ベーシック認証の無効化
+#### Step 4: ベーシック認証の無効化
 
 `.env` ファイルを編集:
 
@@ -719,11 +615,11 @@ foreach ($tables as $table) {
 USE_BASIC_AUTH=false
 ```
 
-#### Step 6: 動作確認
+#### Step 5: 動作確認
 
 1. ブラウザで `http://localhost:8081` にアクセス
 2. ログイン画面が表示されることを確認
-3. Step 2 で作成した認証情報でログイン
+3. Step 1 で作成した認証情報でログイン
 4. 既存のデータ（コーピング、コラム等）が正常に表示されることを確認
 5. 新規データの作成・編集・削除が正常に動作することを確認
 
@@ -748,7 +644,7 @@ USE_BASIC_AUTH=false
 | フェーズ | 内容 | 依存関係 |
 |---------|------|---------|
 | **Phase 1** | パッケージインストール、設定ファイル | なし |
-| **Phase 2** | DB マイグレーション（role追加、user_id追加、既存データ紐付け） | Phase 1 |
+| **Phase 2** | DB マイグレーション（user_id追加、既存データ紐付け） | Phase 1 |
 | **Phase 3** | ベーシック認証廃止 | Phase 2 |
 | **Phase 4** | 会員登録・ログイン・ログアウト実装（Fortify） | Phase 3 |
 | **Phase 4.5** | API 認証（Sanctum SPA 認証）適用 | Phase 4 |
@@ -763,16 +659,16 @@ USE_BASIC_AUTH=false
 
 ### 新規作成するファイル
 
-- マイグレーションファイル × 2
+- マイグレーションファイル × 1
 - Fortify Actions（CreateNewUser, UpdateUserPassword 等）
 - 退会コントローラー、リクエスト、ユースケース
 - 認証関連 Blade ビュー × 5
-- ドメインエンティティ・値オブジェクト（User, Email, UserRole）
+- ドメインエンティティ・値オブジェクト（User, Email）
 - ユーザーリポジトリ（IF + 実装）
 
 ### 変更するファイル
 
-- `app/Models/User.php` — `role` カラム追加、ロール判定メソッド追加
+- `app/Models/User.php` — `$fillable` の確認
 - `bootstrap/app.php` — BasicAuth ミドルウェア削除、Sanctum ミドルウェア追加
 - `routes/web.php` — 認証ミドルウェアでルートを保護
 - `routes/api.php` — Sanctum ミドルウェアでルートを保護
