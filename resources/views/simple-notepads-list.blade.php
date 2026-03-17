@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'メモ帳 - 過去の記録')
+@section('title', 'メモ帳 - 一覧')
 @section('page-title', 'メモ帳')
 
 @section('content')
@@ -13,9 +13,10 @@
         </div>
 
         <template x-for="item in simpleNotepads" :key="item.id">
-            <a :href="'/simple-notepads/' + item.id" class="block">
+            <a :href="'/simple-notepads/' + item.id + '/edit'" class="block">
                 <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg hover:bg-emerald-50 cursor-pointer">
-                    <p class="text-gray-800 line-clamp-2" x-text="item.content"></p>
+                    <p class="text-gray-900 font-semibold text-sm mb-1 line-clamp-1" x-show="item.title" x-text="item.title"></p>
+                    <p class="text-gray-600 line-clamp-2 text-sm" x-text="item.content"></p>
                     <div class="mt-2">
                         <span class="text-xs text-gray-400" x-text="formatDate(item.created_at)"></span>
                     </div>
@@ -44,6 +45,12 @@
 </div>
 
 <style>
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

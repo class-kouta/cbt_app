@@ -61,7 +61,7 @@ Route::get('/writing-disclosures/{id}/edit', function ($id) {
     return view('writing-disclosures', ['itemId' => $id]);
 })->where('id', '[0-9]+');
 
-// シンプルメモ帳ページ
+// シンプルメモ帳新規作成ページ
 Route::get('/simple-notepads', function () {
     return view('simple-notepads');
 });
@@ -70,11 +70,6 @@ Route::get('/simple-notepads', function () {
 Route::get('/simple-notepads/list', function () {
     return view('simple-notepads-list');
 });
-
-// シンプルメモ帳詳細ページ
-Route::get('/simple-notepads/{id}', function ($id) {
-    return view('simple-notepad-detail', ['itemId' => $id]);
-})->where('id', '[0-9]+');
 
 // シンプルメモ帳編集ページ
 Route::get('/simple-notepads/{id}/edit', function ($id) {

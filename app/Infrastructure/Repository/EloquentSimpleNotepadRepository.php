@@ -12,19 +12,20 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
     public function save(SimpleNotepadEntity $simpleNotepad): SimpleNotepadEntity
     {
         if ($simpleNotepad->getId() !== null) {
-            // 更新
             $model = SimpleNotepadModel::findOrFail($simpleNotepad->getId());
+            $model->title = $simpleNotepad->getTitle();
             $model->content = $simpleNotepad->getContent();
             $model->save();
         } else {
-            // 新規作成
             $model = new SimpleNotepadModel();
+            $model->title = $simpleNotepad->getTitle();
             $model->content = $simpleNotepad->getContent();
             $model->save();
         }
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->getKey(),
+            title: (string) $model->title,
             content: (string) $model->content,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
@@ -41,6 +42,7 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->id,
+            title: (string) $model->title,
             content: (string) $model->content,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
