@@ -530,6 +530,13 @@
                     >
                         📋 内容をコピー
                     </button>
+
+                    <!-- 一覧に戻るリンク（下部） -->
+                    <div x-show="hasExistingRecord" class="text-center pt-2">
+                        <a :href="backUrl" class="text-emerald-600 hover:text-emerald-800 flex items-center justify-center gap-1">
+                            ← <span x-text="backLabel"></span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>

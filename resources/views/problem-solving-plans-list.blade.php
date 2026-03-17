@@ -73,21 +73,21 @@
     <!-- フィルター -->
     <div class="mb-4 flex gap-2">
         <button
-            @click="filter = 'all'"
+            @click="setFilter('all')"
             class="px-4 py-2 rounded-full text-sm font-medium transition-all"
             :class="filter === 'all' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
         >
             すべて
         </button>
         <button
-            @click="filter = 'pending'"
+            @click="setFilter('pending')"
             class="px-4 py-2 rounded-full text-sm font-medium transition-all"
             :class="filter === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
         >
             振り返り待ち
         </button>
         <button
-            @click="filter = 'completed'"
+            @click="setFilter('completed')"
             class="px-4 py-2 rounded-full text-sm font-medium transition-all"
             :class="filter === 'completed' ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
         >
@@ -97,7 +97,7 @@
 
     <!-- 一覧 -->
     <div class="space-y-3">
-        <template x-for="plan in filteredPlans" :key="plan.planId">
+        <template x-for="plan in allPlans" :key="plan.planId">
             <a
                 :href="'/problem-solvings/' + plan.problemSolvingId + '?from=plans&plan_id=' + plan.planId"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
@@ -171,8 +171,8 @@
             <p class="text-gray-600 text-lg mt-2">読み込み中...</p>
         </div>
 
-        <!-- 空の状態（検索条件なし） -->
-        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <!-- 空の状態（検索条件・フィルターなし） -->
+        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter === 'all'" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-6xl mb-4">📋</p>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
             <a href="/problem-solvings" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
@@ -181,7 +181,7 @@
         </div>
 
         <!-- フィルター結果が空の場合 -->
-        <div x-show="!loading && allPlans.length > 0 && filteredPlans.length === 0" class="text-center py-12 bg-white rounded-xl shadow-md">
+        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter !== 'all'" class="text-center py-12 bg-white rounded-xl shadow-md">
             <p class="text-4xl mb-4" x-text="filter === 'completed' ? '🎉' : '⏳'"></p>
             <p class="text-gray-600" x-text="filter === 'completed' ? '振り返り済みの計画はまだありません' : '振り返り待ちの計画はありません'"></p>
         </div>
@@ -197,6 +197,12 @@
                 検索条件をクリアする
             </button>
         </div>
+
+        <x-pagination
+            theme-color-from="emerald-500"
+            theme-color-to="teal-500"
+            theme-border-color="emerald-500"
+        />
     </div>
 
     <!-- 新規作成ボタン（フローティング） -->
@@ -233,6 +239,12 @@ function plansListApp() {
         keyword: '',
         improvementLevelMin: 1,
         improvementLevelMax: 10,
+        currentPage: 1,
+        perPage: 10,
+        total: 0,
+        lastPage: 1,
+        from: 0,
+        to: 0,
 
         async init() {
             await this.loadPlans();
@@ -249,12 +261,17 @@ function plansListApp() {
                     params.append('improvement_level_min', this.improvementLevelMin);
                     params.append('improvement_level_max', this.improvementLevelMax);
                 }
+                if (this.filter && this.filter !== 'all') {
+                    params.append('filter', this.filter);
+                }
+                params.append('page', this.currentPage);
+                params.append('per_page', this.perPage);
 
                 const url = '/api/problem-solvings/plans' + (params.toString() ? '?' + params.toString() : '');
                 const res = await fetch(url);
-                const plans = await res.json();
+                const result = await res.json();
 
-                this.allPlans = plans.map(plan => ({
+                this.allPlans = (result.data || []).map(plan => ({
                     planId: plan.id,
                     problemSolvingId: plan.problem_solving_id,
                     problemSituation: plan.problem_situation,
@@ -265,6 +282,13 @@ function plansListApp() {
                     improvementLevel: plan.improvement_level,
                     createdAt: plan.created_at
                 }));
+
+                this.total = result.total || 0;
+                this.currentPage = result.current_page || 1;
+                this.lastPage = result.last_page || 1;
+                this.from = result.from || 0;
+                this.to = result.to || 0;
+                this.perPage = result.per_page || 10;
             } catch (error) {
                 console.error('Failed to load plans:', error);
             } finally {
@@ -274,6 +298,13 @@ function plansListApp() {
 
         async search() {
             if (this.hasRangeError) return;
+            this.currentPage = 1;
+            await this.loadPlans();
+        },
+
+        async setFilter(newFilter) {
+            this.filter = newFilter;
+            this.currentPage = 1;
             await this.loadPlans();
         },
 
@@ -281,7 +312,19 @@ function plansListApp() {
             this.keyword = '';
             this.improvementLevelMin = 1;
             this.improvementLevelMax = 10;
+            this.currentPage = 1;
             await this.loadPlans();
+        },
+
+        async goToPage(page) {
+            if (page < 1 || page > this.lastPage || page === this.currentPage) return;
+            this.currentPage = page;
+            await this.loadPlans();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        get visiblePages() {
+            return calculateVisiblePages(this.currentPage, this.lastPage);
         },
 
         get hasSearchCondition() {
@@ -290,17 +333,6 @@ function plansListApp() {
 
         get hasRangeError() {
             return this.improvementLevelMin > this.improvementLevelMax;
-        },
-
-        get filteredPlans() {
-            if (this.filter === 'all') {
-                return this.allPlans;
-            } else if (this.filter === 'completed') {
-                return this.allPlans.filter(p => p.hasReflection);
-            } else if (this.filter === 'pending') {
-                return this.allPlans.filter(p => !p.hasReflection);
-            }
-            return this.allPlans;
         },
 
         formatDate(dateString) {

@@ -46,11 +46,11 @@ interface ProblemSolvingRepositoryInterface
     public function deleteSolution(int $solutionId): void;
 
     /**
-     * 検索条件に基づいて計画を検索
+     * 検索条件に基づいて計画を検索（ページネーション対応）
      *
      * @param PlanSearchCriteriaData $criteria 検索条件
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
-     * @return array<int, array<string, mixed>> 検索結果
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
     public function searchPlans(PlanSearchCriteriaData $criteria, array $searchableColumns): array;
 

@@ -72,7 +72,7 @@
     </a>
 
     <!-- Problem Solving Card -->
-    <a href="/problem-solvings" class="block group">
+    <a href="/problem-solvings/list" class="block group">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
             <div class="flex flex-col items-center text-center">
                 <!-- Problem Solving Icon -->
