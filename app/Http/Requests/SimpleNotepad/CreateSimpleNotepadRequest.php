@@ -14,6 +14,7 @@ class CreateSimpleNotepadRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => ['nullable', 'string', 'max:255'],
             'content' => ['required', 'string', 'max:10000'],
         ];
     }
@@ -21,6 +22,7 @@ class CreateSimpleNotepadRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'title.max' => 'タイトルは255文字以内で入力してください',
             'content.required' => 'メモ内容を入力してください',
             'content.max' => 'メモ内容は10000文字以内で入力してください',
         ];

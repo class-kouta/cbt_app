@@ -89,6 +89,7 @@
 ---
 ## simple_notepads（シンプルメモ帳）
 - id — bigint, 主キー
+- title — varchar(255), DEFAULT ''（メモタイトル）
 - content — text, NOT NULL（メモ内容）
 - created_at / updated_at — timestamp
 

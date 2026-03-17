@@ -14,7 +14,7 @@ class CreateSimpleNotepadUseCase
 
     public function handle(SimpleNotepadData $data): SimpleNotepadEntity
     {
-        $simpleNotepad = SimpleNotepadEntity::createNew($data->content);
+        $simpleNotepad = SimpleNotepadEntity::createNew($data->title, $data->content);
         return $this->simpleNotepadRepository->save($simpleNotepad);
     }
 }

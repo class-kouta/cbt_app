@@ -23,6 +23,7 @@ class SimpleNotepadController extends Controller
             ->map(function ($simpleNotepad) {
                 return [
                     'id' => $simpleNotepad->id,
+                    'title' => $simpleNotepad->title,
                     'content' => $simpleNotepad->content,
                     'created_at' => $simpleNotepad->created_at->format(DATE_ATOM),
                     'updated_at' => $simpleNotepad->updated_at->format(DATE_ATOM),
@@ -40,6 +41,7 @@ class SimpleNotepadController extends Controller
         CreateSimpleNotepadUseCase $createSimpleNotepad
     ): JsonResponse {
         $data = new SimpleNotepadData(
+            title: (string) $request->string('title'),
             content: (string) $request->string('content')
         );
 
@@ -47,6 +49,7 @@ class SimpleNotepadController extends Controller
 
         return response()->json([
             'id' => $simpleNotepad->getId(),
+            'title' => $simpleNotepad->getTitle(),
             'content' => $simpleNotepad->getContent(),
             'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
@@ -62,6 +65,7 @@ class SimpleNotepadController extends Controller
         UpdateSimpleNotepadUseCase $updateSimpleNotepad
     ): JsonResponse {
         $data = new SimpleNotepadData(
+            title: (string) $request->string('title'),
             content: (string) $request->string('content')
         );
 
@@ -69,6 +73,7 @@ class SimpleNotepadController extends Controller
 
         return response()->json([
             'id' => $updatedSimpleNotepad->getId(),
+            'title' => $updatedSimpleNotepad->getTitle(),
             'content' => $updatedSimpleNotepad->getContent(),
             'created_at' => $updatedSimpleNotepad->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedSimpleNotepad->getUpdatedAt()->format(DATE_ATOM),

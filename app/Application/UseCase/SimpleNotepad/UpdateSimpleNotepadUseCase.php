@@ -21,7 +21,7 @@ class UpdateSimpleNotepadUseCase
             throw new DomainException('Simple notepad not found.');
         }
 
-        $updatedSimpleNotepad = $simpleNotepad->update($data->content);
+        $updatedSimpleNotepad = $simpleNotepad->update($data->title, $data->content);
         return $this->simpleNotepadRepository->save($updatedSimpleNotepad);
     }
 }
