@@ -102,14 +102,13 @@
     → [リダイレクト → ログイン画面]
 ```
 
-#### 退会（アカウント削除）フロー
+#### 退会（アカウント無効化）フロー
 
 ```
 [ユーザー] → [退会ページ] → [パスワード再入力で確認]
     → [POST /account/delete]
         → [パスワード検証]
-        → [ユーザーに紐づく全データ削除（CASCADE or 手動）]
-        → [User レコード削除]
+        → [User レコードをソフトデリート（deleted_at に日時を記録）]
         → [セッション破棄]
     → [リダイレクト → トップページ（退会完了メッセージ）]
 ```
@@ -158,7 +157,7 @@ app/
     │   └── Auth/
     │       └── DeleteAccountRequest.php        # 退会リクエスト（新規）
     └── Middleware/
-        └── (HttpBasicAuth.php を削除)
+        └── (HttpBasicAuth.php は本番確認後に削除)
 ```
 
 **補足**: 会員登録・ログイン・ログアウトは Fortify が提供するルートとアクションで処理するため、これらのコントローラーは新規作成不要です。退会機能のみカスタム実装が必要です。
@@ -169,7 +168,7 @@ app/
 
 ### 4.1 `users` テーブル（一般会員）
 
-`users` テーブルは **一般会員専用** のテーブルとして使用します。Laravel 標準の構成をそのまま利用するため、スキーマ変更は不要です。
+`users` テーブルは **一般会員専用** のテーブルとして使用します。Laravel 標準の構成に `deleted_at` カラムを追加します（退会時のソフトデリート用）。
 
 | カラム | 型 | 備考 |
 |-------|-----|------|
@@ -179,6 +178,7 @@ app/
 | email_verified_at | timestamp | NULL可 |
 | password | varchar | |
 | remember_token | varchar | NULL可 |
+| **deleted_at** | **timestamp** | **NULL可（ソフトデリート用、新規追加）** |
 | created_at / updated_at | timestamp | |
 
 将来、管理者・専門医が必要になった場合は `admin_users` / `specialist_users` テーブルを別途作成します（詳細はセクション 6 を参照）。
@@ -241,16 +241,18 @@ Schema::table('copings', function (Blueprint $table) {
 });
 ```
 
-**ON DELETE CASCADE の採用理由**: ユーザーが退会した際、そのユーザーに紐づく全データを自動的に削除するため。退会処理のロジックがシンプルになり、データの孤立（orphan records）を防止できます。
+**ON DELETE CASCADE の補足**: 退会処理ではソフトデリート（論理削除）を使用するため、通常の退会フローでは CASCADE は発動しません。CASCADE はあくまで、将来的にデータベースレベルで物理削除が必要になった場合（例: GDPR 対応、手動データ整理等）のセーフティネットとして設定します。
 
 ### 4.3 マイグレーションファイルの構成
 
-1つのマイグレーションファイルで全テーブルへの `user_id` カラム追加をまとめて行います。
-
 ```
 database/migrations/
-└── xxxx_xx_xx_000001_add_user_id_to_all_data_tables.php
+├── xxxx_xx_xx_000001_add_soft_deletes_to_users_table.php
+└── xxxx_xx_xx_000002_add_user_id_to_user_data_tables.php
 ```
+
+- `add_soft_deletes_to_users_table`: `users` テーブルに `deleted_at` カラムを追加（ソフトデリート対応）
+- `add_user_id_to_user_data_tables`: 一般会員のデータを保持する15テーブルに `user_id` カラムを追加
 
 ---
 
@@ -298,26 +300,30 @@ docker compose exec app php artisan vendor:publish --provider="Laravel\Sanctum\S
 #### 2-1. マイグレーション作成・実行
 
 ```bash
-docker compose exec app php artisan make:migration add_user_id_to_all_data_tables
+docker compose exec app php artisan make:migration add_soft_deletes_to_users_table
+docker compose exec app php artisan make:migration add_user_id_to_user_data_tables
 docker compose exec app php artisan migrate
 ```
 
-### Phase 3: ベーシック認証の廃止
+### Phase 3: ベーシック認証の無効化
 
-#### 3-1. ミドルウェアの削除
+#### 3-1. ベーシック認証を無効にする
+
+`.env` で `USE_BASIC_AUTH=false` に設定し、ベーシック認証を無効化します。
+
+```env
+USE_BASIC_AUTH=false
+```
+
+**注意**: この時点ではベーシック認証のコード（`HttpBasicAuth` ミドルウェア、`bootstrap/app.php` の登録）は削除しません。コードは残したまま環境変数で無効化するだけにとどめます。
+
+#### 3-2. ベーシック認証コードの完全削除（本番リリース後）
+
+本番環境で会員登録・ログイン機能の動作確認が完了し、問題がないことを確認した後に、以下を実施します。
 
 - `app/Http/Middleware/HttpBasicAuth.php` を削除
 - `bootstrap/app.php` から `HttpBasicAuth` ミドルウェアの登録を削除
-
-#### 3-2. 環境変数のクリーンアップ
-
-`.env` から以下を削除:
-
-```
-USE_BASIC_AUTH
-BASIC_AUTH_USERNAME
-BASIC_AUTH_PASSWORD
-```
+- `.env` から `USE_BASIC_AUTH`、`BASIC_AUTH_USERNAME`、`BASIC_AUTH_PASSWORD` を削除
 
 ### Phase 4: 認証機能の実装
 
@@ -325,17 +331,26 @@ BASIC_AUTH_PASSWORD
 
 ```php
 // app/Models/User.php（または移行先）
-protected $fillable = [
-    'name',
-    'email',
-    'password',
-];
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-protected $casts = [
-    'email_verified_at' => 'datetime',
-    'password' => 'hashed',
-];
+class User extends Authenticatable
+{
+    use HasFactory, Notifiable, SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+}
 ```
+
+**SoftDeletes の補足**: 退会時は `deleted_at` に日時が記録されるだけで、レコードは物理削除されません。`SoftDeletes` トレイトにより、通常のクエリでは退会済みユーザーは自動的に除外されます。`users` テーブルに `deleted_at` カラムを追加するマイグレーションが必要です。
 
 #### 4-2. Fortify Actions の設定
 
@@ -397,17 +412,23 @@ public function destroy(DeleteAccountRequest $request): RedirectResponse
 {
     $user = $request->user();
 
-    $user->delete(); // CASCADE により紐づく全データも削除
+    $user->delete(); // SoftDeletes により deleted_at に日時が記録される（データは残る）
     Auth::logout();
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/')->with('message', 'アカウントを削除しました。');
+    return redirect('/')->with('message', '退会処理が完了しました。');
 }
 ```
 
-**処理順序の補足**: `$user->delete()` を `Auth::logout()` より先に実行しています。万が一 `delete()` が失敗した場合、ユーザーはログイン状態のままエラーを確認しリトライできます。逆順（logout → delete）だと、delete 失敗時にユーザーがログアウトされているのにアカウントが残る中途半端な状態になるため、クリティカルな処理（データ削除）を先に実行する方針としています。
+**ソフトデリート（論理削除）の採用理由**:
+- 退会時にユーザーデータを物理削除しない。`User` モデルに `SoftDeletes` トレイトを使用し、`deleted_at` カラムに日時を記録するのみとする
+- ユーザーに紐づくデータ（copings, columns 等）もそのまま残る
+- 誤退会時のデータ復旧が可能
+- ON DELETE CASCADE は外部キー制約として設定するが、退会処理では物理削除を実行しないため CASCADE は発動しない。CASCADE はあくまで、万が一の手動データ整理時のセーフティネットとして機能する
+
+**処理順序の補足**: `$user->delete()`（ソフトデリート）を `Auth::logout()` より先に実行しています。万が一 `delete()` が失敗した場合、ユーザーはログイン状態のままエラーを確認しリトライできます。
 
 #### 4-5. Blade ビューの作成
 
@@ -453,24 +474,27 @@ public function index(Request $request)
 }
 ```
 
-#### 5-2. グローバルスコープの検討
+#### 5-2. `user_id` フィルタリングの方式
 
-全テーブルへの `user_id` フィルタリングの適用漏れを防ぐため、Eloquent のグローバルスコープの活用を検討します。
+`user_id` のフィルタリングは **リポジトリ層で明示的に行う方式** を採用します。
+
+**Eloquent グローバルスコープを採用しない理由:**
+
+1. **`user_id` を持たないテーブルが存在する**: `tags`、`coping_tags` はシステム共通データであり `user_id` を持ちません。中間テーブル（`coping_coping_tag`、`column_tag` 等）や子テーブル（`problem_solving_plans`、`problem_solving_solutions`）にも `user_id` はありません。グローバルスコープを一律適用すると、これらのテーブルへのクエリでエラーが発生するか、データが取得できなくなります
+2. **将来の管理者ガードとの競合**: 管理者ユーザー（`admin_users` テーブル / `admin` ガード）が追加された場合、`auth()->check()` が管理者コンテキストで意図しない挙動になる可能性がある
+
+**リポジトリ層での明示的フィルタリングの方針:**
 
 ```php
-// app/Infrastructure/Database/Scopes/UserScope.php
-class UserScope implements Scope
-{
-    public function apply(Builder $builder, Model $model): void
-    {
-        if (auth()->check()) {
-            $builder->where($model->getTable() . '.user_id', auth()->id());
-        }
-    }
-}
-```
+// user_id を持つテーブルのリポジトリ → user_id でフィルタリング
+$copings = CopingModel::where('user_id', $userId)->get();
 
-ただし、将来管理者ユーザー（`admin_users` テーブル / `admin` ガード）が追加された場合、管理者は `users` テーブルの認証ガードとは別のガードで認証されます。グローバルスコープ内で `auth()->check()` を使うと管理者のコンテキストで意図しない挙動になる可能性があるため、リポジトリ層で明示的に `user_id` フィルタリングする方式を推奨します。
+// user_id を持たないテーブル（tags, coping_tags）→ フィルタリング不要
+$tags = TagModel::all();
+
+// 中間テーブル → 親テーブルの user_id で間接的に制御
+$copingTags = $coping->tags; // coping 自体が user_id でフィルタ済み
+```
 
 ### Phase 6: テスト
 
@@ -483,7 +507,7 @@ class UserScope implements Scope
 | ログイン | 正常系: 正しい認証情報でログイン成功 |
 | ログイン | 異常系: 誤ったパスワード、存在しないメール |
 | ログアウト | 正常系: セッション破棄、ログイン画面にリダイレクト |
-| 退会 | 正常系: パスワード確認後、アカウントと全データ削除 |
+| 退会 | 正常系: パスワード確認後、アカウントがソフトデリートされログイン不可になること |
 | 退会 | 異常系: パスワード不一致で拒否 |
 | API認証 | 認証済み: API にアクセス可能 |
 | API認証 | 未認証: 401 レスポンス |
@@ -614,7 +638,7 @@ echo "作成されたユーザーID: " . $user->id;
 **マイグレーションファイルの実装方針:**
 
 ```php
-// add_user_id_to_all_data_tables マイグレーション内
+// add_user_id_to_user_data_tables マイグレーション内
 
 public function up(): void
 {
@@ -673,8 +697,24 @@ docker compose exec app php artisan tinker
 ```
 
 ```php
-// 各テーブルの user_id が正しく設定されているか確認
-$tables = ['copings', 'columns', 'writing_disclosures', 'problem_solvings', 'simple_notepads'];
+// user_id を追加した全15テーブルの紐付けを確認
+$tables = [
+    'copings',
+    'columns',
+    'writing_disclosures',
+    'problem_solvings',
+    'simple_notepads',
+    'stressor_and_responses',
+    'support_networks',
+    'early_maladaptive_schemas',
+    'schema_mode_monitorings',
+    'safe_places',
+    'chronologies',
+    'mode_maps',
+    'happy_schema_action_plans',
+    'dialogue_works',
+    'healthy_adult_mode_images',
+];
 
 foreach ($tables as $table) {
     $count = DB::table($table)->count();
@@ -685,16 +725,7 @@ foreach ($tables as $table) {
 
 全件が `user_id` 設定済みであることを確認してください。
 
-#### Step 4: ベーシック認証の無効化
-
-`.env` ファイルを編集:
-
-```env
-# 以下を削除または false に変更
-USE_BASIC_AUTH=false
-```
-
-#### Step 5: 動作確認
+#### Step 4: 動作確認
 
 1. ブラウザで `http://localhost:8081` にアクセス
 2. ログイン画面が表示されることを確認
@@ -714,7 +745,7 @@ USE_BASIC_AUTH=false
 | レート制限 | Fortify 標準のログイン試行回数制限（5回/分） |
 | パスワード要件 | `Password::defaults()` による最低要件（8文字以上等） |
 | データアクセス制御 | 全 API で `user_id` によるフィルタリングを徹底 |
-| 退会時のデータ削除 | CASCADE DELETE で漏れなく削除 |
+| 退会処理 | ソフトデリート（論理削除）を使用。データは残り、復旧可能 |
 
 ---
 
@@ -724,7 +755,7 @@ USE_BASIC_AUTH=false
 |---------|------|---------|
 | **Phase 1** | パッケージインストール、設定ファイル | なし |
 | **Phase 2** | DB マイグレーション（user_id追加、既存データ紐付け） | Phase 1 |
-| **Phase 3** | ベーシック認証廃止 | Phase 2 |
+| **Phase 3** | ベーシック認証無効化（コードは残す。本番確認後に削除） | Phase 2 |
 | **Phase 4** | 会員登録・ログイン・ログアウト実装（Fortify） | Phase 3 |
 | **Phase 4.5** | API 認証（Sanctum SPA 認証）適用 | Phase 4 |
 | **Phase 5** | 退会機能実装 | Phase 4 |
@@ -738,7 +769,7 @@ USE_BASIC_AUTH=false
 
 ### 新規作成するファイル
 
-- マイグレーションファイル × 1
+- マイグレーションファイル × 2（users に deleted_at 追加、データテーブルに user_id 追加）
 - Fortify Actions（CreateNewUser, UpdateUserPassword 等）
 - 退会コントローラー、リクエスト、ユースケース
 - 認証関連 Blade ビュー × 5
@@ -748,7 +779,7 @@ USE_BASIC_AUTH=false
 ### 変更するファイル
 
 - `app/Models/User.php` — `$fillable` の確認
-- `bootstrap/app.php` — BasicAuth ミドルウェア削除、Sanctum ミドルウェア追加
+- `bootstrap/app.php` — Sanctum ミドルウェア追加（BasicAuth の削除は本番確認後）
 - `routes/web.php` — 認証ミドルウェアでルートを保護
 - `routes/api.php` — Sanctum ミドルウェアでルートを保護
 - `config/fortify.php` — 機能設定
@@ -757,6 +788,7 @@ USE_BASIC_AUTH=false
 - 全ユースケース — `user_id` の受け渡し追加
 - 全コントローラー — `$request->user()->id` の取得・受け渡し
 
-### 削除するファイル
+### 削除するファイル（本番リリース後、動作確認完了時に実施）
 
 - `app/Http/Middleware/HttpBasicAuth.php`
+- `bootstrap/app.php` 内の `HttpBasicAuth` ミドルウェア登録
