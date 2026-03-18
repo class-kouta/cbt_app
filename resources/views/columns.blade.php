@@ -800,7 +800,7 @@ function columnApp(columnId) {
 
                     if (res.ok) {
                         const data = await res.json();
-                        // 新規作成後は編集モードに切り替え（以降の自動保存は更新になる）
+                        // 新規作成後は編集モードに切り替え（以降の保存は更新になる）
                         this.columnId = data.id;
                         this.isEditMode = true;
                         // URLを編集ページに変更（リロードなし）
@@ -809,7 +809,7 @@ function columnApp(columnId) {
                     }
                 }
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+                console.error('保存に失敗しました:', error);
             }
         },
 

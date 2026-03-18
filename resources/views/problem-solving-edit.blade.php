@@ -678,7 +678,7 @@ function problemSolvingFormApp(itemId) {
                 }
                 this.showSaveNotification(isManual);
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+                console.error('保存に失敗しました:', error);
             }
         },
 
