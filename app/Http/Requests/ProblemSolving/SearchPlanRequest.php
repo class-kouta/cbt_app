@@ -21,6 +21,9 @@ class SearchPlanRequest extends FormRequest
             'keyword' => ['nullable', 'string', 'max:255'],
             'improvement_level_min' => ['nullable', 'integer', 'min:1', 'max:10'],
             'improvement_level_max' => ['nullable', 'integer', 'min:1', 'max:10', 'gte:improvement_level_min'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'filter' => ['nullable', 'string', 'in:all,pending,completed'],
         ];
     }
 
@@ -48,7 +51,10 @@ class SearchPlanRequest extends FormRequest
         return new PlanSearchCriteriaData(
             keyword: $validated['keyword'] ?? null,
             improvementLevelMin: (int) ($validated['improvement_level_min'] ?? PlanSearchCriteriaData::DEFAULT_IMPROVEMENT_LEVEL_MIN),
-            improvementLevelMax: (int) ($validated['improvement_level_max'] ?? PlanSearchCriteriaData::DEFAULT_IMPROVEMENT_LEVEL_MAX)
+            improvementLevelMax: (int) ($validated['improvement_level_max'] ?? PlanSearchCriteriaData::DEFAULT_IMPROVEMENT_LEVEL_MAX),
+            page: (int) ($validated['page'] ?? 1),
+            perPage: (int) ($validated['per_page'] ?? PlanSearchCriteriaData::DEFAULT_PER_PAGE),
+            filter: $validated['filter'] ?? null
         );
     }
 }

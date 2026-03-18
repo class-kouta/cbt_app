@@ -192,7 +192,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
     /**
      * @param PlanSearchCriteriaData $criteria 検索条件
      * @param array<int, string> $searchableColumns キーワード検索対象カラム（計画テーブル内）
-     * @return array<int, array<string, mixed>> 検索結果
+     * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
     public function searchPlans(PlanSearchCriteriaData $criteria, array $searchableColumns): array
     {
@@ -220,9 +220,19 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                 ]);
         }
 
-        return $query->orderByDesc('created_at')
-            ->get()
-            ->map(function ($plan) {
+        if ($criteria->filter === 'pending') {
+            $query->where(function ($q) {
+                $q->whereNull('reflection')->orWhere('reflection', '');
+            });
+        } elseif ($criteria->filter === 'completed') {
+            $query->whereNotNull('reflection')->where('reflection', '!=', '');
+        }
+
+        $paginator = $query->orderByDesc('created_at')
+            ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
+
+        return [
+            'data' => collect($paginator->items())->map(function ($plan) {
                 return [
                     'id' => $plan->id,
                     'problem_solving_id' => $plan->problem_solving_id,
@@ -234,8 +244,14 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                     'created_at' => $plan->created_at->format(DATE_ATOM),
                     'updated_at' => $plan->updated_at->format(DATE_ATOM),
                 ];
-            })
-            ->toArray();
+            })->toArray(),
+            'total' => $paginator->total(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
     }
 
     /**
