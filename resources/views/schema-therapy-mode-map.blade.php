@@ -24,23 +24,6 @@
         保存しました
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- エラートースト -->
     <div
         x-show="showErrorToast"
@@ -252,13 +235,11 @@
         type="button"
         @click="save()"
         :disabled="saving"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
+        class="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl px-5 py-3 shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30 font-bold"
         title="保存する"
     >
         <template x-if="!saving">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
-            </svg>
+            <span>保存</span>
         </template>
         <template x-if="saving">
             <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -289,16 +270,11 @@ function modeMapApp() {
         },
         loading: true,
         saving: false,
-        autoSaving: false,
         isEditing: false,
         showSaveToast: false,
-        showAutoSaveToast: false,
         showErrorToast: false,
         errorMessage: '',
         exporting: false,
-
-        autoSaveInterval: null,
-        autoSaveSnapshots: [],
 
         async init() {
             await this.loadData();
@@ -327,77 +303,18 @@ function modeMapApp() {
 
         startEditing() {
             this.isEditing = true;
-            this.takeSnapshot();
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async saveAndStopEditing() {
-            await this.performSave(true);
+            await this.performSave();
             this.stopEditing();
         },
 
         stopEditing() {
             this.isEditing = false;
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.autoSaveSnapshots = [];
         },
 
-        takeSnapshot() {
-            const snapshot = { ...this.formData };
-            this.autoSaveSnapshots.push(snapshot);
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-            return this.hasValueChanged(this.autoSaveSnapshots[0]);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.formData.wounded_child_mode !== snapshot.wounded_child_mode ||
-                this.formData.hurtful_adult_mode !== snapshot.hurtful_adult_mode ||
-                this.formData.unacceptable_coping_mode !== snapshot.unacceptable_coping_mode ||
-                this.formData.healthy_happy_child_mode !== snapshot.healthy_happy_child_mode ||
-                this.formData.healthy_adult_mode !== snapshot.healthy_adult_mode
-            );
-        },
-
-        async checkAndAutoSave() {
-            if (!this.isEditing) return;
-
-            if (
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.saving &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-            this.takeSnapshot();
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
-            }
-        },
-
-        async performSave(isManual) {
+        async performSave() {
             if (this.saving) return;
 
             this.saving = true;
@@ -428,13 +345,8 @@ function modeMapApp() {
                     this.recordId = data.id;
                     this.originalData = { ...this.formData };
 
-                    if (isManual) {
-                        this.showSaveToast = true;
-                        setTimeout(() => { this.showSaveToast = false; }, 2000);
-                    } else {
-                        this.showAutoSaveToast = true;
-                        setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
-                    }
+                    this.showSaveToast = true;
+                    setTimeout(() => { this.showSaveToast = false; }, 2000);
                 } else {
                     const errorData = await res.json();
                     this.errorMessage = errorData.message || '保存に失敗しました';
@@ -452,7 +364,7 @@ function modeMapApp() {
         },
 
         async save() {
-            await this.performSave(true);
+            await this.performSave();
         },
 
         async exportCsv() {
