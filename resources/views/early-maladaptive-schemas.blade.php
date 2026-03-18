@@ -42,7 +42,6 @@
             </p>
             <p class="text-sm text-gray-600 leading-relaxed mt-2">
                 各スキーマについて、自分がどれくらい「囚われている」と感じるかを0%〜100%で評価してみましょう。
-                30秒ごとに自動保存されます。
             </p>
         </div>
 
@@ -830,9 +829,6 @@ function schemaApp() {
         error: '',
         showSaveToast: false,
         saveToastMessage: '',
-        autoSaveInterval: null,
-        autoSaveSnapshots: [],
-        autoSaving: false,
 
         // %の値に応じた背景色クラスを返す
         getIntensityClass(value) {
@@ -858,12 +854,6 @@ function schemaApp() {
 
         async init() {
             await this.loadSchemas();
-            this.takeSnapshot();
-            
-            // 30秒ごとに自動保存チェック
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadSchemas() {
@@ -889,67 +879,6 @@ function schemaApp() {
                 console.error('データの読み込みに失敗しました:', error);
             } finally {
                 this.loading = false;
-            }
-        },
-
-        takeSnapshot() {
-            const snapshot = { 
-                schemas: { ...this.schemas },
-                experiences: { ...this.experiences },
-                notes: this.notes
-            };
-            this.autoSaveSnapshots.push(snapshot);
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 1) {
-                return false;
-            }
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            // スキーマ値の変更チェック
-            const schemasChanged = Object.keys(this.schemas).some(key => 
-                this.schemas[key] !== oldSnapshot.schemas[key]
-            );
-            // 経験フィールドの変更チェック
-            const experiencesChanged = Object.keys(this.experiences).some(key => 
-                this.experiences[key] !== oldSnapshot.experiences[key]
-            );
-            // 備考欄の変更チェック
-            const notesChanged = this.notes !== oldSnapshot.notes;
-            return schemasChanged || experiencesChanged || notesChanged;
-        },
-
-        hasAnyValue() {
-            const hasSchemaValue = Object.values(this.schemas).some(v => v !== '' && v !== null);
-            const hasExperienceValue = Object.values(this.experiences).some(v => v !== '' && v !== null);
-            const hasNotesValue = this.notes !== '' && this.notes !== null;
-            return hasSchemaValue || hasExperienceValue || hasNotesValue;
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.hasAnyValue() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-            this.takeSnapshot();
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.saveData();
-                this.showNotification('自動保存しました');
-            } catch (error) {
-                console.error('自動保存に失敗しました:', error);
-            } finally {
-                this.autoSaving = false;
             }
         },
 

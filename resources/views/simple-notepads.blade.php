@@ -22,23 +22,6 @@
         保存しました
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- エラートースト -->
     <div
         x-show="showErrorToast"
@@ -189,13 +172,11 @@
         type="button"
         @click="save()"
         :disabled="saving"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
+        class="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl px-5 py-3 shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30 font-bold"
         title="保存する"
     >
         <template x-if="!saving">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
-            </svg>
+            <span>保存</span>
         </template>
         <template x-if="saving">
             <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -220,12 +201,8 @@ function simpleNotepadApp(itemId) {
         saving: false,
         error: '',
         showSaveToast: false,
-        showAutoSaveToast: false,
         showErrorToast: false,
         errorMessage: '',
-
-        autoSaveInterval: null,
-        lastSavedState: null,
 
         async init() {
             if (this.isEditMode) {
@@ -252,13 +229,6 @@ function simpleNotepadApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.lastSavedState = {
-                title: this.formData.title,
-                content: this.formData.content
-            };
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async saveAndStopEditing() {
@@ -268,27 +238,6 @@ function simpleNotepadApp(itemId) {
 
         stopEditing() {
             this.isEditing = false;
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.lastSavedState = null;
-        },
-
-        async checkAndAutoSave() {
-            if (!this.isEditing || this.saving) return;
-
-            const currentState = {
-                title: this.formData.title,
-                content: this.formData.content
-            };
-
-            if (JSON.stringify(currentState) !== JSON.stringify(this.lastSavedState)) {
-                const success = await this.performSave(false);
-                if (success) {
-                    this.lastSavedState = currentState;
-                }
-            }
         },
 
         async performSave(isManual) {
@@ -315,13 +264,8 @@ function simpleNotepadApp(itemId) {
                 });
 
                 if (res.ok) {
-                    if (isManual) {
-                        this.showSaveToast = true;
-                        setTimeout(() => { this.showSaveToast = false; }, 2000);
-                    } else {
-                        this.showAutoSaveToast = true;
-                        setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
-                    }
+                    this.showSaveToast = true;
+                    setTimeout(() => { this.showSaveToast = false; }, 2000);
                     return true;
                 } else {
                     const errorData = await res.json();
@@ -342,13 +286,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            const success = await this.performSave(true);
-            if (success) {
-                this.lastSavedState = {
-                    title: this.formData.title,
-                    content: this.formData.content
-                };
-            }
+            await this.performSave(true);
         },
 
         async createSimpleNotepad() {
