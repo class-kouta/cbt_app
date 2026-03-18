@@ -30,23 +30,6 @@
         <p class="text-gray-500 mt-2 text-sm">読み込み中...</p>
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -167,13 +150,11 @@
                 type="button"
                 @click="manualSave()"
                 :disabled="submitting || floatingSaving || !isFormValid()"
-                class="w-11 h-11 flex-shrink-0 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full shadow-md flex items-center justify-center hover:from-purple-600 hover:to-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-shrink-0 rounded-xl px-4 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md flex items-center justify-center hover:from-purple-600 hover:to-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold"
                 title="保存する"
             >
                 <template x-if="!floatingSaving && !submitting">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
-                    </svg>
+                    <span>保存</span>
                 </template>
                 <template x-if="floatingSaving || submitting">
                     <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -258,27 +239,17 @@ function dialogueWorkEditApp(itemId) {
         loading: false,
         submitting: false,
         error: '',
-        showAutoSaveToast: false,
         showManualSaveToast: false,
         floatingSaving: false,
         showDeleteModal: false,
         deleting: false,
 
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
         _saveInProgress: false,
 
         async init() {
             if (this.isEditMode) {
                 await this.loadItem();
             }
-
-            this.takeSnapshot();
-
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadItem() {
@@ -354,43 +325,6 @@ function dialogueWorkEditApp(itemId) {
             return this.entries.length > 0 && this.entries.some(e => e.text.trim().length > 0);
         },
 
-        getSnapshotString() {
-            return JSON.stringify(this.entries.map(e => ({ type: e.type, text: e.text })));
-        },
-
-        takeSnapshot() {
-            this.autoSaveSnapshots.push(this.getSnapshotString());
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            const current = this.getSnapshotString();
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return current !== this.autoSaveSnapshots[0];
-                }
-                return false;
-            }
-            return current !== this.autoSaveSnapshots[0];
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.isFormValid() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving &&
-                !this.floatingSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            this.takeSnapshot();
-        },
-
         async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
             if (this._saveInProgress) {
                 return;
@@ -440,17 +374,8 @@ function dialogueWorkEditApp(itemId) {
             }
         },
 
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave({ isManual: false });
-            } finally {
-                this.autoSaving = false;
-            }
-        },
-
         async manualSave() {
-            if (this.floatingSaving || this.autoSaving || this.submitting || !this.isFormValid()) return;
+            if (this.floatingSaving || this.submitting || !this.isFormValid()) return;
 
             this.floatingSaving = true;
             try {
@@ -461,17 +386,10 @@ function dialogueWorkEditApp(itemId) {
         },
 
         showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
         },
 
         confirmDelete() {
@@ -490,9 +408,6 @@ function dialogueWorkEditApp(itemId) {
                 });
 
                 if (res.ok || res.status === 204) {
-                    if (this.autoSaveInterval) {
-                        clearInterval(this.autoSaveInterval);
-                    }
                     window.location.href = '/schema-therapy/dialogue-work';
                 } else {
                     this.error = '削除中にエラーが発生しました。';
