@@ -232,7 +232,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async saveAndStopEditing() {
-            await this.performSave(true);
+            await this.performSave();
             this.stopEditing();
         },
 
@@ -240,7 +240,7 @@ function simpleNotepadApp(itemId) {
             this.isEditing = false;
         },
 
-        async performSave(isManual) {
+        async performSave() {
             if (this.saving) return false;
 
             if (!this.formData.content.trim()) {
@@ -286,7 +286,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            await this.performSave(true);
+            await this.performSave();
         },
 
         async createSimpleNotepad() {

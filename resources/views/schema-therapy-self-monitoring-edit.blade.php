@@ -223,7 +223,7 @@ function selfMonitoringEditApp(itemId) {
             return this.content.trim().length > 0;
         },
 
-        async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
+        async performSave({ redirectOnSuccess = false } = {}) {
             if (this._saveInProgress) {
                 return;
             }
@@ -261,7 +261,7 @@ function selfMonitoringEditApp(itemId) {
                     return;
                 }
 
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
                 if (redirectOnSuccess) {
                     this.error = error.message;
@@ -277,13 +277,13 @@ function selfMonitoringEditApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave({ isManual: true });
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;
@@ -304,7 +304,7 @@ function selfMonitoringEditApp(itemId) {
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            await this.performSave({ isManual: true, redirectOnSuccess: true });
+            await this.performSave({ redirectOnSuccess: true });
         },
 
         confirmDelete() {

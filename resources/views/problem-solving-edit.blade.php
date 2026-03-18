@@ -612,7 +612,7 @@ function problemSolvingFormApp(itemId) {
 
             this.submitting = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
@@ -665,7 +665,7 @@ function problemSolvingFormApp(itemId) {
             return true;
         },
 
-        async performSave(isManual = false) {
+        async performSave() {
             if (!this.validateSolutions()) {
                 return;
             }
@@ -676,7 +676,7 @@ function problemSolvingFormApp(itemId) {
                 } else {
                     await this.saveNewItem();
                 }
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
             }
@@ -687,13 +687,13 @@ function problemSolvingFormApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;

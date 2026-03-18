@@ -771,7 +771,7 @@ function columnApp(columnId) {
         },
 
         // 共通の保存処理
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.columnId) {
                     // 既存コラムの更新
@@ -785,7 +785,7 @@ function columnApp(columnId) {
                     });
 
                     if (res.ok) {
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 } else {
                     // 新規作成
@@ -805,7 +805,7 @@ function columnApp(columnId) {
                         this.isEditMode = true;
                         // URLを編集ページに変更（リロードなし）
                         history.replaceState(null, '', `/columns/${this.columnId}/edit`);
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 }
             } catch (error) {
@@ -819,13 +819,13 @@ function columnApp(columnId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;

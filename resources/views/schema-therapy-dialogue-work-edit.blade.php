@@ -325,7 +325,7 @@ function dialogueWorkEditApp(itemId) {
             return this.entries.length > 0 && this.entries.some(e => e.text.trim().length > 0);
         },
 
-        async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
+        async performSave({ redirectOnSuccess = false } = {}) {
             if (this._saveInProgress) {
                 return;
             }
@@ -363,7 +363,7 @@ function dialogueWorkEditApp(itemId) {
                     return;
                 }
 
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
                 if (redirectOnSuccess) {
                     this.error = error.message;
@@ -379,13 +379,13 @@ function dialogueWorkEditApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave({ isManual: true });
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;

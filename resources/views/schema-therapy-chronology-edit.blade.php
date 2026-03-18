@@ -289,7 +289,7 @@ function chronologyEditApp(itemId) {
             return this.formData.when_period.trim();
         },
 
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
                     const res = await fetch(`/api/chronologies/${this.itemId}`, {
@@ -302,7 +302,7 @@ function chronologyEditApp(itemId) {
                     });
 
                     if (res.ok) {
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 } else {
                     const res = await fetch('/api/chronologies', {
@@ -319,7 +319,7 @@ function chronologyEditApp(itemId) {
                         this.itemId = data.id;
                         this.isEditMode = true;
                         history.replaceState(null, '', `/schema-therapy/chronology/${this.itemId}/edit`);
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 }
             } catch (error) {
@@ -332,13 +332,13 @@ function chronologyEditApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;

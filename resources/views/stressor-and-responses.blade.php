@@ -817,7 +817,7 @@ function stressorApp(itemId) {
         },
 
         // 共通の保存処理
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
                     // 既存データの更新
@@ -831,7 +831,7 @@ function stressorApp(itemId) {
                     });
 
                     if (res.ok) {
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 } else {
                     // 新規作成
@@ -849,7 +849,7 @@ function stressorApp(itemId) {
                         this.itemId = data.id;
                         this.isEditMode = true;
                         history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 }
             } catch (error) {
@@ -863,13 +863,13 @@ function stressorApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
+        showSaveNotification() {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;
