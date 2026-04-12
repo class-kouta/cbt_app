@@ -448,6 +448,42 @@
                             </div>
                         </div>
 
+                        <!-- 会員メニュー -->
+                        <div class="border-b border-gray-500/30" x-data="authMenu()" x-init="init()">
+                            <template x-if="isLoggedIn">
+                                <div>
+                                    <div class="flex items-center gap-3 px-6 py-3 text-gray-700">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                        </svg>
+                                        <span class="font-medium text-lg truncate" x-text="memberName"></span>
+                                    </div>
+                                    <button
+                                        @click="logout()"
+                                        class="flex items-center gap-3 w-full pl-10 pr-6 py-3 text-red-600 hover:bg-white/40 transition-colors"
+                                    >
+                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                        </svg>
+                                        <span class="text-base">ログアウト</span>
+                                    </button>
+                                </div>
+                            </template>
+                            <template x-if="!isLoggedIn">
+                                <div>
+                                    <a href="/login" class="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                        </svg>
+                                        <span class="font-medium text-lg">ログイン</span>
+                                    </a>
+                                    <a href="/register" class="flex items-center gap-3 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">会員登録</span>
+                                    </a>
+                                </div>
+                            </template>
+                        </div>
+
                     </nav>
                 </div>
             </div>
@@ -470,6 +506,46 @@
             </div>
         </div>
     </footer>
+
+    <!-- 認証メニュー共通関数 -->
+    <script>
+    function authMenu() {
+        return {
+            isLoggedIn: false,
+            memberName: '',
+
+            init() {
+                const token = localStorage.getItem('auth_token');
+                const name = localStorage.getItem('member_name');
+                if (token && name) {
+                    this.isLoggedIn = true;
+                    this.memberName = name;
+                }
+            },
+
+            async logout() {
+                const token = localStorage.getItem('auth_token');
+                if (token) {
+                    try {
+                        await fetch('/api/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Authorization': 'Bearer ' + token,
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                        });
+                    } catch (e) {
+                        // API失敗してもローカルはクリアする
+                    }
+                }
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('member_name');
+                window.location.href = '/login';
+            },
+        };
+    }
+    </script>
 
     <!-- 共通CSVエクスポート関数 -->
     <script>

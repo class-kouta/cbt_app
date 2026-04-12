@@ -6,6 +6,15 @@ Route::get('/', function () {
     return view('home');
 });
 
+// 会員認証ページ
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::get('/register', function () {
+    return view('auth.register');
+});
+
 // コーピングリストページ
 Route::get('/copings', function () {
     return view('copings');

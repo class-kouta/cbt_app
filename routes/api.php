@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ChronologyController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
@@ -20,6 +21,17 @@ use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
+
+// Member Auth API（会員認証）
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+    });
+});
 
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
