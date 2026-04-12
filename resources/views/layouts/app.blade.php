@@ -514,33 +514,38 @@
             isLoggedIn: false,
             memberName: '',
 
-            init() {
-                const token = localStorage.getItem('auth_token');
-                const name = localStorage.getItem('member_name');
-                if (token && name) {
-                    this.isLoggedIn = true;
-                    this.memberName = name;
+            async init() {
+                try {
+                    const res = await fetch('/api/auth/me', {
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        this.isLoggedIn = true;
+                        this.memberName = data.member.name;
+                    }
+                } catch (e) {
+                    // 未認証の場合は何もしない
                 }
             },
 
             async logout() {
-                const token = localStorage.getItem('auth_token');
-                if (token) {
-                    try {
-                        await fetch('/api/auth/logout', {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Authorization': 'Bearer ' + token,
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                        });
-                    } catch (e) {
-                        // API失敗してもローカルはクリアする
-                    }
+                try {
+                    await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-XSRF-TOKEN': decodeURIComponent(
+                                document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
+                            ),
+                        },
+                    });
+                } catch (e) {
+                    // API失敗してもリダイレクトする
                 }
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('member_name');
                 window.location.href = '/login';
             },
         };

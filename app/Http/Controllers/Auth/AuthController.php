@@ -10,8 +10,10 @@ use App\Application\UseCase\Auth\RegisterUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\MemberResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -25,17 +27,14 @@ class AuthController extends Controller
             password: $request->validated('password'),
         );
 
-        $result = $useCase->handle($data);
+        $member = $useCase->handle($data);
 
-        return response()->json([
-            'member' => [
-                'id' => $result['member']->id,
-                'name' => $result['member']->name,
-                'email' => $result['member']->email,
-                'created_at' => $result['member']->created_at->format(DATE_ATOM),
-            ],
-            'token' => $result['token'],
-        ], 201);
+        Auth::guard('web')->login($member);
+        $request->session()->regenerate();
+
+        return (new MemberResource($member))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function login(
@@ -47,24 +46,23 @@ class AuthController extends Controller
             password: $request->validated('password'),
         );
 
-        $result = $useCase->handle($data);
+        $member = $useCase->handle($data);
 
-        return response()->json([
-            'member' => [
-                'id' => $result['member']->id,
-                'name' => $result['member']->name,
-                'email' => $result['member']->email,
-                'created_at' => $result['member']->created_at->format(DATE_ATOM),
-            ],
-            'token' => $result['token'],
-        ]);
+        Auth::guard('web')->login($member);
+        $request->session()->regenerate();
+
+        return (new MemberResource($member))
+            ->response();
     }
 
     public function logout(
         Request $request,
         LogoutUseCase $useCase,
     ): JsonResponse {
-        $useCase->handle($request->user());
+        $useCase->handle();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'ログアウトしました',
@@ -73,15 +71,7 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        $member = $request->user();
-
-        return response()->json([
-            'member' => [
-                'id' => $member->id,
-                'name' => $member->name,
-                'email' => $member->email,
-                'created_at' => $member->created_at->format(DATE_ATOM),
-            ],
-        ]);
+        return (new MemberResource($request->user()))
+            ->response();
     }
 }

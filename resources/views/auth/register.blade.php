@@ -153,12 +153,17 @@ function registerApp() {
             this.loading = true;
 
             try {
+                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
+
                 const res = await fetch('/api/auth/register', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-XSRF-TOKEN': decodeURIComponent(
+                            document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
+                        ),
                     },
                     body: JSON.stringify(this.form),
                 });
@@ -172,9 +177,6 @@ function registerApp() {
                     this.generalError = data.message || '登録に失敗しました';
                     return;
                 }
-
-                localStorage.setItem('auth_token', data.token);
-                localStorage.setItem('member_name', data.member.name);
 
                 window.location.href = '/';
             } catch (e) {

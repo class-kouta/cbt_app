@@ -3,23 +3,22 @@
 namespace App\Application\UseCase\Auth;
 
 use App\Application\DTO\Auth\RegisterData;
+use App\Domain\Repository\MemberRepositoryInterface;
 use App\Models\Member;
 
 class RegisterUseCase
 {
-    public function handle(RegisterData $data): array
+    public function __construct(
+        private readonly MemberRepositoryInterface $memberRepository,
+    ) {
+    }
+
+    public function handle(RegisterData $data): Member
     {
-        $member = Member::create([
+        return $this->memberRepository->create([
             'name' => $data->name,
             'email' => $data->email,
             'password' => $data->password,
         ]);
-
-        $token = $member->createToken('member-token')->plainTextToken;
-
-        return [
-            'member' => $member,
-            'token' => $token,
-        ];
     }
 }

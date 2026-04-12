@@ -2,12 +2,12 @@
 
 namespace App\Application\UseCase\Auth;
 
-use App\Models\Member;
+use Illuminate\Support\Facades\Auth;
 
 class LogoutUseCase
 {
-    public function handle(Member $member): void
+    public function handle(): void
     {
-        $member->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
     }
 }

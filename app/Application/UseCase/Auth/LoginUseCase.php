@@ -3,15 +3,21 @@
 namespace App\Application\UseCase\Auth;
 
 use App\Application\DTO\Auth\LoginData;
+use App\Domain\Repository\MemberRepositoryInterface;
 use App\Models\Member;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class LoginUseCase
 {
-    public function handle(LoginData $data): array
+    public function __construct(
+        private readonly MemberRepositoryInterface $memberRepository,
+    ) {
+    }
+
+    public function handle(LoginData $data): Member
     {
-        $member = Member::where('email', $data->email)->first();
+        $member = $this->memberRepository->findByEmail($data->email);
 
         if (! $member || ! Hash::check($data->password, $member->password)) {
             throw ValidationException::withMessages([
@@ -19,12 +25,6 @@ class LoginUseCase
             ]);
         }
 
-        $member->tokens()->delete();
-        $token = $member->createToken('member-token')->plainTextToken;
-
-        return [
-            'member' => $member,
-            'token' => $token,
-        ];
+        return $member;
     }
 }
