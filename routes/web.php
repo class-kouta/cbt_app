@@ -15,6 +15,10 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::get('/verify-email', function () {
+    return view('auth.verify-email');
+})->name('verification.notice');
+
 // コーピングリストページ
 Route::get('/copings', function () {
     return view('copings');

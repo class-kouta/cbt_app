@@ -7,6 +7,11 @@ use App\Models\Member;
 
 class EloquentMemberRepository implements MemberRepositoryInterface
 {
+    public function findById(int $id): ?Member
+    {
+        return Member::find($id);
+    }
+
     public function findByEmail(string $email): ?Member
     {
         return Member::where('email', $email)->first();

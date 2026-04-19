@@ -16,12 +16,16 @@ class RegisterUseCase
 
     public function handle(RegisterData $data): Member
     {
-        return DB::transaction(function () use ($data) {
+        $member = DB::transaction(function () use ($data) {
             return $this->memberRepository->create([
                 'name' => $data->name,
                 'email' => $data->email,
                 'password' => $data->password,
             ]);
         });
+
+        $member->sendEmailVerificationNotification();
+
+        return $member;
     }
 }

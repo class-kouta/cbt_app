@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\Auth;
 
 use App\Application\DTO\Auth\LoginData;
+use App\Application\Exception\EmailNotVerifiedException;
 use App\Domain\Repository\MemberRepositoryInterface;
 use App\Models\Member;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,10 @@ class LoginUseCase
     ) {
     }
 
+    /**
+     * @throws ValidationException
+     * @throws EmailNotVerifiedException
+     */
     public function handle(LoginData $data): Member
     {
         $member = $this->memberRepository->findByEmail($data->email);
@@ -23,6 +28,10 @@ class LoginUseCase
             throw ValidationException::withMessages([
                 'email' => ['メールアドレスまたはパスワードが正しくありません。'],
             ]);
+        }
+
+        if (! $member->hasVerifiedEmail()) {
+            throw new EmailNotVerifiedException($data->email);
         }
 
         return $member;

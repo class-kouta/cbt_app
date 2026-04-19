@@ -22,6 +22,18 @@
             <p class="text-sm text-gray-500 mt-1">アカウント情報を入力してください</p>
         </div>
 
+        <!-- メール認証完了メッセージ -->
+        <template x-if="verified">
+            <div class="mb-4 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-green-700 text-sm font-medium">メール認証が完了しました！ログインしてください。</p>
+                </div>
+            </div>
+        </template>
+
         <form @submit.prevent="login()">
             <!-- メールアドレス -->
             <div class="mb-4">
@@ -71,8 +83,31 @@
             </div>
 
             <!-- エラーメッセージ -->
-            <div x-show="generalError" class="mb-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            <div x-show="generalError && !emailNotVerified" class="mb-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
                 <p class="text-red-600 text-sm" x-text="generalError"></p>
+            </div>
+
+            <!-- メール未認証メッセージ -->
+            <div x-show="emailNotVerified" class="mb-4 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+                <div class="flex items-start gap-2 mb-3">
+                    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm text-amber-700" x-text="generalError"></p>
+                </div>
+                <button
+                    type="button"
+                    @click="resendVerification()"
+                    class="w-full bg-amber-500 text-white py-2 px-4 rounded-lg text-sm font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
+                    :disabled="resending || resendCooldown > 0"
+                >
+                    <span x-show="!resending && resendCooldown <= 0">確認メールを再送する</span>
+                    <span x-show="!resending && resendCooldown > 0" x-text="resendCooldown + '秒後に再送できます'"></span>
+                    <span x-show="resending">送信中...</span>
+                </button>
+                <div x-show="resendSuccess" class="mt-2">
+                    <p class="text-green-600 text-sm" x-text="resendSuccess"></p>
+                </div>
             </div>
 
             <!-- ログインボタン -->
@@ -113,10 +148,17 @@ function loginApp() {
         generalError: '',
         loading: false,
         showPassword: false,
+        emailNotVerified: false,
+        resending: false,
+        resendCooldown: 0,
+        resendSuccess: '',
+        verified: new URLSearchParams(window.location.search).has('verified'),
 
         async login() {
             this.errors = {};
             this.generalError = '';
+            this.emailNotVerified = false;
+            this.resendSuccess = '';
             this.loading = true;
 
             try {
@@ -138,6 +180,11 @@ function loginApp() {
                 const data = await res.json();
 
                 if (!res.ok) {
+                    if (data.email_not_verified) {
+                        this.emailNotVerified = true;
+                        this.generalError = data.message;
+                        return;
+                    }
                     if (data.errors) {
                         this.errors = data.errors;
                     }
@@ -151,6 +198,48 @@ function loginApp() {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async resendVerification() {
+            this.resending = true;
+            this.resendSuccess = '';
+
+            try {
+                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
+
+                const res = await fetch('/api/auth/email/resend', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-XSRF-TOKEN': decodeURIComponent(
+                            document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
+                        ),
+                    },
+                    body: JSON.stringify({ email: this.form.email }),
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    this.resendSuccess = data.message;
+                    this.startResendCooldown();
+                }
+            } catch (e) {
+                // エラー時は何もしない
+            } finally {
+                this.resending = false;
+            }
+        },
+
+        startResendCooldown() {
+            this.resendCooldown = 60;
+            const timer = setInterval(() => {
+                this.resendCooldown--;
+                if (this.resendCooldown <= 0) {
+                    clearInterval(timer);
+                }
+            }, 1000);
         },
     };
 }
