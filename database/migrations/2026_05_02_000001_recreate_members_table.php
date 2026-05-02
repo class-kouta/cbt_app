@@ -50,6 +50,20 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::hasTable('sessions')) {
+            if (Schema::hasColumn('sessions', 'member_id')) {
+                Schema::table('sessions', function (Blueprint $table) {
+                    $table->dropColumn('member_id');
+                });
+            }
+
+            if (! Schema::hasColumn('sessions', 'user_id')) {
+                Schema::table('sessions', function (Blueprint $table) {
+                    $table->foreignId('user_id')->nullable()->after('id')->index();
+                });
+            }
+        }
+
         Schema::dropIfExists('members');
     }
 };
