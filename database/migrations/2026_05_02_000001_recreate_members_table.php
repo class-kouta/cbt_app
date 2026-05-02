@@ -9,16 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * `0001_01_01_000000_create_users_table.php` を `members` を作る形に直接書き換えてしまったため、
-     * 既にマイグレーション済みの環境（本番）には `users` テーブルしか存在しない。
-     * 既存データは保持不要なので、`users` を破棄して `members` を作り直す。
+     * `users` テーブルを破棄して `members` テーブルを新規作成する。
+     * 併せて `sessions.user_id` を `member_id` にリネームする。
      *
-     * 新規環境（既に `members` がある場合）でも冪等に動くよう、`dropIfExists` してから作り直す。
+     * 既存環境（本番: 旧 `0001` で `users` 作成済み）／新規環境（修正後 `0001` で `users` 作成）の
+     * いずれでも `users` が存在する前提で動作する。
      */
     public function up(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('members');
 
         Schema::create('members', function (Blueprint $table) {
             $table->id();
@@ -30,19 +29,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        if (Schema::hasTable('sessions')) {
-            if (Schema::hasColumn('sessions', 'user_id')) {
-                Schema::table('sessions', function (Blueprint $table) {
-                    $table->dropColumn('user_id');
-                });
-            }
-
-            if (! Schema::hasColumn('sessions', 'member_id')) {
-                Schema::table('sessions', function (Blueprint $table) {
-                    $table->foreignId('member_id')->nullable()->after('id')->index();
-                });
-            }
-        }
+        Schema::table('sessions', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+            $table->foreignId('member_id')->nullable()->after('id')->index();
+        });
     }
 
     /**
@@ -50,19 +40,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasTable('sessions')) {
-            if (Schema::hasColumn('sessions', 'member_id')) {
-                Schema::table('sessions', function (Blueprint $table) {
-                    $table->dropColumn('member_id');
-                });
-            }
-
-            if (! Schema::hasColumn('sessions', 'user_id')) {
-                Schema::table('sessions', function (Blueprint $table) {
-                    $table->foreignId('user_id')->nullable()->after('id')->index();
-                });
-            }
-        }
+        Schema::table('sessions', function (Blueprint $table) {
+            $table->dropColumn('member_id');
+            $table->foreignId('user_id')->nullable()->after('id')->index();
+        });
 
         Schema::dropIfExists('members');
 
