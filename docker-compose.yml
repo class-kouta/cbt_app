@@ -35,5 +35,13 @@ services:
     volumes:
       - cbt_db_data:/var/lib/postgresql/data
 
+  # Mailpit (mail) サービス - ローカル開発用メールサーバー
+  mail:
+    container_name: cbt-mail
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
 volumes:
   cbt_db_data:
