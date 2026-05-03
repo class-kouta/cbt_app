@@ -3,6 +3,81 @@
 最終決定したテーブル構成をまとめた DB 定義書です。スマートフォンでも読みやすいよう、各カラムはリスト形式で記述しています。
 
 ---
+## Laravel標準テーブル
+
+### users（ユーザー）
+- id — bigint, 主キー
+- name — varchar(255), NOT NULL
+- email — varchar(255), UNIQUE, NOT NULL
+- email_verified_at — timestamp, NULL可
+- password — varchar(255), NOT NULL
+- remember_token — varchar(100), NULL可
+- created_at / updated_at — timestamp
+
+---
+### password_reset_tokens（パスワードリセットトークン）
+- email — varchar(255), 主キー
+- token — varchar(255), NOT NULL
+- created_at — timestamp, NULL可
+
+---
+### sessions（セッション）
+- id — varchar(255), 主キー
+- user_id — bigint, NULL可, インデックス
+- ip_address — varchar(45), NULL可
+- user_agent — text, NULL可
+- payload — longtext, NOT NULL
+- last_activity — integer, インデックス
+
+---
+### cache（キャッシュ）
+- key — varchar(255), 主キー
+- value — mediumtext, NOT NULL
+- expiration — integer, NOT NULL
+
+---
+### cache_locks（キャッシュロック）
+- key — varchar(255), 主キー
+- owner — varchar(255), NOT NULL
+- expiration — integer, NOT NULL
+
+---
+### jobs（キュー）
+- id — bigint, 主キー
+- queue — varchar(255), インデックス, NOT NULL
+- payload — longtext, NOT NULL
+- attempts — unsigned tinyint, NOT NULL
+- reserved_at — unsigned integer, NULL可
+- available_at — unsigned integer, NOT NULL
+- created_at — unsigned integer, NOT NULL
+
+---
+### job_batches（ジョブバッチ）
+- id — varchar(255), 主キー
+- name — varchar(255), NOT NULL
+- total_jobs — integer, NOT NULL
+- pending_jobs — integer, NOT NULL
+- failed_jobs — integer, NOT NULL
+- failed_job_ids — longtext, NOT NULL
+- options — mediumtext, NULL可
+- cancelled_at — integer, NULL可
+- created_at — integer, NOT NULL
+- finished_at — integer, NULL可
+
+---
+### failed_jobs（失敗ジョブ）
+- id — bigint, 主キー
+- uuid — varchar(255), UNIQUE, NOT NULL
+- connection — text, NOT NULL
+- queue — text, NOT NULL
+- payload — longtext, NOT NULL
+- exception — longtext, NOT NULL
+- failed_at — timestamp, NOT NULL, DEFAULT CURRENT_TIMESTAMP
+
+---
+## アプリケーションテーブル
+
+---
 ## coping_tags（コーピング専用タグ）
 - id — bigint, 主キー
 - name — varchar(50), UNIQUE, NOT NULL
@@ -70,7 +145,6 @@
 - action_plan — text, NULL可（実行計画）
 - reflection — text, NULL可（振り返り）
 - improvement_level — unsigned tinyint, NULL可（改善レベル 1-10）
-
 - created_at / updated_at — timestamp
 
 ユニーク制約:
@@ -140,7 +214,6 @@
 - セルフモニタリングを通じて、自分の内面への理解を深める
 
 ---
----
 ## early_maladaptive_schemas（早期不適応スキーマ）
 - id — bigint, 主キー
 
@@ -180,8 +253,6 @@
 - 30秒ごとに自動保存し、ユーザーの入力を保持
 
 ---
-
----
 ## tags（汎用タグ）
 - id — bigint, 主キー
 - name — varchar(50), UNIQUE, NOT NULL
@@ -210,8 +281,6 @@
 - tag_id — bigint, 複合主キー, 外部キー → tags.id
 
 ---
-
----
 ## dialogue_works（対話ワーク）
 - id — bigint, 主キー
 - type — varchar(20), NOT NULL, DEFAULT 'schema'（対話ワーク種別: schema or mode）
@@ -235,6 +304,7 @@
 ---
 
 ### 補足メモ
+- Laravel標準テーブルとして、ユーザー認証、パスワードリセット、セッション、キャッシュ、キュー関連のテーブルを追記しました。
 - `coping_coping_tag` は複合主キー (coping_id, coping_tag_id) で重複登録を防止します。
 - copingsのタグは独立して管理されます（`coping_tags`テーブル）。
 - `tags` は汎用タグとして、ストレッサー、コラム法、問題解決法で共通利用されます。
