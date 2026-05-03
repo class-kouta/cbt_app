@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ヘルシーサイドとスキーマサイドの対話のワーク - ココロの避難所')
+@section('title', 'ヘルシーサイドとスキーマサイドの対話のワーク - ココケア')
 @section('page-title', '対話のワーク')
 
 @section('content')

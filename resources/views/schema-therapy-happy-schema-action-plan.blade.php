@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ハッピースキーマと行動計画 - ココロの避難所')
+@section('title', 'ハッピースキーマと行動計画 - ココケア')
 @section('page-title', 'ハッピースキーマと行動計画')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')

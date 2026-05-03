@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'マインドフルネス瞑想 - ココロの避難所')
+@section('title', 'マインドフルネス瞑想 - ココケア')
 @section('page-title', 'マインドフルネス瞑想')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')

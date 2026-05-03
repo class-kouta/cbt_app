@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '会員登録 - ココロの避難所')
+@section('title', '会員登録 - ココケア')
 @section('page-title', '会員登録')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')

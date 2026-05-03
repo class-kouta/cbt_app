@@ -2,7 +2,7 @@
     {{-- Header --}}
     <x-slot:header>
         <x-mail::header :url="config('app.url')">
-            ココロの避難所
+            ココケア
         </x-mail::header>
     </x-slot:header>
 
@@ -21,7 +21,7 @@
     {{-- Footer --}}
     <x-slot:footer>
         <x-mail::footer>
-            © {{ date('Y') }} ココロの避難所
+            © {{ date('Y') }} ココケア
         </x-mail::footer>
     </x-slot:footer>
 </x-mail::layout>
