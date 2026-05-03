@@ -38,11 +38,12 @@
 
 ### 手順
 
-#### 1. HerokuをBasicプラン（月額$7）以上にアップグレードする
-Herokuで独自ドメインを「HTTPS（暗号化された安全な通信）」で動かすには、**HerokuのBasicプラン以上が必須**です（無料プランやEcoプランではSSL証明書が自動発行されません）。
+#### 1. HerokuをEcoプラン（月額$5）以上にする
+Herokuで独自ドメインを「HTTPS（暗号化された安全な通信）」で動かすには、**HerokuのEcoプラン以上**が必要です（2024年8月6日以降、Ecoプランでも自動SSL証明書管理 ACM が利用可能になりました）。
 
 *   Herokuのダッシュボードで対象アプリを開き、**[Resources]** タブの `Change Dyno Type` などからプラン変更画面に進みます。
-*   `Basic`プラン（月額 $7）以上を選択してアップグレードします。
+*   `Eco`プラン（月額 $5）以上を選択します。
+*   ※常時稼働させたい場合は `Basic`プラン（月額 $7）以上推奨。Ecoはスリープあり。
 
 #### 2. Herokuにドメインを登録する
 *   Herokuのダッシュボードでアプリの **[Settings]** タブを開きます。
@@ -50,8 +51,43 @@ Herokuで独自ドメインを「HTTPS（暗号化された安全な通信）」
 *   ステップ1で取得したドメイン（例: `your-app.com` または `www.your-app.com`）を入力してNext。
 *   画面に **「DNS Target」** という文字列（例: `whispering-willow-xxxx.herokudns.com`）が表示されるので、これをコピーします。
 
-#### 3. XserverのDNSにCNAMEレコードを設定する
-独自ドメインへのアクセスをHerokuへ流すための設定を行います。
+#### 3. 【超重要】ネームサーバーがどこを向いているか確認する
+
+DNSレコードを設定する前に、**そのドメインを管理しているネームサーバー（NS）がどこを向いているか**を必ず確認してください。ここを間違えると、いくらDNSレコードを設定しても永遠に世界に反映されません。
+
+##### 3-1. 現在のネームサーバーを確認する
+ターミナルで以下のコマンドを実行します。
+
+```bash
+dig NS あなたのドメイン.com +short
+```
+
+返ってくる結果によって、設定すべき場所が変わります。
+
+| 返ってきた値 | 意味 | DNSレコード設定すべき場所 |
+| :--- | :--- | :--- |
+| `ns1〜ns5.xdomain.ne.jp` | **Xserverドメイン側** が管理 | Xserverドメインの「ドメイン管理パネル」 |
+| `ns1〜ns5.xserver.jp` | **Xserverレンタルサーバー側** が管理 | Xserverアカウントの「サーバーパネル」 |
+
+##### 3-2. レンタルサーバーを契約していないのに `ns1〜ns5.xserver.jp` になっていた場合
+Xserverドメイン取得時のキャンペーン等で、自動的にレンタルサーバー側のNSが設定されているケースがあります。レンタルサーバーを使わない場合は、以下の手順でネームサーバーをXserverドメイン側（`ns1〜ns5.xdomain.ne.jp`）に戻します。
+
+1.  [Xserverアカウント](https://secure.xserver.ne.jp/xapanel/login/xdomain/) にログイン
+2.  上部メニューから「**ドメイン**」 → 「**契約管理**」（または「ご契約一覧」）を開く
+3.  対象のドメイン名をクリックして「**ドメイン詳細**」を開く
+4.  「ネームサーバー情報」セクションにある「**ネームサーバーの確認・変更**」をクリック
+5.  「**その他のサービスで利用する**」を選択し、以下を入力して保存
+    ```
+    ネームサーバー1: ns1.xdomain.ne.jp
+    ネームサーバー2: ns2.xdomain.ne.jp
+    ネームサーバー3: ns3.xdomain.ne.jp
+    ネームサーバー4: ns4.xdomain.ne.jp
+    ネームサーバー5: ns5.xdomain.ne.jp
+    ```
+6.  ※ネームサーバー変更の反映には**最大72時間**かかる場合があります（実際は数分〜数時間で反映されることがほとんど）。
+
+#### 4. XserverのDNSにCNAMEレコードを設定する
+ネームサーバーが正しく向いていることを確認したら、独自ドメインへのアクセスをHerokuへ流すための設定を行います。
 
 *   Xserverドメインの「[ドメイン管理パネル](https://secure.xserver.ne.jp/xapanel/login/xdomain/)」にログインし、対象ドメインの「DNSレコード設定」を開きます。
 *   以下のレコードを追加します。
@@ -59,8 +95,44 @@ Herokuで独自ドメインを「HTTPS（暗号化された安全な通信）」
     *   タイプ: **`CNAME`**
     *   値: **コピーしたHerokuのDNS Target**
 
-#### 4. SSL（HTTPS）が反映されるのを待つ
-*   設定後、少し待つとHeroku側の自動SSL機能（ACM）が働き、`https://あなたのドメイン.com` で自分のLaravelアプリが表示されるようになります（DNSの反映には数分〜最大数時間かかる場合があります）。
+#### 5. DNSの反映状況を確認する
+設定後、以下のコマンドで世界中のDNSサーバーから見えているか確認できます。
+
+```bash
+dig あなたのドメイン.com @8.8.8.8 +short  # Google DNSから問い合わせ
+dig あなたのドメイン.com @1.1.1.1 +short  # Cloudflare DNSから問い合わせ
+dig +trace あなたのドメイン.com           # ルートから辿って委任の流れを確認
+```
+
+GUIで確認したい場合は以下が便利です。
+*   [whatsmydns.net](https://www.whatsmydns.net/) - 世界中のDNSサーバーから一気に伝播チェック
+*   [dnschecker.org](https://dnschecker.org/) - 同じく伝播確認系
+
+#### 6. SSL（HTTPS）を有効化する
+**重要：HerokuのACM（Automated Certificate Management）は、デフォルトで無効になっている場合があります**。手動で有効化が必要です。
+
+##### 6-1. ACMの状態を確認
+```bash
+heroku certs:auto --app あなたのアプリ名
+```
+出力に `Automatic Certificate Management is disabled on ...` と表示されたらACMが無効化されています。
+
+##### 6-2. ACMを有効化
+```bash
+heroku certs:auto:enable --app あなたのアプリ名
+```
+これでLet's Encryptが自動で証明書を発行してくれます（**5〜30分程度**かかります）。
+
+##### 6-3. 証明書発行状況を確認
+```bash
+heroku certs:auto --app あなたのアプリ名
+```
+`Status: Cert issued` になれば発行完了！  
+`https://あなたのドメイン.com` でブラウザからアクセスできるようになります。
+
+> ⚠️ **ACMでよくあるエラー**
+> - `DNS Verification Failed`: DNSがまだ伝播していない or CNAMEが正しくない
+> - `Failing`: 数分待ってから `heroku certs:auto:refresh --app アプリ名` で再試行
 
 > **メモ**: Laravel側の `APP_URL` 環境変数の更新は、メール用の環境変数とまとめて**ステップ4**で行います。
 
