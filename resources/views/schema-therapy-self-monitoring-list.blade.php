@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'セルフモニタリング一覧 - ココロの避難所')
+@section('title', 'セルフモニタリング一覧 - ' . config('app.name'))
 @section('page-title', 'セルフモニタリング')
 
 @section('content')

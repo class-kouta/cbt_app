@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'モードマップ(簡易版) - ココロの避難所')
+@section('title', 'モードマップ(簡易版) - ' . config('app.name'))
 @section('page-title', 'モードマップ(簡易版)')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')

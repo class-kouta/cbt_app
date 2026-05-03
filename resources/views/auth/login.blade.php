@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ログイン - ココロの避難所')
+@section('title', 'ログイン - ' . config('app.name'))
 @section('page-title', 'ログイン')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')
