@@ -502,7 +502,7 @@
     <footer class="footer-bg text-gray-700 shadow-inner mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="text-center text-sm">
-                <p>&copy; {{ date('Y') }} ココケア</p>
+                <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
             </div>
         </div>
     </footer>

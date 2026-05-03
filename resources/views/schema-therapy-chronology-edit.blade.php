@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '年表作成 - ココケア')
+@section('title', '年表作成 - ' . config('app.name'))
 @section('page-title', '年表')
 
 @section('content')

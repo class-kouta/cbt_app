@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ヘルシーな大人モードのイメージ - ココケア')
+@section('title', 'ヘルシーな大人モードのイメージ - ' . config('app.name'))
 @section('page-title', 'ヘルシーな大人モードのイメージ')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')

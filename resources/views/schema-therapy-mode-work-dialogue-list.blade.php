@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'モードワーク 対話のワーク - ココケア')
+@section('title', 'モードワーク 対話のワーク - ' . config('app.name'))
 @section('page-title', '対話のワーク')
 
 @section('content')

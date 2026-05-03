@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ヘルシーサイドとスキーマサイドの対話のワーク - ココケア')
+@section('title', 'ヘルシーサイドとスキーマサイドの対話のワーク - ' . config('app.name'))
 @section('page-title', '対話のワーク')
 
 @section('content')

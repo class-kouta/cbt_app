@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '対話のワーク - ココケア')
+@section('title', '対話のワーク - ' . config('app.name'))
 @section('page-title', '対話のワーク')
 
 @section('body-class', 'bg-gradient-to-br from-emerald-50 to-teal-50')
