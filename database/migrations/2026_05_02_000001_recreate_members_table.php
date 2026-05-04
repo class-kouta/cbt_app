@@ -19,20 +19,29 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
 
-        Schema::create('members', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('members')) {
+            Schema::create('members', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
 
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn('user_id');
-            $table->foreignId('member_id')->nullable()->after('id')->index();
-        });
+        if (Schema::hasColumn('sessions', 'user_id')) {
+            Schema::table('sessions', function (Blueprint $table) {
+                $table->dropColumn('user_id');
+            });
+        }
+
+        if (! Schema::hasColumn('sessions', 'member_id')) {
+            Schema::table('sessions', function (Blueprint $table) {
+                $table->foreignId('member_id')->nullable()->after('id')->index();
+            });
+        }
     }
 
     /**
@@ -40,21 +49,30 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn('member_id');
-            $table->foreignId('user_id')->nullable()->after('id')->index();
-        });
+        if (Schema::hasColumn('sessions', 'member_id')) {
+            Schema::table('sessions', function (Blueprint $table) {
+                $table->dropColumn('member_id');
+            });
+        }
+
+        if (! Schema::hasColumn('sessions', 'user_id')) {
+            Schema::table('sessions', function (Blueprint $table) {
+                $table->foreignId('user_id')->nullable()->after('id')->index();
+            });
+        }
 
         Schema::dropIfExists('members');
 
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
     }
 };

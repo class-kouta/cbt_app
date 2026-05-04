@@ -39,6 +39,8 @@ return new class extends Migration
                     ->after('id')
                     ->constrained('members')
                     ->cascadeOnDelete();
+
+                $table->index('member_id');
             });
         }
 
@@ -47,9 +49,10 @@ return new class extends Migration
                 $table->foreignId('member_id')
                     ->nullable()
                     ->after('id')
-                    ->unique()
                     ->constrained('members')
                     ->cascadeOnDelete();
+
+                $table->unique('member_id');
             });
         }
     }
@@ -60,16 +63,25 @@ return new class extends Migration
     public function down(): void
     {
         foreach (self::MULTI_RECORD_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) {
+            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 $table->dropForeign(['member_id']);
+
+                if (Schema::hasIndex($tableName, ['member_id'])) {
+                    $table->dropIndex(['member_id']);
+                }
+
                 $table->dropColumn('member_id');
             });
         }
 
         foreach (self::SINGLE_RECORD_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) {
+            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 $table->dropForeign(['member_id']);
-                $table->dropUnique(['member_id']);
+
+                if (Schema::hasIndex($tableName, ['member_id'], 'unique')) {
+                    $table->dropUnique(['member_id']);
+                }
+
                 $table->dropColumn('member_id');
             });
         }
