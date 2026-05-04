@@ -92,7 +92,7 @@ function selfMonitoringListApp() {
             this.loading = true;
             this.errorOccurred = false;
             try {
-                const res = await fetch('/api/schema-mode-monitorings');
+                const res = await apiFetch('/api/schema-mode-monitorings');
                 if (res.ok) {
                     this.items = await res.json();
                 } else {

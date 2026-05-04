@@ -221,7 +221,7 @@ function safePlaceApp() {
         async loadData() {
             this.loading = true;
             try {
-                const res = await fetch('/api/safe-places');
+                const res = await apiFetch('/api/safe-places');
                 if (res.ok) {
                     const data = await res.json();
                     this.recordId = data.id;
@@ -316,7 +316,7 @@ function safePlaceApp() {
             try {
                 let res;
                 if (this.recordId) {
-                    res = await fetch(`/api/safe-places/${this.recordId}`, {
+                    res = await apiFetch(`/api/safe-places/${this.recordId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -325,7 +325,7 @@ function safePlaceApp() {
                         body: JSON.stringify(this.formData)
                     });
                 } else {
-                    res = await fetch('/api/safe-places', {
+                    res = await apiFetch('/api/safe-places', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

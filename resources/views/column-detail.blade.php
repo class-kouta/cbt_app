@@ -179,7 +179,7 @@ function columnDetailApp() {
 
         async loadColumn() {
             try {
-                const res = await fetch(`/api/columns/${this.columnId}`);
+                const res = await apiFetch(`/api/columns/${this.columnId}`);
                 if (res.ok) {
                     this.column = await res.json();
                 }
@@ -194,7 +194,7 @@ function columnDetailApp() {
             if (!confirm('このコラムを削除しますか？')) return;
 
             try {
-                await fetch(`/api/columns/${this.columnId}`, {
+                await apiFetch(`/api/columns/${this.columnId}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });

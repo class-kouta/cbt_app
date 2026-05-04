@@ -236,7 +236,7 @@ function simpleNotepadApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch('/api/simple-notepads');
+                const res = await apiFetch('/api/simple-notepads');
                 const items = await res.json();
                 const item = items.find(i => i.id === this.itemId);
                 if (item) {
@@ -302,7 +302,7 @@ function simpleNotepadApp(itemId) {
             this.saving = true;
             this.error = '';
             try {
-                const res = await fetch(`/api/simple-notepads/${this.itemId}`, {
+                const res = await apiFetch(`/api/simple-notepads/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -361,7 +361,7 @@ function simpleNotepadApp(itemId) {
 
             this.saving = true;
             try {
-                const res = await fetch('/api/simple-notepads', {
+                const res = await apiFetch('/api/simple-notepads', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -389,7 +389,7 @@ function simpleNotepadApp(itemId) {
             if (!confirm('このメモを削除しますか？')) return;
 
             try {
-                await fetch(`/api/simple-notepads/${this.itemId}`, {
+                await apiFetch(`/api/simple-notepads/${this.itemId}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });

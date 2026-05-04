@@ -35,6 +35,50 @@
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
+        function csrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.content || '';
+        }
+
+        function xsrfToken() {
+            return decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '');
+        }
+
+        function normalizeHeaders(headers = {}) {
+            if (headers instanceof Headers) {
+                return Object.fromEntries(headers.entries());
+            }
+
+            return { ...headers };
+        }
+
+        async function apiFetch(input, init = {}) {
+            const requestInit = { ...init };
+            const refreshCsrfCookie = !!requestInit.refreshCsrfCookie;
+            delete requestInit.refreshCsrfCookie;
+
+            if (refreshCsrfCookie) {
+                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
+            }
+
+            const method = (requestInit.method || 'GET').toUpperCase();
+            const headers = normalizeHeaders(requestInit.headers);
+
+            requestInit.credentials = requestInit.credentials || 'same-origin';
+            headers['Accept'] = headers['Accept'] || 'application/json';
+
+            if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+                if (refreshCsrfCookie) {
+                    headers['X-XSRF-TOKEN'] = headers['X-XSRF-TOKEN'] || xsrfToken();
+                } else {
+                    headers['X-CSRF-TOKEN'] = headers['X-CSRF-TOKEN'] || csrfToken();
+                }
+            }
+
+            requestInit.headers = headers;
+
+            return fetch(input, requestInit);
+        }
+
         /**
          * ページネーションで表示するページ番号の配列を計算する
          * @param {number} currentPage - 現在のページ
@@ -516,10 +560,7 @@
 
             async init() {
                 try {
-                    const res = await fetch('/api/auth/me', {
-                        credentials: 'same-origin',
-                        headers: { 'Accept': 'application/json' },
-                    });
+                    const res = await apiFetch('/api/auth/me');
                     if (res.ok) {
                         const data = await res.json();
                         this.isLoggedIn = true;
@@ -532,16 +573,9 @@
 
             async logout() {
                 try {
-                    await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
-                    await fetch('/api/auth/logout', {
+                    await apiFetch('/api/auth/logout', {
                         method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-XSRF-TOKEN': decodeURIComponent(
-                                document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
-                            ),
-                        },
+                        refreshCsrfCookie: true,
                     });
                 } catch (e) {
                     // API失敗してもリダイレクトする
@@ -577,7 +611,9 @@
         }
         
         const url = apiUrl + (searchParams.toString() ? '?' + searchParams.toString() : '');
-        const response = await fetch(url);
+        const response = await apiFetch(url, {
+            headers: { 'Accept': 'text/csv' },
+        });
         
         if (!response.ok) {
             throw new Error('CSV export failed');

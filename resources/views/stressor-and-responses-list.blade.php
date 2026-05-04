@@ -185,7 +185,7 @@ function stressorListApp() {
         },
 
         async loadTags() {
-            const res = await fetch('/api/tags');
+            const res = await apiFetch('/api/tags');
             this.allTags = await res.json();
         },
 
@@ -204,7 +204,7 @@ function stressorListApp() {
             params.append('per_page', this.perPage);
             
             const url = '/api/stressor-and-responses' + (params.toString() ? '?' + params.toString() : '');
-            const res = await fetch(url);
+            const res = await apiFetch(url);
             const result = await res.json();
             
             // ページネーション情報を更新

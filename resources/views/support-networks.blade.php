@@ -133,7 +133,7 @@ function supportNetworkApp() {
         },
 
         async loadSupportNetworks() {
-            const res = await fetch('/api/support-networks');
+            const res = await apiFetch('/api/support-networks');
             this.supportNetworks = await res.json();
         },
 
@@ -147,7 +147,7 @@ function supportNetworkApp() {
 
             this.loading = true;
             try {
-                const res = await fetch('/api/support-networks', {
+                const res = await apiFetch('/api/support-networks', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -195,7 +195,7 @@ function supportNetworkApp() {
             }
 
             try {
-                const res = await fetch(`/api/support-networks/${person.id}`, {
+                const res = await apiFetch(`/api/support-networks/${person.id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ function supportNetworkApp() {
             if (!confirm('このサポート者を削除しますか？')) return;
 
             try {
-                await fetch(`/api/support-networks/${person.id}`, {
+                await apiFetch(`/api/support-networks/${person.id}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });

@@ -90,7 +90,7 @@ function writingDisclosureApp(itemId) {
         async loadItem() {
             this.dataLoading = true;
             try {
-                const res = await fetch('/api/writing-disclosures');
+                const res = await apiFetch('/api/writing-disclosures');
                 const items = await res.json();
                 const item = items.find(i => i.id === this.itemId);
 
@@ -122,7 +122,7 @@ function writingDisclosureApp(itemId) {
 
             this.loading = true;
             try {
-                const res = await fetch('/api/writing-disclosures', {
+                const res = await apiFetch('/api/writing-disclosures', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ function writingDisclosureApp(itemId) {
 
             this.loading = true;
             try {
-                const res = await fetch(`/api/writing-disclosures/${this.itemId}`, {
+                const res = await apiFetch(`/api/writing-disclosures/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

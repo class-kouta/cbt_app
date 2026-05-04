@@ -175,7 +175,7 @@ function overdueReflectionBanner() {
         hasOverdue: false,
         async init() {
             try {
-                const res = await fetch('/api/problem-solvings/has-overdue-reflection');
+                const res = await apiFetch('/api/problem-solvings/has-overdue-reflection');
                 if (!res.ok) return;
                 const data = await res.json();
                 this.hasOverdue = data.has_overdue;

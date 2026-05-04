@@ -376,7 +376,7 @@ function modeDialogueWorkEditApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/mode-dialogue-works/${this.itemId}`);
+                const res = await apiFetch(`/api/mode-dialogue-works/${this.itemId}`);
                 if (!res.ok) {
                     throw new Error('Failed to load item.');
                 }
@@ -511,7 +511,7 @@ function modeDialogueWorkEditApp(itemId) {
                     body.mode_name = this.fullModeName;
                 }
 
-                const res = await fetch(url, {
+                const res = await apiFetch(url, {
                     method,
                     headers: {
                         'Content-Type': 'application/json',
@@ -592,7 +592,7 @@ function modeDialogueWorkEditApp(itemId) {
             this.deleting = true;
             this.error = '';
             try {
-                const res = await fetch(`/api/mode-dialogue-works/${this.itemId}`, {
+                const res = await apiFetch(`/api/mode-dialogue-works/${this.itemId}`, {
                     method: 'DELETE',
                     headers: { 'Accept': 'application/json' }
                 });

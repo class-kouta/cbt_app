@@ -162,17 +162,11 @@ function loginApp() {
             this.loading = true;
 
             try {
-                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
-
-                const res = await fetch('/api/auth/login', {
+                const res = await apiFetch('/api/auth/login', {
                     method: 'POST',
-                    credentials: 'same-origin',
+                    refreshCsrfCookie: true,
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-XSRF-TOKEN': decodeURIComponent(
-                            document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
-                        ),
                     },
                     body: JSON.stringify(this.form),
                 });
@@ -205,17 +199,11 @@ function loginApp() {
             this.resendSuccess = '';
 
             try {
-                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
-
-                const res = await fetch('/api/auth/email/resend', {
+                const res = await apiFetch('/api/auth/email/resend', {
                     method: 'POST',
-                    credentials: 'same-origin',
+                    refreshCsrfCookie: true,
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-XSRF-TOKEN': decodeURIComponent(
-                            document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || ''
-                        ),
                     },
                     body: JSON.stringify({ email: this.form.email }),
                 });

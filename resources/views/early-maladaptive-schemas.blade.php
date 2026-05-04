@@ -868,7 +868,7 @@ function schemaApp() {
 
         async loadSchemas() {
             try {
-                const res = await fetch('/api/early-maladaptive-schemas');
+                const res = await apiFetch('/api/early-maladaptive-schemas');
                 if (res.ok) {
                     const data = await res.json();
                     if (data.id) {
@@ -989,7 +989,7 @@ function schemaApp() {
 
             let res;
             if (this.schemaId) {
-                res = await fetch(`/api/early-maladaptive-schemas/${this.schemaId}`, {
+                res = await apiFetch(`/api/early-maladaptive-schemas/${this.schemaId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -998,7 +998,7 @@ function schemaApp() {
                     body: JSON.stringify(payload)
                 });
             } else {
-                res = await fetch('/api/early-maladaptive-schemas', {
+                res = await apiFetch('/api/early-maladaptive-schemas', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

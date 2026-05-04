@@ -82,7 +82,7 @@ function adaptiveThoughtListApp() {
 
         async loadColumns() {
             this.loading = true;
-            const res = await fetch('/api/columns/adaptive-thoughts');
+            const res = await apiFetch('/api/columns/adaptive-thoughts');
             this.columns = await res.json();
             this.loading = false;
         },

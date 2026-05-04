@@ -710,7 +710,7 @@ function columnApp(columnId) {
 
         async loadTags() {
             try {
-                const res = await fetch('/api/tags');
+                const res = await apiFetch('/api/tags');
                 if (res.ok) {
                     this.availableTags = await res.json();
                 }
@@ -740,7 +740,7 @@ function columnApp(columnId) {
         // ストレッサーとストレス反応一覧を取得
         async loadStressorAndResponses() {
             try {
-                const res = await fetch('/api/stressor-and-responses');
+                const res = await apiFetch('/api/stressor-and-responses');
                 if (res.ok) {
                     this.stressorAndResponses = await res.json();
                 }
@@ -882,7 +882,7 @@ function columnApp(columnId) {
             try {
                 if (this.columnId) {
                     // 既存コラムの更新
-                    const res = await fetch(`/api/columns/${this.columnId}`, {
+                    const res = await apiFetch(`/api/columns/${this.columnId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -896,7 +896,7 @@ function columnApp(columnId) {
                     }
                 } else {
                     // 新規作成
-                    const res = await fetch('/api/columns', {
+                    const res = await apiFetch('/api/columns', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -959,7 +959,7 @@ function columnApp(columnId) {
         async loadColumn() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/columns/${this.columnId}`);
+                const res = await apiFetch(`/api/columns/${this.columnId}`);
                 if (res.ok) {
                     const column = await res.json();
                     this.newColumn.situation = column.situation || '';
@@ -1101,7 +1101,7 @@ function columnApp(columnId) {
 
             this.submitting = true;
             try {
-                const res = await fetch('/api/columns', {
+                const res = await apiFetch('/api/columns', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1133,7 +1133,7 @@ function columnApp(columnId) {
 
             this.submitting = true;
             try {
-                const res = await fetch(`/api/columns/${this.columnId}`, {
+                const res = await apiFetch(`/api/columns/${this.columnId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
