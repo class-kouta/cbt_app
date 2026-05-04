@@ -5,20 +5,48 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\WritingDisclosure as WritingDisclosureEntity;
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
 use App\Infrastructure\Database\Models\WritingDisclosure as WritingDisclosureModel;
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class EloquentWritingDisclosureRepository implements WritingDisclosureRepositoryInterface
 {
-    public function save(WritingDisclosureEntity $writingDisclosure): WritingDisclosureEntity
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
+    public function findAllForMember(int $memberId): array
+    {
+        return WritingDisclosureModel::where('member_id', $memberId)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($model) => WritingDisclosureEntity::reconstitute(
+                id: (int) $model->id,
+                content: (string) $model->content,
+                createdAt: $this->toDateTimeImmutable($model->created_at),
+                updatedAt: $this->toDateTimeImmutable($model->updated_at),
+            ))
+            ->all();
+    }
+
+    public function saveForMember(WritingDisclosureEntity $writingDisclosure, int $memberId): WritingDisclosureEntity
     {
         if ($writingDisclosure->getId() !== null) {
-            // 更新
-            $model = WritingDisclosureModel::findOrFail($writingDisclosure->getId());
+            $model = WritingDisclosureModel::where('member_id', $memberId)
+                ->findOrFail($writingDisclosure->getId());
             $model->content = $writingDisclosure->getContent();
             $model->save();
         } else {
-            // 新規作成
             $model = new WritingDisclosureModel();
+            $model->member_id = $memberId;
             $model->content = $writingDisclosure->getContent();
             $model->save();
         }
@@ -26,14 +54,14 @@ class EloquentWritingDisclosureRepository implements WritingDisclosureRepository
         return WritingDisclosureEntity::reconstitute(
             id: (int) $model->getKey(),
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
-    public function findById(int $id): ?WritingDisclosureEntity
+    public function findByIdForMember(int $id, int $memberId): ?WritingDisclosureEntity
     {
-        $model = WritingDisclosureModel::find($id);
+        $model = WritingDisclosureModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -42,14 +70,14 @@ class EloquentWritingDisclosureRepository implements WritingDisclosureRepository
         return WritingDisclosureEntity::reconstitute(
             id: (int) $model->id,
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = WritingDisclosureModel::find($id);
+        $model = WritingDisclosureModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();

@@ -5,14 +5,14 @@ namespace App\Application\UseCase\WritingDisclosure;
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
-class DeleteWritingDisclosureUseCase
+class SearchWritingDisclosureUseCase
 {
     public function __construct(private readonly WritingDisclosureRepositoryInterface $writingDisclosureRepository)
     {
     }
 
-    public function handle(int $id): void
+    public function handle(): array
     {
-        $this->writingDisclosureRepository->deleteForMember($id, (int) Auth::id());
+        return $this->writingDisclosureRepository->findAllForMember((int) Auth::id());
     }
 }
