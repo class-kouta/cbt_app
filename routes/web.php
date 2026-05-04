@@ -19,6 +19,7 @@ Route::get('/verify-email', function () {
     return view('auth.verify-email');
 })->name('verification.notice');
 
+Route::middleware('auth')->group(function () {
 // コーピングリストページ
 Route::get('/copings', function () {
     return view('copings');
@@ -243,6 +244,7 @@ Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->
     Route::get('/count', function () {
         return view('schema-count');
     })->name('count');
+});
 });
 
 // ===========================================
