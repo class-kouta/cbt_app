@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\Coping;
 
 use App\Domain\Repository\CopingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteCopingUseCase
 {
@@ -12,6 +13,6 @@ class DeleteCopingUseCase
 
     public function handle(int $id): void
     {
-        $this->copingRepository->delete($id);
+        $this->copingRepository->deleteForMember($id, (int) Auth::id());
     }
 }

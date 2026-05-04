@@ -5,6 +5,7 @@ namespace App\Application\UseCase\Coping;
 use App\Application\DTO\CopingData;
 use App\Domain\Entity\Coping as CopingEntity;
 use App\Domain\Repository\CopingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateCopingUseCase
 {
@@ -14,7 +15,9 @@ class CreateCopingUseCase
 
     public function handle(CopingData $data): CopingEntity
     {
+        $memberId = (int) Auth::id();
         $coping = CopingEntity::createNew($data->content, $data->copingTagIds);
-        return $this->copingRepository->save($coping);
+
+        return $this->copingRepository->saveForMember($coping, $memberId);
     }
 }
