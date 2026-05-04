@@ -4,6 +4,7 @@ namespace App\Application\UseCase\Column;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Repository\ColumnRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class SearchColumnUseCase
 {
@@ -34,6 +35,6 @@ class SearchColumnUseCase
      */
     public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->search($criteria, self::SEARCHABLE_COLUMNS);
+        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
     }
 }

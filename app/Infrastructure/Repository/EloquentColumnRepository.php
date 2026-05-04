@@ -10,11 +10,11 @@ use DateTimeImmutable;
 
 class EloquentColumnRepository implements ColumnRepositoryInterface
 {
-    public function save(ColumnEntity $column): ColumnEntity
+    public function saveForMember(ColumnEntity $column, int $memberId): ColumnEntity
     {
         if ($column->getId() !== null) {
             // 更新
-            $model = ColumnModel::findOrFail($column->getId());
+            $model = ColumnModel::where('member_id', $memberId)->findOrFail($column->getId());
             $model->situation = $column->getSituation();
             $model->mood = $column->getMood();
             $model->automatic_thought = $column->getAutomaticThought();
@@ -24,6 +24,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
             $model->stressor_and_response_id = $column->getStressorAndResponseId();
+            $model->member_id = $memberId;
             $model->save();
         } else {
             // 新規作成
@@ -37,6 +38,7 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
             $model->current_mood = $column->getCurrentMood();
             $model->notes = $column->getNotes();
             $model->stressor_and_response_id = $column->getStressorAndResponseId();
+            $model->member_id = $memberId;
             $model->save();
         }
 
@@ -63,13 +65,13 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
      * @param array<int> $tagIds タグIDの配列
      * @return array<string, mixed> 保存結果（タグ情報を含む）
      */
-    public function saveWithTags(ColumnEntity $column, array $tagIds): array
+    public function saveWithTagsForMember(ColumnEntity $column, array $tagIds, int $memberId): array
     {
         // コラムを保存
-        $savedColumn = $this->save($column);
+        $savedColumn = $this->saveForMember($column, $memberId);
 
         // タグを同期
-        $model = ColumnModel::with('tags')->find($savedColumn->getId());
+        $model = ColumnModel::with('tags')->where('member_id', $memberId)->findOrFail($savedColumn->getId());
         $model->tags()->sync($tagIds);
         $model->load('tags');
 
@@ -94,9 +96,9 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
         ];
     }
 
-    public function findById(int $id): ?ColumnEntity
+    public function findByIdForMember(int $id, int $memberId): ?ColumnEntity
     {
-        $model = ColumnModel::find($id);
+        $model = ColumnModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -118,9 +120,9 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
         );
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = ColumnModel::find($id);
+        $model = ColumnModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();
@@ -160,9 +162,9 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function search(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ColumnModel::with('tags');
+        $query = ColumnModel::with('tags')->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -229,9 +231,9 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<int, array<string, mixed>> 検索結果
      */
-    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ColumnModel::with('tags');
+        $query = ColumnModel::with('tags')->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {

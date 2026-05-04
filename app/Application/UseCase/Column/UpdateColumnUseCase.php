@@ -5,6 +5,7 @@ namespace App\Application\UseCase\Column;
 use App\Application\DTO\ColumnData;
 use App\Domain\Entity\Column as ColumnEntity;
 use App\Domain\Repository\ColumnRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateColumnUseCase
 {
@@ -22,7 +23,8 @@ class UpdateColumnUseCase
     public function handle(int $id, ColumnData $data): array
     {
         // 既存のコラムを取得
-        $existingColumn = $this->columnRepository->findById($id);
+        $memberId = (int) Auth::id();
+        $existingColumn = $this->columnRepository->findByIdForMember($id, $memberId);
 
         if ($existingColumn === null) {
             throw new \RuntimeException('Column not found');
@@ -44,6 +46,6 @@ class UpdateColumnUseCase
             updatedAt: new \DateTimeImmutable('now')
         );
 
-        return $this->columnRepository->saveWithTags($updatedColumn, $data->tagIds);
+        return $this->columnRepository->saveWithTagsForMember($updatedColumn, $data->tagIds, $memberId);
     }
 }

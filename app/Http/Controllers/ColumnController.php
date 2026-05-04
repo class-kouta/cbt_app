@@ -13,6 +13,7 @@ use App\Http\Requests\Common\SearchRequest;
 use App\Infrastructure\Database\Models\Column;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ColumnController extends Controller
 {
@@ -33,7 +34,8 @@ class ColumnController extends Controller
      */
     public function adaptiveThoughts(): JsonResponse
     {
-        $columns = Column::whereNotNull('adaptive_thought')
+        $columns = Column::where('member_id', (int) Auth::id())
+            ->whereNotNull('adaptive_thought')
             ->where('adaptive_thought', '!=', '')
             ->orderByDesc('created_at')
             ->get()
