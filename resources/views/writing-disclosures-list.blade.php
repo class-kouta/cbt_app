@@ -62,7 +62,7 @@ function writingDisclosureListApp() {
         },
 
         async loadWritingDisclosures() {
-            const res = await fetch('/api/writing-disclosures');
+            const res = await apiFetch('/api/writing-disclosures');
             this.writingDisclosures = await res.json();
         },
 

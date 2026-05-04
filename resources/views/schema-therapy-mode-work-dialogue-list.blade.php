@@ -95,7 +95,7 @@ function modeDialogueWorkListApp() {
             this.loading = true;
             this.errorOccurred = false;
             try {
-                const res = await fetch('/api/mode-dialogue-works');
+                const res = await apiFetch('/api/mode-dialogue-works');
                 if (res.ok) {
                     this.items = await res.json();
                 } else {

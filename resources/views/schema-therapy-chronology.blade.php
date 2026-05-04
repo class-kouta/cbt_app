@@ -138,7 +138,7 @@ function chronologyListApp() {
             this.loading = true;
             this.errorOccurred = false;
             try {
-                const res = await fetch('/api/chronologies');
+                const res = await apiFetch('/api/chronologies');
                 if (res.ok) {
                     this.chronologies = await res.json();
                 } else {

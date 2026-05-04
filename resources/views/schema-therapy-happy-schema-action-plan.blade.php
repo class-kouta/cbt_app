@@ -234,7 +234,7 @@ function happySchemaActionPlanApp() {
         async loadData() {
             this.loading = true;
             try {
-                const res = await fetch('/api/happy-schema-action-plans');
+                const res = await apiFetch('/api/happy-schema-action-plans');
                 if (res.ok) {
                     const data = await res.json();
                     this.recordId = data.id;
@@ -299,11 +299,10 @@ function happySchemaActionPlanApp() {
                     : '/api/happy-schema-action-plans';
                 const method = this.recordId ? 'PUT' : 'POST';
 
-                const res = await fetch(url, {
+                const res = await apiFetch(url, {
                     method: method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

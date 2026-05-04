@@ -81,7 +81,7 @@ function simpleNotepadListApp() {
         async loadSimpleNotepads() {
             this.loading = true;
             try {
-                const res = await fetch('/api/simple-notepads');
+                const res = await apiFetch('/api/simple-notepads');
                 this.simpleNotepads = await res.json();
             } catch (error) {
                 console.error(error);

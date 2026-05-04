@@ -199,12 +199,12 @@ function copingApp() {
         },
 
         async loadCopings() {
-            const res = await fetch('/api/copings');
+            const res = await apiFetch('/api/copings');
             this.copings = await res.json();
         },
 
         async loadCopingTags() {
-            const res = await fetch('/api/coping-tags');
+            const res = await apiFetch('/api/coping-tags');
             this.copingTags = await res.json();
         },
 
@@ -227,11 +227,10 @@ function copingApp() {
 
             this.loading = true;
             try {
-                const res = await fetch('/api/copings', {
+                const res = await apiFetch('/api/copings', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.newCoping)
                 });
@@ -278,11 +277,10 @@ function copingApp() {
             }
 
             try {
-                const res = await fetch(`/api/copings/${coping.id}`, {
+                const res = await apiFetch(`/api/copings/${coping.id}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         content: this.editContent,
@@ -303,9 +301,8 @@ function copingApp() {
             if (!confirm('このコーピングを削除しますか？')) return;
 
             try {
-                await fetch(`/api/copings/${coping.id}`, {
+                await apiFetch(`/api/copings/${coping.id}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
                 await this.loadCopings();
             } catch (e) {

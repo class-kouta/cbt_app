@@ -193,7 +193,7 @@ function healthyAdultModeImageApp() {
         async loadData() {
             this.loading = true;
             try {
-                const res = await fetch('/api/healthy-adult-mode-images');
+                const res = await apiFetch('/api/healthy-adult-mode-images');
                 if (res.ok) {
                     const data = await res.json();
                     this.recordId = data.id;
@@ -282,20 +282,18 @@ function healthyAdultModeImageApp() {
             try {
                 let res;
                 if (this.recordId) {
-                    res = await fetch(`/api/healthy-adult-mode-images/${this.recordId}`, {
+                    res = await apiFetch(`/api/healthy-adult-mode-images/${this.recordId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
                 } else {
-                    res = await fetch('/api/healthy-adult-mode-images', {
+                    res = await apiFetch('/api/healthy-adult-mode-images', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });

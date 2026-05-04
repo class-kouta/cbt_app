@@ -90,7 +90,7 @@ function dialogueWorkListApp() {
             this.loading = true;
             this.errorOccurred = false;
             try {
-                const res = await fetch('/api/dialogue-works');
+                const res = await apiFetch('/api/dialogue-works');
                 if (res.ok) {
                     this.items = await res.json();
                 } else {

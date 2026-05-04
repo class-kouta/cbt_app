@@ -493,7 +493,7 @@ function schemaCountApp() {
                 let lastPage = 1;
 
                 do {
-                    const res = await fetch(`/api/stressor-and-responses?per_page=100&page=${page}`);
+                    const res = await apiFetch(`/api/stressor-and-responses?per_page=100&page=${page}`);
                     if (!res.ok) break;
 
                     const data = await res.json();

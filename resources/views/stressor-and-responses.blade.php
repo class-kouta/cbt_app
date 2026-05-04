@@ -822,7 +822,7 @@ function stressorApp(itemId) {
 
         async loadTags() {
             try {
-                const res = await fetch('/api/tags');
+                const res = await apiFetch('/api/tags');
                 if (res.ok) {
                     this.availableTags = await res.json();
                 }
@@ -906,11 +906,10 @@ function stressorApp(itemId) {
             try {
                 if (this.itemId) {
                     // 既存データの更新
-                    const res = await fetch(`/api/stressor-and-responses/${this.itemId}`, {
+                    const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -920,11 +919,10 @@ function stressorApp(itemId) {
                     }
                 } else {
                     // 新規作成
-                    const res = await fetch('/api/stressor-and-responses', {
+                    const res = await apiFetch('/api/stressor-and-responses', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -980,7 +978,7 @@ function stressorApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/stressor-and-responses/${this.itemId}`);
+                const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`);
                 if (res.ok) {
                     const item = await res.json();
                     this.formData.stressor = item.stressor || '';
@@ -1137,11 +1135,10 @@ function stressorApp(itemId) {
 
             this.submitting = true;
             try {
-                const res = await fetch('/api/stressor-and-responses', {
+                const res = await apiFetch('/api/stressor-and-responses', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });
@@ -1168,11 +1165,10 @@ function stressorApp(itemId) {
 
             this.submitting = true;
             try {
-                const res = await fetch(`/api/stressor-and-responses/${this.itemId}`, {
+                const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

@@ -70,7 +70,7 @@ function writingDisclosureDetailApp() {
 
             try {
                 const id = {{ $itemId }};
-                const res = await fetch('/api/writing-disclosures');
+                const res = await apiFetch('/api/writing-disclosures');
                 const items = await res.json();
 
                 this.item = items.find(item => item.id === id);
@@ -101,9 +101,8 @@ function writingDisclosureDetailApp() {
             if (!confirm('この記録を削除しますか？')) return;
 
             try {
-                await fetch(`/api/writing-disclosures/${this.item.id}`, {
+                await apiFetch(`/api/writing-disclosures/${this.item.id}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 window.location.href = '/writing-disclosures/list';
