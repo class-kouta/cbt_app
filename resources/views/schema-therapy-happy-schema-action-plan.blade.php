@@ -302,8 +302,7 @@ function happySchemaActionPlanApp() {
                 const res = await apiFetch(url, {
                     method: method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

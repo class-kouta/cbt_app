@@ -992,8 +992,7 @@ function schemaApp() {
                 res = await apiFetch(`/api/early-maladaptive-schemas/${this.schemaId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });
@@ -1001,8 +1000,7 @@ function schemaApp() {
                 res = await apiFetch('/api/early-maladaptive-schemas', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });

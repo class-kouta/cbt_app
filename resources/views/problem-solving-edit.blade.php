@@ -913,8 +913,7 @@ function problemSolvingFormApp(itemId) {
             const res = await apiFetch('/api/problem-solvings', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(this.form)
             });
@@ -930,8 +929,7 @@ function problemSolvingFormApp(itemId) {
                     const solutionRes = await apiFetch(`/api/problem-solvings/${created.id}/solutions`, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             content: solution.content,
@@ -959,8 +957,7 @@ function problemSolvingFormApp(itemId) {
             const res = await apiFetch(`/api/problem-solvings/${this.itemId}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(this.form)
             });
@@ -968,10 +965,7 @@ function problemSolvingFormApp(itemId) {
             if (res.ok) {
                 for (const original of this.originalSolutions) {
                     await apiFetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
+                        method: 'DELETE'
                     });
                 }
 
@@ -981,8 +975,7 @@ function problemSolvingFormApp(itemId) {
                     const solutionRes = await apiFetch(`/api/problem-solvings/${this.itemId}/solutions`, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             content: solution.content,
@@ -1008,8 +1001,7 @@ function problemSolvingFormApp(itemId) {
                     await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             action_plan: plan.action_plan || null,
@@ -1022,8 +1014,7 @@ function problemSolvingFormApp(itemId) {
                         const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
                                 action_plan: plan.action_plan || null,
@@ -1042,10 +1033,7 @@ function problemSolvingFormApp(itemId) {
             for (const original of this.originalPlans) {
                 if (!this.plans.find(p => p.id === original.id)) {
                     await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${original.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
+                        method: 'DELETE'
                     });
                 }
             }
@@ -1106,10 +1094,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 const res = await apiFetch(`/api/problem-solvings/${this.itemId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
+                    method: 'DELETE'
                 });
 
                 if (res.ok) {

@@ -150,8 +150,7 @@ function supportNetworkApp() {
                 const res = await apiFetch('/api/support-networks', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.newSupportNetwork)
                 });
@@ -198,8 +197,7 @@ function supportNetworkApp() {
                 const res = await apiFetch(`/api/support-networks/${person.id}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         name: this.editName
@@ -221,7 +219,6 @@ function supportNetworkApp() {
             try {
                 await apiFetch(`/api/support-networks/${person.id}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
                 await this.loadSupportNetworks();
             } catch (e) {

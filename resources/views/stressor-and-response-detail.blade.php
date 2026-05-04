@@ -216,7 +216,6 @@ function stressorDetailApp() {
             try {
                 await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
                 window.location.href = '/stressor-and-responses/list';
             } catch (e) {

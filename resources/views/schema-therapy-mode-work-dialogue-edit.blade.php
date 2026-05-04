@@ -514,8 +514,7 @@ function modeDialogueWorkEditApp(itemId) {
                 const res = await apiFetch(url, {
                     method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(body)
                 });
@@ -594,7 +593,6 @@ function modeDialogueWorkEditApp(itemId) {
             try {
                 const res = await apiFetch(`/api/mode-dialogue-works/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {

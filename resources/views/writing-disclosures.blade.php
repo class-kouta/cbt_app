@@ -125,8 +125,7 @@ function writingDisclosureApp(itemId) {
                 const res = await apiFetch('/api/writing-disclosures', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         content: this.newContent
@@ -159,8 +158,7 @@ function writingDisclosureApp(itemId) {
                 const res = await apiFetch(`/api/writing-disclosures/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         content: this.newContent

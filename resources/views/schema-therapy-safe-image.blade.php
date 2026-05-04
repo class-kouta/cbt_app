@@ -319,8 +319,7 @@ function safePlaceApp() {
                     res = await apiFetch(`/api/safe-places/${this.recordId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -328,8 +327,7 @@ function safePlaceApp() {
                     res = await apiFetch('/api/safe-places', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });

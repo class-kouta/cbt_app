@@ -253,10 +253,7 @@ function problemSolvingDetailApp(itemId) {
 
             try {
                 const res = await apiFetch(`/api/problem-solvings/${this.itemId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
+                    method: 'DELETE'
                 });
 
                 if (res.ok) {

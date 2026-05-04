@@ -285,8 +285,7 @@ function healthyAdultModeImageApp() {
                     res = await apiFetch(`/api/healthy-adult-mode-images/${this.recordId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -294,8 +293,7 @@ function healthyAdultModeImageApp() {
                     res = await apiFetch('/api/healthy-adult-mode-images', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });

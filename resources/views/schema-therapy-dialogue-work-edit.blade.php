@@ -406,8 +406,7 @@ function dialogueWorkEditApp(itemId) {
                 const res = await apiFetch(url, {
                     method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ content: this.serializeContent() })
                 });
@@ -486,7 +485,6 @@ function dialogueWorkEditApp(itemId) {
             try {
                 const res = await apiFetch(`/api/dialogue-works/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {

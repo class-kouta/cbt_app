@@ -909,8 +909,7 @@ function stressorApp(itemId) {
                     const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -923,8 +922,7 @@ function stressorApp(itemId) {
                     const res = await apiFetch('/api/stressor-and-responses', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -1140,8 +1138,7 @@ function stressorApp(itemId) {
                 const res = await apiFetch('/api/stressor-and-responses', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });
@@ -1171,8 +1168,7 @@ function stressorApp(itemId) {
                 const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

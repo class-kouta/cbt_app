@@ -300,8 +300,7 @@ function selfMonitoringEditApp(itemId) {
                 const res = await apiFetch(url, {
                     method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ content: this.content })
                 });
@@ -397,7 +396,6 @@ function selfMonitoringEditApp(itemId) {
             try {
                 const res = await apiFetch(`/api/schema-mode-monitorings/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {

@@ -195,8 +195,7 @@ function columnDetailApp() {
 
             try {
                 await apiFetch(`/api/columns/${this.columnId}`, {
-                    method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
+                    method: 'DELETE'
                 });
                 window.location.href = '/columns/list';
             } catch (e) {

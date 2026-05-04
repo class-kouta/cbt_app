@@ -305,8 +305,7 @@ function simpleNotepadApp(itemId) {
                 const res = await apiFetch(`/api/simple-notepads/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         title: this.formData.title,
@@ -364,8 +363,7 @@ function simpleNotepadApp(itemId) {
                 const res = await apiFetch('/api/simple-notepads', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         title: this.formData.title,
@@ -391,7 +389,6 @@ function simpleNotepadApp(itemId) {
             try {
                 await apiFetch(`/api/simple-notepads/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 window.location.href = '/simple-notepads/list';

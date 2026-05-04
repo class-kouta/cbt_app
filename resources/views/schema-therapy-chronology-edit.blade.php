@@ -373,8 +373,7 @@ function chronologyEditApp(itemId) {
                     const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -386,8 +385,7 @@ function chronologyEditApp(itemId) {
                     const res = await apiFetch('/api/chronologies', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -460,8 +458,7 @@ function chronologyEditApp(itemId) {
                 const res = await apiFetch('/api/chronologies', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });
@@ -490,7 +487,6 @@ function chronologyEditApp(itemId) {
             try {
                 const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {
@@ -523,8 +519,7 @@ function chronologyEditApp(itemId) {
                 const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

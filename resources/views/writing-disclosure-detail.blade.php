@@ -103,7 +103,6 @@ function writingDisclosureDetailApp() {
             try {
                 await apiFetch(`/api/writing-disclosures/${this.item.id}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 window.location.href = '/writing-disclosures/list';
