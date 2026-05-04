@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ProblemSolving;
 use App\Application\DTO\ProblemSolvingPlanData;
 use App\Domain\Entity\ProblemSolvingPlan as ProblemSolvingPlanEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdatePlanUseCase
 {
@@ -14,7 +15,7 @@ class UpdatePlanUseCase
 
     public function handle(int $planId, ProblemSolvingPlanData $data): ProblemSolvingPlanEntity
     {
-        $existingPlan = $this->problemSolvingRepository->findPlanById($planId);
+        $existingPlan = $this->problemSolvingRepository->findPlanByIdForMember($planId, (int) Auth::id());
 
         if ($existingPlan === null) {
             throw new \RuntimeException('Plan not found');
@@ -26,6 +27,6 @@ class UpdatePlanUseCase
             $data->improvementLevel
         );
 
-        return $this->problemSolvingRepository->updatePlan($updatedPlan);
+        return $this->problemSolvingRepository->updatePlanForMember($updatedPlan, (int) Auth::id());
     }
 }

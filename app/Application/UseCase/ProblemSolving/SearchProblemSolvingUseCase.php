@@ -4,6 +4,7 @@ namespace App\Application\UseCase\ProblemSolving;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class SearchProblemSolvingUseCase
 {
@@ -28,6 +29,6 @@ class SearchProblemSolvingUseCase
      */
     public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->search($criteria, self::SEARCHABLE_COLUMNS);
+        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
     }
 }

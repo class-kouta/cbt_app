@@ -29,6 +29,7 @@ use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProblemSolvingController extends Controller
@@ -81,7 +82,7 @@ class ProblemSolvingController extends Controller
 
         // タグの紐付け
         $tagIds = $request->input('tag_ids', []);
-        $model = ProblemSolving::with('tags')->find($problemSolvingEntity->getId());
+        $model = ProblemSolving::with('tags')->where('member_id', (int) Auth::id())->findOrFail($problemSolvingEntity->getId());
         if (!empty($tagIds)) {
             $model->tags()->sync($tagIds);
             $model->load('tags');
@@ -189,6 +190,10 @@ class ProblemSolvingController extends Controller
      */
     public function updateSolution(UpdateSolutionRequest $request, ProblemSolving $problemSolving, ProblemSolvingSolution $solution, UpdateSolutionUseCase $updateSolution): JsonResponse
     {
+        if ($solution->problem_solving_id !== $problemSolving->id) {
+            abort(404);
+        }
+
         $data = new ProblemSolvingSolutionData(
             content: (string) $request->string('content'),
             sortOrder: (int) $request->integer('sort_order'),
@@ -215,6 +220,10 @@ class ProblemSolvingController extends Controller
      */
     public function deleteSolution(ProblemSolving $problemSolving, ProblemSolvingSolution $solution, DeleteSolutionUseCase $deleteSolution): JsonResponse
     {
+        if ($solution->problem_solving_id !== $problemSolving->id) {
+            abort(404);
+        }
+
         $deleteSolution->handle($solution->id);
 
         return response()->json(null, 204);
@@ -250,6 +259,10 @@ class ProblemSolvingController extends Controller
      */
     public function updatePlan(UpdatePlanRequest $request, ProblemSolving $problemSolving, ProblemSolvingPlan $plan, UpdatePlanUseCase $updatePlan): JsonResponse
     {
+        if ($plan->problem_solving_id !== $problemSolving->id) {
+            abort(404);
+        }
+
         $data = new ProblemSolvingPlanData(
             actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
             reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null,
@@ -275,6 +288,10 @@ class ProblemSolvingController extends Controller
      */
     public function deletePlan(ProblemSolving $problemSolving, ProblemSolvingPlan $plan, DeletePlanUseCase $deletePlan): JsonResponse
     {
+        if ($plan->problem_solving_id !== $problemSolving->id) {
+            abort(404);
+        }
+
         $deletePlan->handle($plan->id);
 
         return response()->json(null, 204);
@@ -293,6 +310,7 @@ class ProblemSolvingController extends Controller
                 $query->whereNull('reflection')
                     ->orWhere('reflection', '');
             })
+            ->whereHas('problemSolving', fn ($q) => $q->where('member_id', (int) Auth::id()))
             ->where('created_at', '<=', $oneWeekAgo)
             ->exists();
 
