@@ -41,9 +41,9 @@ interface ProblemSolvingRepositoryInterface
 
     public function saveSolution(int $problemSolvingId, ProblemSolvingSolution $solution): ProblemSolvingSolution;
 
-    public function updateSolution(ProblemSolvingSolution $solution): ProblemSolvingSolution;
+    public function updateSolutionForMember(ProblemSolvingSolution $solution, int $memberId): ProblemSolvingSolution;
 
-    public function deleteSolution(int $solutionId): void;
+    public function deleteSolutionForMember(int $solutionId, int $memberId): void;
 
     /**
      * 検索条件に基づいて計画を検索（ページネーション対応）
@@ -54,11 +54,11 @@ interface ProblemSolvingRepositoryInterface
      */
     public function searchPlansForMember(PlanSearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
 
-    public function savePlan(int $problemSolvingId, ProblemSolvingPlan $plan): ProblemSolvingPlan;
+    public function savePlanForMember(int $problemSolvingId, ProblemSolvingPlan $plan, int $memberId): ProblemSolvingPlan;
 
-    public function findPlanById(int $planId): ?ProblemSolvingPlan;
+    public function findPlanByIdForMember(int $planId, int $memberId): ?ProblemSolvingPlan;
 
-    public function updatePlan(ProblemSolvingPlan $plan): ProblemSolvingPlan;
+    public function updatePlanForMember(ProblemSolvingPlan $plan, int $memberId): ProblemSolvingPlan;
 
-    public function deletePlan(int $planId): void;
+    public function deletePlanForMember(int $planId, int $memberId): void;
 }

@@ -82,9 +82,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toSolutionEntity($model);
     }
 
-    public function updateSolution(ProblemSolvingSolutionEntity $solution): ProblemSolvingSolutionEntity
+    public function updateSolutionForMember(ProblemSolvingSolutionEntity $solution, int $memberId): ProblemSolvingSolutionEntity
     {
-        $model = ProblemSolvingSolutionModel::findOrFail($solution->getId());
+        $model = ProblemSolvingSolutionModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->findOrFail($solution->getId());
         $model->content = $solution->getContent();
         $model->effectiveness = $solution->getEffectiveness();
         $model->feasibility = $solution->getFeasibility();
@@ -94,19 +94,21 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toSolutionEntity($model);
     }
 
-    public function deleteSolution(int $solutionId): void
+    public function deleteSolutionForMember(int $solutionId, int $memberId): void
     {
-        $model = ProblemSolvingSolutionModel::find($solutionId);
+        $model = ProblemSolvingSolutionModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->find($solutionId);
 
         if ($model !== null) {
             $model->delete();
         }
     }
 
-    public function savePlan(int $problemSolvingId, ProblemSolvingPlanEntity $plan): ProblemSolvingPlanEntity
+    public function savePlanForMember(int $problemSolvingId, ProblemSolvingPlanEntity $plan, int $memberId): ProblemSolvingPlanEntity
     {
+        $ownerScopedProblemSolving = ProblemSolvingModel::where('member_id', $memberId)->findOrFail($problemSolvingId);
+
         $model = new ProblemSolvingPlanModel();
-        $model->problem_solving_id = $problemSolvingId;
+        $model->problem_solving_id = $ownerScopedProblemSolving->id;
         $model->plan_number = $plan->getPlanNumber();
         $model->action_plan = $plan->getActionPlan();
         $model->reflection = $plan->getReflection();
@@ -116,9 +118,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toPlanEntity($model);
     }
 
-    public function findPlanById(int $planId): ?ProblemSolvingPlanEntity
+    public function findPlanByIdForMember(int $planId, int $memberId): ?ProblemSolvingPlanEntity
     {
-        $model = ProblemSolvingPlanModel::find($planId);
+        $model = ProblemSolvingPlanModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->find($planId);
 
         if ($model === null) {
             return null;
@@ -127,9 +129,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toPlanEntity($model);
     }
 
-    public function updatePlan(ProblemSolvingPlanEntity $plan): ProblemSolvingPlanEntity
+    public function updatePlanForMember(ProblemSolvingPlanEntity $plan, int $memberId): ProblemSolvingPlanEntity
     {
-        $model = ProblemSolvingPlanModel::findOrFail($plan->getId());
+        $model = ProblemSolvingPlanModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->findOrFail($plan->getId());
         $model->action_plan = $plan->getActionPlan();
         $model->reflection = $plan->getReflection();
         $model->improvement_level = $plan->getImprovementLevel();
@@ -138,9 +140,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toPlanEntity($model);
     }
 
-    public function deletePlan(int $planId): void
+    public function deletePlanForMember(int $planId, int $memberId): void
     {
-        $model = ProblemSolvingPlanModel::find($planId);
+        $model = ProblemSolvingPlanModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->find($planId);
 
         if ($model !== null) {
             $model->delete();

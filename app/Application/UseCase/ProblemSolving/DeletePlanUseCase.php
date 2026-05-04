@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\ProblemSolving;
 
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeletePlanUseCase
 {
@@ -12,6 +13,6 @@ class DeletePlanUseCase
 
     public function handle(int $planId): void
     {
-        $this->problemSolvingRepository->deletePlan($planId);
+        $this->problemSolvingRepository->deletePlanForMember($planId, (int) Auth::id());
     }
 }

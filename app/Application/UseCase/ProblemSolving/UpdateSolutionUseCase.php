@@ -6,6 +6,7 @@ use App\Application\DTO\ProblemSolvingSolutionData;
 use App\Domain\Entity\ProblemSolvingSolution as ProblemSolvingSolutionEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateSolutionUseCase
 {
@@ -26,6 +27,6 @@ class UpdateSolutionUseCase
             updatedAt: new DateTimeImmutable('now')
         );
 
-        return $this->problemSolvingRepository->updateSolution($solution);
+        return $this->problemSolvingRepository->updateSolutionForMember($solution, (int) Auth::id());
     }
 }
