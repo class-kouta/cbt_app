@@ -307,7 +307,7 @@ function modeMapApp() {
         async loadData() {
             this.loading = true;
             try {
-                const res = await fetch('/api/mode-maps');
+                const res = await apiFetch('/api/mode-maps');
                 if (res.ok) {
                     const data = await res.json();
                     this.recordId = data.id;
@@ -404,20 +404,18 @@ function modeMapApp() {
             try {
                 let res;
                 if (this.recordId) {
-                    res = await fetch(`/api/mode-maps/${this.recordId}`, {
+                    res = await apiFetch(`/api/mode-maps/${this.recordId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
                 } else {
-                    res = await fetch('/api/mode-maps', {
+                    res = await apiFetch('/api/mode-maps', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });

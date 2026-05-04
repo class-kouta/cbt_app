@@ -173,7 +173,7 @@ function problemSolvingListApp() {
         },
 
         async loadTags() {
-            const res = await fetch('/api/tags');
+            const res = await apiFetch('/api/tags');
             this.allTags = await res.json();
         },
 
@@ -192,7 +192,7 @@ function problemSolvingListApp() {
             params.append('per_page', this.perPage);
             
             const url = '/api/problem-solvings' + (params.toString() ? '?' + params.toString() : '');
-            const res = await fetch(url);
+            const res = await apiFetch(url);
             const result = await res.json();
             
             // ページネーション情報を更新

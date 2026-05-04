@@ -232,7 +232,7 @@ function selfMonitoringEditApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/schema-mode-monitorings/${this.itemId}`);
+                const res = await apiFetch(`/api/schema-mode-monitorings/${this.itemId}`);
                 if (!res.ok) {
                     throw new Error('Failed to load item.');
                 }
@@ -297,11 +297,10 @@ function selfMonitoringEditApp(itemId) {
                     : '/api/schema-mode-monitorings';
                 const method = isUpdate ? 'PUT' : 'POST';
 
-                const res = await fetch(url, {
+                const res = await apiFetch(url, {
                     method,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ content: this.content })
                 });
@@ -395,9 +394,8 @@ function selfMonitoringEditApp(itemId) {
             this.deleting = true;
             this.error = '';
             try {
-                const res = await fetch(`/api/schema-mode-monitorings/${this.itemId}`, {
+                const res = await apiFetch(`/api/schema-mode-monitorings/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {

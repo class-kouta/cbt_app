@@ -200,7 +200,7 @@ function mindfulnessPlayer() {
             this.errorMessage = '';
 
             try {
-                const res = await fetch(
+                const res = await apiFetch(
                     `/api/mindfulness/audio-url?sound=${this.selectedSound}&duration=${this.selectedDuration}`
                 );
                 if (!res.ok) throw new Error('音声URLの取得に失敗しました');

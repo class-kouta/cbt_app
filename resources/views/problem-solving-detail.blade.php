@@ -227,7 +227,7 @@ function problemSolvingDetailApp(itemId) {
         async loadItem() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/problem-solvings/${this.itemId}`);
+                const res = await apiFetch(`/api/problem-solvings/${this.itemId}`);
                 if (res.ok) {
                     this.item = await res.json();
                 }
@@ -252,11 +252,8 @@ function problemSolvingDetailApp(itemId) {
             if (!confirm('この記録を削除しますか？')) return;
 
             try {
-                const res = await fetch(`/api/problem-solvings/${this.itemId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
+                const res = await apiFetch(`/api/problem-solvings/${this.itemId}`, {
+                    method: 'DELETE'
                 });
 
                 if (res.ok) {

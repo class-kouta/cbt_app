@@ -199,7 +199,7 @@ function stressorDetailApp() {
 
         async loadItem() {
             try {
-                const res = await fetch(`/api/stressor-and-responses/${this.itemId}`);
+                const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`);
                 if (res.ok) {
                     this.item = await res.json();
                 }
@@ -214,9 +214,8 @@ function stressorDetailApp() {
             if (!confirm('この記録を削除しますか？')) return;
 
             try {
-                await fetch(`/api/stressor-and-responses/${this.itemId}`, {
+                await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
                 window.location.href = '/stressor-and-responses/list';
             } catch (e) {

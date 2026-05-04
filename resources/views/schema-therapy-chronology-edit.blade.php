@@ -300,7 +300,7 @@ function chronologyEditApp(itemId) {
         async loadChronology() {
             this.loading = true;
             try {
-                const res = await fetch(`/api/chronologies/${this.itemId}`);
+                const res = await apiFetch(`/api/chronologies/${this.itemId}`);
                 if (res.ok) {
                     const data = await res.json();
                     this.formData.when_period = data.when_period || '';
@@ -370,11 +370,10 @@ function chronologyEditApp(itemId) {
         async performSave(isManual = false) {
             try {
                 if (this.itemId) {
-                    const res = await fetch(`/api/chronologies/${this.itemId}`, {
+                    const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -383,11 +382,10 @@ function chronologyEditApp(itemId) {
                         this.showSaveNotification(isManual);
                     }
                 } else {
-                    const res = await fetch('/api/chronologies', {
+                    const res = await apiFetch('/api/chronologies', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.formData)
                     });
@@ -457,11 +455,10 @@ function chronologyEditApp(itemId) {
 
             this.submitting = true;
             try {
-                const res = await fetch('/api/chronologies', {
+                const res = await apiFetch('/api/chronologies', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });
@@ -488,9 +485,8 @@ function chronologyEditApp(itemId) {
             this.deleting = true;
             this.error = '';
             try {
-                const res = await fetch(`/api/chronologies/${this.itemId}`, {
+                const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                     method: 'DELETE',
-                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (res.ok || res.status === 204) {
@@ -520,11 +516,10 @@ function chronologyEditApp(itemId) {
 
             this.submitting = true;
             try {
-                const res = await fetch(`/api/chronologies/${this.itemId}`, {
+                const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(this.formData)
                 });

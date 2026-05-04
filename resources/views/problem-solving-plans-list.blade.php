@@ -268,7 +268,7 @@ function plansListApp() {
                 params.append('per_page', this.perPage);
 
                 const url = '/api/problem-solvings/plans' + (params.toString() ? '?' + params.toString() : '');
-                const res = await fetch(url);
+                const res = await apiFetch(url);
                 const result = await res.json();
 
                 this.allPlans = (result.data || []).map(plan => ({
