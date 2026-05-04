@@ -16,7 +16,7 @@ class UpdateProblemSolvingUseCase
 
     public function handle(int $id, ProblemSolvingData $data): ProblemSolvingEntity
     {
-        $existingProblemSolving = $this->problemSolvingRepository->findByIdForMember($id, Auth::id());
+        $existingProblemSolving = $this->problemSolvingRepository->findByIdForMember($id, (int) Auth::id());
 
         if ($existingProblemSolving === null) {
             throw new \RuntimeException('ProblemSolving not found');
@@ -32,6 +32,6 @@ class UpdateProblemSolvingUseCase
             updatedAt: new DateTimeImmutable('now')
         );
 
-        return $this->problemSolvingRepository->saveForMember($updatedProblemSolving, Auth::id());
+        return $this->problemSolvingRepository->saveForMember($updatedProblemSolving, (int) Auth::id());
     }
 }

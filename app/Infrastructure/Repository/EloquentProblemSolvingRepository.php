@@ -19,8 +19,8 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
     {
         if ($problemSolving->getId() !== null) {
             // 更新
-            $model = ProblemSolvingModel::where("member_id", $memberId)->findOrFail($problemSolving->getId());
-             $model->problem_situation = $problemSolving->getProblemSituation();
+            $model = ProblemSolvingModel::where('member_id', $memberId)->findOrFail($problemSolving->getId());
+            $model->problem_situation = $problemSolving->getProblemSituation();
             $model->improved_image = $problemSolving->getImprovedImage();
             $model->member_id = $memberId;
             $model->save();
@@ -30,6 +30,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             $model = new ProblemSolvingModel();
             $model->problem_situation = $problemSolving->getProblemSituation();
             $model->improved_image = $problemSolving->getImprovedImage();
+            $model->member_id = $memberId;
             $model->save();
         }
 
@@ -38,7 +39,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
     public function findByIdForMember(int $id, int $memberId): ?ProblemSolvingEntity
     {
-        $model = ProblemSolvingModel::with(['solutions', 'plans'])->where("member_id", $memberId)->find($id);
+        $model = ProblemSolvingModel::with(['solutions', 'plans'])->where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -49,7 +50,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
     public function deleteForMember(int $id, int $memberId): void
     {
-        $model = ProblemSolvingModel::where("member_id", $memberId)->find($id);
+        $model = ProblemSolvingModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();

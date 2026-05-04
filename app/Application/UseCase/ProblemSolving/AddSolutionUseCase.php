@@ -15,7 +15,7 @@ class AddSolutionUseCase
 
     public function handle(int $problemSolvingId, ProblemSolvingSolutionData $data): ProblemSolvingSolutionEntity
     {
-        $problemSolving = $this->problemSolvingRepository->findByIdForMember($problemSolvingId, Auth::id());
+        $problemSolving = $this->problemSolvingRepository->findByIdForMember($problemSolvingId, (int) Auth::id());
 
         if ($problemSolving === null) {
             throw new \RuntimeException('ProblemSolving not found');

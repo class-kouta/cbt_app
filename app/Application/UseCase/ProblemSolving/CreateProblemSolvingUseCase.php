@@ -20,6 +20,6 @@ class CreateProblemSolvingUseCase
             $data->improvedImage
         );
 
-        return $this->problemSolvingRepository->saveForMember($problemSolving, Auth::id());
+        return $this->problemSolvingRepository->saveForMember($problemSolving, (int) Auth::id());
     }
 }

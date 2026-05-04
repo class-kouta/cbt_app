@@ -29,6 +29,6 @@ class SearchProblemSolvingUseCase
      */
     public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, Auth::id());
+        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
     }
 }

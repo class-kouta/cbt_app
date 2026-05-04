@@ -13,6 +13,6 @@ class DeleteProblemSolvingUseCase
 
     public function handle(int $id): void
     {
-        $this->problemSolvingRepository->deleteForMember($id, Auth::id());
+        $this->problemSolvingRepository->deleteForMember($id, (int) Auth::id());
     }
 }

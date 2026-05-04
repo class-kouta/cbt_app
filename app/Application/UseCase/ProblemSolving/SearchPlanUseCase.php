@@ -24,6 +24,6 @@ class SearchPlanUseCase
      */
     public function handle(PlanSearchCriteriaData $criteria): array
     {
-        return $this->repository->searchPlansForMember($criteria, self::SEARCHABLE_COLUMNS, Auth::id());
+        return $this->repository->searchPlansForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
     }
 }

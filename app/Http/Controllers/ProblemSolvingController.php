@@ -82,7 +82,7 @@ class ProblemSolvingController extends Controller
 
         // タグの紐付け
         $tagIds = $request->input('tag_ids', []);
-        $model = ProblemSolving::with('tags')->where('member_id', Auth::id())->findOrFail($problemSolvingEntity->getId());
+        $model = ProblemSolving::with('tags')->where('member_id', (int) Auth::id())->findOrFail($problemSolvingEntity->getId());
         if (!empty($tagIds)) {
             $model->tags()->sync($tagIds);
             $model->load('tags');
@@ -294,7 +294,7 @@ class ProblemSolvingController extends Controller
                 $query->whereNull('reflection')
                     ->orWhere('reflection', '');
             })
-            ->whereHas('problemSolving', fn ($q) => $q->where('member_id', Auth::id()))
+            ->whereHas('problemSolving', fn ($q) => $q->where('member_id', (int) Auth::id()))
             ->where('created_at', '<=', $oneWeekAgo)
             ->exists();
 

@@ -46,7 +46,7 @@ class ExportProblemSolvingCsvUseCase
      */
     public function handle(SearchCriteriaData $criteria): StreamedResponse
     {
-        $items = $this->repository->searchAllForMember($criteria, self::SEARCHABLE_COLUMNS, Auth::id());
+        $items = $this->repository->searchAllForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
 
         $rows = array_map(function ($item) {
             // 解決策をsort_order順にソートして1列にまとめる
