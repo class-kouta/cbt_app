@@ -15,13 +15,14 @@ use DateTimeImmutable;
 
 class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterface
 {
-    public function save(ProblemSolvingEntity $problemSolving): ProblemSolvingEntity
+    public function saveForMember(ProblemSolvingEntity $problemSolving, int $memberId): ProblemSolvingEntity
     {
         if ($problemSolving->getId() !== null) {
             // 更新
-            $model = ProblemSolvingModel::findOrFail($problemSolving->getId());
-            $model->problem_situation = $problemSolving->getProblemSituation();
+            $model = ProblemSolvingModel::where("member_id", $memberId)->findOrFail($problemSolving->getId());
+             $model->problem_situation = $problemSolving->getProblemSituation();
             $model->improved_image = $problemSolving->getImprovedImage();
+            $model->member_id = $memberId;
             $model->save();
             $model->load(['solutions', 'plans']); // リレーションを再読み込み
         } else {
@@ -35,9 +36,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?ProblemSolvingEntity
+    public function findByIdForMember(int $id, int $memberId): ?ProblemSolvingEntity
     {
-        $model = ProblemSolvingModel::with(['solutions', 'plans'])->find($id);
+        $model = ProblemSolvingModel::with(['solutions', 'plans'])->where("member_id", $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -46,9 +47,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         return $this->toEntity($model);
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = ProblemSolvingModel::find($id);
+        $model = ProblemSolvingModel::where("member_id", $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();
@@ -194,11 +195,12 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
      * @param array<int, string> $searchableColumns キーワード検索対象カラム（計画テーブル内）
      * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function searchPlans(PlanSearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchPlansForMember(PlanSearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
         $query = ProblemSolvingPlanModel::with('problemSolving')
             ->whereNotNull('action_plan')
-            ->where('action_plan', '!=', '');
+            ->where('action_plan', '!=', '')
+            ->whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId));
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
             $keyword = $criteria->keyword;
@@ -261,9 +263,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function search(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags']);
+        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags'])->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -340,9 +342,9 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<int, array<string, mixed>> 検索結果
      */
-    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags']);
+        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags'])->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {

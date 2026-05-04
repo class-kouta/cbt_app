@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ProblemSolving;
 use App\Application\DTO\ProblemSolvingData;
 use App\Domain\Entity\ProblemSolving as ProblemSolvingEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateProblemSolvingUseCase
 {
@@ -19,6 +20,6 @@ class CreateProblemSolvingUseCase
             $data->improvedImage
         );
 
-        return $this->problemSolvingRepository->save($problemSolving);
+        return $this->problemSolvingRepository->saveForMember($problemSolving, Auth::id());
     }
 }

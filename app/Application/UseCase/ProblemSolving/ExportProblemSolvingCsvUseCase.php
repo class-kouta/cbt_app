@@ -6,6 +6,7 @@ use App\Application\DTO\SearchCriteriaData;
 use App\Application\Service\CsvExportService;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * 問題解決法CSV出力ユースケース
@@ -45,7 +46,7 @@ class ExportProblemSolvingCsvUseCase
      */
     public function handle(SearchCriteriaData $criteria): StreamedResponse
     {
-        $items = $this->repository->searchAll($criteria, self::SEARCHABLE_COLUMNS);
+        $items = $this->repository->searchAllForMember($criteria, self::SEARCHABLE_COLUMNS, Auth::id());
 
         $rows = array_map(function ($item) {
             // 解決策をsort_order順にソートして1列にまとめる
