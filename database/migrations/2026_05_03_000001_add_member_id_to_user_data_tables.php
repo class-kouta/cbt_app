@@ -37,7 +37,6 @@ return new class extends Migration
                 $table->foreignId('member_id')
                     ->nullable()
                     ->after('id')
-                    ->index()
                     ->constrained('members')
                     ->cascadeOnDelete();
             });
@@ -63,7 +62,6 @@ return new class extends Migration
         foreach (self::MULTI_RECORD_TABLES as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
                 $table->dropForeign(['member_id']);
-                $table->dropIndex(['member_id']);
                 $table->dropColumn('member_id');
             });
         }
