@@ -6,9 +6,11 @@ use App\Domain\Entity\Coping;
 
 interface CopingRepositoryInterface
 {
-    public function save(Coping $coping): Coping;
+    public function findAllForMember(int $memberId): array;
 
-    public function findById(int $id): ?Coping;
+    public function saveForMember(Coping $coping, int $memberId): Coping;
 
-    public function delete(int $id): void;
+    public function findByIdForMember(int $id, int $memberId): ?Coping;
+
+    public function deleteForMember(int $id, int $memberId): void;
 }

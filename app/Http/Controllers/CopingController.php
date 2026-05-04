@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\CopingData;
 use App\Application\UseCase\Coping\CreateCopingUseCase;
-use App\Application\UseCase\Coping\UpdateCopingUseCase;
 use App\Application\UseCase\Coping\DeleteCopingUseCase;
+use App\Application\UseCase\Coping\UpdateCopingUseCase;
+use App\Domain\Repository\CopingRepositoryInterface;
 use App\Http\Requests\Coping\CreateCopingRequest;
 use App\Http\Requests\Coping\UpdateCopingRequest;
 use App\Infrastructure\Database\Models\Coping;
@@ -16,25 +17,17 @@ class CopingController extends Controller
     /**
      * コーピング一覧を取得（ポイント高い順、同ポイントは作成日時降順）
      */
-    public function index(): JsonResponse
+    public function index(CopingRepositoryInterface $copingRepository): JsonResponse
     {
-        $copings = Coping::with('copingTags')
-            ->orderByDesc('point')
-            ->orderByDesc('created_at')
-            ->get()
+        $copings = collect($copingRepository->findAllForMember((int) auth()->id()))
             ->map(function ($coping) {
                 return [
-                    'id' => $coping->id,
-                    'content' => $coping->content,
-                    'point' => $coping->point,
-                    'created_at' => $coping->created_at->format(DATE_ATOM),
-                    'updated_at' => $coping->updated_at->format(DATE_ATOM),
-                    'coping_tags' => $coping->copingTags->map(function ($tag) {
-                        return [
-                            'id' => $tag->id,
-                            'name' => $tag->name,
-                        ];
-                    }),
+                    'id' => $coping->getId(),
+                    'content' => $coping->getContent(),
+                    'point' => $coping->getPoint(),
+                    'created_at' => $coping->getCreatedAt()->format(DATE_ATOM),
+                    'updated_at' => $coping->getUpdatedAt()->format(DATE_ATOM),
+                    'coping_tag_ids' => $coping->getCopingTagIds(),
                 ];
             });
 
