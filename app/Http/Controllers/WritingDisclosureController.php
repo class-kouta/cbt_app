@@ -10,6 +10,7 @@ use App\Http\Requests\WritingDisclosure\CreateWritingDisclosureRequest;
 use App\Http\Requests\WritingDisclosure\UpdateWritingDisclosureRequest;
 use App\Infrastructure\Database\Models\WritingDisclosure;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class WritingDisclosureController extends Controller
 {
@@ -18,7 +19,8 @@ class WritingDisclosureController extends Controller
      */
     public function index(): JsonResponse
     {
-        $writingDisclosures = WritingDisclosure::orderByDesc('created_at')
+        $writingDisclosures = WritingDisclosure::where('member_id', Auth::id())
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($writingDisclosure) {
                 return [

@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\WritingDisclosure;
 
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteWritingDisclosureUseCase
 {
@@ -12,6 +13,6 @@ class DeleteWritingDisclosureUseCase
 
     public function handle(int $id): void
     {
-        $this->writingDisclosureRepository->delete($id);
+        $this->writingDisclosureRepository->deleteForMember($id, (int) Auth::id());
     }
 }

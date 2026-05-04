@@ -6,6 +6,7 @@ use App\Application\DTO\WritingDisclosureData;
 use App\Domain\Entity\WritingDisclosure as WritingDisclosureEntity;
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
 use DomainException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateWritingDisclosureUseCase
 {
@@ -15,13 +16,14 @@ class UpdateWritingDisclosureUseCase
 
     public function handle(int $id, WritingDisclosureData $data): WritingDisclosureEntity
     {
-        $writingDisclosure = $this->writingDisclosureRepository->findById($id);
+        $memberId = (int) Auth::id();
+        $writingDisclosure = $this->writingDisclosureRepository->findByIdForMember($id, $memberId);
 
         if ($writingDisclosure === null) {
             throw new DomainException('Writing disclosure not found.');
         }
 
         $updatedWritingDisclosure = $writingDisclosure->update($data->content);
-        return $this->writingDisclosureRepository->save($updatedWritingDisclosure);
+        return $this->writingDisclosureRepository->saveForMember($updatedWritingDisclosure, $memberId);
     }
 }
