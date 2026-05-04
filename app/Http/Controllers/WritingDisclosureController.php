@@ -4,30 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\WritingDisclosureData;
 use App\Application\UseCase\WritingDisclosure\CreateWritingDisclosureUseCase;
+use App\Application\UseCase\WritingDisclosure\SearchWritingDisclosureUseCase;
 use App\Application\UseCase\WritingDisclosure\UpdateWritingDisclosureUseCase;
 use App\Application\UseCase\WritingDisclosure\DeleteWritingDisclosureUseCase;
 use App\Http\Requests\WritingDisclosure\CreateWritingDisclosureRequest;
 use App\Http\Requests\WritingDisclosure\UpdateWritingDisclosureRequest;
 use App\Infrastructure\Database\Models\WritingDisclosure;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class WritingDisclosureController extends Controller
 {
     /**
      * 筆記開示一覧を取得（作成日時降順）
      */
-    public function index(): JsonResponse
+    public function index(SearchWritingDisclosureUseCase $searchWritingDisclosure): JsonResponse
     {
-        $writingDisclosures = WritingDisclosure::where('member_id', Auth::id())
-            ->orderByDesc('created_at')
-            ->get()
+        $writingDisclosures = collect($searchWritingDisclosure->handle())
             ->map(function ($writingDisclosure) {
                 return [
-                    'id' => $writingDisclosure->id,
-                    'content' => $writingDisclosure->content,
-                    'created_at' => $writingDisclosure->created_at->format(DATE_ATOM),
-                    'updated_at' => $writingDisclosure->updated_at->format(DATE_ATOM),
+                    'id' => $writingDisclosure->getId(),
+                    'content' => $writingDisclosure->getContent(),
+                    'created_at' => $writingDisclosure->getCreatedAt()->format(DATE_ATOM),
+                    'updated_at' => $writingDisclosure->getUpdatedAt()->format(DATE_ATOM),
                 ];
             });
 
