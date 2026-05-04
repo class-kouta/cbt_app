@@ -44,11 +44,21 @@
         }
 
         function normalizeHeaders(headers = {}) {
+            const normalized = {};
+
             if (headers instanceof Headers) {
-                return Object.fromEntries(headers.entries());
+                for (const [key, value] of headers.entries()) {
+                    normalized[key.toLowerCase()] = value;
+                }
+
+                return normalized;
             }
 
-            return { ...headers };
+            for (const [key, value] of Object.entries(headers || {})) {
+                normalized[key.toLowerCase()] = value;
+            }
+
+            return normalized;
         }
 
         async function apiFetch(input, init = {}) {
@@ -64,13 +74,13 @@
             const headers = normalizeHeaders(requestInit.headers);
 
             requestInit.credentials = requestInit.credentials || 'same-origin';
-            headers['Accept'] = headers['Accept'] || 'application/json';
+            headers['accept'] = headers['accept'] || 'application/json';
 
             if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
                 if (refreshCsrfCookie) {
-                    headers['X-XSRF-TOKEN'] = headers['X-XSRF-TOKEN'] || xsrfToken();
+                    headers['x-xsrf-token'] = headers['x-xsrf-token'] || xsrfToken();
                 } else {
-                    headers['X-CSRF-TOKEN'] = headers['X-CSRF-TOKEN'] || csrfToken();
+                    headers['x-csrf-token'] = headers['x-csrf-token'] || csrfToken();
                 }
             }
 
