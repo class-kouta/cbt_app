@@ -2,16 +2,20 @@
 
 namespace App\Infrastructure\Database\Models;
 
+use App\Models\Member;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class ProblemSolving extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'member_id',
         'problem_situation',
         'improved_image',
     ];
@@ -40,6 +44,11 @@ class ProblemSolving extends Model
         return $this->belongsToMany(Tag::class, 'problem_solving_tag');
     }
 
+    public function member(): BelongsTo
+    {
+        return $this->belongsTo(Member::class);
+    }
+
     /**
      * 最新の計画を取得
      */
@@ -63,5 +72,12 @@ class ProblemSolving extends Model
         
         // 最新の計画の振り返りが完了している場合は追加可能
         return $latest->isReflectionCompleted();
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? $this->getRouteKeyName(), $value)
+            ->where('member_id', Auth::id())
+            ->first();
     }
 }
