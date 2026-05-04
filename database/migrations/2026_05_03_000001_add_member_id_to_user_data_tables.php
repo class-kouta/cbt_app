@@ -61,17 +61,17 @@ return new class extends Migration
     public function down(): void
     {
         foreach (self::MULTI_RECORD_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                $table->dropForeign("{$tableName}_member_id_foreign");
-                $table->dropIndex("{$tableName}_member_id_index");
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropForeign(['member_id']);
+                $table->dropIndex(['member_id']);
                 $table->dropColumn('member_id');
             });
         }
 
         foreach (self::SINGLE_RECORD_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                $table->dropForeign("{$tableName}_member_id_foreign");
-                $table->dropUnique("{$tableName}_member_id_unique");
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropForeign(['member_id']);
+                $table->dropUnique(['member_id']);
                 $table->dropColumn('member_id');
             });
         }
