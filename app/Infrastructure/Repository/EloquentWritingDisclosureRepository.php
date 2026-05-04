@@ -5,10 +5,24 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\WritingDisclosure as WritingDisclosureEntity;
 use App\Domain\Repository\WritingDisclosureRepositoryInterface;
 use App\Infrastructure\Database\Models\WritingDisclosure as WritingDisclosureModel;
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class EloquentWritingDisclosureRepository implements WritingDisclosureRepositoryInterface
 {
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
     public function findAllForMember(int $memberId): array
     {
         return WritingDisclosureModel::where('member_id', $memberId)
@@ -17,8 +31,8 @@ class EloquentWritingDisclosureRepository implements WritingDisclosureRepository
             ->map(fn ($model) => WritingDisclosureEntity::reconstitute(
                 id: (int) $model->id,
                 content: (string) $model->content,
-                createdAt: new DateTimeImmutable($model->created_at),
-                updatedAt: new DateTimeImmutable($model->updated_at),
+                createdAt: $this->toDateTimeImmutable($model->created_at),
+                updatedAt: $this->toDateTimeImmutable($model->updated_at),
             ))
             ->all();
     }
@@ -40,8 +54,8 @@ class EloquentWritingDisclosureRepository implements WritingDisclosureRepository
         return WritingDisclosureEntity::reconstitute(
             id: (int) $model->getKey(),
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
@@ -56,8 +70,8 @@ class EloquentWritingDisclosureRepository implements WritingDisclosureRepository
         return WritingDisclosureEntity::reconstitute(
             id: (int) $model->id,
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
