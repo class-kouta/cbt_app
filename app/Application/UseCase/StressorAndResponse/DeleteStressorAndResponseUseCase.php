@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\StressorAndResponse;
 
 use App\Domain\Repository\StressorAndResponseRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteStressorAndResponseUseCase
 {
@@ -12,6 +13,6 @@ class DeleteStressorAndResponseUseCase
 
     public function handle(int $id): void
     {
-        $this->repository->delete($id);
+        $this->repository->deleteForMember($id, (int) Auth::id());
     }
 }
