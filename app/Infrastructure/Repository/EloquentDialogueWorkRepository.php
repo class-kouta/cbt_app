@@ -9,12 +9,18 @@ use DateTimeImmutable;
 
 class EloquentDialogueWorkRepository implements DialogueWorkRepositoryInterface
 {
-    public function save(DialogueWorkEntity $dialogueWork): DialogueWorkEntity
+    public function saveForMember(DialogueWorkEntity $dialogueWork, int $memberId): DialogueWorkEntity
     {
-        $model = DialogueWorkModel::updateOrCreate(
-            ['id' => $dialogueWork->getId()],
-            ['content' => $dialogueWork->getContent()]
-        );
+        if ($dialogueWork->getId() !== null) {
+            $model = DialogueWorkModel::where('member_id', $memberId)->findOrFail($dialogueWork->getId());
+        } else {
+            $model = new DialogueWorkModel();
+            $model->member_id = $memberId;
+            $model->type = 'healthy';
+        }
+
+        $model->content = $dialogueWork->getContent();
+        $model->save();
 
         return DialogueWorkEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -24,9 +30,11 @@ class EloquentDialogueWorkRepository implements DialogueWorkRepositoryInterface
         );
     }
 
-    public function findById(int $id): ?DialogueWorkEntity
+    public function findByIdForMember(int $id, int $memberId): ?DialogueWorkEntity
     {
-        $model = DialogueWorkModel::find($id);
+        $model = DialogueWorkModel::where('member_id', $memberId)
+            ->where('type', 'healthy')
+            ->find($id);
 
         if ($model === null) {
             return null;
@@ -40,9 +48,10 @@ class EloquentDialogueWorkRepository implements DialogueWorkRepositoryInterface
         );
     }
 
-    public function findAllOrderByCreatedAtDesc(): array
+    public function findAllForMemberOrderByCreatedAtDesc(int $memberId): array
     {
-        return DialogueWorkModel::where('type', 'schema')
+        return DialogueWorkModel::where('member_id', $memberId)
+            ->where('type', 'healthy')
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($model) {
@@ -56,8 +65,14 @@ class EloquentDialogueWorkRepository implements DialogueWorkRepositoryInterface
             ->toArray();
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        DialogueWorkModel::destroy($id);
+        $model = DialogueWorkModel::where('member_id', $memberId)
+            ->where('type', 'healthy')
+            ->find($id);
+
+        if ($model !== null) {
+            $model->delete();
+        }
     }
 }

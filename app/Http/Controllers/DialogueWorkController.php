@@ -12,6 +12,7 @@ use App\Http\Requests\DialogueWork\CreateDialogueWorkRequest;
 use App\Http\Requests\DialogueWork\UpdateDialogueWorkRequest;
 use App\Infrastructure\Database\Models\DialogueWork;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class DialogueWorkController extends Controller
 {
@@ -26,7 +27,11 @@ class DialogueWorkController extends Controller
         DialogueWork $dialogueWork,
         DialogueWorkRepositoryInterface $repository
     ): JsonResponse {
-        $entity = $repository->findById($dialogueWork->id);
+        $entity = $repository->findByIdForMember($dialogueWork->id, (int) Auth::id());
+
+        if ($entity === null) {
+            abort(404);
+        }
 
         return response()->json([
             'id' => $entity->getId(),

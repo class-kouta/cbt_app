@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\DialogueWork;
 
 use App\Domain\Repository\DialogueWorkRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class ListDialogueWorksUseCase
 {
@@ -16,6 +17,6 @@ class ListDialogueWorksUseCase
      */
     public function handle(): array
     {
-        return $this->dialogueWorkRepository->findAllOrderByCreatedAtDesc();
+        return $this->dialogueWorkRepository->findAllForMemberOrderByCreatedAtDesc((int) Auth::id());
     }
 }

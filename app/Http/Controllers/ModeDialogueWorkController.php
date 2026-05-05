@@ -6,12 +6,14 @@ use App\Http\Requests\ModeDialogueWork\CreateModeDialogueWorkRequest;
 use App\Http\Requests\ModeDialogueWork\UpdateModeDialogueWorkRequest;
 use App\Infrastructure\Database\Models\DialogueWork;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ModeDialogueWorkController extends Controller
 {
     public function index(): JsonResponse
     {
         $items = DialogueWork::where('type', 'mode')
+            ->where('member_id', (int) Auth::id())
             ->orderByDesc('created_at')
             ->get()
             ->map(fn ($model) => [
@@ -50,6 +52,7 @@ class ModeDialogueWorkController extends Controller
             'content' => $request->string('content'),
             'mode_category' => $request->string('mode_category'),
             'mode_name' => $request->string('mode_name'),
+            'member_id' => (int) Auth::id(),
         ]);
 
         return response()->json([
@@ -64,6 +67,10 @@ class ModeDialogueWorkController extends Controller
 
     public function update(UpdateModeDialogueWorkRequest $request, DialogueWork $modeDialogueWork): JsonResponse
     {
+        if ($modeDialogueWork->type !== 'mode') {
+            abort(404);
+        }
+
         $modeDialogueWork->update([
             'content' => $request->string('content'),
         ]);

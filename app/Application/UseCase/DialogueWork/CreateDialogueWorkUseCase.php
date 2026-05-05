@@ -5,6 +5,7 @@ namespace App\Application\UseCase\DialogueWork;
 use App\Application\DTO\DialogueWorkData;
 use App\Domain\Entity\DialogueWork as DialogueWorkEntity;
 use App\Domain\Repository\DialogueWorkRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateDialogueWorkUseCase
 {
@@ -15,6 +16,6 @@ class CreateDialogueWorkUseCase
     public function handle(DialogueWorkData $data): DialogueWorkEntity
     {
         $dialogueWork = DialogueWorkEntity::createNew($data->content);
-        return $this->dialogueWorkRepository->save($dialogueWork);
+        return $this->dialogueWorkRepository->saveForMember($dialogueWork, (int) Auth::id());
     }
 }
