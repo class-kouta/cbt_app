@@ -35,9 +35,9 @@ class ModeDialogueWorkController extends Controller
     {
         $model = DialogueWork::create([
             'type' => self::MODE_TYPE,
-            'content' => (string) $request->input('content'),
-            'mode_category' => (string) $request->input('mode_category'),
-            'mode_name' => (string) $request->input('mode_name'),
+            'content' => (string) $request->string('content'),
+            'mode_category' => (string) $request->string('mode_category'),
+            'mode_name' => (string) $request->string('mode_name'),
             'member_id' => (int) Auth::id(),
         ]);
 
@@ -49,7 +49,7 @@ class ModeDialogueWorkController extends Controller
         $this->assertModeType($modeDialogueWork);
 
         $modeDialogueWork->update([
-            'content' => (string) $request->input('content'),
+            'content' => (string) $request->string('content'),
         ]);
 
         return response()->json($this->toResponse($modeDialogueWork));
