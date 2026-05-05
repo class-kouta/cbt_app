@@ -5,6 +5,7 @@ namespace App\Application\UseCase\StressorAndResponse;
 use App\Application\DTO\StressorAndResponseData;
 use App\Domain\Entity\StressorAndResponse as StressorAndResponseEntity;
 use App\Domain\Repository\StressorAndResponseRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateStressorAndResponseUseCase
 {
@@ -23,6 +24,6 @@ class CreateStressorAndResponseUseCase
             $data->stimulatedSchemas
         );
 
-        return $this->repository->save($stressorAndResponse);
+        return $this->repository->saveForMember($stressorAndResponse, (int) Auth::id());
     }
 }

@@ -5,6 +5,7 @@ namespace App\Application\UseCase\StressorAndResponse;
 use App\Application\DTO\SearchCriteriaData;
 use App\Application\Service\CsvExportService;
 use App\Domain\Repository\StressorAndResponseRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -78,7 +79,7 @@ class ExportStressorAndResponseCsvUseCase
      */
     public function handle(SearchCriteriaData $criteria): StreamedResponse
     {
-        $items = $this->repository->searchAll($criteria, self::SEARCHABLE_COLUMNS);
+        $items = $this->repository->searchAllForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
 
         $rows = array_map(function ($item) {
             return [
