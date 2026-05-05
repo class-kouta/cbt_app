@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\SimpleNotepad;
 
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteSimpleNotepadUseCase
 {
@@ -12,6 +13,7 @@ class DeleteSimpleNotepadUseCase
 
     public function handle(int $id): void
     {
-        $this->simpleNotepadRepository->delete($id);
+        $memberId = (int) Auth::id();
+        $this->simpleNotepadRepository->deleteForMember($id, $memberId);
     }
 }

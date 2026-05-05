@@ -6,6 +6,7 @@ use App\Application\DTO\SimpleNotepadData;
 use App\Domain\Entity\SimpleNotepad as SimpleNotepadEntity;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use DomainException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateSimpleNotepadUseCase
 {
@@ -15,13 +16,14 @@ class UpdateSimpleNotepadUseCase
 
     public function handle(int $id, SimpleNotepadData $data): SimpleNotepadEntity
     {
-        $simpleNotepad = $this->simpleNotepadRepository->findById($id);
+        $memberId = (int) Auth::id();
+        $simpleNotepad = $this->simpleNotepadRepository->findByIdForMember($id, $memberId);
 
         if ($simpleNotepad === null) {
             throw new DomainException('Simple notepad not found.');
         }
 
         $updatedSimpleNotepad = $simpleNotepad->update($data->title, $data->content);
-        return $this->simpleNotepadRepository->save($updatedSimpleNotepad);
+        return $this->simpleNotepadRepository->saveForMember($updatedSimpleNotepad, $memberId);
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Requests\SimpleNotepad\CreateSimpleNotepadRequest;
 use App\Http\Requests\SimpleNotepad\UpdateSimpleNotepadRequest;
 use App\Infrastructure\Database\Models\SimpleNotepad;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleNotepadController extends Controller
 {
@@ -18,7 +19,8 @@ class SimpleNotepadController extends Controller
      */
     public function index(): JsonResponse
     {
-        $simpleNotepads = SimpleNotepad::orderByDesc('created_at')
+        $simpleNotepads = SimpleNotepad::where('member_id', Auth::id())
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($simpleNotepad) {
                 return [
