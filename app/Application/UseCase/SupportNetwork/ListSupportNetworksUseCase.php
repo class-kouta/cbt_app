@@ -5,15 +5,16 @@ namespace App\Application\UseCase\SupportNetwork;
 use App\Domain\Repository\SupportNetworkRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
-class DeleteSupportNetworkUseCase
+class ListSupportNetworksUseCase
 {
     public function __construct(private readonly SupportNetworkRepositoryInterface $supportNetworkRepository)
     {
     }
 
-    public function handle(int $id): void
+    public function handle(): array
     {
         $memberId = (int) Auth::id();
-        $this->supportNetworkRepository->deleteForMember($id, $memberId);
+
+        return $this->supportNetworkRepository->findAllForMember($memberId);
     }
 }
