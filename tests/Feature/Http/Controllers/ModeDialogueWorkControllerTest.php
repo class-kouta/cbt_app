@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Enums\ModeCategory;
 use App\Infrastructure\Database\Models\DialogueWork;
 use App\Models\Member;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,7 +21,7 @@ class ModeDialogueWorkControllerTest extends TestCase
             'member_id' => $member->id,
             'type' => 'mode',
             'content' => 'my mode work',
-            'mode_category' => 'parent',
+            'mode_category' => ModeCategory::VULNERABLE_CHILD->value,
             'mode_name' => 'Punitive Parent',
         ]);
 
@@ -34,7 +35,7 @@ class ModeDialogueWorkControllerTest extends TestCase
             'member_id' => $otherMember->id,
             'type' => 'mode',
             'content' => 'other mode work',
-            'mode_category' => 'parent',
+            'mode_category' => ModeCategory::ANGRY_ADULT->value,
             'mode_name' => 'Demanding Parent',
         ]);
 
@@ -57,6 +58,24 @@ class ModeDialogueWorkControllerTest extends TestCase
 
         $response = $this->actingAs($member, 'sanctum')
             ->getJson("/api/mode-dialogue-works/{$healthyDialogueWork->id}");
+
+        $response->assertNotFound();
+    }
+
+    public function test_update_returns_404_when_dialogue_work_is_not_mode_type(): void
+    {
+        $member = Member::factory()->create();
+
+        $healthyDialogueWork = DialogueWork::create([
+            'member_id' => $member->id,
+            'type' => 'healthy',
+            'content' => 'healthy content',
+        ]);
+
+        $response = $this->actingAs($member, 'sanctum')->putJson(
+            "/api/mode-dialogue-works/{$healthyDialogueWork->id}",
+            ['content' => 'updated content']
+        );
 
         $response->assertNotFound();
     }
