@@ -7,6 +7,7 @@ use App\Application\UseCase\Chronology\CreateChronologyUseCase;
 use App\Application\UseCase\Chronology\DeleteChronologyUseCase;
 use App\Application\UseCase\Chronology\ExportChronologyCsvUseCase;
 use App\Application\UseCase\Chronology\UpdateChronologyUseCase;
+use App\Domain\Repository\ChronologyRepositoryInterface;
 use App\Http\Requests\Chronology\CreateChronologyRequest;
 use App\Http\Requests\Chronology\UpdateChronologyRequest;
 use App\Infrastructure\Database\Models\Chronology;
@@ -18,20 +19,17 @@ class ChronologyController extends Controller
 {
     public function index(): JsonResponse
     {
-        $chronologies = Chronology::where('member_id', Auth::id())
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function ($chronology) {
+        $chronologies = array_map(function ($chronology) {
                 return [
-                    'id' => $chronology->id,
-                    'when_period' => $chronology->when_period,
-                    'environment_event' => $chronology->environment_event,
-                    'experience_feeling' => $chronology->experience_feeling,
-                    'sentiment_type' => $chronology->sentiment_type,
-                    'created_at' => $chronology->created_at->format(DATE_ATOM),
-                    'updated_at' => $chronology->updated_at->format(DATE_ATOM),
+                    'id' => $chronology->getId(),
+                    'when_period' => $chronology->getWhenPeriod(),
+                    'environment_event' => $chronology->getEnvironmentEvent(),
+                    'experience_feeling' => $chronology->getExperienceFeeling(),
+                    'sentiment_type' => $chronology->getSentimentType(),
+                    'created_at' => $chronology->getCreatedAt()->format(DATE_ATOM),
+                    'updated_at' => $chronology->getUpdatedAt()->format(DATE_ATOM),
                 ];
-            });
+            }, app(ChronologyRepositoryInterface::class)->findAllForMember((int) Auth::id()));
 
         return response()->json($chronologies);
     }
