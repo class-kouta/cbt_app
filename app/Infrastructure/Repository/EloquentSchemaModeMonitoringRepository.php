@@ -5,29 +5,44 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\SchemaModeMonitoring as SchemaModeMonitoringEntity;
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
 use App\Infrastructure\Database\Models\SchemaModeMonitoring as SchemaModeMonitoringModel;
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepositoryInterface
 {
-    public function saveForMember(SchemaModeMonitoringEntity $schemaModeMonitoring, int $memberId): SchemaModeMonitoringEntity
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
     {
-        $model = SchemaModeMonitoringModel::query()
-            ->where('member_id', $memberId)
-            ->find($schemaModeMonitoring->getId())
-            ?? new SchemaModeMonitoringModel();
-
-        if (! $model->exists) {
-            $model->member_id = $memberId;
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
         }
 
-        $model->content = $schemaModeMonitoring->getContent();
-        $model->save();
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
+    public function saveForMember(SchemaModeMonitoringEntity $schemaModeMonitoring, int $memberId): SchemaModeMonitoringEntity
+    {
+        if ($schemaModeMonitoring->getId() !== null) {
+            $model = SchemaModeMonitoringModel::query()
+                ->where('member_id', $memberId)
+                ->findOrFail($schemaModeMonitoring->getId());
+            $model->content = $schemaModeMonitoring->getContent();
+            $model->save();
+        } else {
+            $model = new SchemaModeMonitoringModel();
+            $model->member_id = $memberId;
+            $model->content = $schemaModeMonitoring->getContent();
+            $model->save();
+        }
 
         return SchemaModeMonitoringEntity::reconstitute(
             id: (int) $model->getKey(),
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
@@ -44,8 +59,8 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
         return SchemaModeMonitoringEntity::reconstitute(
             id: (int) $model->id,
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
