@@ -6,30 +6,27 @@ use App\Application\DTO\SupportNetworkData;
 use App\Application\UseCase\SupportNetwork\CreateSupportNetworkUseCase;
 use App\Application\UseCase\SupportNetwork\UpdateSupportNetworkUseCase;
 use App\Application\UseCase\SupportNetwork\DeleteSupportNetworkUseCase;
+use App\Application\UseCase\SupportNetwork\ListSupportNetworksUseCase;
 use App\Http\Requests\SupportNetwork\CreateSupportNetworkRequest;
 use App\Http\Requests\SupportNetwork\UpdateSupportNetworkRequest;
 use App\Infrastructure\Database\Models\SupportNetwork;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class SupportNetworkController extends Controller
 {
     /**
      * サポートネットワーク一覧を取得（ポイント高い順、同ポイントは作成日時降順）
      */
-    public function index(): JsonResponse
+    public function index(ListSupportNetworksUseCase $listSupportNetworks): JsonResponse
     {
-        $supportNetworks = SupportNetwork::where('member_id', (int) Auth::id())
-            ->orderByDesc('point')
-            ->orderByDesc('created_at')
-            ->get()
+        $supportNetworks = collect($listSupportNetworks->handle())
             ->map(function ($supportNetwork) {
                 return [
-                    'id' => $supportNetwork->id,
-                    'name' => $supportNetwork->name,
-                    'point' => $supportNetwork->point,
-                    'created_at' => $supportNetwork->created_at->format(DATE_ATOM),
-                    'updated_at' => $supportNetwork->updated_at->format(DATE_ATOM),
+                    'id' => $supportNetwork->getId(),
+                    'name' => $supportNetwork->getName(),
+                    'point' => $supportNetwork->getPoint(),
+                    'created_at' => $supportNetwork->getCreatedAt()->format(DATE_ATOM),
+                    'updated_at' => $supportNetwork->getUpdatedAt()->format(DATE_ATOM),
                 ];
             });
 
