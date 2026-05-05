@@ -6,9 +6,11 @@ use App\Domain\Entity\SimpleNotepad;
 
 interface SimpleNotepadRepositoryInterface
 {
-    public function save(SimpleNotepad $simpleNotepad): SimpleNotepad;
+    public function findAllForMember(int $memberId): array;
 
-    public function findById(int $id): ?SimpleNotepad;
+    public function saveForMember(SimpleNotepad $simpleNotepad, int $memberId): SimpleNotepad;
 
-    public function delete(int $id): void;
+    public function findByIdForMember(int $id, int $memberId): ?SimpleNotepad;
+
+    public function deleteForMember(int $id, int $memberId): void;
 }

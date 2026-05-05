@@ -5,15 +5,15 @@ namespace App\Application\UseCase\SimpleNotepad;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
-class DeleteSimpleNotepadUseCase
+class ListSimpleNotepadsUseCase
 {
     public function __construct(private readonly SimpleNotepadRepositoryInterface $simpleNotepadRepository)
     {
     }
 
-    public function handle(int $id): void
+    public function handle(): array
     {
         $memberId = (int) Auth::id();
-        $this->simpleNotepadRepository->deleteForMember($id, $memberId);
+        return $this->simpleNotepadRepository->findAllForMember($memberId);
     }
 }
