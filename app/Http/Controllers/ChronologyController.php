@@ -11,13 +11,15 @@ use App\Http\Requests\Chronology\CreateChronologyRequest;
 use App\Http\Requests\Chronology\UpdateChronologyRequest;
 use App\Infrastructure\Database\Models\Chronology;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChronologyController extends Controller
 {
     public function index(): JsonResponse
     {
-        $chronologies = Chronology::orderByDesc('created_at')
+        $chronologies = Chronology::where('member_id', Auth::id())
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($chronology) {
                 return [
