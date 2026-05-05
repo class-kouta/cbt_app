@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\SupportNetwork;
 
 use App\Domain\Repository\SupportNetworkRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteSupportNetworkUseCase
 {
@@ -12,6 +13,7 @@ class DeleteSupportNetworkUseCase
 
     public function handle(int $id): void
     {
-        $this->supportNetworkRepository->delete($id);
+        $memberId = (int) Auth::id();
+        $this->supportNetworkRepository->deleteForMember($id, $memberId);
     }
 }

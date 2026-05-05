@@ -10,6 +10,7 @@ use App\Http\Requests\SupportNetwork\CreateSupportNetworkRequest;
 use App\Http\Requests\SupportNetwork\UpdateSupportNetworkRequest;
 use App\Infrastructure\Database\Models\SupportNetwork;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SupportNetworkController extends Controller
 {
@@ -18,7 +19,8 @@ class SupportNetworkController extends Controller
      */
     public function index(): JsonResponse
     {
-        $supportNetworks = SupportNetwork::orderByDesc('point')
+        $supportNetworks = SupportNetwork::where('member_id', (int) Auth::id())
+            ->orderByDesc('point')
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($supportNetwork) {

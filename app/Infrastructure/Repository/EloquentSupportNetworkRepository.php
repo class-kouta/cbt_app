@@ -9,17 +9,33 @@ use DateTimeImmutable;
 
 class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterface
 {
-    public function save(SupportNetworkEntity $supportNetwork): SupportNetworkEntity
+    public function findAllForMember(int $memberId): array
+    {
+        return SupportNetworkModel::where('member_id', $memberId)
+            ->orderByDesc('point')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($model) => SupportNetworkEntity::reconstitute(
+                id: (int) $model->id,
+                name: (string) $model->name,
+                point: (int) $model->point,
+                createdAt: new DateTimeImmutable($model->created_at),
+                updatedAt: new DateTimeImmutable($model->updated_at),
+            ))
+            ->all();
+    }
+
+    public function saveForMember(SupportNetworkEntity $supportNetwork, int $memberId): SupportNetworkEntity
     {
         if ($supportNetwork->getId() !== null) {
-            // 更新
-            $model = SupportNetworkModel::findOrFail($supportNetwork->getId());
+            $model = SupportNetworkModel::where('member_id', $memberId)
+                ->findOrFail($supportNetwork->getId());
             $model->name = $supportNetwork->getName();
             $model->point = $supportNetwork->getPoint();
             $model->save();
         } else {
-            // 新規作成
             $model = new SupportNetworkModel();
+            $model->member_id = $memberId;
             $model->name = $supportNetwork->getName();
             $model->point = $supportNetwork->getPoint();
             $model->save();
@@ -34,9 +50,9 @@ class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterf
         );
     }
 
-    public function findById(int $id): ?SupportNetworkEntity
+    public function findByIdForMember(int $id, int $memberId): ?SupportNetworkEntity
     {
-        $model = SupportNetworkModel::find($id);
+        $model = SupportNetworkModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -51,9 +67,9 @@ class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterf
         );
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = SupportNetworkModel::find($id);
+        $model = SupportNetworkModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();

@@ -6,9 +6,11 @@ use App\Domain\Entity\SupportNetwork;
 
 interface SupportNetworkRepositoryInterface
 {
-    public function save(SupportNetwork $supportNetwork): SupportNetwork;
+    public function findAllForMember(int $memberId): array;
 
-    public function findById(int $id): ?SupportNetwork;
+    public function saveForMember(SupportNetwork $supportNetwork, int $memberId): SupportNetwork;
 
-    public function delete(int $id): void;
+    public function findByIdForMember(int $id, int $memberId): ?SupportNetwork;
+
+    public function deleteForMember(int $id, int $memberId): void;
 }
