@@ -6,14 +6,14 @@ use App\Domain\Entity\SchemaModeMonitoring;
 
 interface SchemaModeMonitoringRepositoryInterface
 {
-    public function save(SchemaModeMonitoring $schemaModeMonitoring): SchemaModeMonitoring;
+    public function saveForMember(SchemaModeMonitoring $schemaModeMonitoring, int $memberId): SchemaModeMonitoring;
 
-    public function findById(int $id): ?SchemaModeMonitoring;
+    public function findByIdForMember(int $id, int $memberId): ?SchemaModeMonitoring;
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function findAllOrderByCreatedAtDesc(): array;
+    public function findAllForMemberOrderByCreatedAtDesc(int $memberId): array;
 
-    public function delete(int $id): void;
+    public function deleteForMember(int $id, int $memberId): void;
 }

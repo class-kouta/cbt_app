@@ -5,6 +5,7 @@ namespace App\Application\UseCase\SchemaModeMonitoring;
 use App\Application\DTO\SchemaModeMonitoringData;
 use App\Domain\Entity\SchemaModeMonitoring as SchemaModeMonitoringEntity;
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateSchemaModeMonitoringUseCase
 {
@@ -15,6 +16,6 @@ class CreateSchemaModeMonitoringUseCase
     public function handle(SchemaModeMonitoringData $data): SchemaModeMonitoringEntity
     {
         $schemaModeMonitoring = SchemaModeMonitoringEntity::createNew($data->content);
-        return $this->schemaModeMonitoringRepository->save($schemaModeMonitoring);
+        return $this->schemaModeMonitoringRepository->saveForMember($schemaModeMonitoring, (int) Auth::id());
     }
 }
