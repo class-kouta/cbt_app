@@ -5,10 +5,24 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\SimpleNotepad as SimpleNotepadEntity;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use App\Infrastructure\Database\Models\SimpleNotepad as SimpleNotepadModel;
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterface
 {
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
     public function findAllForMember(int $memberId): array
     {
         return SimpleNotepadModel::where('member_id', $memberId)
@@ -18,8 +32,8 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
                 id: (int) $model->id,
                 title: (string) $model->title,
                 content: (string) $model->content,
-                createdAt: new DateTimeImmutable($model->created_at),
-                updatedAt: new DateTimeImmutable($model->updated_at),
+                createdAt: $this->toDateTimeImmutable($model->created_at),
+                updatedAt: $this->toDateTimeImmutable($model->updated_at),
             ))
             ->all();
     }
@@ -44,8 +58,8 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             id: (int) $model->getKey(),
             title: (string) $model->title,
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
@@ -61,8 +75,8 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             id: (int) $model->id,
             title: (string) $model->title,
             content: (string) $model->content,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 

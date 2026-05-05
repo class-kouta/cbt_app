@@ -6,29 +6,27 @@ use App\Application\DTO\SimpleNotepadData;
 use App\Application\UseCase\SimpleNotepad\CreateSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\UpdateSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\DeleteSimpleNotepadUseCase;
+use App\Application\UseCase\SimpleNotepad\ListSimpleNotepadsUseCase;
 use App\Http\Requests\SimpleNotepad\CreateSimpleNotepadRequest;
 use App\Http\Requests\SimpleNotepad\UpdateSimpleNotepadRequest;
 use App\Infrastructure\Database\Models\SimpleNotepad;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class SimpleNotepadController extends Controller
 {
     /**
      * メモ帳一覧を取得（作成日時降順）
      */
-    public function index(): JsonResponse
+    public function index(ListSimpleNotepadsUseCase $listSimpleNotepads): JsonResponse
     {
-        $simpleNotepads = SimpleNotepad::where('member_id', Auth::id())
-            ->orderByDesc('created_at')
-            ->get()
+        $simpleNotepads = collect($listSimpleNotepads->handle())
             ->map(function ($simpleNotepad) {
                 return [
-                    'id' => $simpleNotepad->id,
-                    'title' => $simpleNotepad->title,
-                    'content' => $simpleNotepad->content,
-                    'created_at' => $simpleNotepad->created_at->format(DATE_ATOM),
-                    'updated_at' => $simpleNotepad->updated_at->format(DATE_ATOM),
+                    'id' => $simpleNotepad->getId(),
+                    'title' => $simpleNotepad->getTitle(),
+                    'content' => $simpleNotepad->getContent(),
+                    'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
+                    'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
                 ];
             });
 
