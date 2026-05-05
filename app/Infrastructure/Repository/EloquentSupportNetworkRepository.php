@@ -5,10 +5,24 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\SupportNetwork as SupportNetworkEntity;
 use App\Domain\Repository\SupportNetworkRepositoryInterface;
 use App\Infrastructure\Database\Models\SupportNetwork as SupportNetworkModel;
+use Carbon\Carbon;
 use DateTimeImmutable;
 
 class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterface
 {
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
     public function findAllForMember(int $memberId): array
     {
         return SupportNetworkModel::where('member_id', $memberId)
@@ -19,8 +33,8 @@ class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterf
                 id: (int) $model->id,
                 name: (string) $model->name,
                 point: (int) $model->point,
-                createdAt: new DateTimeImmutable($model->created_at),
-                updatedAt: new DateTimeImmutable($model->updated_at),
+                createdAt: $this->toDateTimeImmutable($model->created_at),
+                updatedAt: $this->toDateTimeImmutable($model->updated_at),
             ))
             ->all();
     }
@@ -45,8 +59,8 @@ class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterf
             id: (int) $model->getKey(),
             name: (string) $model->name,
             point: (int) $model->point,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
@@ -62,8 +76,8 @@ class EloquentSupportNetworkRepository implements SupportNetworkRepositoryInterf
             id: (int) $model->id,
             name: (string) $model->name,
             point: (int) $model->point,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
     }
 
