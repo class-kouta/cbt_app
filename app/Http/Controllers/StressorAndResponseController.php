@@ -13,6 +13,7 @@ use App\Http\Requests\StressorAndResponse\CreateStressorAndResponseRequest;
 use App\Http\Requests\StressorAndResponse\UpdateStressorAndResponseRequest;
 use App\Infrastructure\Database\Models\StressorAndResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StressorAndResponseController extends Controller
@@ -76,13 +77,14 @@ class StressorAndResponseController extends Controller
 
         // タグの紐付け
         $tagIds = $request->input('tag_ids', []);
+        $model = StressorAndResponse::where('member_id', (int) Auth::id())
+            ->with('tags')
+            ->findOrFail($item->getId());
+
         if (!empty($tagIds)) {
-            $model = StressorAndResponse::find($item->getId());
             $model->tags()->sync($tagIds);
             $model->load('tags');
         }
-
-        $model = StressorAndResponse::with('tags')->find($item->getId());
 
         return response()->json([
             'id' => $item->getId(),
