@@ -3,7 +3,8 @@
 namespace App\Application\UseCase\Chronology;
 
 use App\Application\Service\CsvExportService;
-use App\Infrastructure\Database\Models\Chronology;
+use App\Domain\Repository\ChronologyRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportChronologyCsvUseCase
@@ -18,15 +19,13 @@ class ExportChronologyCsvUseCase
     ];
 
     public function __construct(
-        private readonly CsvExportService $csvExportService
+        private readonly CsvExportService $csvExportService,
+        private readonly ChronologyRepositoryInterface $chronologyRepository,
     ) {}
 
     public function handle(): StreamedResponse
     {
-        $items = Chronology::orderByDesc('created_at')
-            ->get()
-            ->map(fn ($item) => $item->toArray())
-            ->toArray();
+        $items = $this->chronologyRepository->findAllForMember(Auth::id());
 
         $sentimentLabels = [
             'positive' => 'ポジティブ',
@@ -35,12 +34,12 @@ class ExportChronologyCsvUseCase
 
         $rows = array_map(function ($item) use ($sentimentLabels) {
             return [
-                $item['id'],
-                $this->csvExportService->formatDatetime($item['created_at']),
-                $item['when_period'] ?? '',
-                $item['environment_event'] ?? '',
-                $item['experience_feeling'] ?? '',
-                $sentimentLabels[$item['sentiment_type'] ?? ''] ?? '',
+                $item->getId(),
+                $this->csvExportService->formatDatetime($item->getCreatedAt()->format(DATE_ATOM)),
+                $item->getWhenPeriod() ?? '',
+                $item->getEnvironmentEvent() ?? '',
+                $item->getExperienceFeeling() ?? '',
+                $sentimentLabels[$item->getSentimentType() ?? ''] ?? '',
             ];
         }, $items);
 

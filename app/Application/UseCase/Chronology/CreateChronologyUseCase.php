@@ -5,6 +5,7 @@ namespace App\Application\UseCase\Chronology;
 use App\Application\DTO\ChronologyData;
 use App\Domain\Entity\Chronology as ChronologyEntity;
 use App\Domain\Repository\ChronologyRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateChronologyUseCase
 {
@@ -12,6 +13,8 @@ class CreateChronologyUseCase
 
     public function handle(ChronologyData $data): ChronologyEntity
     {
+        $memberId = Auth::id();
+
         $chronology = ChronologyEntity::createNew(
             $data->whenPeriod,
             $data->environmentEvent,
@@ -19,6 +22,6 @@ class CreateChronologyUseCase
             $data->sentimentType
         );
 
-        return $this->chronologyRepository->save($chronology);
+        return $this->chronologyRepository->saveForMember($chronology, $memberId);
     }
 }

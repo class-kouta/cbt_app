@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\Chronology;
 
 use App\Domain\Repository\ChronologyRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteChronologyUseCase
 {
@@ -10,6 +11,6 @@ class DeleteChronologyUseCase
 
     public function handle(int $id): void
     {
-        $this->chronologyRepository->delete($id);
+        $this->chronologyRepository->deleteForMember($id, Auth::id());
     }
 }
