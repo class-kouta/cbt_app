@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\SchemaModeMonitoring;
 
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteSchemaModeMonitoringUseCase
 {
@@ -12,6 +13,6 @@ class DeleteSchemaModeMonitoringUseCase
 
     public function handle(int $id): void
     {
-        $this->schemaModeMonitoringRepository->delete($id);
+        $this->schemaModeMonitoringRepository->deleteForMember($id, (int) Auth::id());
     }
 }

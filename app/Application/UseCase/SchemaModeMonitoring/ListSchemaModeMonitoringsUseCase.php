@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\SchemaModeMonitoring;
 
 use App\Domain\Repository\SchemaModeMonitoringRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class ListSchemaModeMonitoringsUseCase
 {
@@ -16,6 +17,6 @@ class ListSchemaModeMonitoringsUseCase
      */
     public function handle(): array
     {
-        return $this->schemaModeMonitoringRepository->findAllOrderByCreatedAtDesc();
+        return $this->schemaModeMonitoringRepository->findAllForMemberOrderByCreatedAtDesc((int) Auth::id());
     }
 }

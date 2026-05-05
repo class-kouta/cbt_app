@@ -9,12 +9,19 @@ use DateTimeImmutable;
 
 class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepositoryInterface
 {
-    public function save(SchemaModeMonitoringEntity $schemaModeMonitoring): SchemaModeMonitoringEntity
+    public function saveForMember(SchemaModeMonitoringEntity $schemaModeMonitoring, int $memberId): SchemaModeMonitoringEntity
     {
-        $model = SchemaModeMonitoringModel::updateOrCreate(
-            ['id' => $schemaModeMonitoring->getId()],
-            ['content' => $schemaModeMonitoring->getContent()]
-        );
+        $model = SchemaModeMonitoringModel::query()
+            ->where('member_id', $memberId)
+            ->find($schemaModeMonitoring->getId())
+            ?? new SchemaModeMonitoringModel();
+
+        if (! $model->exists) {
+            $model->member_id = $memberId;
+        }
+
+        $model->content = $schemaModeMonitoring->getContent();
+        $model->save();
 
         return SchemaModeMonitoringEntity::reconstitute(
             id: (int) $model->getKey(),
@@ -24,9 +31,11 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
         );
     }
 
-    public function findById(int $id): ?SchemaModeMonitoringEntity
+    public function findByIdForMember(int $id, int $memberId): ?SchemaModeMonitoringEntity
     {
-        $model = SchemaModeMonitoringModel::find($id);
+        $model = SchemaModeMonitoringModel::query()
+            ->where('member_id', $memberId)
+            ->find($id);
 
         if ($model === null) {
             return null;
@@ -40,9 +49,11 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
         );
     }
 
-    public function findAllOrderByCreatedAtDesc(): array
+    public function findAllForMemberOrderByCreatedAtDesc(int $memberId): array
     {
-        return SchemaModeMonitoringModel::orderByDesc('created_at')
+        return SchemaModeMonitoringModel::query()
+            ->where('member_id', $memberId)
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($model) {
                 return [
@@ -55,8 +66,11 @@ class EloquentSchemaModeMonitoringRepository implements SchemaModeMonitoringRepo
             ->toArray();
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        SchemaModeMonitoringModel::destroy($id);
+        SchemaModeMonitoringModel::query()
+            ->where('member_id', $memberId)
+            ->whereKey($id)
+            ->delete();
     }
 }
