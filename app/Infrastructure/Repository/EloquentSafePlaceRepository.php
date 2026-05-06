@@ -9,12 +9,14 @@ use DateTimeImmutable;
 
 class EloquentSafePlaceRepository implements SafePlaceRepositoryInterface
 {
-    public function save(SafePlaceEntity $safePlace): SafePlaceEntity
+    public function saveForMember(SafePlaceEntity $safePlace, int $memberId): SafePlaceEntity
     {
         if ($safePlace->getId() !== null) {
-            $model = SafePlaceModel::findOrFail($safePlace->getId());
+            $model = SafePlaceModel::where('member_id', $memberId)
+                ->findOrFail($safePlace->getId());
         } else {
             $model = new SafePlaceModel();
+            $model->member_id = $memberId;
         }
 
         $model->safe_image = $safePlace->getSafeImage();
@@ -24,9 +26,9 @@ class EloquentSafePlaceRepository implements SafePlaceRepositoryInterface
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?SafePlaceEntity
+    public function findByIdForMember(int $id, int $memberId): ?SafePlaceEntity
     {
-        $model = SafePlaceModel::find($id);
+        $model = SafePlaceModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -35,9 +37,9 @@ class EloquentSafePlaceRepository implements SafePlaceRepositoryInterface
         return $this->toEntity($model);
     }
 
-    public function findFirst(): ?SafePlaceEntity
+    public function findFirstForMember(int $memberId): ?SafePlaceEntity
     {
-        $model = SafePlaceModel::first();
+        $model = SafePlaceModel::where('member_id', $memberId)->first();
 
         if ($model === null) {
             return null;

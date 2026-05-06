@@ -6,9 +6,9 @@ use App\Domain\Entity\SafePlace;
 
 interface SafePlaceRepositoryInterface
 {
-    public function save(SafePlace $safePlace): SafePlace;
+    public function saveForMember(SafePlace $safePlace, int $memberId): SafePlace;
 
-    public function findById(int $id): ?SafePlace;
+    public function findByIdForMember(int $id, int $memberId): ?SafePlace;
 
-    public function findFirst(): ?SafePlace;
+    public function findFirstForMember(int $memberId): ?SafePlace;
 }

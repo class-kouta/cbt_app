@@ -9,12 +9,13 @@ use App\Domain\Repository\SafePlaceRepositoryInterface;
 use App\Http\Requests\SafePlace\CreateSafePlaceRequest;
 use App\Http\Requests\SafePlace\UpdateSafePlaceRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SafePlaceController extends Controller
 {
     public function show(SafePlaceRepositoryInterface $repository): JsonResponse
     {
-        $safePlace = $repository->findFirst();
+        $safePlace = $repository->findFirstForMember((int) Auth::id());
 
         if ($safePlace === null) {
             return response()->json([
