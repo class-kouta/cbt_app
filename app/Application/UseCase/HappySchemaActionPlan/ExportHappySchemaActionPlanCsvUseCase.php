@@ -5,6 +5,7 @@ namespace App\Application\UseCase\HappySchemaActionPlan;
 use App\Application\Service\CsvExportService;
 use App\Domain\Entity\HappySchemaActionPlan as HappySchemaActionPlanEntity;
 use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportHappySchemaActionPlanCsvUseCase
@@ -18,12 +19,11 @@ class ExportHappySchemaActionPlanCsvUseCase
     public function __construct(
         private readonly CsvExportService $csvExportService,
         private readonly HappySchemaActionPlanRepositoryInterface $repository
-    ) {
-    }
+    ) {}
 
     public function handle(): StreamedResponse
     {
-        $plans = $this->repository->findAllOrderedByLatest();
+        $plans = $this->repository->findAllForMemberOrderedByLatest((int) Auth::id());
 
         $rows = array_map(function (HappySchemaActionPlanEntity $plan) {
             return [
@@ -33,7 +33,7 @@ class ExportHappySchemaActionPlanCsvUseCase
             ];
         }, $plans);
 
-        $filename = 'happy_schema_action_plans_' . $this->csvExportService->getDateSuffix() . '.csv';
+        $filename = 'happy_schema_action_plans_'.$this->csvExportService->getDateSuffix().'.csv';
 
         return $this->csvExportService->export(self::CSV_HEADERS, $rows, $filename);
     }
