@@ -6,12 +6,12 @@ use App\Domain\Entity\HappySchemaActionPlan;
 
 interface HappySchemaActionPlanRepositoryInterface
 {
-    public function save(HappySchemaActionPlan $plan): HappySchemaActionPlan;
+    public function saveForMember(HappySchemaActionPlan $plan, int $memberId): HappySchemaActionPlan;
 
-    public function findById(int $id): ?HappySchemaActionPlan;
+    public function findByIdForMember(int $id, int $memberId): ?HappySchemaActionPlan;
 
-    public function findFirst(): ?HappySchemaActionPlan;
+    public function findFirstForMember(int $memberId): ?HappySchemaActionPlan;
 
     /** @return HappySchemaActionPlan[] */
-    public function findAllOrderedByLatest(): array;
+    public function findAllForMemberOrderedByLatest(int $memberId): array;
 }
