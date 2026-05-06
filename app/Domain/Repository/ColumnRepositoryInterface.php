@@ -23,11 +23,6 @@ interface ColumnRepositoryInterface
     public function deleteForMember(int $id, int $memberId): void;
 
     /**
-     * @return Column[]
-     */
-    public function findAll(): array;
-
-    /**
      * 検索条件に基づいてコラムを検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件

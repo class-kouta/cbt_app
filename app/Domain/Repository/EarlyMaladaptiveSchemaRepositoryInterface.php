@@ -12,5 +12,4 @@ interface EarlyMaladaptiveSchemaRepositoryInterface
 
     public function findFirstForMember(int $memberId): ?EarlyMaladaptiveSchema;
 
-    public function delete(int $id): void;
 }

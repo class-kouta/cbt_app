@@ -17,11 +17,6 @@ interface ProblemSolvingRepositoryInterface
     public function deleteForMember(int $id, int $memberId): void;
 
     /**
-     * @return ProblemSolving[]
-     */
-    public function findAll(): array;
-
-    /**
      * 検索条件に基づいて問題解決法を検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件
@@ -39,7 +34,7 @@ interface ProblemSolvingRepositoryInterface
      */
     public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
 
-    public function saveSolution(int $problemSolvingId, ProblemSolvingSolution $solution): ProblemSolvingSolution;
+    public function saveSolutionForMember(int $problemSolvingId, ProblemSolvingSolution $solution, int $memberId): ProblemSolvingSolution;
 
     public function updateSolutionForMember(ProblemSolvingSolution $solution, int $memberId): ProblemSolvingSolution;
 

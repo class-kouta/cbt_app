@@ -130,32 +130,6 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
     }
 
     /**
-     * @return ColumnEntity[]
-     */
-    public function findAll(): array
-    {
-        return ColumnModel::orderByDesc('created_at')
-            ->get()
-            ->map(function ($model) {
-                return ColumnEntity::reconstitute(
-                    id: (int) $model->id,
-                    situation: (string) $model->situation,
-                    mood: $model->mood,
-                    automaticThought: $model->automatic_thought,
-                    evidence: $model->evidence,
-                    counterEvidence: $model->counter_evidence,
-                    adaptiveThought: $model->adaptive_thought,
-                    currentMood: $model->current_mood,
-                    notes: $model->notes,
-                    stressorAndResponseId: $model->stressor_and_response_id,
-                    createdAt: new DateTimeImmutable($model->created_at),
-                    updatedAt: new DateTimeImmutable($model->updated_at),
-                );
-            })
-            ->toArray();
-    }
-
-    /**
      * 検索条件に基づいてコラムを検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件
