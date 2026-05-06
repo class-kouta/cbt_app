@@ -46,8 +46,8 @@ class EloquentEarlyMaladaptiveSchemaRepository implements EarlyMaladaptiveSchema
         $model->self_sacrifice_experience = $schema->getSelfSacrificeExperience();
         $model->approval_seeking = $schema->getApprovalSeeking();
         $model->approval_seeking_experience = $schema->getApprovalSeekingExperience();
-        $model->negativity_pessimism = $schema->getNegativismPessimism();
-        $model->negativity_pessimism_experience = $schema->getNegativismPessimismExperience();
+        $model->negativity_pessimism = $schema->getNegativityPessimism();
+        $model->negativity_pessimism_experience = $schema->getNegativityPessimismExperience();
         $model->emotional_inhibition = $schema->getEmotionalInhibition();
         $model->emotional_inhibition_experience = $schema->getEmotionalInhibitionExperience();
         $model->unrelenting_standards = $schema->getUnrelentingStandards();
