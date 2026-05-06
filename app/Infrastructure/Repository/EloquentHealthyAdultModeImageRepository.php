@@ -9,12 +9,13 @@ use DateTimeImmutable;
 
 class EloquentHealthyAdultModeImageRepository implements HealthyAdultModeImageRepositoryInterface
 {
-    public function save(HealthyAdultModeImageEntity $entity): HealthyAdultModeImageEntity
+    public function saveForMember(HealthyAdultModeImageEntity $entity, int $memberId): HealthyAdultModeImageEntity
     {
         if ($entity->getId() !== null) {
-            $model = HealthyAdultModeImageModel::findOrFail($entity->getId());
+            $model = HealthyAdultModeImageModel::where('member_id', $memberId)
+                ->findOrFail($entity->getId());
         } else {
-            $model = new HealthyAdultModeImageModel();
+            $model = HealthyAdultModeImageModel::firstOrNew(['member_id' => $memberId]);
         }
 
         $model->content = $entity->getContent();
@@ -23,9 +24,9 @@ class EloquentHealthyAdultModeImageRepository implements HealthyAdultModeImageRe
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?HealthyAdultModeImageEntity
+    public function findByIdForMember(int $id, int $memberId): ?HealthyAdultModeImageEntity
     {
-        $model = HealthyAdultModeImageModel::find($id);
+        $model = HealthyAdultModeImageModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -34,9 +35,9 @@ class EloquentHealthyAdultModeImageRepository implements HealthyAdultModeImageRe
         return $this->toEntity($model);
     }
 
-    public function findFirst(): ?HealthyAdultModeImageEntity
+    public function findFirstForMember(int $memberId): ?HealthyAdultModeImageEntity
     {
-        $model = HealthyAdultModeImageModel::first();
+        $model = HealthyAdultModeImageModel::where('member_id', $memberId)->first();
 
         if ($model === null) {
             return null;

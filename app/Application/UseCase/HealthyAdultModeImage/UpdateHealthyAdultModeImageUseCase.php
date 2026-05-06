@@ -5,6 +5,7 @@ namespace App\Application\UseCase\HealthyAdultModeImage;
 use App\Application\DTO\HealthyAdultModeImageData;
 use App\Domain\Entity\HealthyAdultModeImage as HealthyAdultModeImageEntity;
 use App\Domain\Repository\HealthyAdultModeImageRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateHealthyAdultModeImageUseCase
 {
@@ -14,7 +15,8 @@ class UpdateHealthyAdultModeImageUseCase
 
     public function handle(int $id, HealthyAdultModeImageData $data): HealthyAdultModeImageEntity
     {
-        $existing = $this->repository->findById($id);
+        $memberId = (int) Auth::id();
+        $existing = $this->repository->findByIdForMember($id, $memberId);
 
         if ($existing === null) {
             throw new \RuntimeException('ヘルシーな大人モードのイメージが見つかりません');
@@ -27,6 +29,6 @@ class UpdateHealthyAdultModeImageUseCase
             new \DateTimeImmutable('now')
         );
 
-        return $this->repository->save($entity);
+        return $this->repository->saveForMember($entity, $memberId);
     }
 }
