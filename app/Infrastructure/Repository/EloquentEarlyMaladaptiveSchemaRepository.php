@@ -9,14 +9,13 @@ use DateTimeImmutable;
 
 class EloquentEarlyMaladaptiveSchemaRepository implements EarlyMaladaptiveSchemaRepositoryInterface
 {
-    public function save(EarlyMaladaptiveSchemaEntity $schema): EarlyMaladaptiveSchemaEntity
+    public function saveForMember(EarlyMaladaptiveSchemaEntity $schema, int $memberId): EarlyMaladaptiveSchemaEntity
     {
         if ($schema->getId() !== null) {
-            // 更新
-            $model = EarlyMaladaptiveSchemaModel::findOrFail($schema->getId());
+            $model = EarlyMaladaptiveSchemaModel::where('member_id', $memberId)->findOrFail($schema->getId());
         } else {
-            // 新規作成
             $model = new EarlyMaladaptiveSchemaModel();
+            $model->member_id = $memberId;
         }
 
         $model->abandonment = $schema->getAbandonment();
@@ -61,9 +60,9 @@ class EloquentEarlyMaladaptiveSchemaRepository implements EarlyMaladaptiveSchema
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?EarlyMaladaptiveSchemaEntity
+    public function findByIdForMember(int $id, int $memberId): ?EarlyMaladaptiveSchemaEntity
     {
-        $model = EarlyMaladaptiveSchemaModel::find($id);
+        $model = EarlyMaladaptiveSchemaModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -72,9 +71,9 @@ class EloquentEarlyMaladaptiveSchemaRepository implements EarlyMaladaptiveSchema
         return $this->toEntity($model);
     }
 
-    public function findFirst(): ?EarlyMaladaptiveSchemaEntity
+    public function findFirstForMember(int $memberId): ?EarlyMaladaptiveSchemaEntity
     {
-        $model = EarlyMaladaptiveSchemaModel::first();
+        $model = EarlyMaladaptiveSchemaModel::where('member_id', $memberId)->first();
 
         if ($model === null) {
             return null;
