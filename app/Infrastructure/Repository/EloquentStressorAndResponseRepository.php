@@ -79,29 +79,6 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
     }
 
     /**
-     * @return StressorAndResponseEntity[]
-     */
-    public function findAll(): array
-    {
-        return StressorAndResponseModel::orderByDesc('created_at')
-            ->get()
-            ->map(function ($model) {
-                return StressorAndResponseEntity::reconstitute(
-                    id: (int) $model->id,
-                    stressor: (string) $model->stressor,
-                    cognition: $model->cognition,
-                    mood: $model->mood,
-                    bodyReaction: $model->body_reaction,
-                    behavior: $model->behavior,
-                    stimulatedSchemas: $model->stimulated_schemas,
-                    createdAt: new DateTimeImmutable($model->created_at),
-                    updatedAt: new DateTimeImmutable($model->updated_at),
-                );
-            })
-            ->toArray();
-    }
-
-    /**
      * 検索条件に基づいてストレッサーとストレス反応を検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件

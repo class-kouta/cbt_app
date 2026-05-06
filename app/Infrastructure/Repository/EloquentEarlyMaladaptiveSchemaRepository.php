@@ -82,15 +82,6 @@ class EloquentEarlyMaladaptiveSchemaRepository implements EarlyMaladaptiveSchema
         return $this->toEntity($model);
     }
 
-    public function delete(int $id): void
-    {
-        $model = EarlyMaladaptiveSchemaModel::find($id);
-
-        if ($model !== null) {
-            $model->delete();
-        }
-    }
-
     private function toEntity(EarlyMaladaptiveSchemaModel $model): EarlyMaladaptiveSchemaEntity
     {
         return EarlyMaladaptiveSchemaEntity::reconstitute(

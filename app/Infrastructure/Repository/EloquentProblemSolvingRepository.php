@@ -57,22 +57,12 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
         }
     }
 
-    /**
-     * @return ProblemSolvingEntity[]
-     */
-    public function findAll(): array
+    public function saveSolutionForMember(int $problemSolvingId, ProblemSolvingSolutionEntity $solution, int $memberId): ProblemSolvingSolutionEntity
     {
-        return ProblemSolvingModel::with(['solutions', 'plans'])
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(fn ($model) => $this->toEntity($model))
-            ->toArray();
-    }
+        $ownerScopedProblemSolving = ProblemSolvingModel::where('member_id', $memberId)->findOrFail($problemSolvingId);
 
-    public function saveSolution(int $problemSolvingId, ProblemSolvingSolutionEntity $solution): ProblemSolvingSolutionEntity
-    {
         $model = new ProblemSolvingSolutionModel();
-        $model->problem_solving_id = $problemSolvingId;
+        $model->problem_solving_id = $ownerScopedProblemSolving->id;
         $model->content = $solution->getContent();
         $model->effectiveness = $solution->getEffectiveness();
         $model->feasibility = $solution->getFeasibility();

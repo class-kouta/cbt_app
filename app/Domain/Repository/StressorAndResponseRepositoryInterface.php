@@ -14,11 +14,6 @@ interface StressorAndResponseRepositoryInterface
     public function deleteForMember(int $id, int $memberId): void;
 
     /**
-     * @return StressorAndResponse[]
-     */
-    public function findAll(): array;
-
-    /**
      * 検索条件に基づいてストレッサーとストレス反応を検索（ページネーション対応）
      *
      * @param SearchCriteriaData $criteria 検索条件
