@@ -11,19 +11,16 @@ class EloquentModeMapRepository implements ModeMapRepositoryInterface
 {
     public function saveForMember(ModeMapEntity $modeMap, int $memberId): ModeMapEntity
     {
-        if ($modeMap->getId() !== null) {
-            $model = ModeMapModel::where('member_id', $memberId)->findOrFail($modeMap->getId());
-        } else {
-            $model = new ModeMapModel;
-            $model->member_id = $memberId;
-        }
-
-        $model->wounded_child_mode = $modeMap->getWoundedChildMode();
-        $model->hurtful_adult_mode = $modeMap->getHurtfulAdultMode();
-        $model->unacceptable_coping_mode = $modeMap->getUnacceptableCopingMode();
-        $model->healthy_happy_child_mode = $modeMap->getHealthyHappyChildMode();
-        $model->healthy_adult_mode = $modeMap->getHealthyAdultMode();
-        $model->save();
+        $model = ModeMapModel::updateOrCreate(
+            ['member_id' => $memberId],
+            [
+                'wounded_child_mode' => $modeMap->getWoundedChildMode(),
+                'hurtful_adult_mode' => $modeMap->getHurtfulAdultMode(),
+                'unacceptable_coping_mode' => $modeMap->getUnacceptableCopingMode(),
+                'healthy_happy_child_mode' => $modeMap->getHealthyHappyChildMode(),
+                'healthy_adult_mode' => $modeMap->getHealthyAdultMode(),
+            ],
+        );
 
         return $this->toEntity($model);
     }
