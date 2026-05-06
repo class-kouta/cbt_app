@@ -5,6 +5,7 @@ namespace App\Application\UseCase\EarlyMaladaptiveSchema;
 use App\Application\DTO\EarlyMaladaptiveSchemaData;
 use App\Domain\Entity\EarlyMaladaptiveSchema as EarlyMaladaptiveSchemaEntity;
 use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateEarlyMaladaptiveSchemaUseCase
 {
@@ -54,6 +55,6 @@ class CreateEarlyMaladaptiveSchemaUseCase
             $data->notes
         );
 
-        return $this->repository->save($schema);
+        return $this->repository->saveForMember($schema, (int) Auth::id());
     }
 }
