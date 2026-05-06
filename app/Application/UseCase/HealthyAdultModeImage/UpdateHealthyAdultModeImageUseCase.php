@@ -6,6 +6,7 @@ use App\Application\DTO\HealthyAdultModeImageData;
 use App\Domain\Entity\HealthyAdultModeImage as HealthyAdultModeImageEntity;
 use App\Domain\Repository\HealthyAdultModeImageRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UpdateHealthyAdultModeImageUseCase
 {
@@ -19,7 +20,7 @@ class UpdateHealthyAdultModeImageUseCase
         $existing = $this->repository->findByIdForMember($id, $memberId);
 
         if ($existing === null) {
-            throw new \RuntimeException('ヘルシーな大人モードのイメージが見つかりません');
+            throw new NotFoundHttpException('ヘルシーな大人モードのイメージが見つかりません');
         }
 
         $entity = HealthyAdultModeImageEntity::reconstitute(
