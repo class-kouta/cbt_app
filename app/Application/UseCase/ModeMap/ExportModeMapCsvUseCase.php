@@ -3,7 +3,9 @@
 namespace App\Application\UseCase\ModeMap;
 
 use App\Application\Service\CsvExportService;
-use App\Infrastructure\Database\Models\ModeMap;
+use App\Domain\Entity\ModeMap;
+use App\Domain\Repository\ModeMapRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportModeMapCsvUseCase
@@ -19,37 +21,39 @@ class ExportModeMapCsvUseCase
     ];
 
     public function __construct(
-        private readonly CsvExportService $csvExportService
-    ) {
-    }
+        private readonly CsvExportService $csvExportService,
+        private readonly ModeMapRepositoryInterface $repository
+    ) {}
 
     public function handle(): StreamedResponse
     {
-        $items = ModeMap::orderByDesc('created_at')
-            ->get()
-            ->map(fn ($item) => $item->toArray())
-            ->toArray();
+        $modeMap = $this->repository->findFirstForMember((int) Auth::id());
 
-        $rows = array_map(function ($item) {
-            $sanitize = function ($value) {
-                if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@'])) {
-                    return "'" . $value;
-                }
-                return $value;
-            };
-            return [
-                $item['id'],
-                $this->csvExportService->formatDatetime($item['created_at']),
-                $sanitize($item['wounded_child_mode'] ?? ''),
-                $sanitize($item['hurtful_adult_mode'] ?? ''),
-                $sanitize($item['unacceptable_coping_mode'] ?? ''),
-                $sanitize($item['healthy_happy_child_mode'] ?? ''),
-                $sanitize($item['healthy_adult_mode'] ?? ''),
-            ];
-        }, $items);
+        $rows = $modeMap === null ? [] : [$this->toRow($modeMap)];
 
-        $filename = 'mode_maps_' . $this->csvExportService->getDateSuffix() . '.csv';
+        $filename = 'mode_maps_'.$this->csvExportService->getDateSuffix().'.csv';
 
         return $this->csvExportService->export(self::CSV_HEADERS, $rows, $filename);
+    }
+
+    private function toRow(ModeMap $modeMap): array
+    {
+        $sanitize = function ($value) {
+            if (is_string($value) && strlen($value) > 0 && in_array($value[0], ['=', '+', '-', '@'], true)) {
+                return "'".$value;
+            }
+
+            return $value;
+        };
+
+        return [
+            $modeMap->getId(),
+            $this->csvExportService->formatDatetime($modeMap->getCreatedAt()->format('Y-m-d H:i:s')),
+            $sanitize($modeMap->getWoundedChildMode() ?? ''),
+            $sanitize($modeMap->getHurtfulAdultMode() ?? ''),
+            $sanitize($modeMap->getUnacceptableCopingMode() ?? ''),
+            $sanitize($modeMap->getHealthyHappyChildMode() ?? ''),
+            $sanitize($modeMap->getHealthyAdultMode() ?? ''),
+        ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ModeMap;
 use App\Application\DTO\ModeMapData;
 use App\Domain\Entity\ModeMap as ModeMapEntity;
 use App\Domain\Repository\ModeMapRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateModeMapUseCase
 {
@@ -12,7 +13,8 @@ class UpdateModeMapUseCase
 
     public function handle(int $id, ModeMapData $data): ModeMapEntity
     {
-        $existingModeMap = $this->repository->findById($id);
+        $memberId = (int) Auth::id();
+        $existingModeMap = $this->repository->findByIdForMember($id, $memberId);
 
         if ($existingModeMap === null) {
             throw new \RuntimeException('モードマップが見つかりません');
@@ -29,6 +31,6 @@ class UpdateModeMapUseCase
             new \DateTimeImmutable('now')
         );
 
-        return $this->repository->save($modeMap);
+        return $this->repository->saveForMember($modeMap, $memberId);
     }
 }

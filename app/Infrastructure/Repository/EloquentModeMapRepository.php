@@ -9,25 +9,25 @@ use DateTimeImmutable;
 
 class EloquentModeMapRepository implements ModeMapRepositoryInterface
 {
-    public function save(ModeMapEntity $modeMap): ModeMapEntity
+    public function saveForMember(ModeMapEntity $modeMap, int $memberId): ModeMapEntity
     {
         $model = ModeMapModel::updateOrCreate(
-            ['id' => $modeMap->getId()],
+            ['member_id' => $memberId],
             [
                 'wounded_child_mode' => $modeMap->getWoundedChildMode(),
                 'hurtful_adult_mode' => $modeMap->getHurtfulAdultMode(),
                 'unacceptable_coping_mode' => $modeMap->getUnacceptableCopingMode(),
                 'healthy_happy_child_mode' => $modeMap->getHealthyHappyChildMode(),
                 'healthy_adult_mode' => $modeMap->getHealthyAdultMode(),
-            ]
+            ],
         );
 
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?ModeMapEntity
+    public function findByIdForMember(int $id, int $memberId): ?ModeMapEntity
     {
-        $model = ModeMapModel::find($id);
+        $model = ModeMapModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -36,9 +36,9 @@ class EloquentModeMapRepository implements ModeMapRepositoryInterface
         return $this->toEntity($model);
     }
 
-    public function findFirst(): ?ModeMapEntity
+    public function findFirstForMember(int $memberId): ?ModeMapEntity
     {
-        $model = ModeMapModel::first();
+        $model = ModeMapModel::where('member_id', $memberId)->first();
 
         if ($model === null) {
             return null;

@@ -11,13 +11,14 @@ use App\Domain\Repository\ModeMapRepositoryInterface;
 use App\Http\Requests\ModeMap\CreateModeMapRequest;
 use App\Http\Requests\ModeMap\UpdateModeMapRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ModeMapController extends Controller
 {
     public function show(ModeMapRepositoryInterface $repository): JsonResponse
     {
-        $modeMap = $repository->findFirst();
+        $modeMap = $repository->findFirstForMember((int) Auth::id());
 
         if ($modeMap === null) {
             return response()->json([

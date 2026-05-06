@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ModeMap;
 use App\Application\DTO\ModeMapData;
 use App\Domain\Entity\ModeMap as ModeMapEntity;
 use App\Domain\Repository\ModeMapRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateModeMapUseCase
 {
@@ -20,6 +21,6 @@ class CreateModeMapUseCase
             $data->healthyAdultMode
         );
 
-        return $this->repository->save($modeMap);
+        return $this->repository->saveForMember($modeMap, (int) Auth::id());
     }
 }
