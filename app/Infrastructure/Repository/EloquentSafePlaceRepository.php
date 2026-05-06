@@ -15,8 +15,7 @@ class EloquentSafePlaceRepository implements SafePlaceRepositoryInterface
             $model = SafePlaceModel::where('member_id', $memberId)
                 ->findOrFail($safePlace->getId());
         } else {
-            $model = new SafePlaceModel();
-            $model->member_id = $memberId;
+            $model = SafePlaceModel::firstOrNew(['member_id' => $memberId]);
         }
 
         $model->safe_image = $safePlace->getSafeImage();
