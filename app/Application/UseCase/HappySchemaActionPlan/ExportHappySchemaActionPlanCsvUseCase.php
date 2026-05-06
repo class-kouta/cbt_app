@@ -33,7 +33,7 @@ class ExportHappySchemaActionPlanCsvUseCase
             ];
         }, $plans);
 
-        $filename = 'happy_schema_action_plans_'.$this->csvExportService->getDateSuffix().'.csv';
+        $filename = 'happy_schema_action_plans_' . $this->csvExportService->getDateSuffix() . '.csv';
 
         return $this->csvExportService->export(self::CSV_HEADERS, $rows, $filename);
     }
