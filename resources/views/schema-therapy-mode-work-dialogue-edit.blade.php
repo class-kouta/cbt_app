@@ -203,11 +203,13 @@
                 type="button"
                 @click="manualSave()"
                 :disabled="submitting || floatingSaving || !isFormValid()"
-                class="flex-shrink-0 rounded-xl px-4 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md flex items-center justify-center hover:from-teal-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+                class="w-11 h-11 flex-shrink-0 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-full shadow-md flex items-center justify-center hover:from-teal-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 title="保存する"
             >
                 <template x-if="!floatingSaving && !submitting">
-                    <span>保存</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
+                    </svg>
                 </template>
                 <template x-if="floatingSaving || submitting">
                     <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
