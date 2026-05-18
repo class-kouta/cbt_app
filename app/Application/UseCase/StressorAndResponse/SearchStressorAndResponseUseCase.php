@@ -4,6 +4,7 @@ namespace App\Application\UseCase\StressorAndResponse;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Repository\StressorAndResponseRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class SearchStressorAndResponseUseCase
 {
@@ -31,6 +32,6 @@ class SearchStressorAndResponseUseCase
      */
     public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->search($criteria, self::SEARCHABLE_COLUMNS);
+        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
     }
 }

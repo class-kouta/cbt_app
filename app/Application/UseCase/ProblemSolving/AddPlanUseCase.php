@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ProblemSolving;
 use App\Application\DTO\ProblemSolvingPlanData;
 use App\Domain\Entity\ProblemSolvingPlan as ProblemSolvingPlanEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class AddPlanUseCase
 {
@@ -14,7 +15,7 @@ class AddPlanUseCase
 
     public function handle(int $problemSolvingId, ProblemSolvingPlanData $data): ProblemSolvingPlanEntity
     {
-        $problemSolving = $this->problemSolvingRepository->findById($problemSolvingId);
+        $problemSolving = $this->problemSolvingRepository->findByIdForMember($problemSolvingId, (int) Auth::id());
 
         if ($problemSolving === null) {
             throw new \RuntimeException('ProblemSolving not found');
@@ -31,6 +32,6 @@ class AddPlanUseCase
             $data->improvementLevel
         );
 
-        return $this->problemSolvingRepository->savePlan($problemSolvingId, $plan);
+        return $this->problemSolvingRepository->savePlanForMember($problemSolvingId, $plan, (int) Auth::id());
     }
 }

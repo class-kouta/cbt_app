@@ -9,23 +9,39 @@ use DateTimeImmutable;
 
 class EloquentCopingRepository implements CopingRepositoryInterface
 {
-    public function save(CopingEntity $coping): CopingEntity
+    public function findAllForMember(int $memberId): array
+    {
+        return CopingModel::with('copingTags')
+            ->where('member_id', $memberId)
+            ->orderByDesc('point')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn (CopingModel $model) => CopingEntity::reconstitute(
+                id: (int) $model->id,
+                content: (string) $model->content,
+                point: (int) $model->point,
+                createdAt: new DateTimeImmutable($model->created_at),
+                updatedAt: new DateTimeImmutable($model->updated_at),
+                copingTagIds: $model->copingTags->pluck('id')->map(fn ($id) => (int) $id)->toArray(),
+            ))
+            ->all();
+    }
+
+    public function saveForMember(CopingEntity $coping, int $memberId): CopingEntity
     {
         if ($coping->getId() !== null) {
-            // 更新
-            $model = CopingModel::findOrFail($coping->getId());
+            $model = CopingModel::where('member_id', $memberId)->findOrFail($coping->getId());
             $model->content = $coping->getContent();
             $model->point = $coping->getPoint();
             $model->save();
         } else {
-            // 新規作成
             $model = new CopingModel();
+            $model->member_id = $memberId;
             $model->content = $coping->getContent();
             $model->point = $coping->getPoint();
             $model->save();
         }
 
-        // タグを中間テーブルに保存
         $model->copingTags()->sync($coping->getCopingTagIds());
 
         return CopingEntity::reconstitute(
@@ -38,9 +54,11 @@ class EloquentCopingRepository implements CopingRepositoryInterface
         );
     }
 
-    public function findById(int $id): ?CopingEntity
+    public function findByIdForMember(int $id, int $memberId): ?CopingEntity
     {
-        $model = CopingModel::with('copingTags')->find($id);
+        $model = CopingModel::with('copingTags')
+            ->where('member_id', $memberId)
+            ->find($id);
 
         if ($model === null) {
             return null;
@@ -56,9 +74,9 @@ class EloquentCopingRepository implements CopingRepositoryInterface
         );
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = CopingModel::find($id);
+        $model = CopingModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->copingTags()->detach();

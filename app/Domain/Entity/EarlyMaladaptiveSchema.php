@@ -459,12 +459,12 @@ class EarlyMaladaptiveSchema
         return $this->approvalSeekingExperience;
     }
 
-    public function getNegativismPessimism(): ?int
+    public function getNegativityPessimism(): ?int
     {
         return $this->negativityPessimism;
     }
 
-    public function getNegativismPessimismExperience(): ?string
+    public function getNegativityPessimismExperience(): ?string
     {
         return $this->negativityPessimismExperience;
     }

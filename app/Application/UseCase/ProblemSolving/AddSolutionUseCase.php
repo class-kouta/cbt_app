@@ -5,6 +5,7 @@ namespace App\Application\UseCase\ProblemSolving;
 use App\Application\DTO\ProblemSolvingSolutionData;
 use App\Domain\Entity\ProblemSolvingSolution as ProblemSolvingSolutionEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class AddSolutionUseCase
 {
@@ -14,7 +15,8 @@ class AddSolutionUseCase
 
     public function handle(int $problemSolvingId, ProblemSolvingSolutionData $data): ProblemSolvingSolutionEntity
     {
-        $problemSolving = $this->problemSolvingRepository->findById($problemSolvingId);
+        $memberId = (int) Auth::id();
+        $problemSolving = $this->problemSolvingRepository->findByIdForMember($problemSolvingId, $memberId);
 
         if ($problemSolving === null) {
             throw new \RuntimeException('ProblemSolving not found');
@@ -27,6 +29,6 @@ class AddSolutionUseCase
             $data->feasibility
         );
 
-        return $this->problemSolvingRepository->saveSolution($problemSolvingId, $solution);
+        return $this->problemSolvingRepository->saveSolutionForMember($problemSolvingId, $solution, $memberId);
     }
 }

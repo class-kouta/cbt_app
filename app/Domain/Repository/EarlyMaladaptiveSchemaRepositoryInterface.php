@@ -6,11 +6,10 @@ use App\Domain\Entity\EarlyMaladaptiveSchema;
 
 interface EarlyMaladaptiveSchemaRepositoryInterface
 {
-    public function save(EarlyMaladaptiveSchema $schema): EarlyMaladaptiveSchema;
+    public function saveForMember(EarlyMaladaptiveSchema $schema, int $memberId): EarlyMaladaptiveSchema;
 
-    public function findById(int $id): ?EarlyMaladaptiveSchema;
+    public function findByIdForMember(int $id, int $memberId): ?EarlyMaladaptiveSchema;
 
-    public function findFirst(): ?EarlyMaladaptiveSchema;
+    public function findFirstForMember(int $memberId): ?EarlyMaladaptiveSchema;
 
-    public function delete(int $id): void;
 }

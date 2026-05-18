@@ -6,6 +6,7 @@ use App\Application\DTO\ChronologyData;
 use App\Domain\Entity\Chronology as ChronologyEntity;
 use App\Domain\Repository\ChronologyRepositoryInterface;
 use DomainException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateChronologyUseCase
 {
@@ -13,7 +14,8 @@ class UpdateChronologyUseCase
 
     public function handle(int $id, ChronologyData $data): ChronologyEntity
     {
-        $chronology = $this->chronologyRepository->findById($id);
+        $memberId = Auth::id();
+        $chronology = $this->chronologyRepository->findByIdForMember($id, $memberId);
 
         if ($chronology === null) {
             throw new DomainException('Chronology not found.');
@@ -26,6 +28,6 @@ class UpdateChronologyUseCase
             $data->sentimentType
         );
 
-        return $this->chronologyRepository->save($updatedChronology);
+        return $this->chronologyRepository->saveForMember($updatedChronology, $memberId);
     }
 }

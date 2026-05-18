@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\DialogueWork;
 
 use App\Domain\Repository\DialogueWorkRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteDialogueWorkUseCase
 {
@@ -12,6 +13,6 @@ class DeleteDialogueWorkUseCase
 
     public function handle(int $id): void
     {
-        $this->dialogueWorkRepository->delete($id);
+        $this->dialogueWorkRepository->deleteForMember($id, (int) Auth::id());
     }
 }

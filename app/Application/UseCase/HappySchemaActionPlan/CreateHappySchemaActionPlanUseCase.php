@@ -5,6 +5,7 @@ namespace App\Application\UseCase\HappySchemaActionPlan;
 use App\Application\DTO\HappySchemaActionPlanData;
 use App\Domain\Entity\HappySchemaActionPlan as HappySchemaActionPlanEntity;
 use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateHappySchemaActionPlanUseCase
 {
@@ -17,6 +18,6 @@ class CreateHappySchemaActionPlanUseCase
             $data->actionPlan
         );
 
-        return $this->repository->save($plan);
+        return $this->repository->saveForMember($plan, (int) Auth::id());
     }
 }

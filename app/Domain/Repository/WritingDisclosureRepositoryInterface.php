@@ -6,9 +6,11 @@ use App\Domain\Entity\WritingDisclosure;
 
 interface WritingDisclosureRepositoryInterface
 {
-    public function save(WritingDisclosure $writingDisclosure): WritingDisclosure;
+    public function findAllForMember(int $memberId): array;
 
-    public function findById(int $id): ?WritingDisclosure;
+    public function saveForMember(WritingDisclosure $writingDisclosure, int $memberId): WritingDisclosure;
 
-    public function delete(int $id): void;
+    public function findByIdForMember(int $id, int $memberId): ?WritingDisclosure;
+
+    public function deleteForMember(int $id, int $memberId): void;
 }

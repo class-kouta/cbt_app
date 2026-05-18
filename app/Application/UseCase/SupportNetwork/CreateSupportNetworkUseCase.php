@@ -5,6 +5,7 @@ namespace App\Application\UseCase\SupportNetwork;
 use App\Application\DTO\SupportNetworkData;
 use App\Domain\Entity\SupportNetwork as SupportNetworkEntity;
 use App\Domain\Repository\SupportNetworkRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateSupportNetworkUseCase
 {
@@ -14,7 +15,8 @@ class CreateSupportNetworkUseCase
 
     public function handle(SupportNetworkData $data): SupportNetworkEntity
     {
+        $memberId = (int) Auth::id();
         $supportNetwork = SupportNetworkEntity::createNew($data->name);
-        return $this->supportNetworkRepository->save($supportNetwork);
+        return $this->supportNetworkRepository->saveForMember($supportNetwork, $memberId);
     }
 }

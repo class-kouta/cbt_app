@@ -9,12 +9,13 @@ use App\Domain\Repository\HealthyAdultModeImageRepositoryInterface;
 use App\Http\Requests\HealthyAdultModeImage\CreateHealthyAdultModeImageRequest;
 use App\Http\Requests\HealthyAdultModeImage\UpdateHealthyAdultModeImageRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class HealthyAdultModeImageController extends Controller
 {
     public function show(HealthyAdultModeImageRepositoryInterface $repository): JsonResponse
     {
-        $entity = $repository->findFirst();
+        $entity = $repository->findFirstForMember((int) Auth::id());
 
         if ($entity === null) {
             return response()->json([

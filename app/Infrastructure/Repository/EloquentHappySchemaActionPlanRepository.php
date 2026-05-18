@@ -9,10 +9,10 @@ use DateTimeImmutable;
 
 class EloquentHappySchemaActionPlanRepository implements HappySchemaActionPlanRepositoryInterface
 {
-    public function save(HappySchemaActionPlanEntity $plan): HappySchemaActionPlanEntity
+    public function saveForMember(HappySchemaActionPlanEntity $plan, int $memberId): HappySchemaActionPlanEntity
     {
         $model = HappySchemaActionPlanModel::updateOrCreate(
-            ['id' => $plan->getId()],
+            ['member_id' => $memberId],
             [
                 'happy_schema' => $plan->getHappySchema(),
                 'action_plan' => $plan->getActionPlan(),
@@ -22,9 +22,9 @@ class EloquentHappySchemaActionPlanRepository implements HappySchemaActionPlanRe
         return $this->toEntity($model);
     }
 
-    public function findById(int $id): ?HappySchemaActionPlanEntity
+    public function findByIdForMember(int $id, int $memberId): ?HappySchemaActionPlanEntity
     {
-        $model = HappySchemaActionPlanModel::find($id);
+        $model = HappySchemaActionPlanModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -33,9 +33,9 @@ class EloquentHappySchemaActionPlanRepository implements HappySchemaActionPlanRe
         return $this->toEntity($model);
     }
 
-    public function findFirst(): ?HappySchemaActionPlanEntity
+    public function findFirstForMember(int $memberId): ?HappySchemaActionPlanEntity
     {
-        $model = HappySchemaActionPlanModel::latest()->first();
+        $model = HappySchemaActionPlanModel::where('member_id', $memberId)->first();
 
         if ($model === null) {
             return null;
@@ -45,9 +45,10 @@ class EloquentHappySchemaActionPlanRepository implements HappySchemaActionPlanRe
     }
 
     /** @return HappySchemaActionPlanEntity[] */
-    public function findAllOrderedByLatest(): array
+    public function findAllForMemberOrderedByLatest(int $memberId): array
     {
-        return HappySchemaActionPlanModel::orderByDesc('created_at')
+        return HappySchemaActionPlanModel::where('member_id', $memberId)
+            ->orderByDesc('created_at')
             ->get()
             ->map(fn ($model) => $this->toEntity($model))
             ->all();

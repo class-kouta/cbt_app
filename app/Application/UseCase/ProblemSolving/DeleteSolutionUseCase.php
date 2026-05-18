@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\ProblemSolving;
 
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteSolutionUseCase
 {
@@ -12,6 +13,6 @@ class DeleteSolutionUseCase
 
     public function handle(int $solutionId): void
     {
-        $this->problemSolvingRepository->deleteSolution($solutionId);
+        $this->problemSolvingRepository->deleteSolutionForMember($solutionId, (int) Auth::id());
     }
 }

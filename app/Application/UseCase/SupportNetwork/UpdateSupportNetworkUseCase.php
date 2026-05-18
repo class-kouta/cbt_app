@@ -6,6 +6,7 @@ use App\Application\DTO\SupportNetworkData;
 use App\Domain\Entity\SupportNetwork as SupportNetworkEntity;
 use App\Domain\Repository\SupportNetworkRepositoryInterface;
 use DomainException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateSupportNetworkUseCase
 {
@@ -15,13 +16,14 @@ class UpdateSupportNetworkUseCase
 
     public function handle(int $id, SupportNetworkData $data): SupportNetworkEntity
     {
-        $supportNetwork = $this->supportNetworkRepository->findById($id);
+        $memberId = (int) Auth::id();
+        $supportNetwork = $this->supportNetworkRepository->findByIdForMember($id, $memberId);
 
         if ($supportNetwork === null) {
             throw new DomainException('Support network not found.');
         }
 
         $updatedSupportNetwork = $supportNetwork->updateName($data->name, $data->point);
-        return $this->supportNetworkRepository->save($updatedSupportNetwork);
+        return $this->supportNetworkRepository->saveForMember($updatedSupportNetwork, $memberId);
     }
 }

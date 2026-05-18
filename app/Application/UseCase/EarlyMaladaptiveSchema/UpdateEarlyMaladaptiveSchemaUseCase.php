@@ -5,6 +5,7 @@ namespace App\Application\UseCase\EarlyMaladaptiveSchema;
 use App\Application\DTO\EarlyMaladaptiveSchemaData;
 use App\Domain\Entity\EarlyMaladaptiveSchema as EarlyMaladaptiveSchemaEntity;
 use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateEarlyMaladaptiveSchemaUseCase
 {
@@ -14,7 +15,8 @@ class UpdateEarlyMaladaptiveSchemaUseCase
 
     public function handle(int $id, EarlyMaladaptiveSchemaData $data): EarlyMaladaptiveSchemaEntity
     {
-        $existingSchema = $this->repository->findById($id);
+        $memberId = (int) Auth::id();
+        $existingSchema = $this->repository->findByIdForMember($id, $memberId);
 
         if ($existingSchema === null) {
             throw new \RuntimeException('早期不適応スキーマが見つかりません');
@@ -63,6 +65,6 @@ class UpdateEarlyMaladaptiveSchemaUseCase
             new \DateTimeImmutable('now')
         );
 
-        return $this->repository->save($schema);
+        return $this->repository->saveForMember($schema, $memberId);
     }
 }

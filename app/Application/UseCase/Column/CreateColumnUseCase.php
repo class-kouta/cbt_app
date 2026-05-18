@@ -5,6 +5,7 @@ namespace App\Application\UseCase\Column;
 use App\Application\DTO\ColumnData;
 use App\Domain\Entity\Column as ColumnEntity;
 use App\Domain\Repository\ColumnRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CreateColumnUseCase
 {
@@ -32,6 +33,6 @@ class CreateColumnUseCase
             $data->stressorAndResponseId
         );
 
-        return $this->columnRepository->saveWithTags($column, $data->tagIds);
+        return $this->columnRepository->saveWithTagsForMember($column, $data->tagIds, (int) Auth::id());
     }
 }

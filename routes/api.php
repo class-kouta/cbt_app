@@ -39,6 +39,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+Route::middleware('auth:sanctum')->group(function () {
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
 Route::post('/copings', [CopingController::class, 'store']);
@@ -162,3 +163,4 @@ Route::get('/chronologies/{chronology}', [ChronologyController::class, 'show']);
 Route::post('/chronologies', [ChronologyController::class, 'store']);
 Route::put('/chronologies/{chronology}', [ChronologyController::class, 'update']);
 Route::delete('/chronologies/{chronology}', [ChronologyController::class, 'destroy']);
+});

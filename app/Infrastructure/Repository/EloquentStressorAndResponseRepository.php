@@ -10,11 +10,11 @@ use DateTimeImmutable;
 
 class EloquentStressorAndResponseRepository implements StressorAndResponseRepositoryInterface
 {
-    public function save(StressorAndResponseEntity $stressorAndResponse): StressorAndResponseEntity
+    public function saveForMember(StressorAndResponseEntity $stressorAndResponse, int $memberId): StressorAndResponseEntity
     {
         if ($stressorAndResponse->getId() !== null) {
             // 更新
-            $model = StressorAndResponseModel::findOrFail($stressorAndResponse->getId());
+            $model = StressorAndResponseModel::where('member_id', $memberId)->findOrFail($stressorAndResponse->getId());
             $model->stressor = $stressorAndResponse->getStressor();
             $model->cognition = $stressorAndResponse->getCognition();
             $model->mood = $stressorAndResponse->getMood();
@@ -25,6 +25,7 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
         } else {
             // 新規作成
             $model = new StressorAndResponseModel();
+            $model->member_id = $memberId;
             $model->stressor = $stressorAndResponse->getStressor();
             $model->cognition = $stressorAndResponse->getCognition();
             $model->mood = $stressorAndResponse->getMood();
@@ -47,9 +48,9 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
         );
     }
 
-    public function findById(int $id): ?StressorAndResponseEntity
+    public function findByIdForMember(int $id, int $memberId): ?StressorAndResponseEntity
     {
-        $model = StressorAndResponseModel::find($id);
+        $model = StressorAndResponseModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -68,36 +69,13 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
         );
     }
 
-    public function delete(int $id): void
+    public function deleteForMember(int $id, int $memberId): void
     {
-        $model = StressorAndResponseModel::find($id);
+        $model = StressorAndResponseModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
             $model->delete();
         }
-    }
-
-    /**
-     * @return StressorAndResponseEntity[]
-     */
-    public function findAll(): array
-    {
-        return StressorAndResponseModel::orderByDesc('created_at')
-            ->get()
-            ->map(function ($model) {
-                return StressorAndResponseEntity::reconstitute(
-                    id: (int) $model->id,
-                    stressor: (string) $model->stressor,
-                    cognition: $model->cognition,
-                    mood: $model->mood,
-                    bodyReaction: $model->body_reaction,
-                    behavior: $model->behavior,
-                    stimulatedSchemas: $model->stimulated_schemas,
-                    createdAt: new DateTimeImmutable($model->created_at),
-                    updatedAt: new DateTimeImmutable($model->updated_at),
-                );
-            })
-            ->toArray();
     }
 
     /**
@@ -107,10 +85,11 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<string, mixed> 検索結果（ページネーション情報を含む）
      */
-    public function search(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
         $query = StressorAndResponseModel::with('tags')
-            ->withCount('columns'); // 転記されたコラム数をカウント
+            ->withCount('columns')
+            ->where('member_id', $memberId); // 転記されたコラム数をカウント
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -176,9 +155,10 @@ class EloquentStressorAndResponseRepository implements StressorAndResponseReposi
      * @param array<int, string> $searchableColumns キーワード検索対象カラム
      * @return array<int, array<string, mixed>> 検索結果
      */
-    public function searchAll(SearchCriteriaData $criteria, array $searchableColumns): array
+    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = StressorAndResponseModel::with('tags');
+        $query = StressorAndResponseModel::with('tags')
+            ->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {

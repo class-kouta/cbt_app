@@ -6,6 +6,7 @@ use App\Application\DTO\ProblemSolvingData;
 use App\Domain\Entity\ProblemSolving as ProblemSolvingEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateProblemSolvingUseCase
 {
@@ -15,7 +16,7 @@ class UpdateProblemSolvingUseCase
 
     public function handle(int $id, ProblemSolvingData $data): ProblemSolvingEntity
     {
-        $existingProblemSolving = $this->problemSolvingRepository->findById($id);
+        $existingProblemSolving = $this->problemSolvingRepository->findByIdForMember($id, (int) Auth::id());
 
         if ($existingProblemSolving === null) {
             throw new \RuntimeException('ProblemSolving not found');
@@ -31,6 +32,6 @@ class UpdateProblemSolvingUseCase
             updatedAt: new DateTimeImmutable('now')
         );
 
-        return $this->problemSolvingRepository->save($updatedProblemSolving);
+        return $this->problemSolvingRepository->saveForMember($updatedProblemSolving, (int) Auth::id());
     }
 }

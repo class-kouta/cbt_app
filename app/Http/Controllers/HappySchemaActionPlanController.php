@@ -11,13 +11,14 @@ use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
 use App\Http\Requests\HappySchemaActionPlan\CreateHappySchemaActionPlanRequest;
 use App\Http\Requests\HappySchemaActionPlan\UpdateHappySchemaActionPlanRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class HappySchemaActionPlanController extends Controller
 {
     public function show(HappySchemaActionPlanRepositoryInterface $repository): JsonResponse
     {
-        $plan = $repository->findFirst();
+        $plan = $repository->findFirstForMember((int) Auth::id());
 
         if ($plan === null) {
             return response()->json([

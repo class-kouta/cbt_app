@@ -5,6 +5,7 @@ namespace App\Application\UseCase\HappySchemaActionPlan;
 use App\Application\DTO\HappySchemaActionPlanData;
 use App\Domain\Entity\HappySchemaActionPlan as HappySchemaActionPlanEntity;
 use App\Domain\Repository\HappySchemaActionPlanRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateHappySchemaActionPlanUseCase
 {
@@ -12,7 +13,8 @@ class UpdateHappySchemaActionPlanUseCase
 
     public function handle(int $id, HappySchemaActionPlanData $data): HappySchemaActionPlanEntity
     {
-        $existing = $this->repository->findById($id);
+        $memberId = (int) Auth::id();
+        $existing = $this->repository->findByIdForMember($id, $memberId);
 
         if ($existing === null) {
             throw new \RuntimeException('ハッピースキーマと行動計画が見つかりません');
@@ -26,6 +28,6 @@ class UpdateHappySchemaActionPlanUseCase
             new \DateTimeImmutable('now')
         );
 
-        return $this->repository->save($plan);
+        return $this->repository->saveForMember($plan, $memberId);
     }
 }

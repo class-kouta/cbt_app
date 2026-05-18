@@ -5,19 +5,22 @@ namespace App\Http\Controllers;
 use App\Application\DTO\EarlyMaladaptiveSchemaData;
 use App\Application\UseCase\EarlyMaladaptiveSchema\CreateEarlyMaladaptiveSchemaUseCase;
 use App\Application\UseCase\EarlyMaladaptiveSchema\UpdateEarlyMaladaptiveSchemaUseCase;
+use App\Domain\Entity\EarlyMaladaptiveSchema as EarlyMaladaptiveSchemaEntity;
+use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
 use App\Http\Requests\EarlyMaladaptiveSchema\CreateEarlyMaladaptiveSchemaRequest;
 use App\Http\Requests\EarlyMaladaptiveSchema\UpdateEarlyMaladaptiveSchemaRequest;
 use App\Infrastructure\Database\Models\EarlyMaladaptiveSchema;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class EarlyMaladaptiveSchemaController extends Controller
 {
     /**
      * 最初のスキーマを取得（存在しない場合は空のデータを返す）
      */
-    public function show(): JsonResponse
+    public function show(EarlyMaladaptiveSchemaRepositoryInterface $repository): JsonResponse
     {
-        $schema = EarlyMaladaptiveSchema::first();
+        $schema = $repository->findFirstForMember((int) Auth::id());
 
         if ($schema === null) {
             return response()->json([
@@ -64,48 +67,7 @@ class EarlyMaladaptiveSchemaController extends Controller
             ]);
         }
 
-        return response()->json([
-            'id' => $schema->id,
-            'abandonment' => $schema->abandonment,
-            'abandonment_experience' => $schema->abandonment_experience,
-            'mistrust_abuse' => $schema->mistrust_abuse,
-            'mistrust_abuse_experience' => $schema->mistrust_abuse_experience,
-            'emotional_deprivation' => $schema->emotional_deprivation,
-            'emotional_deprivation_experience' => $schema->emotional_deprivation_experience,
-            'defectiveness_shame' => $schema->defectiveness_shame,
-            'defectiveness_shame_experience' => $schema->defectiveness_shame_experience,
-            'social_isolation' => $schema->social_isolation,
-            'social_isolation_experience' => $schema->social_isolation_experience,
-            'dependence_incompetence' => $schema->dependence_incompetence,
-            'dependence_incompetence_experience' => $schema->dependence_incompetence_experience,
-            'vulnerability_to_harm' => $schema->vulnerability_to_harm,
-            'vulnerability_to_harm_experience' => $schema->vulnerability_to_harm_experience,
-            'enmeshment' => $schema->enmeshment,
-            'enmeshment_experience' => $schema->enmeshment_experience,
-            'failure' => $schema->failure,
-            'failure_experience' => $schema->failure_experience,
-            'entitlement_grandiosity' => $schema->entitlement_grandiosity,
-            'entitlement_grandiosity_experience' => $schema->entitlement_grandiosity_experience,
-            'insufficient_self_control' => $schema->insufficient_self_control,
-            'insufficient_self_control_experience' => $schema->insufficient_self_control_experience,
-            'subjugation' => $schema->subjugation,
-            'subjugation_experience' => $schema->subjugation_experience,
-            'self_sacrifice' => $schema->self_sacrifice,
-            'self_sacrifice_experience' => $schema->self_sacrifice_experience,
-            'approval_seeking' => $schema->approval_seeking,
-            'approval_seeking_experience' => $schema->approval_seeking_experience,
-            'negativity_pessimism' => $schema->negativity_pessimism,
-            'negativity_pessimism_experience' => $schema->negativity_pessimism_experience,
-            'emotional_inhibition' => $schema->emotional_inhibition,
-            'emotional_inhibition_experience' => $schema->emotional_inhibition_experience,
-            'unrelenting_standards' => $schema->unrelenting_standards,
-            'unrelenting_standards_experience' => $schema->unrelenting_standards_experience,
-            'punitiveness' => $schema->punitiveness,
-            'punitiveness_experience' => $schema->punitiveness_experience,
-            'notes' => $schema->notes,
-            'created_at' => $schema->created_at->format(DATE_ATOM),
-            'updated_at' => $schema->updated_at->format(DATE_ATOM),
-        ]);
+        return response()->json($this->schemaToArray($schema));
     }
 
     /**
@@ -146,8 +108,8 @@ class EarlyMaladaptiveSchemaController extends Controller
             'self_sacrifice_experience' => $schema->getSelfSacrificeExperience(),
             'approval_seeking' => $schema->getApprovalSeeking(),
             'approval_seeking_experience' => $schema->getApprovalSeekingExperience(),
-            'negativity_pessimism' => $schema->getNegativismPessimism(),
-            'negativity_pessimism_experience' => $schema->getNegativismPessimismExperience(),
+            'negativity_pessimism' => $schema->getNegativityPessimism(),
+            'negativity_pessimism_experience' => $schema->getNegativityPessimismExperience(),
             'emotional_inhibition' => $schema->getEmotionalInhibition(),
             'emotional_inhibition_experience' => $schema->getEmotionalInhibitionExperience(),
             'unrelenting_standards' => $schema->getUnrelentingStandards(),
@@ -198,8 +160,8 @@ class EarlyMaladaptiveSchemaController extends Controller
             'self_sacrifice_experience' => $schema->getSelfSacrificeExperience(),
             'approval_seeking' => $schema->getApprovalSeeking(),
             'approval_seeking_experience' => $schema->getApprovalSeekingExperience(),
-            'negativity_pessimism' => $schema->getNegativismPessimism(),
-            'negativity_pessimism_experience' => $schema->getNegativismPessimismExperience(),
+            'negativity_pessimism' => $schema->getNegativityPessimism(),
+            'negativity_pessimism_experience' => $schema->getNegativityPessimismExperience(),
             'emotional_inhibition' => $schema->getEmotionalInhibition(),
             'emotional_inhibition_experience' => $schema->getEmotionalInhibitionExperience(),
             'unrelenting_standards' => $schema->getUnrelentingStandards(),
@@ -256,5 +218,51 @@ class EarlyMaladaptiveSchemaController extends Controller
             punitivenessExperience: $request->input('punitiveness_experience'),
             notes: $request->input('notes')
         );
+    }
+
+    private function schemaToArray(EarlyMaladaptiveSchemaEntity $schema): array
+    {
+        return [
+            'id' => $schema->getId(),
+            'abandonment' => $schema->getAbandonment(),
+            'abandonment_experience' => $schema->getAbandonmentExperience(),
+            'mistrust_abuse' => $schema->getMistrustAbuse(),
+            'mistrust_abuse_experience' => $schema->getMistrustAbuseExperience(),
+            'emotional_deprivation' => $schema->getEmotionalDeprivation(),
+            'emotional_deprivation_experience' => $schema->getEmotionalDeprivationExperience(),
+            'defectiveness_shame' => $schema->getDefectivenessShame(),
+            'defectiveness_shame_experience' => $schema->getDefectivenessShameExperience(),
+            'social_isolation' => $schema->getSocialIsolation(),
+            'social_isolation_experience' => $schema->getSocialIsolationExperience(),
+            'dependence_incompetence' => $schema->getDependenceIncompetence(),
+            'dependence_incompetence_experience' => $schema->getDependenceIncompetenceExperience(),
+            'vulnerability_to_harm' => $schema->getVulnerabilityToHarm(),
+            'vulnerability_to_harm_experience' => $schema->getVulnerabilityToHarmExperience(),
+            'enmeshment' => $schema->getEnmeshment(),
+            'enmeshment_experience' => $schema->getEnmeshmentExperience(),
+            'failure' => $schema->getFailure(),
+            'failure_experience' => $schema->getFailureExperience(),
+            'entitlement_grandiosity' => $schema->getEntitlementGrandiosity(),
+            'entitlement_grandiosity_experience' => $schema->getEntitlementGrandiosityExperience(),
+            'insufficient_self_control' => $schema->getInsufficientSelfControl(),
+            'insufficient_self_control_experience' => $schema->getInsufficientSelfControlExperience(),
+            'subjugation' => $schema->getSubjugation(),
+            'subjugation_experience' => $schema->getSubjugationExperience(),
+            'self_sacrifice' => $schema->getSelfSacrifice(),
+            'self_sacrifice_experience' => $schema->getSelfSacrificeExperience(),
+            'approval_seeking' => $schema->getApprovalSeeking(),
+            'approval_seeking_experience' => $schema->getApprovalSeekingExperience(),
+            'negativity_pessimism' => $schema->getNegativityPessimism(),
+            'negativity_pessimism_experience' => $schema->getNegativityPessimismExperience(),
+            'emotional_inhibition' => $schema->getEmotionalInhibition(),
+            'emotional_inhibition_experience' => $schema->getEmotionalInhibitionExperience(),
+            'unrelenting_standards' => $schema->getUnrelentingStandards(),
+            'unrelenting_standards_experience' => $schema->getUnrelentingStandardsExperience(),
+            'punitiveness' => $schema->getPunitiveness(),
+            'punitiveness_experience' => $schema->getPunitivenessExperience(),
+            'notes' => $schema->getNotes(),
+            'created_at' => $schema->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $schema->getUpdatedAt()->format(DATE_ATOM),
+        ];
     }
 }

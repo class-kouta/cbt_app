@@ -6,9 +6,9 @@ use App\Domain\Entity\ModeMap;
 
 interface ModeMapRepositoryInterface
 {
-    public function save(ModeMap $modeMap): ModeMap;
+    public function saveForMember(ModeMap $modeMap, int $memberId): ModeMap;
 
-    public function findById(int $id): ?ModeMap;
+    public function findByIdForMember(int $id, int $memberId): ?ModeMap;
 
-    public function findFirst(): ?ModeMap;
+    public function findFirstForMember(int $memberId): ?ModeMap;
 }
