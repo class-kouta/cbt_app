@@ -44,7 +44,6 @@ class StressorAndResponseController extends Controller
             'mood' => $stressorAndResponse->mood,
             'body_reaction' => $stressorAndResponse->body_reaction,
             'behavior' => $stressorAndResponse->behavior,
-            'stimulated_schemas' => $stressorAndResponse->stimulated_schemas,
             'tags' => $stressorAndResponse->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
@@ -60,17 +59,12 @@ class StressorAndResponseController extends Controller
      */
     public function store(CreateStressorAndResponseRequest $request, CreateStressorAndResponseUseCase $createUseCase): JsonResponse
     {
-        $stimulatedSchemas = $request->has('stimulated_schemas') && is_array($request->input('stimulated_schemas'))
-            ? $request->input('stimulated_schemas')
-            : null;
-
         $data = new StressorAndResponseData(
             stressor: (string) $request->string('stressor'),
             cognition: $request->has('cognition') && $request->filled('cognition') ? (string) $request->string('cognition') : null,
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
             bodyReaction: $request->has('body_reaction') && $request->filled('body_reaction') ? (string) $request->string('body_reaction') : null,
-            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null,
-            stimulatedSchemas: $stimulatedSchemas
+            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null
         );
 
         $item = $createUseCase->handle($data);
@@ -93,7 +87,6 @@ class StressorAndResponseController extends Controller
             'mood' => $item->getMood(),
             'body_reaction' => $item->getBodyReaction(),
             'behavior' => $item->getBehavior(),
-            'stimulated_schemas' => $item->getStimulatedSchemas(),
             'tags' => $model->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
@@ -109,17 +102,12 @@ class StressorAndResponseController extends Controller
      */
     public function update(UpdateStressorAndResponseRequest $request, StressorAndResponse $stressorAndResponse, UpdateStressorAndResponseUseCase $updateUseCase): JsonResponse
     {
-        $stimulatedSchemas = $request->has('stimulated_schemas') && is_array($request->input('stimulated_schemas'))
-            ? $request->input('stimulated_schemas')
-            : null;
-
         $data = new StressorAndResponseData(
             stressor: (string) $request->string('stressor'),
             cognition: $request->has('cognition') && $request->filled('cognition') ? (string) $request->string('cognition') : null,
             mood: $request->has('mood') && $request->filled('mood') ? (string) $request->string('mood') : null,
             bodyReaction: $request->has('body_reaction') && $request->filled('body_reaction') ? (string) $request->string('body_reaction') : null,
-            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null,
-            stimulatedSchemas: $stimulatedSchemas
+            behavior: $request->has('behavior') && $request->filled('behavior') ? (string) $request->string('behavior') : null
         );
 
         $updatedItem = $updateUseCase->handle($stressorAndResponse->id, $data);
@@ -136,7 +124,6 @@ class StressorAndResponseController extends Controller
             'mood' => $updatedItem->getMood(),
             'body_reaction' => $updatedItem->getBodyReaction(),
             'behavior' => $updatedItem->getBehavior(),
-            'stimulated_schemas' => $updatedItem->getStimulatedSchemas(),
             'tags' => $stressorAndResponse->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
