@@ -2,10 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
-
 // 会員認証ページ
 Route::get('/login', function () {
     return view('auth.login');
@@ -18,6 +14,10 @@ Route::get('/register', function () {
 Route::get('/verify-email', function () {
     return view('auth.verify-email');
 })->name('verification.notice');
+
+Route::get('/', function () {
+    return view('home');
+})->middleware('auth');
 
 // コーピングリストページ
 Route::get('/copings', function () {
