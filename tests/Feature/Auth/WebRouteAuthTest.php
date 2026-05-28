@@ -74,5 +74,32 @@ class WebRouteAuthTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_unverified_member_is_redirected_from_home_to_verify_email(): void
+    {
+        $member = Member::factory()->unverified()->create();
+
+        $response = $this->actingAs($member)->get('/');
+
+        $response->assertRedirect(route('verification.notice'));
+    }
+
+    public function test_unverified_member_is_redirected_from_protected_page_to_verify_email(): void
+    {
+        $member = Member::factory()->unverified()->create();
+
+        $response = $this->actingAs($member)->get('/columns');
+
+        $response->assertRedirect(route('verification.notice'));
+    }
+
+    public function test_unverified_member_cannot_access_protected_api(): void
+    {
+        $member = Member::factory()->unverified()->create();
+
+        $response = $this->actingAs($member, 'sanctum')->getJson('/api/columns');
+
+        $response->assertForbidden();
+    }
+
 }
 

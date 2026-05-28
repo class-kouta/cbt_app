@@ -14,239 +14,241 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
-
     Route::get('/verify-email', function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 
-// コーピングリストページ
-Route::get('/copings', function () {
-    return view('copings');
-});
+    Route::middleware('verified')->group(function () {
+        Route::get('/', function () {
+            return view('home');
+        })->name('home');
 
-// コラム法ページ
-Route::get('/columns', function () {
-    return view('columns');
-});
+        // コーピングリストページ
+        Route::get('/copings', function () {
+            return view('copings');
+        });
 
-// コラム一覧ページ
-Route::get('/columns/list', function () {
-    return view('columns-list');
-});
+        // コラム法ページ
+        Route::get('/columns', function () {
+            return view('columns');
+        });
 
-// 適応的思考一覧ページ
-Route::get('/columns/adaptive-thoughts', function () {
-    return view('column-adaptive-thoughts-list');
-});
+        // コラム一覧ページ
+        Route::get('/columns/list', function () {
+            return view('columns-list');
+        });
 
-// コラム詳細ページ
-Route::get('/columns/{id}', function ($id) {
-    return view('column-detail', ['columnId' => $id]);
-})->where('id', '[0-9]+');
+        // 適応的思考一覧ページ
+        Route::get('/columns/adaptive-thoughts', function () {
+            return view('column-adaptive-thoughts-list');
+        });
 
-// コラム編集ページ
-Route::get('/columns/{id}/edit', function ($id) {
-    return view('columns', ['columnId' => $id]);
-})->where('id', '[0-9]+');
+        // コラム詳細ページ
+        Route::get('/columns/{id}', function ($id) {
+            return view('column-detail', ['columnId' => $id]);
+        })->where('id', '[0-9]+');
 
-// クイックタスク管理ページ
-Route::get('/quick-tasks', function () {
-    return view('quick-tasks');
-});
+        // コラム編集ページ
+        Route::get('/columns/{id}/edit', function ($id) {
+            return view('columns', ['columnId' => $id]);
+        })->where('id', '[0-9]+');
 
-// 筆記開示ページ
-Route::get('/writing-disclosures', function () {
-    return view('writing-disclosures');
-});
+        // クイックタスク管理ページ
+        Route::get('/quick-tasks', function () {
+            return view('quick-tasks');
+        });
 
-// 筆記開示一覧ページ
-Route::get('/writing-disclosures/list', function () {
-    return view('writing-disclosures-list');
-});
+        // 筆記開示ページ
+        Route::get('/writing-disclosures', function () {
+            return view('writing-disclosures');
+        });
 
-// 筆記開示詳細ページ
-Route::get('/writing-disclosures/{id}', function ($id) {
-    return view('writing-disclosure-detail', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // 筆記開示一覧ページ
+        Route::get('/writing-disclosures/list', function () {
+            return view('writing-disclosures-list');
+        });
 
-// 筆記開示編集ページ
-Route::get('/writing-disclosures/{id}/edit', function ($id) {
-    return view('writing-disclosures', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // 筆記開示詳細ページ
+        Route::get('/writing-disclosures/{id}', function ($id) {
+            return view('writing-disclosure-detail', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// シンプルメモ帳新規作成ページ
-Route::get('/simple-notepads', function () {
-    return view('simple-notepads');
-});
+        // 筆記開示編集ページ
+        Route::get('/writing-disclosures/{id}/edit', function ($id) {
+            return view('writing-disclosures', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// シンプルメモ帳一覧ページ
-Route::get('/simple-notepads/list', function () {
-    return view('simple-notepads-list');
-});
+        // シンプルメモ帳新規作成ページ
+        Route::get('/simple-notepads', function () {
+            return view('simple-notepads');
+        });
 
-// シンプルメモ帳編集ページ
-Route::get('/simple-notepads/{id}/edit', function ($id) {
-    return view('simple-notepads', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // シンプルメモ帳一覧ページ
+        Route::get('/simple-notepads/list', function () {
+            return view('simple-notepads-list');
+        });
 
-// 問題解決法作成ページ
-Route::get('/problem-solvings', function () {
-    return view('problem-solving-edit');
-});
+        // シンプルメモ帳編集ページ
+        Route::get('/simple-notepads/{id}/edit', function ($id) {
+            return view('simple-notepads', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// 問題解決法一覧ページ
-Route::get('/problem-solvings/list', function () {
-    return view('problem-solvings-list');
-});
+        // 問題解決法作成ページ
+        Route::get('/problem-solvings', function () {
+            return view('problem-solving-edit');
+        });
 
-// 計画一覧ページ
-Route::get('/problem-solvings/plans', function () {
-    return view('problem-solving-plans-list');
-})->name('problem-solving-plans.list');
+        // 問題解決法一覧ページ
+        Route::get('/problem-solvings/list', function () {
+            return view('problem-solvings-list');
+        });
 
-// 問題解決法詳細・編集ページ（統合）
-Route::get('/problem-solvings/{id}', function ($id) {
-    return view('problem-solving-edit', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // 計画一覧ページ
+        Route::get('/problem-solvings/plans', function () {
+            return view('problem-solving-plans-list');
+        })->name('problem-solving-plans.list');
 
-// 旧編集URLからのリダイレクト
-Route::get('/problem-solvings/{id}/edit', function ($id) {
-    return redirect('/problem-solvings/' . $id);
-})->where('id', '[0-9]+');
+        // 問題解決法詳細・編集ページ（統合）
+        Route::get('/problem-solvings/{id}', function ($id) {
+            return view('problem-solving-edit', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// ストレッサーとストレス反応作成ページ
-Route::get('/stressor-and-responses', function () {
-    return view('stressor-and-responses');
-});
+        // 旧編集URLからのリダイレクト
+        Route::get('/problem-solvings/{id}/edit', function ($id) {
+            return redirect('/problem-solvings/' . $id);
+        })->where('id', '[0-9]+');
 
-// ストレッサーとストレス反応一覧ページ
-Route::get('/stressor-and-responses/list', function () {
-    return view('stressor-and-responses-list');
-});
+        // ストレッサーとストレス反応作成ページ
+        Route::get('/stressor-and-responses', function () {
+            return view('stressor-and-responses');
+        });
 
-// ストレッサーとストレス反応詳細ページ
-Route::get('/stressor-and-responses/{id}', function ($id) {
-    return view('stressor-and-response-detail', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // ストレッサーとストレス反応一覧ページ
+        Route::get('/stressor-and-responses/list', function () {
+            return view('stressor-and-responses-list');
+        });
 
-// ストレッサーとストレス反応編集ページ
-Route::get('/stressor-and-responses/{id}/edit', function ($id) {
-    return view('stressor-and-responses', ['itemId' => $id]);
-})->where('id', '[0-9]+');
+        // ストレッサーとストレス反応詳細ページ
+        Route::get('/stressor-and-responses/{id}', function ($id) {
+            return view('stressor-and-response-detail', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// サポートネットワークページ
-Route::get('/support-networks', function () {
-    return view('support-networks');
-});
+        // ストレッサーとストレス反応編集ページ
+        Route::get('/stressor-and-responses/{id}/edit', function ($id) {
+            return view('stressor-and-responses', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
 
-// マインドフルネス瞑想ページ
-Route::get('/mindfulness', function () {
-    return view('mindfulness', [
-        'sounds' => \App\Enums\MindfulnessSound::toFrontendArray(),
-        'durations' => \App\Enums\MindfulnessDuration::values(),
-    ]);
-});
+        // サポートネットワークページ
+        Route::get('/support-networks', function () {
+            return view('support-networks');
+        });
 
-// スキーマ療法ページ
-Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
-    Route::get('/', function () {
-        return view('schema-therapy');
-    })->name('index');
+        // マインドフルネス瞑想ページ
+        Route::get('/mindfulness', function () {
+            return view('mindfulness', [
+                'sounds' => \App\Enums\MindfulnessSound::toFrontendArray(),
+                'durations' => \App\Enums\MindfulnessDuration::values(),
+            ]);
+        });
 
-    Route::get('/safe-image', function () {
-        return view('schema-therapy-safe-image');
-    })->name('safe-image');
+        // スキーマ療法ページ
+        Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
+            Route::get('/', function () {
+                return view('schema-therapy');
+            })->name('index');
 
-    Route::get('/chronology', function () {
-        return view('schema-therapy-chronology');
-    })->name('chronology');
+            Route::get('/safe-image', function () {
+                return view('schema-therapy-safe-image');
+            })->name('safe-image');
 
-    Route::get('/mode-map', function () {
-        return view('schema-therapy-mode-map');
-    })->name('mode-map');
+            Route::get('/chronology', function () {
+                return view('schema-therapy-chronology');
+            })->name('chronology');
 
-    Route::get('/chronology/create', function () {
-        return view('schema-therapy-chronology-edit');
-    })->name('chronology.create');
+            Route::get('/mode-map', function () {
+                return view('schema-therapy-mode-map');
+            })->name('mode-map');
 
-    Route::get('/chronology/{id}/edit', function ($id) {
-        return view('schema-therapy-chronology-edit', ['itemId' => $id]);
-    })->where('id', '[0-9]+')->name('chronology.edit');
+            Route::get('/chronology/create', function () {
+                return view('schema-therapy-chronology-edit');
+            })->name('chronology.create');
 
-    // ハッピースキーマと行動計画
-    Route::get('/happy-schema-action-plan', function () {
-        return view('schema-therapy-happy-schema-action-plan');
-    })->name('happy-schema-action-plan');
+            Route::get('/chronology/{id}/edit', function ($id) {
+                return view('schema-therapy-chronology-edit', ['itemId' => $id]);
+            })->where('id', '[0-9]+')->name('chronology.edit');
 
-    // ヘルシーサイドとスキーマサイドの対話のワーク一覧
-    Route::get('/dialogue-work', function () {
-        return view('schema-therapy-dialogue-work-list');
-    })->name('dialogue-work');
+            // ハッピースキーマと行動計画
+            Route::get('/happy-schema-action-plan', function () {
+                return view('schema-therapy-happy-schema-action-plan');
+            })->name('happy-schema-action-plan');
 
-    // ヘルシーサイドとスキーマサイドの対話のワーク作成
-    Route::get('/dialogue-work/create', function () {
-        return view('schema-therapy-dialogue-work-edit');
-    })->name('dialogue-work.create');
+            // ヘルシーサイドとスキーマサイドの対話のワーク一覧
+            Route::get('/dialogue-work', function () {
+                return view('schema-therapy-dialogue-work-list');
+            })->name('dialogue-work');
 
-    // ヘルシーサイドとスキーマサイドの対話のワーク編集
-    Route::get('/dialogue-work/{id}/edit', function ($id) {
-        return view('schema-therapy-dialogue-work-edit', ['itemId' => $id]);
-    })->where('id', '[0-9]+')->name('dialogue-work.edit');
+            // ヘルシーサイドとスキーマサイドの対話のワーク作成
+            Route::get('/dialogue-work/create', function () {
+                return view('schema-therapy-dialogue-work-edit');
+            })->name('dialogue-work.create');
 
-    // モードワーク
-    Route::get('/mode-work', function () {
-        return view('schema-therapy-mode-work');
-    })->name('mode-work');
+            // ヘルシーサイドとスキーマサイドの対話のワーク編集
+            Route::get('/dialogue-work/{id}/edit', function ($id) {
+                return view('schema-therapy-dialogue-work-edit', ['itemId' => $id]);
+            })->where('id', '[0-9]+')->name('dialogue-work.edit');
 
-    // モードワーク - ヘルシーな大人モードのイメージ
-    Route::get('/mode-work/healthy-adult-image', function () {
-        return view('schema-therapy-healthy-adult-image');
-    })->name('mode-work.healthy-adult-image');
+            // モードワーク
+            Route::get('/mode-work', function () {
+                return view('schema-therapy-mode-work');
+            })->name('mode-work');
 
-    // モードワーク - 対話のワーク一覧
-    Route::get('/mode-work/dialogue', function () {
-        return view('schema-therapy-mode-work-dialogue-list');
-    })->name('mode-work.dialogue');
+            // モードワーク - ヘルシーな大人モードのイメージ
+            Route::get('/mode-work/healthy-adult-image', function () {
+                return view('schema-therapy-healthy-adult-image');
+            })->name('mode-work.healthy-adult-image');
 
-    // モードワーク - 対話のワーク作成
-    Route::get('/mode-work/dialogue/create', function () {
-        return view('schema-therapy-mode-work-dialogue-edit');
-    })->name('mode-work.dialogue.create');
+            // モードワーク - 対話のワーク一覧
+            Route::get('/mode-work/dialogue', function () {
+                return view('schema-therapy-mode-work-dialogue-list');
+            })->name('mode-work.dialogue');
 
-    // モードワーク - 対話のワーク編集
-    Route::get('/mode-work/dialogue/{id}/edit', function ($id) {
-        return view('schema-therapy-mode-work-dialogue-edit', ['itemId' => $id]);
-    })->where('id', '[0-9]+')->name('mode-work.dialogue.edit');
+            // モードワーク - 対話のワーク作成
+            Route::get('/mode-work/dialogue/create', function () {
+                return view('schema-therapy-mode-work-dialogue-edit');
+            })->name('mode-work.dialogue.create');
 
-    // セルフモニタリング一覧ページ
-    Route::get('/self-monitoring', function () {
-        return view('schema-therapy-self-monitoring-list');
-    })->name('self-monitoring');
+            // モードワーク - 対話のワーク編集
+            Route::get('/mode-work/dialogue/{id}/edit', function ($id) {
+                return view('schema-therapy-mode-work-dialogue-edit', ['itemId' => $id]);
+            })->where('id', '[0-9]+')->name('mode-work.dialogue.edit');
 
-    // セルフモニタリング作成ページ
-    Route::get('/self-monitoring/create', function () {
-        return view('schema-therapy-self-monitoring-edit');
-    })->name('self-monitoring.create');
+            // セルフモニタリング一覧ページ
+            Route::get('/self-monitoring', function () {
+                return view('schema-therapy-self-monitoring-list');
+            })->name('self-monitoring');
 
-    // セルフモニタリング編集ページ
-    Route::get('/self-monitoring/{id}/edit', function ($id) {
-        return view('schema-therapy-self-monitoring-edit', ['itemId' => $id]);
-    })->where('id', '[0-9]+')->name('self-monitoring.edit');
-});
+            // セルフモニタリング作成ページ
+            Route::get('/self-monitoring/create', function () {
+                return view('schema-therapy-self-monitoring-edit');
+            })->name('self-monitoring.create');
 
-// 早期不適応スキーマページ
-Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->group(function () {
-    Route::get('/', function () {
-        return view('early-maladaptive-schemas');
-    })->name('index');
+            // セルフモニタリング編集ページ
+            Route::get('/self-monitoring/{id}/edit', function ($id) {
+                return view('schema-therapy-self-monitoring-edit', ['itemId' => $id]);
+            })->where('id', '[0-9]+')->name('self-monitoring.edit');
+        });
 
-    Route::get('/count', function () {
-        return view('schema-count');
-    })->name('count');
-});
+        // 早期不適応スキーマページ
+        Route::prefix('early-maladaptive-schemas')->name('early-maladaptive-schemas.')->group(function () {
+            Route::get('/', function () {
+                return view('early-maladaptive-schemas');
+            })->name('index');
+
+            Route::get('/count', function () {
+                return view('schema-count');
+            })->name('count');
+        });
+    });
 });
 
 // ===========================================
