@@ -31,7 +31,10 @@ class AuthController extends Controller
             password: $request->validated('password'),
         );
 
-        $useCase->handle($data);
+        $member = $useCase->handle($data);
+
+        Auth::guard('web')->login($member);
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => '確認メールを送信しました。メールに記載されたURLをクリックして、会員登録を完了してください。',

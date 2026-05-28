@@ -57,4 +57,22 @@ class WebRouteAuthTest extends TestCase
 
         $response->assertOk();
     }
+
+    public function test_guest_is_redirected_from_verify_email_to_login(): void
+    {
+        $response = $this->get('/verify-email');
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_authenticated_member_can_access_verify_email(): void
+    {
+        $member = Member::factory()->unverified()->create();
+
+        $response = $this->actingAs($member)->get('/verify-email');
+
+        $response->assertOk();
+    }
+
 }
+
