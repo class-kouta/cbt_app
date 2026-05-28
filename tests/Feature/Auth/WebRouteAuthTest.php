@@ -101,5 +101,14 @@ class WebRouteAuthTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_verified_member_is_redirected_from_verify_email_to_home(): void
+    {
+        $member = Member::factory()->create();
+
+        $response = $this->actingAs($member)->get('/verify-email');
+
+        $response->assertRedirect(route('home'));
+    }
+
 }
 
