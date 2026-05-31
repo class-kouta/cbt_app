@@ -31,7 +31,10 @@ class AuthController extends Controller
             password: $request->validated('password'),
         );
 
-        $useCase->handle($data);
+        $member = $useCase->handle($data);
+
+        Auth::guard('web')->login($member);
+        $this->regenerateSession($request);
 
         return response()->json([
             'message' => '確認メールを送信しました。メールに記載されたURLをクリックして、会員登録を完了してください。',
@@ -57,7 +60,7 @@ class AuthController extends Controller
         }
 
         Auth::guard('web')->login($member);
-        $request->session()->regenerate();
+        $this->regenerateSession($request);
 
         return (new MemberResource($member))
             ->response();
@@ -69,12 +72,26 @@ class AuthController extends Controller
     ): JsonResponse {
         $useCase->handle();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->invalidateSession($request);
 
         return response()->json([
             'message' => 'ログアウトしました',
         ]);
+    }
+
+    private function regenerateSession(Request $request): void
+    {
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+    }
+
+    private function invalidateSession(Request $request): void
+    {
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
     }
 
     public function me(Request $request): JsonResponse

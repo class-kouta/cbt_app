@@ -39,7 +39,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // Coping API
 Route::get('/copings', [CopingController::class, 'index']);
 Route::post('/copings', [CopingController::class, 'store']);
