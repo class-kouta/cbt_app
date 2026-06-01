@@ -52,7 +52,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL') ?: (env('HEROKU_APP_NAME')
+        ? 'https://'.env('HEROKU_APP_NAME').'.herokuapp.com'
+        : 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +124,17 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Seed Test Members
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, TestMembersSeeder will insert predefined test accounts
+    | into the members table.
+    |
+    */
+
+    'seed_test_members' => filter_var(env('SEED_TEST_MEMBERS', false), FILTER_VALIDATE_BOOL),
 
 ];

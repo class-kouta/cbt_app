@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Heroku 等のリバースプロキシ経由で HTTPS を正しく認識する（セッション Cookie 用）
+        $middleware->trustProxies(at: '*');
+
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('home'));
 

@@ -15,10 +15,18 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
-        'localhost,localhost:3000,localhost:8081,127.0.0.1,127.0.0.1:8000,127.0.0.1:8081,::1',
-        Sanctum::currentApplicationUrlWithPort(),
+    'stateful' => array_values(array_filter(array_unique(
+        explode(',', env('SANCTUM_STATEFUL_DOMAINS', implode(',', array_filter([
+            'localhost',
+            'localhost:3000',
+            'localhost:8081',
+            '127.0.0.1',
+            '127.0.0.1:8000',
+            '127.0.0.1:8081',
+            '::1',
+            env('HEROKU_APP_NAME') ? env('HEROKU_APP_NAME').'.herokuapp.com' : null,
+            Sanctum::currentApplicationUrlWithPort(),
+        ]))))
     ))),
 
     /*
