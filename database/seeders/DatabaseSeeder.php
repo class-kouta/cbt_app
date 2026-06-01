@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             DifficultySeeder::class,
             TagSeeder::class,
             CopingTagSeeder::class,
+            TestMembersSeeder::class,
         ]);
     }
 }

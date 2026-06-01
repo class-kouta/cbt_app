@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Session;
 
+use App\Models\Member;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Session\DatabaseSessionHandler;
 
@@ -16,7 +17,11 @@ class MemberDatabaseSessionHandler extends DatabaseSessionHandler
     protected function addUserInformation(&$payload): static
     {
         if ($this->container->bound(Guard::class)) {
-            $payload['member_id'] = $this->userId();
+            $user = $this->container->make(Guard::class)->user();
+
+            if ($user instanceof Member) {
+                $payload['member_id'] = $user->getAuthIdentifier();
+            }
         }
 
         return $this;
