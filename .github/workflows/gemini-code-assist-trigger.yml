@@ -10,10 +10,10 @@ on:
       pull_request_number:
         description: 'PR number to trigger review for'
         required: true
-        type: 'number'
+        type: 'string'
 
 concurrency:
-  group: 'gemini-code-assist-trigger-${{ github.event.pull_request.number || github.event.inputs.pull_request_number || github.run_id }}'
+  group: 'gemini-code-assist-trigger-${{ github.event.pull_request.number || github.run_id }}'
   cancel-in-progress: true
 
 defaults:
