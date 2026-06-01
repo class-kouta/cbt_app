@@ -20,7 +20,7 @@
     "SESSION_DRIVER": "database",
     "USE_BASIC_AUTH": "false",
     "SEED_TEST_MEMBERS": {
-      "description": "検証用テスト会員をマイグレーションで作成する（本番では無効のまま）",
+      "description": "検証用テスト会員を Seeder で作成する（本番では無効のまま）",
       "value": "true"
     }
   },

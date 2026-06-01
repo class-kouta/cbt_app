@@ -130,8 +130,8 @@ return [
     | Seed Test Members
     |--------------------------------------------------------------------------
     |
-    | When enabled, the verification test members migration will insert
-    | predefined test accounts into the members table.
+    | When enabled, TestMembersSeeder will insert predefined test accounts
+    | into the members table.
     |
     */
 
