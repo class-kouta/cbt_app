@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
     {
         // 難易度とタグの初期データを作成
         $this->call([
-            DifficultySeeder::class,
             TagSeeder::class,
             CopingTagSeeder::class,
             TestMembersSeeder::class,

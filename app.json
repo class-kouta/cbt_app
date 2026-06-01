@@ -25,6 +25,6 @@
     }
   },
   "scripts": {
-    "postdeploy": "php artisan migrate --force && php artisan db:seed --force"
+    "postdeploy": "php artisan migrate --force && php artisan db:seed --class=TestMembersSeeder --force && php artisan db:seed --force"
   }
 }
