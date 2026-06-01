@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Seed Test Members
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the verification test members migration will insert
+    | predefined test accounts into the members table.
+    |
+    */
+
+    'seed_test_members' => filter_var(env('SEED_TEST_MEMBERS', false), FILTER_VALIDATE_BOOL),
+
 ];
