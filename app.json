@@ -17,7 +17,7 @@
       "value": "base64:BDBSUnUkGj92CHz0jb5yrvAkUcIbZf3azlPmBDSalos="
     },
     "DB_CONNECTION": "pgsql",
-    "SESSION_DRIVER": "file",
+    "SESSION_DRIVER": "database",
     "USE_BASIC_AUTH": "false",
     "SEED_TEST_MEMBERS": {
       "description": "検証用テスト会員をマイグレーションで作成する（本番では無効のまま）",
