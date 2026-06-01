@@ -51,10 +51,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (! config('app.seed_test_members', false)) {
-            return;
-        }
-
         DB::table('members')->whereIn('email', [
             'ff03csm26test1@example.com',
             'ff03csm26test2@example.com',
