@@ -116,6 +116,6 @@ jobs:
             echo "::notice title=Gemini review trigger::GEMINI_REVIEW_TRIGGER_PAT is not set. Posting as Actions bot. If gemini-code-assist does not respond, add a fine-grained PAT from a human account as repository secret GEMINI_REVIEW_TRIGGER_PAT."
           fi
 
+          COMMENT_BODY="${MARKER}"$'\n''/gemini review'
           gh api "repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
-            -f body="${MARKER}
-/gemini review"
+            -f body="${COMMENT_BODY}"
