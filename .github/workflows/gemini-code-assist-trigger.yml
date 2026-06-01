@@ -1,0 +1,51 @@
+name: '🔁 Trigger Gemini Code Assist Review'
+
+on:
+  pull_request:
+    types:
+      - 'synchronize'
+
+concurrency:
+  group: 'gemini-code-assist-trigger-${{ github.event.pull_request.number }}'
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: 'bash'
+
+jobs:
+  trigger-review:
+    if: github.event.pull_request.head.repo.fork == false
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      pull-requests: 'write'
+    steps:
+      - name: 'Check for reviewable file changes'
+        id: 'check_files'
+        uses: 'actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea' # ratchet:actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number, per_page: 100 }
+            );
+
+            const reviewable = files.some((file) => {
+              return !file.filename.startsWith('.github/workflows/');
+            });
+
+            core.setOutput('reviewable', reviewable ? 'true' : 'false');
+
+      - name: 'Post /gemini review comment'
+        if: steps.check_files.outputs.reviewable == 'true'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          ISSUE_NUMBER: '${{ github.event.pull_request.number }}'
+          REPOSITORY: '${{ github.repository }}'
+        run: |-
+          gh pr comment "${ISSUE_NUMBER}" \
+            --body "/gemini review" \
+            --repo "${REPOSITORY}"
