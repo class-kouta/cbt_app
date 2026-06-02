@@ -1,0 +1,121 @@
+name: '🔁 Trigger Gemini Code Assist Review'
+
+on:
+  pull_request:
+    types:
+      - 'synchronize'
+      - 'reopened'
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: 'PR number to trigger review for'
+        required: true
+        type: 'string'
+
+concurrency:
+  group: 'gemini-code-assist-trigger-${{ github.event.pull_request.number || github.run_id }}'
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: 'bash'
+
+jobs:
+  trigger-review:
+    if: |-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.fork == false
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      issues: 'write'
+      pull-requests: 'write'
+    steps:
+      - name: 'Resolve pull request number'
+        id: 'resolve_pr'
+        uses: 'actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea' # ratchet:actions/github-script@v7
+        with:
+          script: |
+            if (context.eventName === 'workflow_dispatch') {
+              core.setOutput('number', String(context.payload.inputs.pull_request_number));
+              return;
+            }
+
+            core.setOutput('number', String(context.payload.pull_request.number));
+
+      - name: 'Mint identity token'
+        id: 'mint_identity_token'
+        if: |-
+          ${{ vars.APP_ID }}
+        uses: 'actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b' # ratchet:actions/create-github-app-token@v2
+        with:
+          app-id: '${{ vars.APP_ID }}'
+          private-key: '${{ secrets.APP_PRIVATE_KEY }}'
+          permission-contents: 'read'
+          permission-issues: 'write'
+          permission-pull-requests: 'write'
+
+      - name: 'Check for reviewable file changes'
+        id: 'check_files'
+        uses: 'actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea' # ratchet:actions/github-script@v7
+        with:
+          script: |
+            const pullNumber = Number('${{ steps.resolve_pr.outputs.number }}');
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullNumber,
+                per_page: 100,
+              }
+            );
+
+            const ignoredPrefixes = ['.github/workflows/'];
+            const reviewable = files.some((file) => {
+              return !ignoredPrefixes.some((prefix) => file.filename.startsWith(prefix));
+            });
+
+            let headSha = context.payload.pull_request?.head?.sha;
+            if (!headSha) {
+              const pullRequest = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullNumber,
+              });
+              headSha = pullRequest.data.head.sha;
+            }
+
+            core.setOutput('reviewable', reviewable ? 'true' : 'false');
+            core.setOutput('head_sha', headSha);
+
+      - name: 'Post /gemini review comment'
+        if: steps.check_files.outputs.reviewable == 'true'
+        env:
+          APP_TOKEN: '${{ steps.mint_identity_token.outputs.token }}'
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          HEAD_SHA: '${{ steps.check_files.outputs.head_sha }}'
+          PAT: '${{ secrets.GEMINI_REVIEW_TRIGGER_PAT }}'
+          PR_NUMBER: '${{ steps.resolve_pr.outputs.number }}'
+          REPOSITORY: '${{ github.repository }}'
+        run: |-
+          TOKEN="${PAT:-${APP_TOKEN:-${GH_TOKEN}}}"
+          export GH_TOKEN="${TOKEN}"
+
+          MARKER="<!-- gemini-auto-review:${HEAD_SHA} -->"
+
+          existing=$(gh api "repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq ".[] | select(.body | contains(\"gemini-auto-review:${HEAD_SHA}\")) | .id" | head -1)
+
+          if [ -n "${existing}" ]; then
+            echo "Review trigger already posted for ${HEAD_SHA}"
+            exit 0
+          fi
+
+          if [ -z "${PAT}" ]; then
+            echo "::notice title=Gemini review trigger::GEMINI_REVIEW_TRIGGER_PAT is not set. Posting as Actions bot. If gemini-code-assist does not respond, add a fine-grained PAT from a human account as repository secret GEMINI_REVIEW_TRIGGER_PAT."
+          fi
+
+          COMMENT_BODY="${MARKER}"$'\n''/gemini review'
+          gh api "repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+            -f body="${COMMENT_BODY}"
