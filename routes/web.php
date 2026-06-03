@@ -245,10 +245,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/', function () {
                 return view('early-maladaptive-schemas');
             })->name('index');
-
-            Route::get('/count', function () {
-                return view('schema-count');
-            })->name('count');
         });
     });
 });

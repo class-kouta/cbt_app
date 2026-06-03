@@ -20,8 +20,7 @@ class CreateStressorAndResponseUseCase
             $data->cognition,
             $data->mood,
             $data->bodyReaction,
-            $data->behavior,
-            $data->stimulatedSchemas
+            $data->behavior
         );
 
         return $this->repository->saveForMember($stressorAndResponse, (int) Auth::id());
