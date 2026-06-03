@@ -467,7 +467,6 @@
                                 @php
                                 $schemaLinks = [
                                     ['label' => 'トップ', 'patterns' => 'schema-therapy', 'exclude' => 'schema-therapy/*', 'href' => '/schema-therapy'],
-                                    ['label' => '安全なイメージと安全な何か', 'patterns' => 'schema-therapy/safe-image', 'href' => '/schema-therapy/safe-image'],
                                     ['label' => '年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
                                     ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
                                     ['label' => 'モードマップ', 'patterns' => 'schema-therapy/mode-map', 'href' => '/schema-therapy/mode-map'],

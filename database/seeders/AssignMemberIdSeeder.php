@@ -24,7 +24,6 @@ class AssignMemberIdSeeder extends Seeder
 
     private const SINGLE_RECORD_TABLES = [
         'early_maladaptive_schemas',
-        'safe_places',
         'mode_maps',
         'happy_schema_action_plans',
         'healthy_adult_mode_images',

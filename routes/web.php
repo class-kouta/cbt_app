@@ -159,10 +159,6 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy');
             })->name('index');
 
-            Route::get('/safe-image', function () {
-                return view('schema-therapy-safe-image');
-            })->name('safe-image');
-
             Route::get('/chronology', function () {
                 return view('schema-therapy-chronology');
             })->name('chronology');
