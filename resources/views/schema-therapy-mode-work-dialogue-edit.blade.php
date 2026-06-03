@@ -433,7 +433,7 @@ function modeDialogueWorkEditApp(itemId) {
                 return true;
             }
             const lastEntry = this.entries[this.entries.length - 1];
-            return lastEntry.text.trim().length > 0;
+            return typeof lastEntry?.text === 'string' && lastEntry.text.trim().length > 0;
         },
 
         addEntry(type) {
