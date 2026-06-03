@@ -6,7 +6,6 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
-use App\Http\Controllers\HappySchemaActionPlanController;
 use App\Http\Controllers\ModeMapController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
@@ -113,12 +112,6 @@ Route::get('/mode-maps', [ModeMapController::class, 'show']);
 Route::get('/mode-maps/export/csv', [ModeMapController::class, 'exportCsv']);
 Route::post('/mode-maps', [ModeMapController::class, 'store']);
 Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
-
-// HappySchemaActionPlan API（スキーマ療法 - ハッピースキーマと行動計画）
-Route::get('/happy-schema-action-plans', [HappySchemaActionPlanController::class, 'show']);
-Route::get('/happy-schema-action-plans/export/csv', [HappySchemaActionPlanController::class, 'exportCsv']);
-Route::post('/happy-schema-action-plans', [HappySchemaActionPlanController::class, 'store']);
-Route::put('/happy-schema-action-plans/{id}', [HappySchemaActionPlanController::class, 'update']);
 
 // DialogueWork API（スキーマ療法 - ヘルシーサイドとスキーマサイドの対話のワーク）
 Route::get('/dialogue-works', [DialogueWorkController::class, 'index']);

@@ -175,11 +175,6 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy-chronology-edit', ['itemId' => $id]);
             })->where('id', '[0-9]+')->name('chronology.edit');
 
-            // ハッピースキーマと行動計画
-            Route::get('/happy-schema-action-plan', function () {
-                return view('schema-therapy-happy-schema-action-plan');
-            })->name('happy-schema-action-plan');
-
             // ヘルシーサイドとスキーマサイドの対話のワーク一覧
             Route::get('/dialogue-work', function () {
                 return view('schema-therapy-dialogue-work-list');
