@@ -165,7 +165,8 @@
                     <span class="font-medium text-gray-700">@yield('page-title', '')</span>
                 </div>
 
-                <!-- Right side - Hamburger menu button -->
+                <!-- Right side - Hamburger menu button (未ログインのログイン画面では非表示) -->
+                @unless(request()->routeIs('login'))
                 <div>
                     <button
                         @click="menuOpen = !menuOpen"
@@ -183,7 +184,11 @@
                         </svg>
                     </button>
                 </div>
+                @else
+                <div class="w-10" aria-hidden="true"></div>
+                @endunless
 
+                @unless(request()->routeIs('login'))
                 <!-- Overlay -->
                 <div
                     x-show="menuOpen"
@@ -573,6 +578,7 @@
 
                     </nav>
                 </div>
+                @endunless
             </div>
         </div>
     </nav>
