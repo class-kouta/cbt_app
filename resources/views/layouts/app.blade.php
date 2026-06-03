@@ -476,7 +476,6 @@
                                     ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
                                     ['label' => 'モードマップ', 'patterns' => 'schema-therapy/mode-map', 'href' => '/schema-therapy/mode-map'],
                                     ['label' => 'セルフモニタリング', 'patterns' => 'schema-therapy/self-monitoring*', 'href' => '/schema-therapy/self-monitoring'],
-                                    ['label' => 'ハッピースキーマと行動計画', 'patterns' => 'schema-therapy/happy-schema-action-plan', 'href' => '/schema-therapy/happy-schema-action-plan'],
                                     ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
                                 ];
                                 @endphp
