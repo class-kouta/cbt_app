@@ -474,7 +474,6 @@
                                     ['label' => 'セルフモニタリング', 'patterns' => 'schema-therapy/self-monitoring*', 'href' => '/schema-therapy/self-monitoring'],
                                     ['label' => 'ハッピースキーマと行動計画', 'patterns' => 'schema-therapy/happy-schema-action-plan', 'href' => '/schema-therapy/happy-schema-action-plan'],
                                     ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
-                                    ['label' => 'スキーマカウント', 'patterns' => 'early-maladaptive-schemas/count', 'href' => '/early-maladaptive-schemas/count'],
                                 ];
                                 @endphp
                                 @foreach ($schemaLinks as $link)

@@ -30,7 +30,6 @@ class UpdateStressorAndResponseUseCase
             $data->mood,
             $data->bodyReaction,
             $data->behavior,
-            $data->stimulatedSchemas,
             $existing->getCreatedAt(),
             new \DateTimeImmutable('now')
         );
