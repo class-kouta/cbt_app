@@ -205,14 +205,16 @@
             <button
                 type="button"
                 @click="addEntry('healthy')"
-                class="flex-1 py-2.5 bg-white border-2 border-teal-400 text-teal-600 rounded-full font-bold text-xs hover:bg-teal-50 transition-all px-2"
+                :disabled="!canAddEntry()"
+                class="flex-1 py-2.5 bg-white border-2 border-teal-400 text-teal-600 rounded-full font-bold text-xs hover:bg-teal-50 transition-all px-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
                 + ヘルシーな大人モード
             </button>
             <button
                 type="button"
                 @click="addEntry('mode')"
-                class="flex-1 py-2.5 bg-white border-2 border-amber-400 text-amber-600 rounded-full font-bold text-xs hover:bg-amber-50 transition-all px-2"
+                :disabled="!canAddEntry()"
+                class="flex-1 py-2.5 bg-white border-2 border-amber-400 text-amber-600 rounded-full font-bold text-xs hover:bg-amber-50 transition-all px-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
                 + <span x-text="fullModeName"></span>
             </button>
@@ -426,7 +428,18 @@ function modeDialogueWorkEditApp(itemId) {
             })));
         },
 
+        canAddEntry() {
+            if (this.entries.length === 0) {
+                return true;
+            }
+            const lastEntry = this.entries[this.entries.length - 1];
+            return lastEntry.text.trim().length > 0;
+        },
+
         addEntry(type) {
+            if (!this.canAddEntry()) {
+                return;
+            }
             this.entries.push({ id: nextId++, type: type, text: '' });
             this.$nextTick(() => {
                 const container = this.$refs.entriesContainer;
