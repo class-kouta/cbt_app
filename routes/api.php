@@ -9,7 +9,6 @@ use App\Http\Controllers\EarlyMaladaptiveSchemaController;
 use App\Http\Controllers\HappySchemaActionPlanController;
 use App\Http\Controllers\ModeMapController;
 use App\Http\Controllers\ProblemSolvingController;
-use App\Http\Controllers\SafePlaceController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
@@ -109,11 +108,6 @@ Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::c
 Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
 Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
-
-// SafePlace API（スキーマ療法 - 安全なイメージと安全な何か）
-Route::get('/safe-places', [SafePlaceController::class, 'show']);
-Route::post('/safe-places', [SafePlaceController::class, 'store']);
-Route::put('/safe-places/{id}', [SafePlaceController::class, 'update']);
 
 // ModeMap API（スキーマ療法 - モードマップ簡易版）
 Route::get('/mode-maps', [ModeMapController::class, 'show']);
