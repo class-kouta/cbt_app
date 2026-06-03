@@ -13,7 +13,6 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\SchemaModeMonitoringController;
 use App\Http\Controllers\DialogueWorkController;
 use App\Http\Controllers\HealthyAdultModeImageController;
 use App\Http\Controllers\ModeDialogueWorkController;
@@ -120,13 +119,6 @@ Route::get('/happy-schema-action-plans', [HappySchemaActionPlanController::class
 Route::get('/happy-schema-action-plans/export/csv', [HappySchemaActionPlanController::class, 'exportCsv']);
 Route::post('/happy-schema-action-plans', [HappySchemaActionPlanController::class, 'store']);
 Route::put('/happy-schema-action-plans/{id}', [HappySchemaActionPlanController::class, 'update']);
-
-// SchemaModeMonitoring API（スキーマ療法 - セルフモニタリング）
-Route::get('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'index']);
-Route::get('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'show']);
-Route::post('/schema-mode-monitorings', [SchemaModeMonitoringController::class, 'store']);
-Route::put('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'update']);
-Route::delete('/schema-mode-monitorings/{schemaModeMonitoring}', [SchemaModeMonitoringController::class, 'destroy']);
 
 // DialogueWork API（スキーマ療法 - ヘルシーサイドとスキーマサイドの対話のワーク）
 Route::get('/dialogue-works', [DialogueWorkController::class, 'index']);

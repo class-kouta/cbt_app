@@ -203,15 +203,6 @@
 - お気に入りポイントで頼りになる度合いを記録
 
 ---
-## schema_mode_monitorings（スキーマとモードのセルフモニタリング）
-- id — bigint, 主キー
-- content — text, NOT NULL（モニタリング内容）
-- created_at / updated_at — timestamp
-
-**用途:**
-- スキーマ療法におけるスキーマとモードのセルフモニタリングを記録
-- 今の自分のスキーマやモードに気づいて書き出す
-- セルフモニタリングを通じて、自分の内面への理解を深める
 
 ---
 ## early_maladaptive_schemas（早期不適応スキーマ）
@@ -313,4 +304,3 @@
 - `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。
 - `stressor_and_responses` はストレッサーとそれに対するストレス反応（認知・感情・身体・行動）を記録する機能です。
 - `early_maladaptive_schemas` はスキーマ療法の18の早期不適応スキーマの囚われ度を記録する機能です。
-- `schema_mode_monitorings` はスキーマ療法のセルフモニタリング記録です。

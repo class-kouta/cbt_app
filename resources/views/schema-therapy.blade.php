@@ -40,21 +40,6 @@ $features = [
         </svg>',
     ],
     [
-        'href' => '/schema-therapy/self-monitoring',
-        'title' => 'スキーマとモードのセルフモニタリング',
-        'icon' => '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 5V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M17 7L19 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M19 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M17 17L19 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M7 17L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M5 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M7 7L5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>',
-    ],
-    [
         'href' => '/schema-therapy/happy-schema-action-plan',
         'title' => 'ハッピースキーマと行動計画',
         'icon' => '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
