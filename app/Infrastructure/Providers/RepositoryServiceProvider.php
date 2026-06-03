@@ -14,7 +14,6 @@ use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
 use App\Domain\Repository\TagRepositoryInterface;
 use App\Domain\Repository\ChronologyRepositoryInterface;
 use App\Domain\Repository\ModeMapRepositoryInterface;
-use App\Domain\Repository\DialogueWorkRepositoryInterface;
 use App\Domain\Repository\HealthyAdultModeImageRepositoryInterface;
 use App\Domain\Repository\MemberRepositoryInterface;
 
@@ -30,7 +29,6 @@ use App\Infrastructure\Repository\EloquentEarlyMaladaptiveSchemaRepository;
 use App\Infrastructure\Repository\EloquentTagRepository;
 use App\Infrastructure\Repository\EloquentChronologyRepository;
 use App\Infrastructure\Repository\EloquentModeMapRepository;
-use App\Infrastructure\Repository\EloquentDialogueWorkRepository;
 use App\Infrastructure\Repository\EloquentHealthyAdultModeImageRepository;
 use App\Infrastructure\Repository\EloquentMemberRepository;
 
@@ -52,7 +50,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TagRepositoryInterface::class, EloquentTagRepository::class);
         $this->app->bind(ChronologyRepositoryInterface::class, EloquentChronologyRepository::class);
         $this->app->bind(ModeMapRepositoryInterface::class, EloquentModeMapRepository::class);
-        $this->app->bind(DialogueWorkRepositoryInterface::class, EloquentDialogueWorkRepository::class);
         $this->app->bind(HealthyAdultModeImageRepositoryInterface::class, EloquentHealthyAdultModeImageRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, EloquentMemberRepository::class);
     }
