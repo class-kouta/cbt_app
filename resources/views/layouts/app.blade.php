@@ -165,8 +165,8 @@
                     <span class="font-medium text-gray-700">@yield('page-title', '')</span>
                 </div>
 
-                <!-- Right side - Hamburger menu button (未ログインのログイン画面では非表示) -->
-                @unless(request()->routeIs('login'))
+                <!-- Right side - Hamburger menu button (未ログインの認証画面では非表示) -->
+                @if(!request()->routeIs('login', 'register'))
                 <div>
                     <button
                         @click="menuOpen = !menuOpen"
@@ -186,9 +186,9 @@
                 </div>
                 @else
                 <div class="w-10" aria-hidden="true"></div>
-                @endunless
+                @endif
 
-                @unless(request()->routeIs('login'))
+                @if(!request()->routeIs('login', 'register'))
                 <!-- Overlay -->
                 <div
                     x-show="menuOpen"
@@ -578,7 +578,7 @@
 
                     </nav>
                 </div>
-                @endunless
+                @endif
             </div>
         </div>
     </nav>
