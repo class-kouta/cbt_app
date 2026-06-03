@@ -15,7 +15,6 @@ return new class extends Migration
         'simple_notepads',
         'stressor_and_responses',
         'support_networks',
-        'schema_mode_monitorings',
         'dialogue_works',
         'chronologies',
     ];
