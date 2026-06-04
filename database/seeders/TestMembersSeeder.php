@@ -31,7 +31,7 @@ class TestMembersSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
-            config('test_members.accounts'),
+            config('test_members.accounts', []),
         );
 
         DB::table('members')->upsert(

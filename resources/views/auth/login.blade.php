@@ -145,7 +145,7 @@
             <p class="text-xs text-amber-800 mb-4">検証用のログイン情報です。コピーボタンでそのまま貼り付けできます。</p>
 
             <div class="space-y-3">
-                @foreach (config('test_members.accounts') as $account)
+                @foreach (config('test_members.accounts', []) as $account)
                     <div class="bg-white border border-amber-100 rounded-xl p-3 sm:p-4">
                         <p class="text-sm font-semibold text-gray-800 mb-2">{{ $account['name'] }}</p>
 
