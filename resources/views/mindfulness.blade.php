@@ -239,6 +239,7 @@ function mindfulnessPlayer() {
                 seekto: (details) => {
                     if (
                         this.audio
+                        && details
                         && typeof details.seekTime === 'number'
                         && isFinite(details.seekTime)
                         && details.seekTime >= 0
@@ -271,6 +272,8 @@ function mindfulnessPlayer() {
                 navigator.mediaSession.playbackState = 'playing';
             } else if (this.isPaused) {
                 navigator.mediaSession.playbackState = 'paused';
+            } else {
+                navigator.mediaSession.playbackState = 'none';
             }
 
             this.updateMediaSessionPosition();
