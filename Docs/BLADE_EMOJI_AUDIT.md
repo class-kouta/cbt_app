@@ -467,7 +467,6 @@
 - `resources/views/schema-therapy-mode-work.blade.php`
 - `resources/views/schema-therapy-mode-work-dialogue.blade.php`
 - `resources/views/schema-therapy-healthy-adult-image.blade.php`
-- `resources/views/schema-therapy-mode-map.blade.php`
 - `resources/views/vendor/**`
 - など
 
