@@ -742,7 +742,7 @@
         <!-- 備考欄 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="bg-gray-600 text-white px-4 py-3">
-                <h2 class="text-lg font-bold">📋 備考欄</h2>
+                <h2 class="text-lg font-bold"><x-icon name="document-text" class="w-5 h-5" /> 備考欄</h2>
                 <p class="text-sm opacity-90">スキーマ全体に関するメモや、気づいたこと、その他なんでも自由に記入できます</p>
             </div>
             <div class="p-4">

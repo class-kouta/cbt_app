@@ -17,7 +17,7 @@
             @click="confirmDelete()"
             class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50/80 flex items-center gap-1 text-sm"
         >
-            🗑️ <span class="hidden sm:inline">削除</span>
+            <x-icon name="trash" class="w-5 h-5" /><span class="hidden sm:inline">削除</span>
         </button>
     </div>
 
@@ -113,7 +113,7 @@
                     @click="startDialogue()"
                     class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-3 px-8 rounded-full font-bold text-base hover:from-teal-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl"
                 >
-                    💬 対話のワークを始める
+                    <x-icon name="chat-bubble-left-right" class="w-5 h-5" /> 対話のワークを始める
                 </button>
             </div>
         </div>
@@ -190,7 +190,7 @@
 
         <!-- 空の状態 -->
         <div x-show="entries.length === 0" class="text-center py-24">
-            <p class="text-5xl mb-4">💬</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="chat-bubble-left-right" class="w-14 h-14" /></div>
             <p class="text-gray-400 text-base mb-1">下のボタンをタップして</p>
             <p class="text-gray-400 text-base">対話を始めましょう</p>
         </div>
@@ -264,7 +264,7 @@
             >
                 <div class="bg-gradient-to-r from-red-500 to-rose-500 px-6 py-4">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        🗑️ 削除確認
+                        <x-icon name="trash" class="w-5 h-5" /> 削除確認
                     </h3>
                 </div>
                 <div class="px-6 py-5">

@@ -169,7 +169,7 @@
 
         <!-- 空の状態 -->
         <div x-show="filteredCopings.length === 0" class="text-center py-12 text-gray-500">
-            <p class="text-4xl mb-4">🌱</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="sun" class="w-12 h-12" /></div>
             <p>コーピングがありません</p>
         </div>
     </div>

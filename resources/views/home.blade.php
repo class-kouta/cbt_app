@@ -10,7 +10,7 @@
 <div x-data="overdueReflectionBanner()" x-init="init()" x-cloak>
     <div x-show="hasOverdue" class="max-w-4xl mx-auto mb-4">
         <div class="bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3 flex items-start gap-3">
-            <span class="text-yellow-500 text-xl flex-shrink-0 mt-0.5">⚠️</span>
+            <x-icon name="exclamation-triangle" class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" />
             <p class="text-sm text-yellow-800">
                 振り返りしてない実行計画があります。<a href="/problem-solvings/plans?filter=pending" class="text-yellow-900 font-bold underline hover:text-yellow-700">計画一覧</a>から確認できます。
             </p>

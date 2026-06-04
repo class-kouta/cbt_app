@@ -32,7 +32,7 @@
         x-transition:leave-end="opacity-0 transform translate-y-2"
         class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
     >
-        <span>📋</span>
+        <x-icon name="clipboard-document" class="w-5 h-5" />
         <span>コピーしました！</span>
     </div>
 
@@ -115,7 +115,7 @@
             <!-- タグセクション -->
             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    🏷️ タグ
+                    <x-icon name="tag" class="w-4 h-4" /> タグ
                     <span class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
                 </h3>
                 <p class="text-xs text-gray-500 mb-3">
@@ -189,7 +189,7 @@
 
                             <!-- ネガティブエリア -->
                             <div class="mb-3">
-                                <p class="text-xs font-semibold text-gray-500 mb-1.5">😔 ネガティブ</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1.5"><x-icon name="face-frown" class="w-4 h-4 inline-block" /> ネガティブ</p>
                                 <div class="flex flex-wrap gap-1.5">
                                     <template x-for="emotion in negativeEmotions" :key="emotion">
                                         <button
@@ -204,7 +204,7 @@
 
                             <!-- ポジティブエリア -->
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 mb-1.5">😊 ポジティブ</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1.5"><x-icon name="face-smile" class="w-4 h-4 inline-block" /> ポジティブ</p>
                                 <div class="flex flex-wrap gap-1.5">
                                     <template x-for="emotion in positiveEmotions" :key="emotion">
                                         <button
@@ -273,10 +273,10 @@
                     :disabled="submitting || !isFormValid()"
                 >
                     <span x-show="!submitting && !isEditMode" class="flex items-center justify-center gap-2">
-                        ✨ 保存する
+                        <x-icon name="arrow-down-tray" class="w-5 h-5" /> 保存する
                     </span>
                     <span x-show="!submitting && isEditMode" class="flex items-center justify-center gap-2">
-                        ✨ 更新する
+                        <x-icon name="arrow-down-tray" class="w-5 h-5" /> 更新する
                     </span>
                     <span x-show="submitting" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -295,7 +295,7 @@
                     :disabled="!hasAnyContent()"
                     :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
                 >
-                    📋 入力内容をコピー
+                    <x-icon name="clipboard-document" class="w-5 h-5" /> 入力内容をコピー
                 </button>
             </div>
         </div>

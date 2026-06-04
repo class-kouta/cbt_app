@@ -24,7 +24,7 @@
 
         <!-- 音の種類選択 -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">🎵 音の種類を選択</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3"><x-icon name="musical-note" class="w-4 h-4 inline-block" /> 音の種類を選択</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <template x-for="sound in sounds" :key="sound.id">
                     <button
@@ -44,7 +44,7 @@
 
         <!-- 再生時間選択 -->
         <div class="mb-8">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">⏱ 再生時間を選択</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><x-icon name="clock" class="w-4 h-4" /> 再生時間を選択</label>
             <div class="grid grid-cols-3 gap-2 sm:gap-3">
                 <template x-for="d in durations" :key="d">
                     <button

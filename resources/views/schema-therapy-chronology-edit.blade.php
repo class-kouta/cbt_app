@@ -15,7 +15,7 @@
             class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 flex items-center gap-1 text-sm"
             title="削除"
         >
-            🗑️ <span class="hidden sm:inline">削除</span>
+            <x-icon name="trash" class="w-5 h-5" /><span class="hidden sm:inline">削除</span>
         </button>
     </div>
 
@@ -155,7 +155,7 @@
                             : 'bg-white border-gray-300 text-gray-600 hover:border-orange-300 hover:bg-orange-50'"
                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 font-medium transition-all"
                     >
-                        😊 ポジティブ
+                        <x-icon name="face-smile" class="w-4 h-4 inline-block" /> ポジティブ
                     </button>
                     <button
                         type="button"
@@ -165,7 +165,7 @@
                             : 'bg-white border-gray-300 text-gray-600 hover:border-blue-300 hover:bg-blue-50'"
                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 font-medium transition-all"
                     >
-                        😢 ネガティブ
+                        <x-icon name="face-frown" class="w-4 h-4 inline-block" /> ネガティブ
                     </button>
                 </div>
             </div>
@@ -181,10 +181,10 @@
                     :disabled="submitting || !isFormValid()"
                 >
                     <span x-show="!submitting && !isEditMode" class="flex items-center justify-center gap-2">
-                        ✨ 年表を保存
+                        <x-icon name="arrow-down-tray" class="w-5 h-5" /> 年表を保存
                     </span>
                     <span x-show="!submitting && isEditMode" class="flex items-center justify-center gap-2">
-                        ✨ 更新する
+                        <x-icon name="arrow-down-tray" class="w-5 h-5" /> 更新する
                     </span>
                     <span x-show="submitting" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -225,7 +225,7 @@
             >
                 <div class="bg-gradient-to-r from-red-500 to-rose-500 px-6 py-4">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        🗑️ 削除確認
+                        <x-icon name="trash" class="w-5 h-5" /> 削除確認
                     </h3>
                 </div>
                 <div class="px-6 py-5">

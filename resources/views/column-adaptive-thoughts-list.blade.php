@@ -51,7 +51,7 @@
 
         <!-- 空の状態 -->
         <div x-show="!loading && columns.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">💭</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="chat-bubble-bottom-center-text" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">適応的思考がまだありません</p>
             <p class="text-gray-500 text-sm mb-4">コラム法で「適応的思考」を記録すると、ここに表示されます</p>
             <a href="/columns" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">

@@ -7,7 +7,7 @@
 <div x-data="chronologyListApp()" x-init="init()" x-cloak>
     <!-- カウント表示 & CSV出力 -->
     <div x-show="!loading && !errorOccurred && chronologies.length > 0" class="mb-4 flex justify-between items-center">
-        <span class="text-sm text-gray-500">📜 全 <span class="font-semibold text-gray-700" x-text="chronologies.length"></span> 件</span>
+        <span class="text-sm text-gray-500"><x-icon name="queue-list" class="w-4 h-4 inline-block" /> 全 <span class="font-semibold text-gray-700" x-text="chronologies.length"></span> 件</span>
         <button
             @click="exportCsv()"
             :disabled="exporting"
@@ -47,13 +47,13 @@
                                 x-show="item.sentiment_type === 'positive'"
                                 class="shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200"
                             >
-                                😊 ポジティブ
+                                <x-icon name="face-smile" class="w-4 h-4 inline-block" /> ポジティブ
                             </span>
                             <span
                                 x-show="item.sentiment_type === 'negative'"
                                 class="shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
                             >
-                                😢 ネガティブ
+                                <x-icon name="face-frown" class="w-4 h-4 inline-block" /> ネガティブ
                             </span>
                         </div>
                         <!-- 環境・出来事 -->
@@ -92,7 +92,7 @@
 
         <!-- エラー状態 -->
         <div x-show="!loading && errorOccurred" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">😢</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="inbox" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">データの取得に失敗しました</p>
             <button
                 @click="loadChronologies()"
@@ -104,7 +104,7 @@
 
         <!-- 空の状態 -->
         <div x-show="!loading && !errorOccurred && chronologies.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">📜</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="queue-list" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ年表がありません</p>
             <a href="/schema-therapy/chronology/create" class="inline-block mt-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-6 rounded-lg font-medium hover:from-green-600 hover:to-emerald-600 transition-all">
                 年表を記入する

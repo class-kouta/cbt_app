@@ -16,7 +16,7 @@
         x-transition:leave-end="opacity-0 transform translate-y-2"
         class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
     >
-        <span>📋</span>
+        <x-icon name="clipboard-document" class="w-5 h-5" />
         <span>コピーしました！</span>
     </div>
 
@@ -43,14 +43,14 @@
                     class="text-teal-600 hover:text-teal-800 transition-colors p-2 rounded hover:bg-teal-50"
                     title="編集する"
                 >
-                    ✏️
+                    <x-icon name="pencil-square" class="w-5 h-5" />
                 </a>
                 <button
                     @click="deleteColumn()"
                     class="text-red-400 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
                     title="削除"
                 >
-                    🗑️
+                    <x-icon name="trash" class="w-5 h-5" />
                 </button>
             </div>
         </div>
@@ -69,7 +69,7 @@
                 <!-- タグ -->
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200" x-show="column?.tags && column.tags.length > 0">
                     <div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
-                        🏷️ タグ
+                        <x-icon name="tag" class="w-4 h-4" /> タグ
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <template x-for="tag in (column?.tags || [])" :key="tag.id">
@@ -121,7 +121,7 @@
                 <div class="bg-green-50 rounded-lg p-4 border-2 border-green-200">
                     <div class="text-xs font-semibold text-green-600 mb-2 flex items-center gap-1">
                         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 text-white text-xs">6</span>
-                        適応的思考 ✨
+                        適応的思考
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere font-medium" :class="!column?.adaptive_thought ? 'text-gray-400' : ''" x-text="column?.adaptive_thought || '未入力'"></p>
                 </div>
@@ -138,7 +138,7 @@
                 <!-- 備考 -->
                 <div class="bg-gray-50 rounded-lg p-4">
                     <div class="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
-                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-500 text-white text-xs">📝</span>
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-500 text-white"><x-icon name="document-text" class="w-3 h-3" /></span>
                         備考
                     </div>
                     <p class="text-gray-800 whitespace-pre-wrap break-words overflow-wrap-anywhere" :class="!column?.notes ? 'text-gray-400' : ''" x-text="column?.notes || '未入力'"></p>
@@ -150,14 +150,14 @@
                     @click="copyToClipboard()"
                     class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
                 >
-                    📋 内容をコピー
+                    <x-icon name="clipboard-document" class="w-5 h-5" /> 内容をコピー
                 </button>
             </div>
     </div>
 
     <!-- エラー -->
     <div x-show="!loading && !column" class="text-center py-16 bg-white rounded-xl shadow-md">
-        <p class="text-6xl mb-4">😢</p>
+        <div class="mb-4 flex justify-center text-gray-300"><x-icon name="inbox" class="w-16 h-16" /></div>
         <p class="text-gray-600 text-lg mb-2">コラムが見つかりません</p>
         <a href="/columns/list" class="inline-block mt-4 text-teal-600 hover:text-teal-800">
             ←
