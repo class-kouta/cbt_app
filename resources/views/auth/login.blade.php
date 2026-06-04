@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    @unless (app()->environment('production'))
+    @if (! app()->environment('production') || config('app.seed_test_members', false))
         <div class="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5">
             <div class="flex items-center gap-2 mb-3">
                 <x-icon name="user-group" class="w-5 h-5 text-amber-600 flex-shrink-0" />
@@ -182,7 +182,7 @@
                 @endforeach
             </div>
         </div>
-    @endunless
+    @endif
 
     <!-- コピー成功トースト -->
     <div
