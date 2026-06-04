@@ -209,7 +209,7 @@ function mindfulnessPlayer() {
 
             const sound = this.sounds.find(s => s.id === this.selectedSound);
             const title = sound?.label || 'マインドフルネス瞑想';
-            const iconUrl = new URL(@json(asset('apple-touch-icon.png')), window.location.origin).href;
+            const iconUrl = @json(asset('apple-touch-icon.png'));
 
             navigator.mediaSession.metadata = new MediaMetadata({
                 title,
@@ -225,7 +225,7 @@ function mindfulnessPlayer() {
             this._mediaSessionHandlers = {
                 play: () => {
                     if (this.audio) {
-                        this.audio.play();
+                        this.audio.play().catch(e => console.error('MediaSession play failed:', e));
                     }
                 },
                 pause: () => {
@@ -236,11 +236,23 @@ function mindfulnessPlayer() {
                 stop: () => {
                     this.stop();
                 },
+                seekto: (details) => {
+                    if (this.audio && typeof details.seekTime === 'number') {
+                        this.audio.currentTime = details.seekTime;
+                        this.updateMediaSessionPosition();
+                        this.updateProgress();
+                    }
+                },
             };
 
             navigator.mediaSession.setActionHandler('play', this._mediaSessionHandlers.play);
             navigator.mediaSession.setActionHandler('pause', this._mediaSessionHandlers.pause);
             navigator.mediaSession.setActionHandler('stop', this._mediaSessionHandlers.stop);
+            try {
+                navigator.mediaSession.setActionHandler('seekto', this._mediaSessionHandlers.seekto);
+            } catch (e) {
+                // 未対応のアクションは無視
+            }
 
             this.updateMediaSessionState();
         },
@@ -280,7 +292,7 @@ function mindfulnessPlayer() {
                 return;
             }
 
-            for (const action of ['play', 'pause', 'stop']) {
+            for (const action of ['play', 'pause', 'stop', 'seekto']) {
                 try {
                     navigator.mediaSession.setActionHandler(action, null);
                 } catch (e) {
@@ -377,7 +389,7 @@ function mindfulnessPlayer() {
 
         resume() {
             if (this.audio) {
-                this.audio.play();
+                this.audio.play().catch(e => console.error('Audio play failed:', e));
             }
         },
 
