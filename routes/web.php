@@ -163,10 +163,6 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy-chronology');
             })->name('chronology');
 
-            Route::get('/mode-map', function () {
-                return view('schema-therapy-mode-map');
-            })->name('mode-map');
-
             Route::get('/chronology/create', function () {
                 return view('schema-therapy-chronology-edit');
             })->name('chronology.create');
