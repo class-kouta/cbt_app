@@ -33,9 +33,9 @@ class WebRouteAuthTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_login_page_shows_test_accounts_in_non_production(): void
+    public function test_login_page_shows_test_accounts_in_staging(): void
     {
-        config(['app.env' => 'local']);
+        config(['app.env' => 'staging']);
 
         $response = $this->get('/login');
 
@@ -48,31 +48,13 @@ class WebRouteAuthTest extends TestCase
 
     public function test_login_page_hides_test_accounts_in_production(): void
     {
-        config([
-            'app.env' => 'production',
-            'app.seed_test_members' => false,
-        ]);
+        config(['app.env' => 'production']);
 
         $response = $this->get('/login');
 
         $response->assertOk();
         $response->assertDontSee('テストアカウント（本番以外）');
         $response->assertDontSee('ff03csm26test1@example.com');
-    }
-
-    public function test_login_page_shows_test_accounts_when_seed_test_members_enabled_in_production(): void
-    {
-        config([
-            'app.env' => 'production',
-            'app.seed_test_members' => true,
-        ]);
-
-        $response = $this->get('/login');
-
-        $response->assertOk();
-        $response->assertSee('テストアカウント（本番以外）');
-        $response->assertSee('ff03csm26test1@example.com');
-        $response->assertSee('testtesttest');
     }
 
     public function test_authenticated_member_is_redirected_from_login_to_home(): void

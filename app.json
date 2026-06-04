@@ -8,8 +8,8 @@
   ],
   "env": {
     "APP_ENV": {
-      "description": "検証環境だけど本番と限りなく同じ動作にしたいためproductionとしている",
-      "value": "production"
+      "description": "Review Apps 等の検証環境であることを Laravel に示す（本番は production のまま）",
+      "value": "staging"
     },
     "APP_DEBUG": "true",
     "APP_KEY": {
