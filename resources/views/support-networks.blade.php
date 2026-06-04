@@ -109,7 +109,7 @@
 
         <!-- 空の状態 -->
         <div x-show="supportNetworks.length === 0" class="text-center py-12 text-gray-500">
-            <p class="text-4xl mb-4">👥</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="user-group" class="w-12 h-12" /></div>
             <p>サポートネットワークがありません</p>
             <p class="text-sm mt-2">困った時に頼れる人を登録しましょう</p>
         </div>

@@ -24,7 +24,7 @@
     <!-- 説明（新規作成時のみ表示） -->
     <div x-show="!isEditMode" class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
         <p class="text-emerald-800 text-sm">
-            💭 頭の中でぐるぐる回っている考えを書き出して、外に出してみましょう。書くことで気持ちが整理されることがあります。
+            <x-icon name="chat-bubble-bottom-center-text" class="w-5 h-5 inline-block shrink-0" /> 頭の中でぐるぐる回っている考えを書き出して、外に出してみましょう。書くことで気持ちが整理されることがあります。
         </p>
     </div>
 
@@ -55,8 +55,8 @@
                         class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
                         :disabled="loading || !newContent.trim()"
                     >
-                        <span x-show="!loading && !isEditMode">書き出す 📝</span>
-                        <span x-show="!loading && isEditMode">更新する ✨</span>
+                        <span x-show="!loading && !isEditMode" class="inline-flex items-center justify-center gap-2"><x-icon name="arrow-down-tray" class="w-5 h-5" /> 書き出す</span>
+                        <span x-show="!loading && isEditMode" class="inline-flex items-center justify-center gap-2"><x-icon name="arrow-down-tray" class="w-5 h-5" /> 更新する</span>
                         <span x-show="loading" class="flex items-center justify-center gap-2">
                             <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

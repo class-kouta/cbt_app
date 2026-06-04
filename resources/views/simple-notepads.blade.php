@@ -73,7 +73,7 @@
                 class="text-xl hover:opacity-70 transition-opacity"
                 title="削除"
             >
-                🗑️
+                <x-icon name="trash" class="w-5 h-5" />
             </button>
             <!-- 編集する / 保存して編集をやめるボタン（編集モードのみ） -->
             <template x-if="isEditMode">
@@ -164,7 +164,7 @@
                     class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
                     :disabled="saving || !formData.content.trim()"
                 >
-                    <span x-show="!saving">メモを保存 📝</span>
+                    <span x-show="!saving" class="inline-flex items-center justify-center gap-2"><x-icon name="arrow-down-tray" class="w-5 h-5" /> メモを保存</span>
                     <span x-show="saving" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

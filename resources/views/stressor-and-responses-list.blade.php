@@ -127,7 +127,7 @@
 
         <!-- 空の状態 -->
         <div x-show="!loading && items.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">⚡</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="bolt" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ記録がありません</p>
             <a href="/stressor-and-responses" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
                 新しく記録する

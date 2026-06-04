@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-lg shadow-md p-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">💜 コーピングリスト管理</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center"><x-icon name="heart" class="w-8 h-8 inline-block text-purple-600" /> コーピングリスト管理</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- コーピングリストタグ管理 -->

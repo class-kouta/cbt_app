@@ -25,7 +25,7 @@
 
         <!-- 空の状態 -->
         <div x-show="writingDisclosures.length === 0" class="text-center py-12 text-gray-500">
-            <p class="text-4xl mb-4">📝</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="document-text" class="w-12 h-12" /></div>
             <p>まだ記録がありません</p>
             <a href="/writing-disclosures" class="text-teal-600 hover:text-teal-800 text-sm mt-4 inline-block">
                 思いを書き出してみましょう →

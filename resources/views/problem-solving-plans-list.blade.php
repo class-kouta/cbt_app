@@ -21,7 +21,7 @@
 
         <!-- 改善レベル範囲検索 -->
         <div class="mb-3">
-            <label class="block text-sm font-medium text-gray-700 mb-2">📊 改善レベルで絞り込み</label>
+            <label class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700"><x-icon name="chart-bar" class="w-4 h-4" /> 改善レベルで絞り込み</label>
             <div class="flex items-center gap-2">
                 <select
                     x-model.number="improvementLevelMin"
@@ -110,7 +110,7 @@
                                 x-show="plan.hasReflection"
                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
                             >
-                                ✓ 振り返り済み
+                                <x-icon name="check" class="w-3.5 h-3.5 inline-block" /> 振り返り済み
                             </span>
                             <span
                                 x-show="!plan.hasReflection"
@@ -124,22 +124,22 @@
 
                     <!-- 問題状況（どの問題に紐づくか） -->
                     <div class="mb-3">
-                        <span class="text-xs text-gray-500 block mb-1">📋 問題状況</span>
+                        <span class="mb-1 flex items-center gap-1 text-xs text-gray-500"><x-icon name="clipboard-document" class="w-3.5 h-3.5" /> 問題状況</span>
                         <p class="text-gray-700 text-sm line-clamp-1 break-words" x-text="plan.problemSituation"></p>
                     </div>
 
                     <!-- 実行計画 -->
                     <div class="mb-3">
-                        <span class="text-xs text-emerald-600 font-medium block mb-1">📝 実行計画</span>
+                        <span class="mb-1 flex items-center gap-1 text-xs font-medium text-emerald-600"><x-icon name="document-text" class="w-3.5 h-3.5" /> 実行計画</span>
                         <p class="text-gray-800 whitespace-pre-wrap break-words" x-text="plan.actionPlan || '未入力'"></p>
                     </div>
 
                     <!-- 振り返り（ある場合のみ表示） -->
                     <div x-show="plan.hasReflection" class="bg-green-50 rounded-lg p-2">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-green-600 font-medium">💭 振り返り</span>
+                            <span class="flex items-center gap-1 text-xs font-medium text-green-600"><x-icon name="chat-bubble-bottom-center-text" class="w-3.5 h-3.5" /> 振り返り</span>
                             <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
+                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
                                 :class="{
                                     'bg-gray-100 text-gray-500': !plan.improvementLevel,
                                     'bg-red-100 text-red-700': plan.improvementLevel && plan.improvementLevel <= 3,
@@ -147,7 +147,7 @@
                                     'bg-green-100 text-green-700': plan.improvementLevel && plan.improvementLevel >= 7
                                 }"
                             >
-                                📊 改善Lv.<span x-text="plan.improvementLevel || '-'"></span>
+                                <x-icon name="chart-bar" class="w-3.5 h-3.5" /> 改善Lv.<span x-text="plan.improvementLevel || '-'"></span>
                             </span>
                         </div>
                         <p class="text-gray-800 text-sm line-clamp-2 break-words" x-text="plan.reflection"></p>
@@ -173,7 +173,7 @@
 
         <!-- 空の状態（検索条件・フィルターなし） -->
         <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter === 'all'" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">📋</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="clipboard-document" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
             <a href="/problem-solvings" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
                 問題解決を始める
@@ -182,13 +182,16 @@
 
         <!-- フィルター結果が空の場合 -->
         <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter !== 'all'" class="text-center py-12 bg-white rounded-xl shadow-md">
-            <p class="text-4xl mb-4" x-text="filter === 'completed' ? '🎉' : '⏳'"></p>
+            <div class="mb-4 flex justify-center text-gray-300">
+                <span x-show="filter === 'completed'"><x-icon name="check-circle" class="w-12 h-12" /></span>
+                <span x-show="filter !== 'completed'" x-cloak><x-icon name="clock" class="w-12 h-12" /></span>
+            </div>
             <p class="text-gray-600" x-text="filter === 'completed' ? '振り返り済みの計画はまだありません' : '振り返り待ちの計画はありません'"></p>
         </div>
 
         <!-- 検索結果が空の場合 -->
         <div x-show="!loading && allPlans.length === 0 && hasSearchCondition" class="text-center py-12 bg-white rounded-xl shadow-md">
-            <p class="text-4xl mb-4">🔍</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="magnifying-glass" class="w-12 h-12" /></div>
             <p class="text-gray-600 mb-2">条件に一致する計画が見つかりませんでした</p>
             <button
                 @click="clearSearch()"

@@ -11,7 +11,7 @@
             ← モードワーク
         </a>
         <span x-show="!loading && !errorOccurred && items.length > 0" class="text-sm text-gray-500">
-            🔍 全 <span class="font-semibold text-gray-700" x-text="items.length"></span> 件
+            <x-icon name="queue-list" class="w-4 h-4 inline-block" /> 全 <span class="font-semibold text-gray-700" x-text="items.length"></span> 件
         </span>
     </div>
 
@@ -50,7 +50,7 @@
 
         <!-- エラー状態 -->
         <div x-show="!loading && errorOccurred" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">😢</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="inbox" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">データの取得に失敗しました</p>
             <button
                 @click="loadItems()"
@@ -62,7 +62,7 @@
 
         <!-- 空の状態 -->
         <div x-show="!loading && !errorOccurred && items.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <p class="text-6xl mb-4">💬</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="chat-bubble-left-right" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ対話のワークがありません</p>
             <a href="/schema-therapy/mode-work/dialogue/create" class="inline-block mt-4 bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-2 px-6 rounded-lg font-medium hover:from-teal-600 hover:to-emerald-600 transition-all">
                 対話のワークを始める

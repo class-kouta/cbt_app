@@ -24,27 +24,31 @@
 
         <!-- 音の種類選択 -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">🎵 音の種類を選択</label>
+            <label class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <x-icon name="musical-note" class="w-4 h-4" />
+                音の種類を選択
+            </label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <template x-for="sound in sounds" :key="sound.id">
+                @foreach ($sounds as $sound)
                     <button
-                        @click="selectedSound = sound.id"
-                        :class="selectedSound === sound.id
+                        type="button"
+                        @click="selectedSound = '{{ $sound['id'] }}'"
+                        :class="selectedSound === '{{ $sound['id'] }}'
                             ? 'bg-green-100 border-green-500 text-green-800 ring-2 ring-green-300'
                             : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'"
                         class="flex flex-col items-center gap-2 p-4 sm:p-5 rounded-xl border-2 transition-all duration-200"
                         :disabled="isPlaying"
                     >
-                        <span class="text-2xl sm:text-3xl" x-text="sound.emoji"></span>
-                        <span class="text-sm sm:text-base font-medium" x-text="sound.label"></span>
+                        <x-icon name="{{ $sound['icon'] }}" class="h-10 w-10 text-green-600 sm:h-12 sm:w-12" />
+                        <span class="text-sm sm:text-base font-medium text-center">{{ $sound['label'] }}</span>
                     </button>
-                </template>
+                @endforeach
             </div>
         </div>
 
         <!-- 再生時間選択 -->
         <div class="mb-8">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">⏱ 再生時間を選択</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2"><x-icon name="clock" class="w-4 h-4" /> 再生時間を選択</label>
             <div class="grid grid-cols-3 gap-2 sm:gap-3">
                 <template x-for="d in durations" :key="d">
                     <button
@@ -66,7 +70,11 @@
             <!-- 再生中の表示 -->
             <div x-show="isPlaying || isPaused" class="mb-6">
                 <div class="flex items-center justify-center gap-2 mb-4">
-                    <span class="text-xl" x-text="sounds.find(s => s.id === selectedSound)?.emoji || ''"></span>
+                    @foreach ($sounds as $sound)
+                        <span x-show="selectedSound === '{{ $sound['id'] }}'" x-cloak class="text-green-600">
+                            <x-icon name="{{ $sound['icon'] }}" class="h-6 w-6" />
+                        </span>
+                    @endforeach
                     <span class="text-lg font-semibold text-gray-800" x-text="sounds.find(s => s.id === selectedSound)?.label || ''"></span>
                     <span class="text-gray-500">-</span>
                     <span class="text-lg text-gray-600" x-text="selectedDuration + '分'"></span>

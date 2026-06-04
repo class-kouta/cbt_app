@@ -16,14 +16,14 @@
                 class="text-xl hover:opacity-70 transition-opacity"
                 title="編集"
             >
-                ✏️
+                <x-icon name="pencil-square" class="w-5 h-5" />
             </a>
             <button
                 @click="deleteItem()"
                 class="text-xl hover:opacity-70 transition-opacity"
                 title="削除"
             >
-                🗑️
+                <x-icon name="trash" class="w-5 h-5" />
             </button>
         </div>
     </div>
@@ -35,7 +35,7 @@
 
     <!-- エラー -->
     <div x-show="error && !loading" class="text-center py-12 text-gray-500">
-        <p class="text-4xl mb-4">😢</p>
+        <div class="mb-4 flex justify-center text-gray-300"><x-icon name="inbox" class="w-12 h-12" /></div>
         <p x-text="error"></p>
         <a href="/writing-disclosures/list" class="text-teal-600 hover:text-teal-800 text-sm mt-4 inline-block">
             一覧に戻る →

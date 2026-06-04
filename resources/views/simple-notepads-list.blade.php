@@ -35,7 +35,7 @@
 
         <!-- 空の状態 -->
         <div x-show="simpleNotepads.length === 0" class="text-center py-12 text-gray-500">
-            <p class="text-4xl mb-4">📝</p>
+            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="document-text" class="w-12 h-12" /></div>
             <p>まだメモがありません</p>
             <a href="/simple-notepads" class="text-emerald-600 hover:text-emerald-800 text-sm mt-4 inline-block">
                 メモを書いてみましょう →

@@ -17,12 +17,13 @@ enum MindfulnessSound: string
         };
     }
 
-    public function emoji(): string
+    /** Heroicons v2 outline 名（<x-icon name="..." />） */
+    public function icon(): string
     {
         return match ($this) {
-            self::FOREST => '🌲',
-            self::STREAM => '🌅',
-            self::JUNGLE => '🌴',
+            self::FOREST => 'cloud',
+            self::STREAM => 'sun',
+            self::JUNGLE => 'bolt',
         };
     }
 
@@ -36,7 +37,7 @@ enum MindfulnessSound: string
         return array_map(fn (self $case) => [
             'id' => $case->value,
             'label' => $case->label(),
-            'emoji' => $case->emoji(),
+            'icon' => $case->icon(),
         ], self::cases());
     }
 }

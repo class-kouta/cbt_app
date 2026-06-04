@@ -51,7 +51,7 @@
         x-transition:leave-end="opacity-0 transform translate-y-2"
         class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
     >
-        <span>📋</span>
+        <x-icon name="clipboard-document" class="w-5 h-5" />
         <span>コピーしました！</span>
     </div>
 
@@ -126,7 +126,7 @@
                 class="text-red-400 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
                 title="削除"
             >
-                🗑️
+                <x-icon name="trash" class="w-5 h-5" />
             </button>
         </div>
     </div>
@@ -169,7 +169,7 @@
                 <!-- タグセクション -->
                 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        🏷️ タグ
+                        <x-icon name="tag" class="w-4 h-4" /> タグ
                         <span x-show="isEditing" class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
                     </h3>
                     <p x-show="isEditing" class="text-xs text-gray-500 mb-3">
@@ -246,7 +246,7 @@
                                         class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
                                         title="削除"
                                     >
-                                        🗑️
+                                        <x-icon name="trash" class="w-5 h-5" />
                                     </button>
                                 </div>
                                 <textarea
@@ -381,7 +381,7 @@
                                             x-show="plan.reflection && plan.reflection.trim()"
                                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
                                         >
-                                            ✓ 振り返り済み
+                                            <x-icon name="check" class="w-3.5 h-3.5 inline-block" /> 振り返り済み
                                         </span>
                                         <span
                                             x-show="plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())"
@@ -404,7 +404,7 @@
                                             class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
                                             title="この計画を削除"
                                         >
-                                            🗑️
+                                            <x-icon name="trash" class="w-5 h-5" />
                                         </button>
                                         <svg
                                             class="w-5 h-5 text-gray-400 transition-transform"
@@ -460,7 +460,7 @@
                                         <!-- 改善レベル -->
                                         <div class="mt-3">
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                📊 改善レベル
+                                                <x-icon name="chart-bar" class="w-4 h-4 inline-block" /> 改善レベル
                                                 <span class="text-gray-400 font-normal ml-1">実行後の改善度合いを1〜10で評価</span>
                                             </label>
                                             <select
@@ -528,7 +528,7 @@
                         :disabled="!hasAnyContent()"
                         :class="{ 'opacity-50 cursor-not-allowed': !hasAnyContent() }"
                     >
-                        📋 内容をコピー
+                        <x-icon name="clipboard-document" class="w-5 h-5" /> 内容をコピー
                     </button>
 
                     <!-- 一覧に戻るリンク（下部） -->
