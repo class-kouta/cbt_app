@@ -137,17 +137,52 @@
         </div>
     </a>
 
-    <!-- Schema Therapy Card -->
-    <a href="/schema-therapy" class="block group">
+    <!-- Schema Chronology Card -->
+    <a href="/schema-therapy/chronology" class="block group">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
             <div class="flex flex-col items-center text-center">
-                <!-- Schema Therapy Icon (puzzle pieces representing schemas) -->
+                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M12 2V22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="6" r="2" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="12" cy="18" r="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M14 6H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M4 12H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M14 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">スキーマ年表</h2>
+            </div>
+        </div>
+    </a>
+
+    <!-- Early Maladaptive Schemas Card -->
+    <a href="/early-maladaptive-schemas" class="block group">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+            <div class="flex flex-col items-center text-center">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
                         <path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a2 2 0 012 2v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a2 2 0 01-2 2h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H6a2 2 0 01-2-2v-3a1 1 0 00-1-1H2a2 2 0 110-4h1a1 1 0 001-1V8a2 2 0 012-2h3a1 1 0 001-1V4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">スキーマ療法</h2>
+                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">早期不適応的スキーマ</h2>
+            </div>
+        </div>
+    </a>
+
+    <!-- Schema Mode Dialogue Work Card -->
+    <a href="/schema-therapy/mode-work/dialogue" class="block group">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8 9H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M8 13H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">スキーマモードの対話ワーク</h2>
             </div>
         </div>
     </a>

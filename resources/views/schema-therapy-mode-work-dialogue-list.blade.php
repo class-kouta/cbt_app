@@ -1,15 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'モードワーク 対話のワーク - ' . config('app.name'))
-@section('page-title', '対話のワーク')
+@section('title', 'スキーマモードの対話ワーク - ' . config('app.name'))
+@section('page-title', 'スキーマモードの対話ワーク')
 
 @section('content')
 <div x-data="modeDialogueWorkListApp()" x-init="init()" x-cloak>
     <!-- ヘッダー -->
-    <div class="mb-4 flex justify-between items-center">
-        <a href="/schema-therapy/mode-work" class="text-green-600 hover:text-green-800 flex items-center gap-1 text-sm">
-            ← モードワーク
-        </a>
+    <div class="mb-4 flex justify-end items-center">
         <span x-show="!loading && !errorOccurred && items.length > 0" class="text-sm text-gray-500">
             <x-icon name="queue-list" class="w-4 h-4 inline-block" /> 全 <span class="font-semibold text-gray-700" x-text="items.length"></span> 件
         </span>
