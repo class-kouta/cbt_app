@@ -6,7 +6,6 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
-use App\Http\Controllers\ModeMapController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
@@ -104,12 +103,6 @@ Route::delete('/support-networks/{supportNetwork}', [SupportNetworkController::c
 Route::get('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'show']);
 Route::post('/early-maladaptive-schemas', [EarlyMaladaptiveSchemaController::class, 'store']);
 Route::put('/early-maladaptive-schemas/{earlyMaladaptiveSchema}', [EarlyMaladaptiveSchemaController::class, 'update']);
-
-// ModeMap API（スキーマ療法 - モードマップ簡易版）
-Route::get('/mode-maps', [ModeMapController::class, 'show']);
-Route::get('/mode-maps/export/csv', [ModeMapController::class, 'exportCsv']);
-Route::post('/mode-maps', [ModeMapController::class, 'store']);
-Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
 
 // ModeDialogueWork API（スキーマ療法 - モードワーク対話のワーク）
 Route::get('/mode-dialogue-works', [ModeDialogueWorkController::class, 'index']);

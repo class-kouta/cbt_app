@@ -474,7 +474,6 @@
                                     ['label' => 'トップ', 'patterns' => 'schema-therapy', 'exclude' => 'schema-therapy/*', 'href' => '/schema-therapy'],
                                     ['label' => '年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
                                     ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
-                                    ['label' => 'モードマップ', 'patterns' => 'schema-therapy/mode-map', 'href' => '/schema-therapy/mode-map'],
                                     ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
                                 ];
                                 @endphp

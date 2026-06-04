@@ -23,7 +23,6 @@ class AssignMemberIdSeeder extends Seeder
 
     private const SINGLE_RECORD_TABLES = [
         'early_maladaptive_schemas',
-        'mode_maps',
     ];
 
     /**
