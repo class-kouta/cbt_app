@@ -26,6 +26,17 @@
 - path を Blade にコピーして使う場合も、MIT の条件（著作権表示の保持）が適用される。
 - Heroicons 以外の SVG を混在させる場合は、本ファイルと `NOTICE` に出典を追記する。
 
+### Lucide Icons（マインドフルネス用 `trees` のみ）
+
+| 項目 | 内容 |
+|------|------|
+| アイコン名 | `trees`（森の音源カード） |
+| 取得元 | [Lucide Icons](https://lucide.dev) / [GitHub](https://github.com/lucide-icons/lucide) |
+| ライセンス | **ISC License** |
+| 実装 | `app/Support/Heroicons.php` に path をインライン化 |
+
+`waves`（小川の音源カード）はプロジェクト独自の stroke パスです。
+
 ---
 
 ## MIT License（Heroicons）— 要約（非公式）

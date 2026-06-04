@@ -21,8 +21,8 @@ enum MindfulnessSound: string
     public function icon(): string
     {
         return match ($this) {
-            self::FOREST => 'cloud',
-            self::STREAM => 'sun',
+            self::FOREST => 'trees',
+            self::STREAM => 'waves',
             self::JUNGLE => 'bolt',
         };
     }
