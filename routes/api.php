@@ -12,7 +12,6 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\HealthyAdultModeImageController;
 use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
 use App\Http\Controllers\WritingDisclosureController;
@@ -118,11 +117,6 @@ Route::get('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkControlle
 Route::post('/mode-dialogue-works', [ModeDialogueWorkController::class, 'store']);
 Route::put('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkController::class, 'update']);
 Route::delete('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkController::class, 'destroy']);
-
-// HealthyAdultModeImage API（スキーマ療法 - ヘルシーな大人モードのイメージ）
-Route::get('/healthy-adult-mode-images', [HealthyAdultModeImageController::class, 'show']);
-Route::post('/healthy-adult-mode-images', [HealthyAdultModeImageController::class, 'store']);
-Route::put('/healthy-adult-mode-images/{id}', [HealthyAdultModeImageController::class, 'update']);
 
 // Mindfulness API（マインドフルネス瞑想 - 音声URL取得）
 Route::get('/mindfulness/audio-url', [MindfulnessController::class, 'getAudioUrl']);
