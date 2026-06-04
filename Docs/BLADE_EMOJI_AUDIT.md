@@ -1,8 +1,24 @@
 # Blade テンプレート内 絵文字使用状況 調査レポート
 
-調査日: 2026-06-03  
+調査日: 2026-06-03（最終更新: 2026-06-03 — Heroicons 統一・差し替え表追加）  
 対象: `resources/views/**/*.blade.php`（全 58 ファイル）  
 方法: Unicode 絵文字・記号の機械スキャン + 目視確認
+
+**関連ドキュメント**
+
+- サードパーティ表記（日本語）: [`Docs/THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
+- MIT 全文（Heroicons）: リポジトリ直下 [`NOTICE`](../NOTICE)
+
+---
+
+## アイコン方針（決定案）
+
+| 項目 | 方針 |
+|------|------|
+| ライブラリ | **Heroicons v2** に基本統一 |
+| スタイル | **outline**（`home.blade.php` の既存インライン SVG と揃える） |
+| 実装 | 共通 Blade コンポーネント + インライン SVG（npm 必須ではない） |
+| 表記 | ルート `NOTICE` に Heroicons の MIT 表示を記載済み |
 
 ---
 
@@ -67,6 +83,95 @@
 | ⚡ | ストレッサー一覧空状態 | stressor-and-responses-list |
 | 👥 | サポートネットワーク空状態 | support-networks |
 | 🚧 | 工事中（管理タグ画面） | admin/coping/tag |
+
+---
+
+## 絵文字 → Heroicons 差し替え対応表（推奨）
+
+いずれも **Heroicons v2 / outline / 24×24**。名称は [heroicons.com](https://heroicons.com) のスラッグ。
+
+### 操作・ステータス（優先度: 高）
+
+| 現在 | 推奨 Heroicons | 代替案 | 用途・備考 |
+|------|----------------|--------|------------|
+| ✏️ | `pencil-square` | `pencil` | 編集リンク・ボタン。タップ領域がある操作は square 推奨 |
+| 🗑️ | `trash` | — | 削除。危険操作は `text-red-500` 等で色分け |
+| 📋 | `clipboard-document` | `clipboard-document-check` | コピー操作・「内容をコピー」。完了トーストは **check** 版も可 |
+| ✨ | `arrow-down-tray` | `check`, `sparkles` | 保存・更新。**意味を明確にするなら arrow-down-tray または check**。装飾のみなら sparkles |
+| ✓ | `check` | `check-circle`, `check-badge` | 転記済み・振り返り済みバッジ。強調するなら circle / badge |
+
+### ラベル・セクション（優先度: 中）
+
+| 現在 | 推奨 Heroicons | 代替案 | 用途・備考 |
+|------|----------------|--------|------------|
+| 🏷️ | `tag` | `hashtag` | タグ入力・見出し |
+| 📊 | `chart-bar` | `presentation-chart-bar` | 改善レベル。一覧の数値強調なら chart-bar で十分 |
+| 📝 | `document-text` | `pencil-square` | メモ・実行計画・コラム。編集意味が強い場合は pencil-square |
+| 📜 | `queue-list` | `document-text`, `newspaper` | 年表・件数。時系列なら queue-list が意味に近い |
+| 💬 | `chat-bubble-left-right` | `chat-bubble-left` | 対話ワーク |
+| 💭 | `chat-bubble-bottom-center-text` | `light-bulb` | 思考・振り返り・筆記開示の説明。思考文脈は chat 系、ひらめきなら light-bulb |
+| 🎵 | `musical-note` | `speaker-wave` | マインドフルネス音選択。再生中強調なら speaker-wave |
+| 🔍 | `magnifying-glass` | `queue-list` | 検索結果なし・「全 N 件」。**件数表示のみ**なら `queue-list` の方が意味的に正確な場合あり |
+| 🔧 | `wrench-screwdriver` | `cog-6-tooth` | 管理画面タイトル |
+| 💜 | `heart` | — | コーピング管理。色は `text-purple-600` 等で表現（アイコン形状は heart） |
+
+### 感情・極性（優先度: 中）
+
+| 現在 | 推奨 Heroicons | 代替案 | 用途・備考 |
+|------|----------------|--------|------------|
+| 😊 | `face-smile` | `hand-thumb-up` | ポジティブ感情ラベル |
+| 😔 | `face-frown` | `hand-thumb-down` | ネガティブ感情ラベル |
+| 😢 | `inbox` | `document`, `folder-open` | **データなし空状態**。感情表現ではなく「未登録」なので顔アイコンは非推奨 |
+| ⚠️ | `exclamation-triangle` | `exclamation-circle` | 警告バナー（home 振り返り未実施） |
+
+### 空状態・その他（優先度: 低〜中）
+
+| 現在 | 推奨 Heroicons | 代替案 | 用途・備考 |
+|------|----------------|--------|------------|
+| 🎉 | `check-circle` | `trophy`, `sparkles` | フィルタ「完了」側（Alpine 動的表示） |
+| ⏳ | `clock` | `arrow-path` | フィルタ「待ち」側。待機なら clock |
+| 🌱 | `sun` | `sparkles`, `arrow-trending-up` | コーピング空状態。成長・ウェルネスなら sun |
+| 🧩 | `puzzle-piece` | — | 問題解決一覧空状態（home のスキーマ療法カードと統一可） |
+| ⚡ | `bolt` | — | ストレッサー一覧空状態（home カードと同形で統一可） |
+| 👥 | `user-group` | `users` | サポートネットワーク空状態 |
+| 🚧 | `wrench-screwdriver` | `exclamation-triangle` | 工事中プレースホルダー |
+
+### 記号（Unicode、絵文字ではないが置換対象）
+
+| 現在 | 推奨 Heroicons | 備考 |
+|------|----------------|------|
+| ✓（U+2713） | `check` | 上表の ✓ と同一コンポーネントに統合 |
+
+### 置換しないもの（参考）
+
+| 文字 | 理由 |
+|------|------|
+| `←` `→` | ナビゲーション用テキスト。必要なら `arrow-left` / `arrow-right` に段階的に変更可 |
+
+### Alpine.js 動的表示の注意
+
+`problem-solving-plans-list.blade.php` L185 の `x-text="'🎉' : '⏳'"` は、次のいずれかに変更する。
+
+1. `<template x-if="filter === 'completed'"><x-icon name="check-circle" /></template>` のように DOM 分岐
+2. 共通コンポーネントに `icon` プロパティを渡す Alpine ヘルパー
+
+`x-text` のままでは Heroicons SVG を表示できない。
+
+### 実装時のサイズ目安
+
+| 文脈 | Tailwind クラス例 |
+|------|-------------------|
+| インラインラベル | `w-4 h-4` |
+| ツールバー（編集・削除） | `w-5 h-5` |
+| ボタン内 | `w-5 h-5` + `gap-2` |
+| 空状態（大） | `w-16 h-16` `text-gray-300` |
+| ページタイトル横 | `w-7 h-7` |
+
+### path の取得例
+
+公式リポジトリ: `https://github.com/tailwindlabs/heroicons/blob/master/src/24/outline/{name}.svg`
+
+例: `pencil-square` → `src/24/outline/pencil-square.svg` の `<path>` をコンポーネントに取り込む。
 
 ---
 
@@ -370,17 +475,17 @@
 
 ## 重複パターン（置換時の DRY 候補）
 
-同じ絵文字が複数ファイルで繰り返されている。Blade コンポーネント化すると置換コストを下げられる。
+同じ絵文字が複数ファイルで繰り返されている。`<x-icon name="..." />` にまとめると、上表の Heroicons 名を一箇所で管理できる。
 
-| パターン | 出現ファイル数（概算） | 推奨アイコン例（Heroicons 風） |
-|----------|------------------------|--------------------------------|
+| パターン | 出現ファイル数（概算） | コンポーネント名（案） |
+|----------|------------------------|-------------------------|
 | ✏️ 編集 | 4+ | `pencil-square` |
 | 🗑️ 削除 | 10+ | `trash` |
 | 📋 コピー | 10+ | `clipboard-document` |
 | 🏷️ タグ | 5+ | `tag` |
-| ✨ 保存/更新 | 6+ | `sparkles` または `check` / `arrow-down-tray` |
-| 😢 空状態 | 8+ | `face-frown` またはイラストなし + テキストのみ |
-| 😊 / 😔 極性 | 6+ | `face-smile` / `face-frown` または色付きバッジ |
+| ✨ 保存/更新 | 6+ | `arrow-down-tray` または `check` |
+| 😢 空状態 | 8+ | `inbox` |
+| 😊 / 😔 極性 | 6+ | `face-smile` / `face-frown` |
 | 📝 メモ系 | 6+ | `document-text` |
 | 📊 改善レベル | 4+ | `chart-bar` |
 
@@ -388,20 +493,22 @@
 
 ## 技術スタック上のメモ（次フェーズ用）
 
-- **npm 依存:** アイコンライブラリは未導入（`package.json` に Heroicons / Lucide 等なし）。
-- **既存パターン:** `home.blade.php` や各編集画面で **インライン SVG + Tailwind** が使われている。統一するなら同スタイルの SVG コンポーネント、または `<x-icon name="..." />` のような Blade コンポーネントが自然。
-- **Alpine.js 動的絵文字:** `problem-solving-plans-list.blade.php` L185 は `x-text` で `'🎉'` / `'⏳'` を切り替え。アイコン化する場合は `x-html` またはテンプレート分岐が必要。
+- **ライセンス:** ルート [`NOTICE`](../NOTICE) に Heroicons MIT を記載。方針は [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+- **npm 依存:** 必須ではない。path を Blade コンポーネントに保持する方式で可（現状のインライン SVG を DRY 化）。
+- **既存パターン:** `home.blade.php` のカード・`layouts/app.blade.php` の home アイコンは既に Heroicons outline 系 path。新規置換も同じ stroke ルールに揃える。
+- **Alpine.js 動的絵文字:** `problem-solving-plans-list.blade.php` L185 — 上表「Alpine.js 動的表示の注意」参照。
 - **Variation Selector:** ソース上は `✏️` `🗑️` `🏷️` のように表示されるが、一部はベース文字 + U+FE0F の組み合わせ。
 
 ---
 
 ## 推奨する次のステップ
 
-1. アイコン方針の決定（インライン SVG 継続 vs Heroicons/Lucide 導入）
-2. 共通 Blade コンポーネント `resources/views/components/icon.blade.php` の作成
-3. 優先度「高」から置換: ✏️ 🗑️ 📋（操作系 UI）
-4. 空状態の 😢 等は、絵文字単体より **イラスト + 文言** または **単色アイコン** に統一
-5. 管理画面タイトルの装飾絵文字（🔧 💜 🏷️）はテキストのみ + 小さな SVG に変更
+1. ~~アイコン方針の決定~~ → **Heroicons v2 outline に統一**（本ドキュメント・`NOTICE` 参照）
+2. 共通 Blade コンポーネント `resources/views/components/icon.blade.php` を作成（name → SVG path マップ）
+3. 優先度「高」から置換: ✏️ → `pencil-square`、🗑️ → `trash`、📋 → `clipboard-document`
+4. 空状態の 😢 → `inbox`（顔文字アイコンは使わない）
+5. 管理画面タイトル: 🔧 → `wrench-screwdriver`、💜 → `heart`、🏷️ → `tag`
+6. `home.blade.php` L13 の ⚠️ → `exclamation-triangle`（他カードと同じく SVG 化）
 
 ---
 

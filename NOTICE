@@ -1,0 +1,46 @@
+Third-Party Notices
+===================
+
+This application includes material from the following third-party sources.
+
+
+Heroicons
+-------
+
+Some user interface icons in this application are derived from or
+consistent with Heroicons, created by Tailwind Labs, Inc.
+
+  Website:  https://heroicons.com
+  Source:   https://github.com/tailwindlabs/heroicons
+
+Copyright (c) Tailwind Labs, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Icon usage in this project:
+
+  - Style: Heroicons v2 "outline" (24x24, stroke-based), inlined as SVG in
+    Blade templates or rendered via a shared Blade icon component.
+  - Scope: Replacing emoji-based UI affordances and aligning new icons with
+    the same set. A mapping table is maintained in Docs/BLADE_EMOJI_AUDIT.md.
+  - Custom paths: A small number of icons (e.g. mindfulness) may use
+    project-specific SVG paths; those are not claimed as Heroicons assets.
+
+For questions about third-party attribution, see Docs/THIRD_PARTY_NOTICES.md
+(Japanese summary).
