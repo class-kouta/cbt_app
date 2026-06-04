@@ -176,11 +176,6 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy-mode-work');
             })->name('mode-work');
 
-            // モードワーク - ヘルシーな大人モードのイメージ
-            Route::get('/mode-work/healthy-adult-image', function () {
-                return view('schema-therapy-healthy-adult-image');
-            })->name('mode-work.healthy-adult-image');
-
             // モードワーク - 対話のワーク一覧
             Route::get('/mode-work/dialogue', function () {
                 return view('schema-therapy-mode-work-dialogue-list');
