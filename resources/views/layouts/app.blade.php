@@ -451,31 +451,25 @@
                             @endif
                         </div>
 
-                        <!-- スキーマ年表 -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('schema-therapy/chronology*'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">スキーマ年表</span>
-                                </span>
-                            @else
-                                <a href="/schema-therapy/chronology" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">スキーマ年表</span>
-                                </a>
-                            @endif
-                        </div>
-
-                        <!-- 早期不適応的スキーマ -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('early-maladaptive-schemas*'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">早期不適応的スキーマ</span>
-                                </span>
-                            @else
-                                <a href="/early-maladaptive-schemas" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">早期不適応的スキーマ</span>
-                                </a>
-                            @endif
-                        </div>
+                        @php
+                        $schemaLinks = [
+                            ['label' => 'スキーマ年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
+                            ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas*', 'href' => '/early-maladaptive-schemas'],
+                        ];
+                        @endphp
+                        @foreach ($schemaLinks as $link)
+                            <div class="border-b border-gray-500/30">
+                                @if(request()->is($link['patterns']))
+                                    <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                    </span>
+                                @else
+                                    <a href="{{ $link['href'] }}" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
 
                         <!-- スキーマモードの対話ワーク（多段） -->
                         <div class="border-b border-gray-500/30">
