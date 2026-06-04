@@ -175,21 +175,6 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy-chronology-edit', ['itemId' => $id]);
             })->where('id', '[0-9]+')->name('chronology.edit');
 
-            // ヘルシーサイドとスキーマサイドの対話のワーク一覧
-            Route::get('/dialogue-work', function () {
-                return view('schema-therapy-dialogue-work-list');
-            })->name('dialogue-work');
-
-            // ヘルシーサイドとスキーマサイドの対話のワーク作成
-            Route::get('/dialogue-work/create', function () {
-                return view('schema-therapy-dialogue-work-edit');
-            })->name('dialogue-work.create');
-
-            // ヘルシーサイドとスキーマサイドの対話のワーク編集
-            Route::get('/dialogue-work/{id}/edit', function ($id) {
-                return view('schema-therapy-dialogue-work-edit', ['itemId' => $id]);
-            })->where('id', '[0-9]+')->name('dialogue-work.edit');
-
             // モードワーク
             Route::get('/mode-work', function () {
                 return view('schema-therapy-mode-work');

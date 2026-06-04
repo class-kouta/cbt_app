@@ -12,7 +12,6 @@ use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\DialogueWorkController;
 use App\Http\Controllers\HealthyAdultModeImageController;
 use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
@@ -112,13 +111,6 @@ Route::get('/mode-maps', [ModeMapController::class, 'show']);
 Route::get('/mode-maps/export/csv', [ModeMapController::class, 'exportCsv']);
 Route::post('/mode-maps', [ModeMapController::class, 'store']);
 Route::put('/mode-maps/{id}', [ModeMapController::class, 'update']);
-
-// DialogueWork API（スキーマ療法 - ヘルシーサイドとスキーマサイドの対話のワーク）
-Route::get('/dialogue-works', [DialogueWorkController::class, 'index']);
-Route::get('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'show']);
-Route::post('/dialogue-works', [DialogueWorkController::class, 'store']);
-Route::put('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'update']);
-Route::delete('/dialogue-works/{dialogueWork}', [DialogueWorkController::class, 'destroy']);
 
 // ModeDialogueWork API（スキーマ療法 - モードワーク対話のワーク）
 Route::get('/mode-dialogue-works', [ModeDialogueWorkController::class, 'index']);
