@@ -59,7 +59,7 @@
                                 x-ref="editInput"
                                 @keydown.escape="cancelEdit()"
                                 @keydown.enter="saveEdit(person)"
-                                class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
+                                class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
                                 maxlength="100"
                             >
                             <div class="flex gap-2 mt-2">
