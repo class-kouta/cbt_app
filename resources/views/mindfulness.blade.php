@@ -237,7 +237,12 @@ function mindfulnessPlayer() {
                     this.stop();
                 },
                 seekto: (details) => {
-                    if (this.audio && typeof details.seekTime === 'number') {
+                    if (
+                        this.audio
+                        && typeof details.seekTime === 'number'
+                        && isFinite(details.seekTime)
+                        && details.seekTime >= 0
+                    ) {
                         this.audio.currentTime = details.seekTime;
                         this.updateMediaSessionPosition();
                         this.updateProgress();
@@ -272,14 +277,25 @@ function mindfulnessPlayer() {
         },
 
         updateMediaSessionPosition() {
-            if (!('mediaSession' in navigator) || !this.audio || !this.audio.duration) {
+            if (
+                !('mediaSession' in navigator)
+                || !this.audio
+                || !isFinite(this.audio.duration)
+                || this.audio.duration <= 0
+                || !isFinite(this.audio.currentTime)
+            ) {
+                return;
+            }
+
+            const playbackRate = this.audio.playbackRate || 1;
+            if (!isFinite(playbackRate) || playbackRate <= 0) {
                 return;
             }
 
             try {
                 navigator.mediaSession.setPositionState({
                     duration: this.audio.duration,
-                    playbackRate: this.audio.playbackRate || 1,
+                    playbackRate,
                     position: this.audio.currentTime,
                 });
             } catch (e) {
