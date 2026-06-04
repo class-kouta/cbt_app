@@ -135,6 +135,69 @@
             </p>
         </div>
     </div>
+
+    @unless (app()->environment('production'))
+        <div class="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center gap-2 mb-3">
+                <x-icon name="user-group" class="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <h3 class="text-sm font-semibold text-amber-900">テストアカウント（本番以外）</h3>
+            </div>
+            <p class="text-xs text-amber-800 mb-4">検証用のログイン情報です。コピーボタンでそのまま貼り付けできます。</p>
+
+            <div class="space-y-3">
+                @foreach (config('test_members.accounts') as $account)
+                    <div class="bg-white border border-amber-100 rounded-xl p-3 sm:p-4">
+                        <p class="text-sm font-semibold text-gray-800 mb-2">{{ $account['name'] }}</p>
+
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-500 w-20 flex-shrink-0">メール</span>
+                                <code class="flex-1 min-w-0 text-xs sm:text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 truncate">{{ $account['email'] }}</code>
+                                <button
+                                    type="button"
+                                    @click="copyText(@js($account['email']))"
+                                    class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+                                    title="メールアドレスをコピー"
+                                >
+                                    <x-icon name="clipboard-document" class="w-4 h-4" />
+                                    コピー
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-500 w-20 flex-shrink-0">PW</span>
+                                <code class="flex-1 min-w-0 text-xs sm:text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">{{ config('test_members.password') }}</code>
+                                <button
+                                    type="button"
+                                    @click="copyText(@js(config('test_members.password')))"
+                                    class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+                                    title="パスワードをコピー"
+                                >
+                                    <x-icon name="clipboard-document" class="w-4 h-4" />
+                                    コピー
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endunless
+
+    <!-- コピー成功トースト -->
+    <div
+        x-show="showCopyToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-2"
+        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
+    >
+        <x-icon name="clipboard-document" class="w-5 h-5" />
+        <span>コピーしました！</span>
+    </div>
 </div>
 
 <script>
@@ -153,6 +216,39 @@ function loginApp() {
         resendCooldown: 0,
         resendSuccess: '',
         verified: new URLSearchParams(window.location.search).has('verified'),
+        showCopyToast: false,
+
+        async copyText(text) {
+            let copied = false;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copied = true;
+                } catch (err) {
+                    console.error('コピーに失敗しました:', err);
+                }
+                document.body.removeChild(textArea);
+            }
+
+            if (copied) {
+                this.showCopyToast = true;
+                setTimeout(() => {
+                    this.showCopyToast = false;
+                }, 2000);
+            }
+        },
 
         async login() {
             this.errors = {};
