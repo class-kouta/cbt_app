@@ -66,7 +66,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.abandonment" :class="getIntensityClass(schemas.abandonment) + ' ' + getIntensityBorderClass(schemas.abandonment)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.abandonment" :class="getIntensityClass(schemas.abandonment) + ' ' + getIntensityBorderClass(schemas.abandonment)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -83,7 +83,7 @@
                         <textarea
                             x-model="experiences.abandonment_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -102,7 +102,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.mistrust_abuse" :class="getIntensityClass(schemas.mistrust_abuse) + ' ' + getIntensityBorderClass(schemas.mistrust_abuse)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.mistrust_abuse" :class="getIntensityClass(schemas.mistrust_abuse) + ' ' + getIntensityBorderClass(schemas.mistrust_abuse)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -119,7 +119,7 @@
                         <textarea
                             x-model="experiences.mistrust_abuse_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -138,7 +138,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.emotional_deprivation" :class="getIntensityClass(schemas.emotional_deprivation) + ' ' + getIntensityBorderClass(schemas.emotional_deprivation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.emotional_deprivation" :class="getIntensityClass(schemas.emotional_deprivation) + ' ' + getIntensityBorderClass(schemas.emotional_deprivation)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -155,7 +155,7 @@
                         <textarea
                             x-model="experiences.emotional_deprivation_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -174,7 +174,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.defectiveness_shame" :class="getIntensityClass(schemas.defectiveness_shame) + ' ' + getIntensityBorderClass(schemas.defectiveness_shame)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.defectiveness_shame" :class="getIntensityClass(schemas.defectiveness_shame) + ' ' + getIntensityBorderClass(schemas.defectiveness_shame)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -191,7 +191,7 @@
                         <textarea
                             x-model="experiences.defectiveness_shame_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -210,7 +210,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.social_isolation" :class="getIntensityClass(schemas.social_isolation) + ' ' + getIntensityBorderClass(schemas.social_isolation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.social_isolation" :class="getIntensityClass(schemas.social_isolation) + ' ' + getIntensityBorderClass(schemas.social_isolation)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -227,7 +227,7 @@
                         <textarea
                             x-model="experiences.social_isolation_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -255,7 +255,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.dependence_incompetence" :class="getIntensityClass(schemas.dependence_incompetence) + ' ' + getIntensityBorderClass(schemas.dependence_incompetence)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.dependence_incompetence" :class="getIntensityClass(schemas.dependence_incompetence) + ' ' + getIntensityBorderClass(schemas.dependence_incompetence)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -272,7 +272,7 @@
                         <textarea
                             x-model="experiences.dependence_incompetence_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -291,7 +291,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.vulnerability_to_harm" :class="getIntensityClass(schemas.vulnerability_to_harm) + ' ' + getIntensityBorderClass(schemas.vulnerability_to_harm)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.vulnerability_to_harm" :class="getIntensityClass(schemas.vulnerability_to_harm) + ' ' + getIntensityBorderClass(schemas.vulnerability_to_harm)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -308,7 +308,7 @@
                         <textarea
                             x-model="experiences.vulnerability_to_harm_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -327,7 +327,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.enmeshment" :class="getIntensityClass(schemas.enmeshment) + ' ' + getIntensityBorderClass(schemas.enmeshment)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.enmeshment" :class="getIntensityClass(schemas.enmeshment) + ' ' + getIntensityBorderClass(schemas.enmeshment)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -344,7 +344,7 @@
                         <textarea
                             x-model="experiences.enmeshment_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -363,7 +363,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.failure" :class="getIntensityClass(schemas.failure) + ' ' + getIntensityBorderClass(schemas.failure)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.failure" :class="getIntensityClass(schemas.failure) + ' ' + getIntensityBorderClass(schemas.failure)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -380,7 +380,7 @@
                         <textarea
                             x-model="experiences.failure_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -408,7 +408,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.entitlement_grandiosity" :class="getIntensityClass(schemas.entitlement_grandiosity) + ' ' + getIntensityBorderClass(schemas.entitlement_grandiosity)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.entitlement_grandiosity" :class="getIntensityClass(schemas.entitlement_grandiosity) + ' ' + getIntensityBorderClass(schemas.entitlement_grandiosity)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -425,7 +425,7 @@
                         <textarea
                             x-model="experiences.entitlement_grandiosity_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -444,7 +444,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.insufficient_self_control" :class="getIntensityClass(schemas.insufficient_self_control) + ' ' + getIntensityBorderClass(schemas.insufficient_self_control)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.insufficient_self_control" :class="getIntensityClass(schemas.insufficient_self_control) + ' ' + getIntensityBorderClass(schemas.insufficient_self_control)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -461,7 +461,7 @@
                         <textarea
                             x-model="experiences.insufficient_self_control_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -489,7 +489,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.subjugation" :class="getIntensityClass(schemas.subjugation) + ' ' + getIntensityBorderClass(schemas.subjugation)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.subjugation" :class="getIntensityClass(schemas.subjugation) + ' ' + getIntensityBorderClass(schemas.subjugation)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -506,7 +506,7 @@
                         <textarea
                             x-model="experiences.subjugation_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -525,7 +525,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.self_sacrifice" :class="getIntensityClass(schemas.self_sacrifice) + ' ' + getIntensityBorderClass(schemas.self_sacrifice)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.self_sacrifice" :class="getIntensityClass(schemas.self_sacrifice) + ' ' + getIntensityBorderClass(schemas.self_sacrifice)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -542,7 +542,7 @@
                         <textarea
                             x-model="experiences.self_sacrifice_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -561,7 +561,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.approval_seeking" :class="getIntensityClass(schemas.approval_seeking) + ' ' + getIntensityBorderClass(schemas.approval_seeking)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.approval_seeking" :class="getIntensityClass(schemas.approval_seeking) + ' ' + getIntensityBorderClass(schemas.approval_seeking)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -578,7 +578,7 @@
                         <textarea
                             x-model="experiences.approval_seeking_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -606,7 +606,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.negativity_pessimism" :class="getIntensityClass(schemas.negativity_pessimism) + ' ' + getIntensityBorderClass(schemas.negativity_pessimism)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.negativity_pessimism" :class="getIntensityClass(schemas.negativity_pessimism) + ' ' + getIntensityBorderClass(schemas.negativity_pessimism)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -623,7 +623,7 @@
                         <textarea
                             x-model="experiences.negativity_pessimism_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -642,7 +642,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.emotional_inhibition" :class="getIntensityClass(schemas.emotional_inhibition) + ' ' + getIntensityBorderClass(schemas.emotional_inhibition)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.emotional_inhibition" :class="getIntensityClass(schemas.emotional_inhibition) + ' ' + getIntensityBorderClass(schemas.emotional_inhibition)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -659,7 +659,7 @@
                         <textarea
                             x-model="experiences.emotional_inhibition_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -678,7 +678,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.unrelenting_standards" :class="getIntensityClass(schemas.unrelenting_standards) + ' ' + getIntensityBorderClass(schemas.unrelenting_standards)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.unrelenting_standards" :class="getIntensityClass(schemas.unrelenting_standards) + ' ' + getIntensityBorderClass(schemas.unrelenting_standards)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -695,7 +695,7 @@
                         <textarea
                             x-model="experiences.unrelenting_standards_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -714,7 +714,7 @@
                             </h3>
                         </div>
                         <div class="flex-shrink-0">
-                            <select x-model="schemas.punitiveness" :class="getIntensityClass(schemas.punitiveness) + ' ' + getIntensityBorderClass(schemas.punitiveness)" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+                            <select x-model="schemas.punitiveness" :class="getIntensityClass(schemas.punitiveness) + ' ' + getIntensityBorderClass(schemas.punitiveness)" class="border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
                                 <option value="">未選択</option>
                                 <template x-for="i in 21" :key="i">
                                     <option :value="(i-1)*5" x-text="(i-1)*5 + '%'"></option>
@@ -731,7 +731,7 @@
                         <textarea
                             x-model="experiences.punitiveness_experience"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
                             placeholder="このスキーマに関連する過去の経験、エピソード、思い当たることなどを自由に記入してください..."
                         ></textarea>
                     </div>
@@ -749,7 +749,7 @@
                 <textarea
                     x-model="notes"
                     rows="10"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-y"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-y"
                     placeholder="スキーマ全体を通しての気づき、治療の目標、日々の振り返り、その他なんでも自由にメモしてください..."
                 ></textarea>
             </div>
