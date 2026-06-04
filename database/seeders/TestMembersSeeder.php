@@ -20,27 +20,22 @@ class TestMembersSeeder extends Seeder
         }
 
         $now = now();
-        $password = Hash::make('testtesttest');
+        $password = Hash::make(config('test_members.password'));
+
+        $members = array_map(
+            fn (array $account) => [
+                'name' => $account['name'],
+                'email' => $account['email'],
+                'password' => $password,
+                'email_verified_at' => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            config('test_members.accounts', []),
+        );
 
         DB::table('members')->upsert(
-            [
-                [
-                    'name' => '検証テストユーザー1',
-                    'email' => 'ff03csm26test1@example.com',
-                    'password' => $password,
-                    'email_verified_at' => $now,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ],
-                [
-                    'name' => '検証テストユーザー2',
-                    'email' => 'ff03csm26test2@example.com',
-                    'password' => $password,
-                    'email_verified_at' => $now,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ],
-            ],
+            $members,
             ['email'],
             ['name', 'password', 'email_verified_at', 'updated_at'],
         );
