@@ -205,7 +205,7 @@
             <button
                 type="button"
                 @click="addEntry('healthy')"
-                :disabled="!canAddEntry()"
+                :disabled="!canAddEntry"
                 class="flex-1 py-2.5 bg-white border-2 border-teal-400 text-teal-600 rounded-full font-bold text-xs hover:bg-teal-50 transition-all px-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
                 + ヘルシーな大人モード
@@ -213,7 +213,7 @@
             <button
                 type="button"
                 @click="addEntry('mode')"
-                :disabled="!canAddEntry()"
+                :disabled="!canAddEntry"
                 class="flex-1 py-2.5 bg-white border-2 border-amber-400 text-amber-600 rounded-full font-bold text-xs hover:bg-amber-50 transition-all px-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
             >
                 + <span x-text="fullModeName"></span>
@@ -353,6 +353,14 @@ function modeDialogueWorkEditApp(itemId) {
             return PLACEHOLDER_MAP[this.modeCategory] || '';
         },
 
+        get canAddEntry() {
+            if (this.entries.length === 0) {
+                return true;
+            }
+            const lastEntry = this.entries[this.entries.length - 1];
+            return !!lastEntry?.text?.trim();
+        },
+
         async init() {
             window.addEventListener('beforeunload', () => {
                 if (this.autoSaveInterval) {
@@ -428,16 +436,8 @@ function modeDialogueWorkEditApp(itemId) {
             })));
         },
 
-        canAddEntry() {
-            if (this.entries.length === 0) {
-                return true;
-            }
-            const lastEntry = this.entries[this.entries.length - 1];
-            return typeof lastEntry?.text === 'string' && lastEntry.text.trim().length > 0;
-        },
-
         addEntry(type) {
-            if (!this.canAddEntry()) {
+            if (!this.canAddEntry) {
                 return;
             }
             this.entries.push({ id: nextId++, type: type, text: '' });
