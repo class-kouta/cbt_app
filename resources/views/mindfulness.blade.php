@@ -200,6 +200,154 @@ function mindfulnessPlayer() {
         errorMessage: '',
         progressInterval: null,
         _listeners: {},
+        _mediaSessionHandlers: null,
+
+        setupMediaSession() {
+            if (!('mediaSession' in navigator) || !this.audio) {
+                return;
+            }
+
+            const sound = this.sounds.find(s => s.id === this.selectedSound);
+            const title = sound?.label || 'マインドフルネス瞑想';
+            const iconUrl = @json(asset('apple-touch-icon.png'));
+
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title,
+                artist: 'マインドフルネス瞑想',
+                album: `${this.selectedDuration}分`,
+                artwork: [
+                    { src: iconUrl, sizes: '180x180', type: 'image/png' },
+                ],
+            });
+
+            this.clearMediaSessionHandlers();
+
+            this._mediaSessionHandlers = {
+                play: () => {
+                    if (this.audio) {
+                        this.audio.play().catch(e => console.error('MediaSession play failed:', e));
+                    }
+                },
+                pause: () => {
+                    if (this.audio) {
+                        this.audio.pause();
+                    }
+                },
+                stop: () => {
+                    this.stop();
+                },
+                seekto: (details) => {
+                    if (
+                        this.audio
+                        && details
+                        && typeof details.seekTime === 'number'
+                        && isFinite(details.seekTime)
+                        && details.seekTime >= 0
+                    ) {
+                        this.audio.currentTime = details.seekTime;
+                        this.updateMediaSessionPosition();
+                        this.updateProgress();
+                    }
+                },
+            };
+
+            navigator.mediaSession.setActionHandler('play', this._mediaSessionHandlers.play);
+            navigator.mediaSession.setActionHandler('pause', this._mediaSessionHandlers.pause);
+            navigator.mediaSession.setActionHandler('stop', this._mediaSessionHandlers.stop);
+            try {
+                navigator.mediaSession.setActionHandler('seekto', this._mediaSessionHandlers.seekto);
+            } catch (e) {
+                // 未対応のアクションは無視
+            }
+
+            this.updateMediaSessionState();
+        },
+
+        updateMediaSessionState() {
+            if (!('mediaSession' in navigator)) {
+                return;
+            }
+
+            if (this.isPlaying) {
+                navigator.mediaSession.playbackState = 'playing';
+            } else if (this.isPaused) {
+                navigator.mediaSession.playbackState = 'paused';
+            } else {
+                navigator.mediaSession.playbackState = 'none';
+            }
+
+            this.updateMediaSessionPosition();
+        },
+
+        updateMediaSessionPosition() {
+            if (
+                !('mediaSession' in navigator)
+                || !this.audio
+                || !isFinite(this.audio.duration)
+                || this.audio.duration <= 0
+                || !isFinite(this.audio.currentTime)
+            ) {
+                return;
+            }
+
+            const playbackRate = this.audio.playbackRate || 1;
+            if (!isFinite(playbackRate) || playbackRate <= 0) {
+                return;
+            }
+
+            try {
+                navigator.mediaSession.setPositionState({
+                    duration: this.audio.duration,
+                    playbackRate,
+                    position: this.audio.currentTime,
+                });
+            } catch (e) {
+                // 未対応ブラウザは無視
+            }
+        },
+
+        clearMediaSessionHandlers() {
+            if (!('mediaSession' in navigator) || !this._mediaSessionHandlers) {
+                return;
+            }
+
+            for (const action of ['play', 'pause', 'stop', 'seekto']) {
+                try {
+                    navigator.mediaSession.setActionHandler(action, null);
+                } catch (e) {
+                    // 未対応のアクションは無視
+                }
+            }
+
+            this._mediaSessionHandlers = null;
+        },
+
+        clearMediaSession() {
+            this.clearMediaSessionHandlers();
+
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = null;
+                navigator.mediaSession.playbackState = 'none';
+            }
+        },
+
+        onAudioPlay() {
+            this.isPlaying = true;
+            this.isPaused = false;
+            this.updateMediaSessionState();
+            this.startProgressUpdate();
+        },
+
+        onAudioPause() {
+            if (!this.audio || this.audio.ended) {
+                return;
+            }
+
+            this.isPlaying = false;
+            this.isPaused = true;
+            this.updateMediaSessionState();
+            this.stopProgressUpdate();
+        },
 
         async play() {
             if (!this.selectedSound || !this.selectedDuration) return;
@@ -215,31 +363,37 @@ function mindfulnessPlayer() {
                 const data = await res.json();
 
                 this.audio = new Audio(data.url);
+                this.setupMediaSession();
 
                 this._listeners.loadedmetadata = () => {
                     this.totalDuration = this.audio.duration;
                     this.isLoading = false;
-                    this.isPlaying = true;
-                    this.startProgressUpdate();
+                    this.updateMediaSessionPosition();
                 };
+                this._listeners.play = () => this.onAudioPlay();
+                this._listeners.pause = () => this.onAudioPause();
                 this._listeners.ended = () => {
                     this.isPlaying = false;
                     this.isPaused = false;
                     this.progressPercent = 100;
                     this.stopProgressUpdate();
+                    this.clearMediaSession();
                 };
                 this._listeners.error = () => {
                     this.isLoading = false;
                     this.isPlaying = false;
                     this.errorMessage = '音声の読み込みに失敗しました。しばらくしてからもう一度お試しください。';
                     this.stopProgressUpdate();
+                    this.clearMediaSession();
                 };
 
                 this.audio.addEventListener('loadedmetadata', this._listeners.loadedmetadata);
+                this.audio.addEventListener('play', this._listeners.play);
+                this.audio.addEventListener('pause', this._listeners.pause);
                 this.audio.addEventListener('ended', this._listeners.ended);
                 this.audio.addEventListener('error', this._listeners.error);
 
-                this.audio.play();
+                await this.audio.play();
             } catch (e) {
                 this.isLoading = false;
                 this.errorMessage = '音声の取得に失敗しました。ネットワーク接続を確認してください。';
@@ -249,18 +403,12 @@ function mindfulnessPlayer() {
         pause() {
             if (this.audio) {
                 this.audio.pause();
-                this.isPlaying = false;
-                this.isPaused = true;
-                this.stopProgressUpdate();
             }
         },
 
         resume() {
             if (this.audio) {
-                this.audio.play();
-                this.isPlaying = true;
-                this.isPaused = false;
-                this.startProgressUpdate();
+                this.audio.play().catch(e => console.error('Audio play failed:', e));
             }
         },
 
@@ -274,6 +422,7 @@ function mindfulnessPlayer() {
                 this.audio = null;
             }
             this._listeners = {};
+            this.clearMediaSession();
             this.isPlaying = false;
             this.isPaused = false;
             this.isLoading = false;
