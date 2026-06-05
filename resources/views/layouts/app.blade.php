@@ -461,12 +461,12 @@
                         <!-- サポートネットワーク -->
                         <div class="border-b border-gray-500/30 {{ $menuActive['support'] ? $menuGroupBg : '' }}">
                             @if($menuActive['support'])
-                                <span class="flex items-center justify-end gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
                                     <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
                                 </span>
                             @else
-                                <a href="/support-networks" class="flex items-center justify-end gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/support-networks" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
                                     <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
                                 </a>
@@ -476,12 +476,12 @@
                         <!-- コーピングリスト -->
                         <div class="border-b border-gray-500/30 {{ $menuActive['coping'] ? $menuGroupBg : '' }}">
                             @if($menuActive['coping'])
-                                <span class="flex items-center justify-end gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">コーピングリスト</span>
                                     <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
                                 </span>
                             @else
-                                <a href="/copings" class="flex items-center justify-end gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/copings" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">コーピングリスト</span>
                                     <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
                                 </a>
@@ -491,12 +491,12 @@
                         <!-- マインドフルネス瞑想 -->
                         <div class="border-b border-gray-500/30 {{ $menuActive['mindfulness'] ? $menuGroupBg : '' }}">
                             @if($menuActive['mindfulness'])
-                                <span class="flex items-center justify-end gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
                                     <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
                                 </span>
                             @else
-                                <a href="/mindfulness" class="flex items-center justify-end gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/mindfulness" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
                                     <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
                                 </a>
@@ -515,12 +515,12 @@
                             @endphp
                             <div class="border-b border-gray-500/30 {{ $schemaLinkActive ? $menuGroupBg : '' }}">
                                 @if($schemaLinkActive)
-                                    <span class="flex items-center justify-end gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                         <span class="font-medium text-lg">{{ $link['label'] }}</span>
                                         <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
                                     </span>
                                 @else
-                                    <a href="{{ $link['href'] }}" class="flex items-center justify-end gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <a href="{{ $link['href'] }}" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="font-medium text-lg">{{ $link['label'] }}</span>
                                         <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
                                     </a>
