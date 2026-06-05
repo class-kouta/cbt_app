@@ -249,7 +249,8 @@
                             writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
                             problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
                             notepadOpen: {{ $menuActive['notepad'] ? 'true' : 'false' }},
-                            modeDialogueOpen: {{ $menuActive['modeDialogue'] ? 'true' : 'false' }}
+                            modeDialogueOpen: {{ $menuActive['modeDialogue'] ? 'true' : 'false' }},
+                            chronologyOpen: {{ $menuActive['chronology'] ? 'true' : 'false' }}
                         }"
                     >
                         <!-- トップ -->
@@ -505,10 +506,49 @@
 
                         @php
                         $schemaLinks = [
-                            ['label' => 'スキーマ年表', 'activeKey' => 'chronology', 'href' => '/schema-therapy/chronology'],
                             ['label' => '早期不適応的スキーマ', 'activeKey' => 'ems', 'href' => '/early-maladaptive-schemas'],
                         ];
                         @endphp
+
+                        <!-- スキーマ年表（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['chronology'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="chronologyOpen = !chronologyOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">スキーマ年表</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="chronologyOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="chronologyOpen" x-collapse class="">
+                                @if(request()->is('schema-therapy/chronology/create'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/chronology/create" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/chronology'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/chronology" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
                         @foreach ($schemaLinks as $link)
                             @php
                                 $schemaLinkActive = $menuActive[$link['activeKey']];
