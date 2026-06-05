@@ -9,19 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 
-class SimpleNotepad extends Model
+class SimpleNotepadTag extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'member_id',
-        'title',
-        'content',
-    ];
-
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'name',
     ];
 
     public function member(): BelongsTo
@@ -29,13 +23,13 @@ class SimpleNotepad extends Model
         return $this->belongsTo(Member::class);
     }
 
-    public function tags(): BelongsToMany
+    public function simpleNotepads(): BelongsToMany
     {
         return $this->belongsToMany(
-            SimpleNotepadTag::class,
+            SimpleNotepad::class,
             'simple_notepad_tag',
-            'simple_notepad_id',
-            'simple_notepad_tag_id'
+            'simple_notepad_tag_id',
+            'simple_notepad_id'
         );
     }
 

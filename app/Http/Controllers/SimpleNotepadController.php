@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\SimpleNotepadData;
 use App\Application\UseCase\SimpleNotepad\CreateSimpleNotepadUseCase;
-use App\Application\UseCase\SimpleNotepad\UpdateSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\DeleteSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\ListSimpleNotepadsUseCase;
+use App\Application\UseCase\SimpleNotepad\UpdateSimpleNotepadUseCase;
 use App\Http\Requests\SimpleNotepad\CreateSimpleNotepadRequest;
 use App\Http\Requests\SimpleNotepad\UpdateSimpleNotepadRequest;
 use App\Infrastructure\Database\Models\SimpleNotepad;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleNotepadController extends Controller
 {
@@ -19,18 +20,23 @@ class SimpleNotepadController extends Controller
      */
     public function index(ListSimpleNotepadsUseCase $listSimpleNotepads): JsonResponse
     {
-        $simpleNotepads = collect($listSimpleNotepads->handle())
-            ->map(function ($simpleNotepad) {
-                return [
-                    'id' => $simpleNotepad->getId(),
-                    'title' => $simpleNotepad->getTitle(),
-                    'content' => $simpleNotepad->getContent(),
-                    'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
-                    'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-                ];
-            });
+        $memberId = (int) Auth::id();
+        $simpleNotepads = collect($listSimpleNotepads->handle());
+        $ids = $simpleNotepads->map(fn ($item) => $item->getId())->all();
 
-        return response()->json($simpleNotepads);
+        $modelsById = SimpleNotepad::where('member_id', $memberId)
+            ->with('tags')
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+
+        $response = $simpleNotepads->map(function ($simpleNotepad) use ($modelsById) {
+            $model = $modelsById->get($simpleNotepad->getId());
+
+            return $this->formatResponse($simpleNotepad, $model);
+        });
+
+        return response()->json($response);
     }
 
     /**
@@ -47,13 +53,17 @@ class SimpleNotepadController extends Controller
 
         $simpleNotepad = $createSimpleNotepad->handle($data);
 
-        return response()->json([
-            'id' => $simpleNotepad->getId(),
-            'title' => $simpleNotepad->getTitle(),
-            'content' => $simpleNotepad->getContent(),
-            'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
+        $tagIds = $request->input('tag_ids', []);
+        $model = SimpleNotepad::where('member_id', (int) Auth::id())
+            ->with('tags')
+            ->findOrFail($simpleNotepad->getId());
+
+        if (! empty($tagIds)) {
+            $model->tags()->sync($tagIds);
+            $model->load('tags');
+        }
+
+        return response()->json($this->formatResponse($simpleNotepad, $model), 201);
     }
 
     /**
@@ -71,13 +81,11 @@ class SimpleNotepadController extends Controller
 
         $updatedSimpleNotepad = $updateSimpleNotepad->handle($simpleNotepad->id, $data);
 
-        return response()->json([
-            'id' => $updatedSimpleNotepad->getId(),
-            'title' => $updatedSimpleNotepad->getTitle(),
-            'content' => $updatedSimpleNotepad->getContent(),
-            'created_at' => $updatedSimpleNotepad->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $updatedSimpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-        ]);
+        $tagIds = $request->input('tag_ids', []);
+        $simpleNotepad->tags()->sync($tagIds);
+        $simpleNotepad->load('tags');
+
+        return response()->json($this->formatResponse($updatedSimpleNotepad, $simpleNotepad));
     }
 
     /**
@@ -90,5 +98,23 @@ class SimpleNotepadController extends Controller
         $deleteSimpleNotepad->handle($simpleNotepad->id);
 
         return response()->json(null, 204);
+    }
+
+    private function formatResponse($simpleNotepad, ?SimpleNotepad $model): array
+    {
+        $tags = $model?->tags ?? collect();
+
+        return [
+            'id' => $simpleNotepad->getId(),
+            'title' => $simpleNotepad->getTitle(),
+            'content' => $simpleNotepad->getContent(),
+            'tags' => $tags->map(fn ($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->name,
+            ])->values()->toArray(),
+            'tag_ids' => $tags->pluck('id')->values()->toArray(),
+            'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
+        ];
     }
 }

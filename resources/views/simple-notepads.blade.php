@@ -152,6 +152,69 @@
             <div class="text-xs text-gray-400 text-right" x-text="(formData.content || '').length + '/10000'"></div>
         </div>
 
+        <!-- タグセクション -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h3 class="text-base font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <x-icon name="tag" class="w-4 h-4" /> タグ
+                <span class="text-gray-400 font-normal text-sm">（任意・複数選択可）</span>
+            </h3>
+            <p class="text-xs text-gray-500 mb-3">
+                このメモに関連するタグを選択してください
+            </p>
+
+            <!-- タグ選択UI -->
+            <div x-show="availableTags.length > 0" class="flex flex-wrap gap-2 mb-3">
+                <template x-for="tag in availableTags" :key="tag.id">
+                    <button
+                        type="button"
+                        @click="toggleTag(tag.id)"
+                        :disabled="isEditMode && !isEditing"
+                        class="px-3 py-1.5 text-sm rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        :class="isTagSelected(tag.id)
+                            ? 'bg-emerald-500 text-white border-emerald-500'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50'"
+                        x-text="tag.name"
+                    ></button>
+                </template>
+            </div>
+
+            <!-- タグがない場合 -->
+            <div x-show="availableTags.length === 0" class="text-sm text-gray-500 mb-3">
+                タグがありません
+            </div>
+
+            <!-- 新規作成ページのみ：タグ追加フォーム -->
+            <template x-if="!isEditMode">
+                <div class="border-t border-gray-200 pt-3 mt-1">
+                    <p class="text-xs text-gray-500 mb-2">新しいタグを追加</p>
+                    <div class="flex gap-2">
+                        <input
+                            type="text"
+                            x-model="newTagName"
+                            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                            placeholder="タグ名を入力..."
+                            maxlength="50"
+                            :disabled="availableTags.length >= 10 || addingTag"
+                            @keydown.enter.prevent="addNewTag()"
+                        >
+                        <button
+                            type="button"
+                            @click="addNewTag()"
+                            class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                            :disabled="!newTagName.trim() || availableTags.length >= 10 || addingTag"
+                        >
+                            <span x-show="!addingTag">追加</span>
+                            <span x-show="addingTag">追加中...</span>
+                        </button>
+                    </div>
+                    <div x-show="tagError" class="text-red-500 text-xs mt-2" x-text="tagError"></div>
+                    <div x-show="availableTags.length >= 10" class="text-amber-600 text-xs mt-2">
+                        タグは10個まで作成できます
+                    </div>
+                </div>
+            </template>
+        </div>
+
         <!-- エラーメッセージ -->
         <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
 
@@ -214,8 +277,13 @@ function simpleNotepadApp(itemId) {
         isEditing: false,
         formData: {
             title: '',
-            content: ''
+            content: '',
+            tag_ids: []
         },
+        availableTags: [],
+        newTagName: '',
+        addingTag: false,
+        tagError: '',
         loading: false,
         saving: false,
         error: '',
@@ -228,8 +296,77 @@ function simpleNotepadApp(itemId) {
         lastSavedState: null,
 
         async init() {
+            await this.loadTags();
+
             if (this.isEditMode) {
                 await this.loadItem();
+            }
+        },
+
+        async loadTags() {
+            try {
+                const res = await apiFetch('/api/simple-notepad-tags');
+                if (res.ok) {
+                    this.availableTags = await res.json();
+                }
+            } catch (error) {
+                console.error('タグの取得に失敗しました:', error);
+            }
+        },
+
+        toggleTag(tagId) {
+            if (this.isEditMode && !this.isEditing) return;
+
+            const index = this.formData.tag_ids.indexOf(tagId);
+            if (index > -1) {
+                this.formData.tag_ids.splice(index, 1);
+            } else {
+                this.formData.tag_ids.push(tagId);
+            }
+        },
+
+        isTagSelected(tagId) {
+            return this.formData.tag_ids.includes(tagId);
+        },
+
+        async addNewTag() {
+            this.tagError = '';
+
+            if (!this.newTagName.trim()) {
+                this.tagError = 'タグ名を入力してください';
+                return;
+            }
+
+            if (this.availableTags.length >= 10) {
+                this.tagError = 'タグは10個まで作成できます';
+                return;
+            }
+
+            this.addingTag = true;
+            try {
+                const res = await apiFetch('/api/simple-notepad-tags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: this.newTagName.trim() })
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || (data.errors?.name?.[0]) || 'エラーが発生しました');
+                }
+
+                const newTag = await res.json();
+                this.newTagName = '';
+                await this.loadTags();
+                if (!this.formData.tag_ids.includes(newTag.id)) {
+                    this.formData.tag_ids.push(newTag.id);
+                }
+            } catch (e) {
+                this.tagError = e.message;
+            } finally {
+                this.addingTag = false;
             }
         },
 
@@ -242,6 +379,7 @@ function simpleNotepadApp(itemId) {
                 if (item) {
                     this.formData.title = item.title || '';
                     this.formData.content = item.content || '';
+                    this.formData.tag_ids = item.tag_ids || [];
                 }
             } catch (error) {
                 console.error(error);
@@ -254,7 +392,8 @@ function simpleNotepadApp(itemId) {
             this.isEditing = true;
             this.lastSavedState = {
                 title: this.formData.title,
-                content: this.formData.content
+                content: this.formData.content,
+                tag_ids: [...this.formData.tag_ids]
             };
             this.autoSaveInterval = setInterval(() => {
                 this.checkAndAutoSave();
@@ -280,7 +419,8 @@ function simpleNotepadApp(itemId) {
 
             const currentState = {
                 title: this.formData.title,
-                content: this.formData.content
+                content: this.formData.content,
+                tag_ids: [...this.formData.tag_ids]
             };
 
             if (JSON.stringify(currentState) !== JSON.stringify(this.lastSavedState)) {
@@ -309,7 +449,8 @@ function simpleNotepadApp(itemId) {
                     },
                     body: JSON.stringify({
                         title: this.formData.title,
-                        content: this.formData.content
+                        content: this.formData.content,
+                        tag_ids: this.formData.tag_ids
                     })
                 });
 
@@ -345,7 +486,8 @@ function simpleNotepadApp(itemId) {
             if (success) {
                 this.lastSavedState = {
                     title: this.formData.title,
-                    content: this.formData.content
+                    content: this.formData.content,
+                    tag_ids: [...this.formData.tag_ids]
                 };
             }
         },
@@ -367,7 +509,8 @@ function simpleNotepadApp(itemId) {
                     },
                     body: JSON.stringify({
                         title: this.formData.title,
-                        content: this.formData.content
+                        content: this.formData.content,
+                        tag_ids: this.formData.tag_ids
                     })
                 });
 

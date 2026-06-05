@@ -3,6 +3,8 @@
 namespace App\Http\Requests\SimpleNotepad;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UpdateSimpleNotepadRequest extends FormRequest
 {
@@ -16,6 +18,11 @@ class UpdateSimpleNotepadRequest extends FormRequest
         return [
             'title' => ['nullable', 'string', 'max:255'],
             'content' => ['required', 'string', 'max:10000'],
+            'tag_ids' => ['nullable', 'array'],
+            'tag_ids.*' => [
+                'integer',
+                Rule::exists('simple_notepad_tags', 'id')->where('member_id', Auth::id()),
+            ],
         ];
     }
 
