@@ -125,25 +125,29 @@
                                     </label>
                                 </template>
                             </div>
-                            <div class="flex gap-2 mt-2">
+                            <div class="flex items-center gap-2 mt-2">
                                 <button
+                                    type="button"
                                     @click="saveEdit(coping)"
-                                    class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
+                                    class="text-emerald-600 hover:text-emerald-700 transition-colors p-1.5 rounded hover:bg-emerald-50"
+                                    title="保存"
                                 >
-                                    保存
+                                    <x-icon name="check" class="w-5 h-5" />
                                 </button>
                                 <button
+                                    type="button"
+                                    @click="deleteCoping(coping)"
+                                    class="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded hover:bg-red-50"
+                                    title="削除"
+                                >
+                                    <x-icon name="trash" class="w-5 h-5" />
+                                </button>
+                                <span
                                     @click="cancelEdit()"
-                                    class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
+                                    class="text-sm text-gray-500 hover:text-gray-700 underline cursor-pointer select-none ml-1"
                                 >
                                     キャンセル
-                                </button>
-                                <button
-                                    @click="deleteCoping(coping)"
-                                    class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                >
-                                    削除
-                                </button>
+                                </span>
                             </div>
                         </div>
 
