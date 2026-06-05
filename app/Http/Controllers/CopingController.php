@@ -27,7 +27,6 @@ class CopingController extends Controller
                     'point' => $coping->getPoint(),
                     'created_at' => $coping->getCreatedAt()->format(DATE_ATOM),
                     'updated_at' => $coping->getUpdatedAt()->format(DATE_ATOM),
-                    'coping_tag_ids' => $coping->getCopingTagIds(),
                 ];
             });
 
@@ -40,8 +39,7 @@ class CopingController extends Controller
     public function store(CreateCopingRequest $request, CreateCopingUseCase $createCoping): JsonResponse
     {
         $data = new CopingData(
-            content: (string) $request->string('content'),
-            copingTagIds: (array) $request->input('coping_tag_ids', [])
+            content: (string) $request->string('content')
         );
 
         $coping = $createCoping->handle($data);
@@ -52,7 +50,6 @@ class CopingController extends Controller
             'point' => $coping->getPoint(),
             'created_at' => $coping->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $coping->getUpdatedAt()->format(DATE_ATOM),
-            'coping_tag_ids' => $coping->getCopingTagIds(),
         ], 201);
     }
 
@@ -63,7 +60,6 @@ class CopingController extends Controller
     {
         $data = new CopingData(
             content: (string) $request->string('content'),
-            copingTagIds: (array) $request->input('coping_tag_ids', []),
             point: $request->has('point') ? (int) $request->integer('point') : null
         );
 
@@ -75,7 +71,6 @@ class CopingController extends Controller
             'point' => $updatedCoping->getPoint(),
             'created_at' => $updatedCoping->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $updatedCoping->getUpdatedAt()->format(DATE_ATOM),
-            'coping_tag_ids' => $updatedCoping->getCopingTagIds(),
         ]);
     }
 

@@ -23,7 +23,7 @@ class UpdateCopingUseCase
             throw new DomainException('Coping not found.');
         }
 
-        $updatedCoping = $coping->updateContent($data->content, $data->copingTagIds, $data->point);
+        $updatedCoping = $coping->updateContent($data->content, $data->point);
 
         return $this->copingRepository->saveForMember($updatedCoping, $memberId);
     }
