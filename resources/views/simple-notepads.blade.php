@@ -321,6 +321,10 @@ function simpleNotepadApp(itemId) {
             if (index > -1) {
                 this.formData.tag_ids.splice(index, 1);
             } else {
+                if (this.formData.tag_ids.length >= 10) {
+                    alert('タグは10個までしか選択できません');
+                    return;
+                }
                 this.formData.tag_ids.push(tagId);
             }
         },
@@ -361,7 +365,11 @@ function simpleNotepadApp(itemId) {
                 this.newTagName = '';
                 await this.loadTags();
                 if (!this.formData.tag_ids.includes(newTag.id)) {
-                    this.formData.tag_ids.push(newTag.id);
+                    if (this.formData.tag_ids.length >= 10) {
+                        this.tagError = 'タグは10個までしか選択できません';
+                    } else {
+                        this.formData.tag_ids.push(newTag.id);
+                    }
                 }
             } catch (e) {
                 this.tagError = e.message;

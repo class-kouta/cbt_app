@@ -91,7 +91,14 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             $model = SimpleNotepadModel::with('tags')
                 ->where('member_id', $memberId)
                 ->findOrFail($savedSimpleNotepad->getId());
-            $model->tags()->sync($tagIds);
+
+            $validTagIds = DB::table('simple_notepad_tags')
+                ->where('member_id', $memberId)
+                ->whereIn('id', $tagIds)
+                ->pluck('id')
+                ->toArray();
+
+            $model->tags()->sync($validTagIds);
             $model->load('tags');
 
             return $this->formatWithTags($savedSimpleNotepad, $model);
