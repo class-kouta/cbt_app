@@ -505,13 +505,13 @@
 
                         @php
                         $schemaLinks = [
-                            ['label' => 'スキーマ年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
-                            ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas*', 'href' => '/early-maladaptive-schemas'],
+                            ['label' => 'スキーマ年表', 'activeKey' => 'chronology', 'href' => '/schema-therapy/chronology'],
+                            ['label' => '早期不適応的スキーマ', 'activeKey' => 'ems', 'href' => '/early-maladaptive-schemas'],
                         ];
                         @endphp
                         @foreach ($schemaLinks as $link)
                             @php
-                                $schemaLinkActive = request()->is($link['patterns']);
+                                $schemaLinkActive = $menuActive[$link['activeKey']];
                             @endphp
                             <div class="border-b border-gray-500/30 {{ $schemaLinkActive ? $menuGroupBg : '' }}">
                                 @if($schemaLinkActive)
