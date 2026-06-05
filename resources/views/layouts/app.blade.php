@@ -224,22 +224,69 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true, modeDialogueOpen: true }">
+                    @php
+                        $menuActive = [
+                            'home' => request()->routeIs('home'),
+                            'writing' => request()->is('writing-disclosures*'),
+                            'stressor' => request()->is('stressor-and-responses*'),
+                            'column' => request()->is('columns*'),
+                            'problem' => request()->is('problem-solvings*'),
+                            'support' => request()->is('support-networks*'),
+                            'coping' => request()->is('copings*'),
+                            'mindfulness' => request()->is('mindfulness*'),
+                            'chronology' => request()->is('schema-therapy/chronology*'),
+                            'ems' => request()->is('early-maladaptive-schemas*'),
+                            'modeDialogue' => request()->is('schema-therapy/mode-work/dialogue*'),
+                            'notepad' => request()->is('simple-notepads*'),
+                        ];
+                        $menuGroupBg = 'bg-white/50';
+                    @endphp
+                    <nav
+                        class="py-2 flex-1 overflow-y-auto"
+                        x-data="{
+                            stressorOpen: {{ $menuActive['stressor'] ? 'true' : 'false' }},
+                            columnOpen: {{ $menuActive['column'] ? 'true' : 'false' }},
+                            writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
+                            problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
+                            notepadOpen: {{ $menuActive['notepad'] ? 'true' : 'false' }},
+                            modeDialogueOpen: {{ $menuActive['modeDialogue'] ? 'true' : 'false' }},
+                            chronologyOpen: {{ $menuActive['chronology'] ? 'true' : 'false' }}
+                        }"
+                    >
                         <!-- トップ -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('/'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">トップ</span>
+                        <div class="border-b border-gray-500/30 {{ $menuActive['home'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['home'])
+                                <span class="flex justify-center px-6 py-3 text-gray-400 cursor-default">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                        />
+                                    </svg>
+                                    <span class="sr-only">トップ（現在のページ）</span>
                                 </span>
                             @else
-                                <a href="/" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">トップ</span>
+                                <a
+                                    href="{{ route('home') }}"
+                                    class="flex justify-center px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"
+                                    aria-label="トップへ"
+                                >
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                        />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
 
                         <!-- 筆記開示（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['writing'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="writingOpen = !writingOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -278,7 +325,7 @@
                         </div>
 
                         <!-- ストレッサーとストレス反応（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['stressor'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="stressorOpen = !stressorOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -317,7 +364,7 @@
                         </div>
 
                         <!-- 認知再構成法(コラム法)（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['column'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="columnOpen = !columnOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -365,7 +412,7 @@
                         </div>
 
                         <!-- 問題解決法（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['problem'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="problemOpen = !problemOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -413,66 +460,132 @@
                         </div>
 
                         <!-- サポートネットワーク -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('support-networks'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['support'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['support'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
-                                <a href="/support-networks" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/support-networks" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
 
                         <!-- コーピングリスト -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('copings'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['coping'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['coping'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">コーピングリスト</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
-                                <a href="/copings" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/copings" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">コーピングリスト</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
 
                         <!-- マインドフルネス瞑想 -->
-                        <div class="border-b border-gray-500/30">
-                            @if(request()->is('mindfulness'))
-                                <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['mindfulness'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['mindfulness'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
-                                <a href="/mindfulness" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                <a href="/mindfulness" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
 
                         @php
                         $schemaLinks = [
-                            ['label' => 'スキーマ年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
-                            ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas*', 'href' => '/early-maladaptive-schemas'],
+                            ['label' => '早期不適応的スキーマ', 'activeKey' => 'ems', 'href' => '/early-maladaptive-schemas'],
                         ];
                         @endphp
-                        @foreach ($schemaLinks as $link)
-                            <div class="border-b border-gray-500/30">
-                                @if(request()->is($link['patterns']))
-                                    <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
-                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+
+                        <!-- スキーマ年表（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['chronology'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="chronologyOpen = !chronologyOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">スキーマ年表</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="chronologyOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="chronologyOpen" x-collapse class="">
+                                @if(request()->is('schema-therapy/chronology/create'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
                                     </span>
                                 @else
-                                    <a href="{{ $link['href'] }}" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <a href="/schema-therapy/chronology/create" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/chronology'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/chronology" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        @foreach ($schemaLinks as $link)
+                            @php
+                                $schemaLinkActive = $menuActive[$link['activeKey']];
+                            @endphp
+                            <div class="border-b border-gray-500/30 {{ $schemaLinkActive ? $menuGroupBg : '' }}">
+                                @if($schemaLinkActive)
+                                    <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                         <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                        <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </span>
+                                @else
+                                    <a href="{{ $link['href'] }}" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                        <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </a>
                                 @endif
                             </div>
                         @endforeach
 
                         <!-- スキーマモードの対話ワーク（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['modeDialogue'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="modeDialogueOpen = !modeDialogueOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
@@ -511,7 +624,7 @@
                         </div>
 
                         <!-- メモ帳（多段） -->
-                        <div class="border-b border-gray-500/30">
+                        <div class="border-b border-gray-500/30 {{ $menuActive['notepad'] ? $menuGroupBg : '' }}">
                             <button
                                 @click="notepadOpen = !notepadOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
