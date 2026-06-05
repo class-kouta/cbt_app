@@ -82,6 +82,7 @@ Route::delete('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolving
 
 // SimpleNotepad API（シンプルメモ帳）
 Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);
+Route::get('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'show']);
 Route::post('/simple-notepads', [SimpleNotepadController::class, 'store']);
 Route::put('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'update']);
 Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'destroy']);

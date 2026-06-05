@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\SimpleNotepad as SimpleNotepadEntity;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use App\Infrastructure\Database\Models\SimpleNotepad as SimpleNotepadModel;
@@ -129,6 +130,56 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
         if ($model !== null) {
             $model->delete();
         }
+    }
+
+    public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
+    {
+        $query = SimpleNotepadModel::with('tags')->where('member_id', $memberId);
+
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $keyword = $criteria->keyword;
+            $query->where(function ($q) use ($keyword, $searchableColumns) {
+                foreach ($searchableColumns as $index => $column) {
+                    if ($index === 0) {
+                        $q->where($column, 'like', "%{$keyword}%");
+                    } else {
+                        $q->orWhere($column, 'like', "%{$keyword}%");
+                    }
+                }
+            });
+        }
+
+        if ($criteria->hasTagIds()) {
+            $query->whereHas('tags', function ($q) use ($criteria) {
+                $q->whereIn('simple_notepad_tags.id', $criteria->tagIds);
+            });
+        }
+
+        $paginator = $query->orderByDesc('created_at')
+            ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
+
+        $items = collect($paginator->items())
+            ->map(fn ($model) => $this->formatWithTags(
+                SimpleNotepadEntity::reconstitute(
+                    id: (int) $model->id,
+                    title: (string) $model->title,
+                    content: (string) $model->content,
+                    createdAt: $this->toDateTimeImmutable($model->created_at),
+                    updatedAt: $this->toDateTimeImmutable($model->updated_at),
+                ),
+                $model
+            ))
+            ->toArray();
+
+        return [
+            'data' => $items,
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
     }
 
     /**

@@ -405,14 +405,11 @@ function simpleNotepadApp(itemId) {
 
         async loadItem() {
             try {
-                const res = await apiFetch('/api/simple-notepads');
-                const items = await res.json();
-                const item = items.find(i => i.id === this.itemId);
-                if (item) {
-                    this.formData.title = item.title || '';
-                    this.formData.content = item.content || '';
-                    this.formData.tag_ids = item.tag_ids || [];
-                }
+                const res = await apiFetch(`/api/simple-notepads/${this.itemId}`);
+                const item = await res.json();
+                this.formData.title = item.title || '';
+                this.formData.content = item.content || '';
+                this.formData.tag_ids = item.tag_ids || [];
             } catch (error) {
                 console.error(error);
             }
