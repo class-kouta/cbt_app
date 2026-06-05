@@ -57,8 +57,6 @@ class ColumnController extends Controller
      */
     public function show(Column $column): JsonResponse
     {
-        $this->authorizeMemberOwnership($column);
-
         $column->load('tags');
 
         return response()->json([

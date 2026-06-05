@@ -51,8 +51,6 @@ class ProblemSolvingController extends Controller
      */
     public function show(ProblemSolving $problemSolving): JsonResponse
     {
-        $this->authorizeMemberOwnership($problemSolving);
-
         $problemSolving->load(['solutions', 'plans', 'tags']);
         return response()->json($this->formatProblemSolving($problemSolving));
     }

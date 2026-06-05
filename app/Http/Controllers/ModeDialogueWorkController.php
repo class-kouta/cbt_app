@@ -31,8 +31,6 @@ class ModeDialogueWorkController extends Controller
 
     public function show(DialogueWork $modeDialogueWork): JsonResponse
     {
-        $this->authorizeMemberOwnership($modeDialogueWork);
-
         if ($modeDialogueWork->type !== 'mode') {
             abort(404);
         }

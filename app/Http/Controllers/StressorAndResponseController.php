@@ -35,8 +35,6 @@ class StressorAndResponseController extends Controller
      */
     public function show(StressorAndResponse $stressorAndResponse): JsonResponse
     {
-        $this->authorizeMemberOwnership($stressorAndResponse);
-
         $stressorAndResponse->load('tags');
 
         return response()->json([
