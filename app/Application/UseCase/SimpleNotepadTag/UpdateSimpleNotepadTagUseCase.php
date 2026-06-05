@@ -6,7 +6,6 @@ use App\Application\DTO\SimpleNotepadTagData;
 use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
 use DomainException;
-use Illuminate\Support\Facades\Auth;
 
 class UpdateSimpleNotepadTagUseCase
 {
@@ -14,9 +13,8 @@ class UpdateSimpleNotepadTagUseCase
     {
     }
 
-    public function handle(int $id, SimpleNotepadTagData $data): SimpleNotepadTagEntity
+    public function handle(int $id, SimpleNotepadTagData $data, int $memberId): SimpleNotepadTagEntity
     {
-        $memberId = (int) Auth::id();
         $tag = $this->simpleNotepadTagRepository->findByIdForMember($id, $memberId);
 
         if ($tag === null) {

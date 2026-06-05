@@ -12,6 +12,7 @@ use App\Http\Requests\SimpleNotepadTag\UpdateSimpleNotepadTagRequest;
 use App\Infrastructure\Database\Models\SimpleNotepadTag;
 use DomainException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleNotepadTagController extends Controller
 {
@@ -20,7 +21,8 @@ class SimpleNotepadTagController extends Controller
      */
     public function index(ListSimpleNotepadTagsUseCase $listSimpleNotepadTags): JsonResponse
     {
-        $tags = collect($listSimpleNotepadTags->handle())
+        $memberId = (int) Auth::id();
+        $tags = collect($listSimpleNotepadTags->handle($memberId))
             ->map(function ($tag) {
                 return [
                     'id' => $tag->getId(),
@@ -45,7 +47,7 @@ class SimpleNotepadTagController extends Controller
                 name: (string) $request->string('name')
             );
 
-            $tag = $createSimpleNotepadTag->handle($data);
+            $tag = $createSimpleNotepadTag->handle($data, (int) Auth::id());
 
             return response()->json([
                 'id' => $tag->getId(),
@@ -71,7 +73,7 @@ class SimpleNotepadTagController extends Controller
                 name: (string) $request->string('name')
             );
 
-            $updatedTag = $updateSimpleNotepadTag->handle($simpleNotepadTag->id, $data);
+            $updatedTag = $updateSimpleNotepadTag->handle($simpleNotepadTag->id, $data, (int) Auth::id());
 
             return response()->json([
                 'id' => $updatedTag->getId(),
@@ -92,7 +94,7 @@ class SimpleNotepadTagController extends Controller
         DeleteSimpleNotepadTagUseCase $deleteSimpleNotepadTag
     ): JsonResponse {
         try {
-            $deleteSimpleNotepadTag->handle($simpleNotepadTag->id);
+            $deleteSimpleNotepadTag->handle($simpleNotepadTag->id, (int) Auth::id());
 
             return response()->json(null, 204);
         } catch (DomainException $e) {

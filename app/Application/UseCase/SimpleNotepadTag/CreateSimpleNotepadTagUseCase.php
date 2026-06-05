@@ -6,7 +6,6 @@ use App\Application\DTO\SimpleNotepadTagData;
 use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
 use DomainException;
-use Illuminate\Support\Facades\Auth;
 
 class CreateSimpleNotepadTagUseCase
 {
@@ -16,10 +15,8 @@ class CreateSimpleNotepadTagUseCase
     {
     }
 
-    public function handle(SimpleNotepadTagData $data): SimpleNotepadTagEntity
+    public function handle(SimpleNotepadTagData $data, int $memberId): SimpleNotepadTagEntity
     {
-        $memberId = (int) Auth::id();
-
         if ($this->simpleNotepadTagRepository->countForMember($memberId) >= self::MAX_TAGS) {
             throw new DomainException('タグは10個まで作成できます');
         }

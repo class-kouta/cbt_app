@@ -3,7 +3,6 @@
 namespace App\Application\UseCase\SimpleNotepadTag;
 
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 
 class ListSimpleNotepadTagsUseCase
 {
@@ -11,10 +10,8 @@ class ListSimpleNotepadTagsUseCase
     {
     }
 
-    public function handle(): array
+    public function handle(int $memberId): array
     {
-        $memberId = (int) Auth::id();
-
         return $this->simpleNotepadTagRepository->findAllForMember($memberId);
     }
 }

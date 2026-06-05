@@ -20,23 +20,7 @@ class SimpleNotepadController extends Controller
      */
     public function index(ListSimpleNotepadsUseCase $listSimpleNotepads): JsonResponse
     {
-        $memberId = (int) Auth::id();
-        $simpleNotepads = collect($listSimpleNotepads->handle());
-        $ids = $simpleNotepads->map(fn ($item) => $item->getId())->all();
-
-        $modelsById = SimpleNotepad::where('member_id', $memberId)
-            ->with('tags')
-            ->whereIn('id', $ids)
-            ->get()
-            ->keyBy('id');
-
-        $response = $simpleNotepads->map(function ($simpleNotepad) use ($modelsById) {
-            $model = $modelsById->get($simpleNotepad->getId());
-
-            return $this->formatResponse($simpleNotepad, $model);
-        });
-
-        return response()->json($response);
+        return response()->json($listSimpleNotepads->handle((int) Auth::id()));
     }
 
     /**
@@ -48,22 +32,13 @@ class SimpleNotepadController extends Controller
     ): JsonResponse {
         $data = new SimpleNotepadData(
             title: (string) $request->string('title'),
-            content: (string) $request->string('content')
+            content: (string) $request->string('content'),
+            tagIds: $request->input('tag_ids', []),
         );
 
-        $simpleNotepad = $createSimpleNotepad->handle($data);
+        $result = $createSimpleNotepad->handle($data, (int) Auth::id());
 
-        $tagIds = $request->input('tag_ids', []);
-        $model = SimpleNotepad::where('member_id', (int) Auth::id())
-            ->with('tags')
-            ->findOrFail($simpleNotepad->getId());
-
-        if (! empty($tagIds)) {
-            $model->tags()->sync($tagIds);
-            $model->load('tags');
-        }
-
-        return response()->json($this->formatResponse($simpleNotepad, $model), 201);
+        return response()->json($result, 201);
     }
 
     /**
@@ -76,16 +51,13 @@ class SimpleNotepadController extends Controller
     ): JsonResponse {
         $data = new SimpleNotepadData(
             title: (string) $request->string('title'),
-            content: (string) $request->string('content')
+            content: (string) $request->string('content'),
+            tagIds: $request->input('tag_ids', []),
         );
 
-        $updatedSimpleNotepad = $updateSimpleNotepad->handle($simpleNotepad->id, $data);
+        $result = $updateSimpleNotepad->handle($simpleNotepad->id, $data, (int) Auth::id());
 
-        $tagIds = $request->input('tag_ids', []);
-        $simpleNotepad->tags()->sync($tagIds);
-        $simpleNotepad->load('tags');
-
-        return response()->json($this->formatResponse($updatedSimpleNotepad, $simpleNotepad));
+        return response()->json($result);
     }
 
     /**
@@ -98,23 +70,5 @@ class SimpleNotepadController extends Controller
         $deleteSimpleNotepad->handle($simpleNotepad->id);
 
         return response()->json(null, 204);
-    }
-
-    private function formatResponse($simpleNotepad, ?SimpleNotepad $model): array
-    {
-        $tags = $model?->tags ?? collect();
-
-        return [
-            'id' => $simpleNotepad->getId(),
-            'title' => $simpleNotepad->getTitle(),
-            'content' => $simpleNotepad->getContent(),
-            'tags' => $tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->values()->toArray(),
-            'tag_ids' => $tags->pluck('id')->values()->toArray(),
-            'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-        ];
     }
 }

@@ -4,7 +4,6 @@ namespace App\Application\UseCase\SimpleNotepadTag;
 
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
 use DomainException;
-use Illuminate\Support\Facades\Auth;
 
 class DeleteSimpleNotepadTagUseCase
 {
@@ -12,9 +11,8 @@ class DeleteSimpleNotepadTagUseCase
     {
     }
 
-    public function handle(int $id): void
+    public function handle(int $id, int $memberId): void
     {
-        $memberId = (int) Auth::id();
         $tag = $this->simpleNotepadTagRepository->findByIdForMember($id, $memberId);
 
         if ($tag === null) {
