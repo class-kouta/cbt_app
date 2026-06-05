@@ -36,6 +36,8 @@ class ChronologyController extends Controller
 
     public function show(Chronology $chronology): JsonResponse
     {
+        $this->authorizeMemberOwnership($chronology);
+
         return response()->json([
             'id' => $chronology->id,
             'when_period' => $chronology->when_period,

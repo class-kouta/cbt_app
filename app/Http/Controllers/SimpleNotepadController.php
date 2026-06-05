@@ -33,6 +33,8 @@ class SimpleNotepadController extends Controller
      */
     public function show(SimpleNotepad $simpleNotepad): JsonResponse
     {
+        $this->authorizeMemberOwnership($simpleNotepad);
+
         $simpleNotepad->load('tags');
 
         return response()->json([
