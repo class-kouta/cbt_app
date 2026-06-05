@@ -21,6 +21,7 @@ class UpdateSimpleNotepadRequest extends FormRequest
             'tag_ids' => ['nullable', 'array', 'max:10'],
             'tag_ids.*' => [
                 'integer',
+                'distinct',
                 Rule::exists('simple_notepad_tags', 'id')->where('member_id', Auth::id()),
             ],
         ];

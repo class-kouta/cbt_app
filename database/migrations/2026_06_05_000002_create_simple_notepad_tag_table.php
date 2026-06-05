@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('simple_notepad_id')->constrained()->cascadeOnDelete();
             $table->foreignId('simple_notepad_tag_id')->constrained()->cascadeOnDelete();
             $table->primary(['simple_notepad_id', 'simple_notepad_tag_id']);
+            $table->index('simple_notepad_tag_id');
         });
     }
 
