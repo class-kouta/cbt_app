@@ -16,7 +16,7 @@ class CreateCopingUseCase
     public function handle(CopingData $data): CopingEntity
     {
         $memberId = (int) Auth::id();
-        $coping = CopingEntity::createNew($data->content, $data->copingTagIds);
+        $coping = CopingEntity::createNew($data->content);
 
         return $this->copingRepository->saveForMember($coping, $memberId);
     }

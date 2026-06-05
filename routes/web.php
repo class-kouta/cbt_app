@@ -212,12 +212,3 @@ Route::get('/siteAdmPanel63/menu', function () {
     return view('admin.menu');
 });
 
-// コーピングリスト管理メニュー
-Route::get('/siteAdmPanel63/coping/menu', function () {
-    return view('admin.coping.menu');
-});
-
-// コーピングリストタグ管理
-Route::get('/siteAdmPanel63/coping/tag', function () {
-    return view('admin.coping.tag');
-});

@@ -11,8 +11,7 @@ class EloquentCopingRepository implements CopingRepositoryInterface
 {
     public function findAllForMember(int $memberId): array
     {
-        return CopingModel::with('copingTags')
-            ->where('member_id', $memberId)
+        return CopingModel::where('member_id', $memberId)
             ->orderByDesc('point')
             ->orderByDesc('created_at')
             ->get()
@@ -22,7 +21,6 @@ class EloquentCopingRepository implements CopingRepositoryInterface
                 point: (int) $model->point,
                 createdAt: new DateTimeImmutable($model->created_at),
                 updatedAt: new DateTimeImmutable($model->updated_at),
-                copingTagIds: $model->copingTags->pluck('id')->map(fn ($id) => (int) $id)->toArray(),
             ))
             ->all();
     }
@@ -42,23 +40,18 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             $model->save();
         }
 
-        $model->copingTags()->sync($coping->getCopingTagIds());
-
         return CopingEntity::reconstitute(
             id: (int) $model->getKey(),
             content: (string) $model->content,
             point: (int) $model->point,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
-            copingTagIds: $coping->getCopingTagIds(),
         );
     }
 
     public function findByIdForMember(int $id, int $memberId): ?CopingEntity
     {
-        $model = CopingModel::with('copingTags')
-            ->where('member_id', $memberId)
-            ->find($id);
+        $model = CopingModel::where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -70,7 +63,6 @@ class EloquentCopingRepository implements CopingRepositoryInterface
             point: (int) $model->point,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
-            copingTagIds: $model->copingTags->pluck('id')->map(fn ($id) => (int) $id)->toArray(),
         );
     }
 
@@ -79,7 +71,6 @@ class EloquentCopingRepository implements CopingRepositoryInterface
         $model = CopingModel::where('member_id', $memberId)->find($id);
 
         if ($model !== null) {
-            $model->copingTags()->detach();
             $model->delete();
         }
     }
