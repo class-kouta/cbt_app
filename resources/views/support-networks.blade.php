@@ -69,7 +69,7 @@
                                     class="text-emerald-600 hover:text-emerald-700 transition-colors p-1.5 rounded hover:bg-emerald-50"
                                     title="保存"
                                 >
-                                    <x-icon name="check" class="w-5 h-5" />
+                                    <x-icon name="floppy-disk" class="w-5 h-5" />
                                 </button>
                                 <button
                                     type="button"
