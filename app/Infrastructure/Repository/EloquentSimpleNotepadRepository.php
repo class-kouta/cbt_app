@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Application\DTO\SearchCriteriaData;
+use App\Support\LikeSearch;
 use App\Domain\Entity\SimpleNotepad as SimpleNotepadEntity;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
 use App\Infrastructure\Database\Models\SimpleNotepad as SimpleNotepadModel;
@@ -137,13 +138,13 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
         $query = SimpleNotepadModel::with('tags')->where('member_id', $memberId);
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $index => $column) {
                     if ($index === 0) {
-                        $q->where($column, 'like', "%{$keyword}%");
+                        $q->where($column, 'like', $pattern);
                     } else {
-                        $q->orWhere($column, 'like', "%{$keyword}%");
+                        $q->orWhere($column, 'like', $pattern);
                     }
                 }
             });
