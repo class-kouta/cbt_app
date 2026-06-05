@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\SimpleNotepadData;
 use App\Application\UseCase\SimpleNotepad\CreateSimpleNotepadUseCase;
-use App\Application\UseCase\SimpleNotepad\UpdateSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\DeleteSimpleNotepadUseCase;
 use App\Application\UseCase\SimpleNotepad\ListSimpleNotepadsUseCase;
+use App\Application\UseCase\SimpleNotepad\UpdateSimpleNotepadUseCase;
 use App\Http\Requests\SimpleNotepad\CreateSimpleNotepadRequest;
 use App\Http\Requests\SimpleNotepad\UpdateSimpleNotepadRequest;
 use App\Infrastructure\Database\Models\SimpleNotepad;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class SimpleNotepadController extends Controller
 {
@@ -19,18 +20,7 @@ class SimpleNotepadController extends Controller
      */
     public function index(ListSimpleNotepadsUseCase $listSimpleNotepads): JsonResponse
     {
-        $simpleNotepads = collect($listSimpleNotepads->handle())
-            ->map(function ($simpleNotepad) {
-                return [
-                    'id' => $simpleNotepad->getId(),
-                    'title' => $simpleNotepad->getTitle(),
-                    'content' => $simpleNotepad->getContent(),
-                    'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
-                    'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-                ];
-            });
-
-        return response()->json($simpleNotepads);
+        return response()->json($listSimpleNotepads->handle((int) Auth::id()));
     }
 
     /**
@@ -42,18 +32,13 @@ class SimpleNotepadController extends Controller
     ): JsonResponse {
         $data = new SimpleNotepadData(
             title: (string) $request->string('title'),
-            content: (string) $request->string('content')
+            content: (string) $request->string('content'),
+            tagIds: $request->input('tag_ids', []),
         );
 
-        $simpleNotepad = $createSimpleNotepad->handle($data);
+        $result = $createSimpleNotepad->handle($data, (int) Auth::id());
 
-        return response()->json([
-            'id' => $simpleNotepad->getId(),
-            'title' => $simpleNotepad->getTitle(),
-            'content' => $simpleNotepad->getContent(),
-            'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $simpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
+        return response()->json($result, 201);
     }
 
     /**
@@ -66,18 +51,13 @@ class SimpleNotepadController extends Controller
     ): JsonResponse {
         $data = new SimpleNotepadData(
             title: (string) $request->string('title'),
-            content: (string) $request->string('content')
+            content: (string) $request->string('content'),
+            tagIds: $request->input('tag_ids', []),
         );
 
-        $updatedSimpleNotepad = $updateSimpleNotepad->handle($simpleNotepad->id, $data);
+        $result = $updateSimpleNotepad->handle($simpleNotepad->id, $data, (int) Auth::id());
 
-        return response()->json([
-            'id' => $updatedSimpleNotepad->getId(),
-            'title' => $updatedSimpleNotepad->getTitle(),
-            'content' => $updatedSimpleNotepad->getContent(),
-            'created_at' => $updatedSimpleNotepad->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $updatedSimpleNotepad->getUpdatedAt()->format(DATE_ATOM),
-        ]);
+        return response()->json($result);
     }
 
     /**

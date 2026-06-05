@@ -659,6 +659,15 @@
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif
+                                @if(request()->is('simple-notepad-tags'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">タグ管理</span>
+                                    </span>
+                                @else
+                                    <a href="/simple-notepad-tags" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">タグ管理</span>
+                                    </a>
+                                @endif
                             </div>
                         </div>
 

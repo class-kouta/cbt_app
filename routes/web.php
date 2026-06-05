@@ -95,6 +95,11 @@ Route::middleware('auth')->group(function () {
             return view('simple-notepads', ['itemId' => $id]);
         })->where('id', '[0-9]+');
 
+        // メモ帳タグ管理ページ
+        Route::get('/simple-notepad-tags', function () {
+            return view('simple-notepad-tags');
+        });
+
         // 問題解決法作成ページ
         Route::get('/problem-solvings', function () {
             return view('problem-solving-edit');

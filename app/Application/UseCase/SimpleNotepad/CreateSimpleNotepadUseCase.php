@@ -5,7 +5,6 @@ namespace App\Application\UseCase\SimpleNotepad;
 use App\Application\DTO\SimpleNotepadData;
 use App\Domain\Entity\SimpleNotepad as SimpleNotepadEntity;
 use App\Domain\Repository\SimpleNotepadRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 
 class CreateSimpleNotepadUseCase
 {
@@ -13,10 +12,13 @@ class CreateSimpleNotepadUseCase
     {
     }
 
-    public function handle(SimpleNotepadData $data): SimpleNotepadEntity
+    /**
+     * @return array<string, mixed>
+     */
+    public function handle(SimpleNotepadData $data, int $memberId): array
     {
-        $memberId = (int) Auth::id();
         $simpleNotepad = SimpleNotepadEntity::createNew($data->title, $data->content);
-        return $this->simpleNotepadRepository->saveForMember($simpleNotepad, $memberId);
+
+        return $this->simpleNotepadRepository->saveWithTagsForMember($simpleNotepad, $data->tagIds, $memberId);
     }
 }

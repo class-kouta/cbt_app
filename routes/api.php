@@ -8,6 +8,7 @@ use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
+use App\Http\Controllers\SimpleNotepadTagController;
 use App\Http\Controllers\StressorAndResponseController;
 use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
@@ -84,6 +85,12 @@ Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);
 Route::post('/simple-notepads', [SimpleNotepadController::class, 'store']);
 Route::put('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'update']);
 Route::delete('/simple-notepads/{simpleNotepad}', [SimpleNotepadController::class, 'destroy']);
+
+// SimpleNotepadTag API（メモ帳タグ）
+Route::get('/simple-notepad-tags', [SimpleNotepadTagController::class, 'index']);
+Route::post('/simple-notepad-tags', [SimpleNotepadTagController::class, 'store']);
+Route::put('/simple-notepad-tags/{simpleNotepadTag}', [SimpleNotepadTagController::class, 'update']);
+Route::delete('/simple-notepad-tags/{simpleNotepadTag}', [SimpleNotepadTagController::class, 'destroy']);
 
 // StressorAndResponse API（ストレッサーとストレス反応）
 Route::get('/stressor-and-responses', [StressorAndResponseController::class, 'index']);
