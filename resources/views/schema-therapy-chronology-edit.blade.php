@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', '年表作成 - ' . config('app.name'))
-@section('page-title', '年表')
+@section('title', 'スキーマ年表 - ' . config('app.name'))
+@section('page-title', 'スキーマ年表')
 
 @section('content')
 <div x-data="chronologyEditApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>

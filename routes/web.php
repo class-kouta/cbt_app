@@ -155,9 +155,7 @@ Route::middleware('auth')->group(function () {
 
         // スキーマ療法ページ
         Route::prefix('schema-therapy')->name('schema-therapy.')->group(function () {
-            Route::get('/', function () {
-                return view('schema-therapy');
-            })->name('index');
+            Route::redirect('/', '/')->name('index');
 
             Route::get('/chronology', function () {
                 return view('schema-therapy-chronology');
@@ -171,10 +169,8 @@ Route::middleware('auth')->group(function () {
                 return view('schema-therapy-chronology-edit', ['itemId' => $id]);
             })->where('id', '[0-9]+')->name('chronology.edit');
 
-            // モードワーク
-            Route::get('/mode-work', function () {
-                return view('schema-therapy-mode-work');
-            })->name('mode-work');
+            // モードワーク（旧ハブ → 対話ワークへリダイレクト）
+            Route::redirect('/mode-work', '/schema-therapy/mode-work/dialogue')->name('mode-work');
 
             // モードワーク - 対話のワーク一覧
             Route::get('/mode-work/dialogue', function () {

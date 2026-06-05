@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', '早期不適応スキーマ')
-@section('page-title', '早期不適応スキーマ')
+@section('title', '早期不適応的スキーマ - ' . config('app.name'))
+@section('page-title', '早期不適応的スキーマ')
 
 @section('content')
 <div x-data="schemaApp()" x-init="init()" x-cloak>

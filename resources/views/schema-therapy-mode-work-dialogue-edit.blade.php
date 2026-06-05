@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'モードワーク 対話のワーク - ' . config('app.name'))
-@section('page-title', '対話のワーク')
+@section('title', 'スキーマモードの対話ワーク - ' . config('app.name'))
+@section('page-title', 'スキーマモードの対話ワーク')
 
 @section('body-class', 'bg-gradient-to-b from-emerald-100 to-teal-50')
 

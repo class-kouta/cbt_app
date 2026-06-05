@@ -224,7 +224,7 @@
                     </div>
 
                     <!-- Menu items (scrollable) -->
-                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true, schemaOpen: true }">
+                    <nav class="py-2 flex-1 overflow-y-auto" x-data="{ stressorOpen: true, columnOpen: true, writingOpen: true, problemOpen: true, supportOpen: true, notepadOpen: true, modeDialogueOpen: true }">
                         <!-- トップ -->
                         <div class="border-b border-gray-500/30">
                             @if(request()->is('/'))
@@ -451,16 +451,36 @@
                             @endif
                         </div>
 
-                        <!-- スキーマ療法（多段） -->
+                        @php
+                        $schemaLinks = [
+                            ['label' => 'スキーマ年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
+                            ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas*', 'href' => '/early-maladaptive-schemas'],
+                        ];
+                        @endphp
+                        @foreach ($schemaLinks as $link)
+                            <div class="border-b border-gray-500/30">
+                                @if(request()->is($link['patterns']))
+                                    <span class="flex items-center gap-4 px-6 py-3 text-gray-400 cursor-default">
+                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                    </span>
+                                @else
+                                    <a href="{{ $link['href'] }}" class="flex items-center gap-4 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="font-medium text-lg">{{ $link['label'] }}</span>
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
+
+                        <!-- スキーマモードの対話ワーク（多段） -->
                         <div class="border-b border-gray-500/30">
                             <button
-                                @click="schemaOpen = !schemaOpen"
+                                @click="modeDialogueOpen = !modeDialogueOpen"
                                 class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
                             >
-                                <span class="font-medium text-lg">スキーマ療法</span>
+                                <span class="font-medium text-lg">スキーマモードの対話ワーク</span>
                                 <svg
                                     class="w-5 h-5 transition-transform duration-200"
-                                    :class="schemaOpen ? 'rotate-180' : ''"
+                                    :class="modeDialogueOpen ? 'rotate-180' : ''"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -468,32 +488,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div x-show="schemaOpen" x-collapse class="">
-                                @php
-                                $schemaLinks = [
-                                    ['label' => 'トップ', 'patterns' => 'schema-therapy', 'exclude' => 'schema-therapy/*', 'href' => '/schema-therapy'],
-                                    ['label' => '年表', 'patterns' => 'schema-therapy/chronology*', 'href' => '/schema-therapy/chronology'],
-                                    ['label' => '早期不適応的スキーマ', 'patterns' => 'early-maladaptive-schemas', 'exclude' => 'early-maladaptive-schemas/*', 'href' => '/early-maladaptive-schemas'],
-                                    ['label' => 'モードワーク', 'patterns' => 'schema-therapy/mode-work', 'href' => '/schema-therapy/mode-work'],
-                                ];
-                                @endphp
-                                @foreach ($schemaLinks as $link)
-                                    @php
-                                        $isActive = request()->is($link['patterns']);
-                                        if (isset($link['exclude'])) {
-                                            $isActive = $isActive && !request()->is($link['exclude']);
-                                        }
-                                    @endphp
-                                    @if ($isActive)
-                                        <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                            <span class="text-base">{{ $link['label'] }}</span>
-                                        </span>
-                                    @else
-                                        <a href="{{ $link['href'] }}" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                            <span class="text-base">{{ $link['label'] }}</span>
-                                        </a>
-                                    @endif
-                                @endforeach
+                            <div x-show="modeDialogueOpen" x-collapse class="">
+                                @if(request()->is('schema-therapy/mode-work/dialogue/create'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/mode-work/dialogue/create" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('schema-therapy/mode-work/dialogue'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/schema-therapy/mode-work/dialogue" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
                             </div>
                         </div>
 
