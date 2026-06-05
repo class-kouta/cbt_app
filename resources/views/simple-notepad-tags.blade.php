@@ -67,7 +67,7 @@
                                 <input
                                     type="text"
                                     x-model="editName"
-                                    x-ref="editInput"
+                                    x-effect="if (editingId === tag.id) { $nextTick(() => { $el.focus(); $el.select(); }) }"
                                     @keydown.escape="cancelEdit()"
                                     @keydown.enter="saveEdit(tag)"
                                     class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
@@ -196,13 +196,6 @@ function simpleNotepadTagApp() {
         startEdit(tag) {
             this.editingId = tag.id;
             this.editName = tag.name;
-            this.$nextTick(() => {
-                const input = document.querySelector(`[x-ref="editInput"]`);
-                if (input) {
-                    input.focus();
-                    input.select();
-                }
-            });
         },
 
         cancelEdit() {
@@ -223,8 +216,14 @@ function simpleNotepadTagApp() {
         },
 
         async saveEdit(tag) {
-            if (!this.editName.trim()) {
+            const trimmedName = this.editName.trim();
+            if (!trimmedName) {
                 alert('タグ名を入力してください');
+                return;
+            }
+
+            if (trimmedName === tag.name) {
+                this.cancelEdit();
                 return;
             }
 
@@ -239,7 +238,7 @@ function simpleNotepadTagApp() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        name: this.editName
+                        name: trimmedName
                     })
                 });
 

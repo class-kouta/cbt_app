@@ -71,7 +71,7 @@ class SimpleNotepadTagController extends Controller
                 'updated_at' => $updatedTag->getUpdatedAt()->format(DATE_ATOM),
             ]);
         } catch (DomainException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return $this->domainExceptionResponse($e);
         }
     }
 
@@ -87,7 +87,14 @@ class SimpleNotepadTagController extends Controller
 
             return response()->json(null, 204);
         } catch (DomainException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return $this->domainExceptionResponse($e);
         }
+    }
+
+    private function domainExceptionResponse(DomainException $e): JsonResponse
+    {
+        $status = $e->getMessage() === 'タグが見つかりません' ? 404 : 422;
+
+        return response()->json(['message' => $e->getMessage()], $status);
     }
 }

@@ -15,11 +15,11 @@ readonly class SimpleNotepadTagName
         $normalized = trim($raw);
 
         if ($normalized === '') {
-            throw new DomainException('Simple notepad tag name must not be empty.');
+            throw new DomainException('メモ帳のタグ名は空にできません。');
         }
 
         if (mb_strlen($normalized) > self::MAX_LENGTH) {
-            throw new DomainException('Simple notepad tag name must be at most '.self::MAX_LENGTH.' characters.');
+            throw new DomainException('メモ帳のタグ名は最大'.self::MAX_LENGTH.'文字までです。');
         }
 
         $this->value = $normalized;
