@@ -12,6 +12,6 @@ class ListSimpleNotepadTagsUseCase
 
     public function handle(int $memberId): array
     {
-        return $this->simpleNotepadTagRepository->findAllForMember($memberId);
+        return $this->simpleNotepadTagRepository->findAllSummariesForMember($memberId);
     }
 }

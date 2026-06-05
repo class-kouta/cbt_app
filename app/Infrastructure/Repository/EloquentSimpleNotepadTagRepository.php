@@ -37,6 +37,22 @@ class EloquentSimpleNotepadTagRepository implements SimpleNotepadTagRepositoryIn
             ->all();
     }
 
+    public function findAllSummariesForMember(int $memberId): array
+    {
+        return SimpleNotepadTagModel::where('member_id', $memberId)
+            ->withCount('simpleNotepads')
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($model) => [
+                'id' => (int) $model->id,
+                'name' => (string) $model->name,
+                'usage_count' => (int) $model->simple_notepads_count,
+                'created_at' => $this->toDateTimeImmutable($model->created_at)->format(DATE_ATOM),
+                'updated_at' => $this->toDateTimeImmutable($model->updated_at)->format(DATE_ATOM),
+            ])
+            ->all();
+    }
+
     public function countForMember(int $memberId): int
     {
         return SimpleNotepadTagModel::where('member_id', $memberId)->count();

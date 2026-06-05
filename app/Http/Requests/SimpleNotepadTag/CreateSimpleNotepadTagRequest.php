@@ -19,7 +19,7 @@ class CreateSimpleNotepadTagRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:50',
+                'max:10',
                 Rule::unique('simple_notepad_tags', 'name')->where('member_id', Auth::id()),
             ],
         ];
@@ -29,7 +29,7 @@ class CreateSimpleNotepadTagRequest extends FormRequest
     {
         return [
             'name.required' => 'タグ名を入力してください',
-            'name.max' => 'タグ名は50文字以内で入力してください',
+            'name.max' => 'タグ名は10文字以内で入力してください',
             'name.unique' => '同じ名前のタグが既に存在します',
         ];
     }

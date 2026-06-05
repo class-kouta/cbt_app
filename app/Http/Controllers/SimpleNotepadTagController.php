@@ -21,18 +21,7 @@ class SimpleNotepadTagController extends Controller
      */
     public function index(ListSimpleNotepadTagsUseCase $listSimpleNotepadTags): JsonResponse
     {
-        $memberId = (int) Auth::id();
-        $tags = collect($listSimpleNotepadTags->handle($memberId))
-            ->map(function ($tag) {
-                return [
-                    'id' => $tag->getId(),
-                    'name' => $tag->getName(),
-                    'created_at' => $tag->getCreatedAt()->format(DATE_ATOM),
-                    'updated_at' => $tag->getUpdatedAt()->format(DATE_ATOM),
-                ];
-            });
-
-        return response()->json($tags);
+        return response()->json($listSimpleNotepadTags->handle((int) Auth::id()));
     }
 
     /**

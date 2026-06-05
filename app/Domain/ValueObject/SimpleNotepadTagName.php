@@ -6,7 +6,7 @@ use DomainException;
 
 readonly class SimpleNotepadTagName
 {
-    private const MAX_LENGTH = 50;
+    private const MAX_LENGTH = 10;
 
     private string $value;
 

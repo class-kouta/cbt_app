@@ -56,6 +56,16 @@
         <span x-text="errorMessage"></span>
     </div>
 
+    <!-- ローディング -->
+    <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-gray-600 mt-2">読み込み中...</p>
+    </div>
+
+    <div x-show="!loading">
     <!-- ヘッダー -->
     <div class="flex items-center justify-between mb-4">
         <a href="/simple-notepads/list" class="inline-flex items-center gap-1 text-green-600 hover:text-green-700 font-medium transition-colors text-sm">
@@ -108,17 +118,8 @@
         </div>
     </div>
 
-    <!-- ローディング -->
-    <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
-        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <p class="text-gray-600 mt-2">読み込み中...</p>
-    </div>
-
     <!-- フォーム -->
-    <div x-show="!loading" class="space-y-4">
+    <div class="space-y-4">
         <!-- タイトル -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">タイトル</label>
@@ -126,7 +127,7 @@
                 type="text"
                 x-model="formData.title"
                 :disabled="isEditMode && !isEditing"
-                class="w-full border rounded-lg px-4 py-2 transition-all"
+                class="w-full border rounded-lg px-4 py-2 text-base transition-all"
                 :class="(isEditMode && !isEditing)
                     ? 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
                     : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'"
@@ -142,7 +143,7 @@
                 x-model="formData.content"
                 rows="18"
                 :disabled="isEditMode && !isEditing"
-                class="w-full border rounded-lg px-4 py-3 transition-all resize-y"
+                class="w-full border rounded-lg px-4 py-3 text-base transition-all resize-y"
                 :class="(isEditMode && !isEditing)
                     ? 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
                     : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'"
@@ -186,30 +187,46 @@
             <!-- 新規作成ページのみ：タグ追加フォーム -->
             <template x-if="!isEditMode">
                 <div class="border-t border-gray-200 pt-3 mt-1">
-                    <p class="text-xs text-gray-500 mb-2">新しいタグを追加</p>
-                    <div class="flex gap-2">
-                        <input
-                            type="text"
-                            x-model="newTagName"
-                            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                            placeholder="タグ名を入力..."
-                            maxlength="50"
-                            :disabled="availableTags.length >= 10 || addingTag"
-                            @keydown.enter.prevent="addNewTag()"
-                        >
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500">新しいタグを追加</p>
                         <button
                             type="button"
-                            @click="addNewTag()"
-                            class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50"
-                            :disabled="!newTagName.trim() || availableTags.length >= 10 || addingTag"
+                            @click="showNewTagForm = !showNewTagForm"
+                            class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                            :disabled="availableTags.length >= 10"
+                            title="タグ追加フォームを表示"
                         >
-                            <span x-show="!addingTag">追加</span>
-                            <span x-show="addingTag">追加中...</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
                         </button>
                     </div>
-                    <div x-show="tagError" class="text-red-500 text-xs mt-2" x-text="tagError"></div>
+                    <div x-show="showNewTagForm" x-collapse>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                x-model="newTagName"
+                                class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                placeholder="タグ名を入力..."
+                                maxlength="10"
+                                :disabled="availableTags.length >= 10 || addingTag"
+                                @keydown.enter.prevent="addNewTag()"
+                            >
+                            <button
+                                type="button"
+                                @click="addNewTag()"
+                                class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                                :disabled="!newTagName.trim() || availableTags.length >= 10 || addingTag"
+                            >
+                                <span x-show="!addingTag">追加</span>
+                                <span x-show="addingTag">追加中...</span>
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-400 text-right mt-1" x-text="newTagName.length + '/10'"></div>
+                        <div x-show="tagError" class="text-red-500 text-xs mt-2" x-text="tagError"></div>
+                    </div>
                     <div x-show="availableTags.length >= 10" class="text-amber-600 text-xs mt-2">
-                        タグは10個まで作成できます
+                        タグは10個までしか作成できません。新しく作成する場合は<a href="/simple-notepad-tags" class="underline text-emerald-600 hover:text-emerald-700">タグ管理</a>から既存のタグを削除するかタグ名を変更してください。
                     </div>
                 </div>
             </template>
@@ -238,6 +255,7 @@
                 </button>
             </div>
         </template>
+    </div>
     </div>
 
     <!-- フローティング保存ボタン（編集モード時のみ） -->
@@ -282,9 +300,10 @@ function simpleNotepadApp(itemId) {
         },
         availableTags: [],
         newTagName: '',
+        showNewTagForm: false,
         addingTag: false,
         tagError: '',
-        loading: false,
+        loading: true,
         saving: false,
         error: '',
         showSaveToast: false,
@@ -296,10 +315,15 @@ function simpleNotepadApp(itemId) {
         lastSavedState: null,
 
         async init() {
-            await this.loadTags();
+            this.loading = true;
+            try {
+                await this.loadTags();
 
-            if (this.isEditMode) {
-                await this.loadItem();
+                if (this.isEditMode) {
+                    await this.loadItem();
+                }
+            } finally {
+                this.loading = false;
             }
         },
 
@@ -342,7 +366,7 @@ function simpleNotepadApp(itemId) {
             }
 
             if (this.availableTags.length >= 10) {
-                this.tagError = 'タグは10個まで作成できます';
+                this.tagError = 'タグは10個までしか作成できません。新しく作成する場合はタグ管理から既存のタグを削除するかタグ名を変更してください。';
                 return;
             }
 
@@ -363,6 +387,7 @@ function simpleNotepadApp(itemId) {
 
                 const newTag = await res.json();
                 this.newTagName = '';
+                this.showNewTagForm = false;
                 await this.loadTags();
                 if (!this.formData.tag_ids.includes(newTag.id)) {
                     if (this.formData.tag_ids.length >= 10) {
@@ -379,7 +404,6 @@ function simpleNotepadApp(itemId) {
         },
 
         async loadItem() {
-            this.loading = true;
             try {
                 const res = await apiFetch('/api/simple-notepads');
                 const items = await res.json();
@@ -391,8 +415,6 @@ function simpleNotepadApp(itemId) {
                 }
             } catch (error) {
                 console.error(error);
-            } finally {
-                this.loading = false;
             }
         },
 

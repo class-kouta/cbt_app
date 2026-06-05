@@ -5,110 +5,125 @@
 
 @section('content')
 <div x-data="simpleNotepadTagApp()" x-init="init()" x-cloak>
-    <!-- 新規タグ作成フォーム -->
-    <div class="mb-6">
-        <form @submit.prevent="createTag()">
-            <div class="space-y-4">
-                <div>
-                    <input
-                        type="text"
-                        x-model="newTag.name"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                        placeholder="タグ名を入力..."
-                        maxlength="50"
-                        :disabled="tags.length >= 10"
-                        required
-                    >
-                    <div class="text-xs text-gray-400 text-right" x-text="newTag.name.length + '/50'"></div>
-                </div>
-
-                <div x-show="tags.length >= 10" class="text-amber-600 text-sm">
-                    タグは10個まで作成できます
-                </div>
-
-                <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
-
-                <div>
-                    <button
-                        type="submit"
-                        class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
-                        :disabled="loading || !newTag.name.trim() || tags.length >= 10"
-                    >
-                        <span x-show="!loading">追加</span>
-                        <span x-show="loading">追加中...</span>
-                    </button>
-                </div>
-            </div>
-        </form>
+    <!-- ローディング -->
+    <div x-show="pageLoading" class="text-center py-16 bg-white rounded-xl shadow-md">
+        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-gray-600 mt-2">読み込み中...</p>
     </div>
 
-    <!-- タグ一覧 -->
-    <div class="space-y-3">
-        <div class="text-sm text-gray-600 mb-2">
-            合計: <span x-text="tags.length" class="font-bold"></span> / 10 個
+    <div x-show="!pageLoading">
+        <!-- 新規タグ作成フォーム -->
+        <div class="mb-6">
+            <form @submit.prevent="createTag()">
+                <div class="space-y-4">
+                    <div>
+                        <input
+                            type="text"
+                            x-model="newTag.name"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="タグ名を入力..."
+                            maxlength="10"
+                            :disabled="loading || tags.length >= 10"
+                            required
+                        >
+                        <div class="text-xs text-gray-400 text-right" x-text="newTag.name.length + '/10'"></div>
+                    </div>
+
+                    <div x-show="tags.length >= 10" class="text-amber-600 text-sm">
+                        タグの作成は10個までです。新しく作成したい場合は既存のタグを削除するか、タグ名を変更してください。
+                    </div>
+
+                    <div x-show="error" class="text-red-500 text-sm" x-text="error"></div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            class="w-full bg-emerald-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                            :disabled="loading || !newTag.name.trim() || tags.length >= 10"
+                        >
+                            <span x-show="!loading">追加</span>
+                            <span x-show="loading">追加中...</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
-        <template x-for="tag in tags" :key="tag.id">
-            <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg">
-                <div class="flex items-start gap-4">
-                    <div class="flex-1 min-w-0">
-                        <!-- 編集モード -->
-                        <div x-show="editingId === tag.id">
-                            <input
-                                type="text"
-                                x-model="editName"
-                                x-ref="editInput"
-                                @keydown.escape="cancelEdit()"
-                                @keydown.enter="saveEdit(tag)"
-                                class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
-                                maxlength="50"
-                            >
-                            <div class="flex gap-2 mt-2">
-                                <button
-                                    @click="saveEdit(tag)"
-                                    class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
-                                >
-                                    保存
-                                </button>
-                                <button
-                                    @click="cancelEdit()"
-                                    class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
-                                >
-                                    キャンセル
-                                </button>
-                                <button
-                                    @click="deleteTag(tag)"
-                                    class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
-                                >
-                                    削除
-                                </button>
-                            </div>
-                        </div>
+        <!-- タグ一覧 -->
+        <div class="space-y-3">
+            <div class="text-sm text-gray-600 mb-2">
+                合計: <span x-text="tags.length" class="font-bold"></span> / 10 個
+            </div>
 
-                        <!-- 表示モード -->
-                        <div
-                            x-show="editingId !== tag.id"
-                            @click="startEdit(tag)"
-                            class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
-                            title="クリックして編集"
-                        >
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <x-icon name="tag" class="w-5 h-5 text-emerald-600" />
+            <template x-for="tag in tags" :key="tag.id">
+                <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1 min-w-0">
+                            <!-- 編集モード -->
+                            <div x-show="editingId === tag.id">
+                                <input
+                                    type="text"
+                                    x-model="editName"
+                                    x-ref="editInput"
+                                    @keydown.escape="cancelEdit()"
+                                    @keydown.enter="saveEdit(tag)"
+                                    class="w-full border border-emerald-400 rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-emerald-50"
+                                    maxlength="10"
+                                >
+                                <div class="text-xs text-gray-400 text-right mt-1" x-text="editName.length + '/10'"></div>
+                                <div class="flex gap-2 mt-2">
+                                    <button
+                                        @click="saveEdit(tag)"
+                                        class="bg-emerald-500 text-white px-3 py-1 rounded text-sm hover:bg-emerald-600"
+                                    >
+                                        保存
+                                    </button>
+                                    <button
+                                        @click="cancelEdit()"
+                                        class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
+                                    >
+                                        キャンセル
+                                    </button>
+                                    <button
+                                        @click="deleteTag(tag)"
+                                        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                                    >
+                                        削除
+                                    </button>
                                 </div>
-                                <p class="text-gray-800 break-words overflow-wrap-anywhere font-medium" x-text="tag.name"></p>
+                            </div>
+
+                            <!-- 表示モード -->
+                            <div
+                                x-show="editingId !== tag.id"
+                                @click="startEdit(tag)"
+                                class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors"
+                                title="クリックして編集"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <x-icon name="tag" class="w-5 h-5 text-emerald-600" />
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-gray-800 break-words overflow-wrap-anywhere font-medium" x-text="tag.name"></p>
+                                        <p x-show="tag.usage_count > 0" class="text-xs text-gray-500 mt-0.5" x-text="tag.usage_count + '件のメモで使用中'"></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </template>
+            </template>
 
-        <!-- 空の状態 -->
-        <div x-show="tags.length === 0" class="text-center py-12 text-gray-500">
-            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="tag" class="w-12 h-12" /></div>
-            <p>タグがありません</p>
-            <p class="text-sm mt-2">メモを整理するためのタグを作成しましょう</p>
+            <!-- 空の状態 -->
+            <div x-show="tags.length === 0" class="text-center py-12 text-gray-500">
+                <div class="mb-4 flex justify-center text-gray-300"><x-icon name="tag" class="w-12 h-12" /></div>
+                <p>タグがありません</p>
+                <p class="text-sm mt-2">メモを整理するためのタグを作成しましょう</p>
+            </div>
         </div>
     </div>
 </div>
@@ -123,10 +138,16 @@ function simpleNotepadTagApp() {
         editingId: null,
         editName: '',
         loading: false,
+        pageLoading: true,
         error: '',
 
         async init() {
-            await this.loadTags();
+            this.pageLoading = true;
+            try {
+                await this.loadTags();
+            } finally {
+                this.pageLoading = false;
+            }
         },
 
         async loadTags() {
@@ -143,7 +164,7 @@ function simpleNotepadTagApp() {
             }
 
             if (this.tags.length >= 10) {
-                this.error = 'タグは10個まで作成できます';
+                this.error = 'タグの作成は10個までです。新しく作成したい場合は既存のタグを削除するか、タグ名を変更してください。';
                 return;
             }
 
@@ -189,9 +210,25 @@ function simpleNotepadTagApp() {
             this.editName = '';
         },
 
+        confirmInUseAction(tag, actionLabel) {
+            if (tag.usage_count > 0) {
+                return confirm(`このタグは${tag.usage_count}件のメモで使用されています。${actionLabel}してもよろしいですか？`);
+            }
+
+            if (actionLabel === '削除') {
+                return confirm('このタグを削除しますか？');
+            }
+
+            return true;
+        },
+
         async saveEdit(tag) {
             if (!this.editName.trim()) {
                 alert('タグ名を入力してください');
+                return;
+            }
+
+            if (!this.confirmInUseAction(tag, '更新')) {
                 return;
             }
 
@@ -221,7 +258,7 @@ function simpleNotepadTagApp() {
         },
 
         async deleteTag(tag) {
-            if (!confirm('このタグを削除しますか？')) return;
+            if (!this.confirmInUseAction(tag, '削除')) return;
 
             try {
                 await apiFetch(`/api/simple-notepad-tags/${tag.id}`, {
