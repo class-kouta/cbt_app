@@ -464,12 +464,16 @@
                             @if($menuActive['support'])
                                 <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
-                                    <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
                                 <a href="/support-networks" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">サポートネットワーク</span>
-                                    <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
@@ -479,12 +483,16 @@
                             @if($menuActive['coping'])
                                 <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">コーピングリスト</span>
-                                    <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
                                 <a href="/copings" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">コーピングリスト</span>
-                                    <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
@@ -494,12 +502,16 @@
                             @if($menuActive['mindfulness'])
                                 <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
-                                    <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </span>
                             @else
                                 <a href="/mindfulness" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                     <span class="font-medium text-lg">マインドフルネス瞑想</span>
-                                    <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </a>
                             @endif
                         </div>
@@ -557,12 +569,16 @@
                                 @if($schemaLinkActive)
                                     <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
                                         <span class="font-medium text-lg">{{ $link['label'] }}</span>
-                                        <span class="text-lg leading-none" aria-hidden="true">&gt;</span>
+                                        <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </span>
                                 @else
                                     <a href="{{ $link['href'] }}" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="font-medium text-lg">{{ $link['label'] }}</span>
-                                        <span class="text-lg leading-none text-gray-600" aria-hidden="true">&gt;</span>
+                                        <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </a>
                                 @endif
                             </div>
