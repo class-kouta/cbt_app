@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ChronologyController;
+use App\Http\Controllers\ConditionCheckController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
@@ -117,6 +118,13 @@ Route::delete('/mode-dialogue-works/{modeDialogueWork}', [ModeDialogueWorkContro
 
 // Mindfulness API（マインドフルネス瞑想 - 音声URL取得）
 Route::get('/mindfulness/audio-url', [MindfulnessController::class, 'getAudioUrl']);
+
+// ConditionCheck API（コンディションチェック）
+Route::get('/condition-checks', [ConditionCheckController::class, 'index']);
+Route::get('/condition-checks/{conditionCheck}', [ConditionCheckController::class, 'show']);
+Route::post('/condition-checks', [ConditionCheckController::class, 'store']);
+Route::put('/condition-checks/{conditionCheck}', [ConditionCheckController::class, 'update']);
+Route::delete('/condition-checks/{conditionCheck}', [ConditionCheckController::class, 'destroy']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

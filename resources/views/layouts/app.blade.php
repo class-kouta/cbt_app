@@ -227,6 +227,7 @@
                     @php
                         $menuActive = [
                             'home' => request()->routeIs('home'),
+                            'conditionCheck' => request()->is('condition-checks*'),
                             'writing' => request()->is('writing-disclosures*'),
                             'stressor' => request()->is('stressor-and-responses*'),
                             'column' => request()->is('columns*'),
@@ -245,6 +246,7 @@
                         class="py-2 flex-1 overflow-y-auto"
                         x-data="{
                             stressorOpen: {{ $menuActive['stressor'] ? 'true' : 'false' }},
+                            conditionCheckOpen: {{ $menuActive['conditionCheck'] ? 'true' : 'false' }},
                             columnOpen: {{ $menuActive['column'] ? 'true' : 'false' }},
                             writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
                             problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
@@ -283,6 +285,54 @@
                                     </svg>
                                 </a>
                             @endif
+                        </div>
+
+                        <!-- コンディションチェック（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['conditionCheck'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="conditionCheckOpen = !conditionCheckOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">コンディションチェック</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="conditionCheckOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="conditionCheckOpen" x-collapse class="">
+                                @if(request()->is('condition-checks') && !request()->is('condition-checks/*'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">トップ</span>
+                                    </span>
+                                @else
+                                    <a href="/condition-checks" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">トップ</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('condition-checks/create'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/condition-checks/create" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('condition-checks/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/condition-checks/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- 筆記開示（多段） -->

@@ -60,6 +60,23 @@ Route::middleware('auth')->group(function () {
             return view('quick-tasks');
         });
 
+        // コンディションチェック
+        Route::get('/condition-checks', function () {
+            return view('condition-checks');
+        });
+
+        Route::get('/condition-checks/create', function () {
+            return view('condition-checks-form');
+        });
+
+        Route::get('/condition-checks/list', function () {
+            return view('condition-checks-list');
+        });
+
+        Route::get('/condition-checks/{id}/edit', function ($id) {
+            return view('condition-checks-form', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
         // 筆記開示ページ
         Route::get('/writing-disclosures', function () {
             return view('writing-disclosures');

@@ -20,6 +20,23 @@
 
 <!-- Cards Grid - Always 2 columns for mobile friendliness -->
 <div class="max-w-4xl mx-auto grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+    <!-- Condition Check Card -->
+    <a href="/condition-checks" class="block group">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mb-3 sm:mb-4 md:mb-6 text-green-600">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 14C8.5 12.5 10 11.5 12 11.5C14 11.5 15.5 12.5 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="9" cy="10" r="1" fill="currentColor"/>
+                        <circle cx="15" cy="10" r="1" fill="currentColor"/>
+                    </svg>
+                </div>
+                <h2 class="text-sm sm:text-base md:text-xl lg:text-2xl font-bold text-gray-900">コンディションチェック</h2>
+            </div>
+        </div>
+    </a>
+
     <!-- Writing Disclosure Card -->
     <a href="/writing-disclosures" class="block group">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-105 h-full">

@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Infrastructure\Repository;
+
+use App\Domain\Entity\ConditionCheck as ConditionCheckEntity;
+use App\Domain\Repository\ConditionCheckRepositoryInterface;
+use App\Infrastructure\Database\Models\ConditionCheck as ConditionCheckModel;
+use Carbon\Carbon;
+use DateTimeImmutable;
+
+class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterface
+{
+    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
+    {
+        if ($value instanceof DateTimeImmutable) {
+            return $value;
+        }
+
+        if ($value instanceof Carbon) {
+            return DateTimeImmutable::createFromMutable($value);
+        }
+
+        return new DateTimeImmutable((string) $value);
+    }
+
+    private function toEntity(ConditionCheckModel $model): ConditionCheckEntity
+    {
+        return ConditionCheckEntity::reconstitute(
+            id: (int) $model->id,
+            mood: (int) $model->mood,
+            fatigue: (int) $model->fatigue,
+            anxiety: (int) $model->anxiety,
+            sleepiness: (int) $model->sleepiness,
+            physicalCondition: (int) $model->physical_condition,
+            memo: $model->memo !== null ? (string) $model->memo : null,
+            createdAt: $this->toDateTimeImmutable($model->created_at),
+            updatedAt: $this->toDateTimeImmutable($model->updated_at),
+        );
+    }
+
+    public function findAllForMember(int $memberId): array
+    {
+        return ConditionCheckModel::where('member_id', $memberId)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($model) => $this->toEntity($model))
+            ->all();
+    }
+
+    public function saveForMember(ConditionCheckEntity $conditionCheck, int $memberId): ConditionCheckEntity
+    {
+        if ($conditionCheck->getId() !== null) {
+            $model = ConditionCheckModel::where('member_id', $memberId)
+                ->findOrFail($conditionCheck->getId());
+        } else {
+            $model = new ConditionCheckModel();
+            $model->member_id = $memberId;
+        }
+
+        $model->mood = $conditionCheck->getMood();
+        $model->fatigue = $conditionCheck->getFatigue();
+        $model->anxiety = $conditionCheck->getAnxiety();
+        $model->sleepiness = $conditionCheck->getSleepiness();
+        $model->physical_condition = $conditionCheck->getPhysicalCondition();
+        $model->memo = $conditionCheck->getMemo();
+        $model->save();
+
+        return $this->toEntity($model);
+    }
+
+    public function findByIdForMember(int $id, int $memberId): ?ConditionCheckEntity
+    {
+        $model = ConditionCheckModel::where('member_id', $memberId)->find($id);
+
+        if ($model === null) {
+            return null;
+        }
+
+        return $this->toEntity($model);
+    }
+
+    public function deleteForMember(int $id, int $memberId): void
+    {
+        $model = ConditionCheckModel::where('member_id', $memberId)->find($id);
+
+        if ($model !== null) {
+            $model->delete();
+        }
+    }
+}
