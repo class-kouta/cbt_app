@@ -52,4 +52,33 @@ enum ConditionCheckRating: int
     {
         return [1, 2, 3, 4, 5];
     }
+
+    /**
+     * 評価値に応じたバッジのCSSクラス（1=良い→青、5=悪い→赤）
+     */
+    public static function badgeClassFor(int $value): string
+    {
+        return match ($value) {
+            self::Level1->value => 'bg-blue-100 text-blue-800',
+            self::Level2->value => 'bg-sky-100 text-sky-800',
+            self::Level3->value => 'bg-green-100 text-green-800',
+            self::Level4->value => 'bg-orange-100 text-orange-800',
+            self::Level5->value => 'bg-red-100 text-red-800',
+            default => 'bg-gray-100 text-gray-800',
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function badgeClassesByValue(): array
+    {
+        $classes = [];
+
+        foreach (self::values() as $value) {
+            $classes[$value] = self::badgeClassFor($value);
+        }
+
+        return $classes;
+    }
 }

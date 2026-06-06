@@ -1,8 +1,8 @@
 @php
 use App\Enums\ConditionCheckRating;
 
-$ratingFields = ConditionCheckRating::fieldLabels();
 $ratingLabels = ConditionCheckRating::labelsByField();
+$ratingBadgeClasses = ConditionCheckRating::badgeClassesByValue();
 $shortLabels = [
     'mood' => '気分',
     'fatigue' => '疲労',
@@ -14,14 +14,20 @@ $shortLabels = [
 
 @extends('layouts.app')
 
-@section('title', 'コンディションチェック - 記録一覧')
+@section('title', 'コンディションチェック')
 @section('page-title', 'コンディションチェック')
 
 @section('content')
 <div x-data="conditionCheckListApp()" x-init="init()" x-cloak>
+    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+        <p class="text-emerald-800 text-sm">
+            現在のコンディションを記録しましょう
+        </p>
+    </div>
+
     <div class="space-y-3">
-        <div class="text-sm text-gray-600 mb-2">
-            合計: <span x-text="items.length" class="font-bold"></span> 件
+        <div class="text-sm text-gray-600 mb-2" x-show="!loading && total > 0">
+            合計: <span x-text="total" class="font-bold"></span> 件
         </div>
 
         <template x-for="item in items" :key="item.id">
@@ -51,6 +57,14 @@ $shortLabels = [
             </a>
         </template>
 
+        <div x-show="loading" class="text-center py-16">
+            <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-gray-600 mt-2">読み込み中...</p>
+        </div>
+
         <div x-show="!loading && items.length === 0" class="text-center py-12 text-gray-500">
             <div class="mb-4 flex justify-center text-gray-300">
                 <x-icon name="clipboard-document" class="w-12 h-12" />
@@ -60,6 +74,12 @@ $shortLabels = [
                 コンディションを記録してみましょう →
             </a>
         </div>
+
+        <x-pagination
+            theme-color-from="emerald-500"
+            theme-color-to="teal-500"
+            theme-border-color="emerald-500"
+        />
     </div>
 
     <a
@@ -83,11 +103,19 @@ $shortLabels = [
 <script>
 function conditionCheckListApp() {
     const ratingLabels = @json($ratingLabels);
+    const ratingBadgeClasses = @json($ratingBadgeClasses);
 
     return {
         items: [],
         loading: true,
         ratingLabels,
+        ratingBadgeClasses,
+        currentPage: 1,
+        perPage: 30,
+        total: 0,
+        lastPage: 1,
+        from: 0,
+        to: 0,
 
         async init() {
             await this.loadItems();
@@ -96,11 +124,34 @@ function conditionCheckListApp() {
         async loadItems() {
             this.loading = true;
             try {
-                const res = await apiFetch('/api/condition-checks');
-                this.items = await res.json();
+                const params = new URLSearchParams();
+                params.append('page', this.currentPage);
+                params.append('per_page', this.perPage);
+
+                const res = await apiFetch('/api/condition-checks?' + params.toString());
+                const result = await res.json();
+
+                this.items = result.data || [];
+                this.total = result.total || 0;
+                this.currentPage = result.current_page || 1;
+                this.lastPage = result.last_page || 1;
+                this.from = result.from || 0;
+                this.to = result.to || 0;
+                this.perPage = result.per_page || 30;
             } finally {
                 this.loading = false;
             }
+        },
+
+        async goToPage(page) {
+            if (page < 1 || page > this.lastPage || page === this.currentPage) return;
+            this.currentPage = page;
+            await this.loadItems();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        get visiblePages() {
+            return calculateVisiblePages(this.currentPage, this.lastPage);
         },
 
         formatDate(dateString) {
@@ -119,10 +170,7 @@ function conditionCheckListApp() {
         },
 
         getRatingClass(value) {
-            const num = parseInt(value, 10);
-            if (num <= 2) return 'bg-green-100 text-green-800';
-            if (num === 3) return 'bg-yellow-100 text-yellow-800';
-            return 'bg-orange-100 text-orange-800';
+            return this.ratingBadgeClasses[value] || 'bg-gray-100 text-gray-800';
         },
     };
 }

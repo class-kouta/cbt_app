@@ -9,6 +9,7 @@ use App\Application\UseCase\ConditionCheck\FindConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\SearchConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\UpdateConditionCheckUseCase;
 use App\Enums\ConditionCheckRating;
+use App\Http\Requests\ConditionCheck\ConditionCheckIndexRequest;
 use App\Http\Requests\ConditionCheck\CreateConditionCheckRequest;
 use App\Http\Requests\ConditionCheck\UpdateConditionCheckRequest;
 use DomainException;
@@ -20,12 +21,13 @@ class ConditionCheckController extends Controller
     /**
      * コンディションチェック一覧を取得（作成日時降順）
      */
-    public function index(SearchConditionCheckUseCase $searchConditionCheck): JsonResponse
-    {
-        $items = collect($searchConditionCheck->handle())
-            ->map(fn ($item) => $this->toArray($item));
+    public function index(
+        ConditionCheckIndexRequest $request,
+        SearchConditionCheckUseCase $searchConditionCheck,
+    ): JsonResponse {
+        $criteria = $request->toSearchCriteriaData();
 
-        return response()->json($items);
+        return response()->json($searchConditionCheck->handle($criteria));
     }
 
     /**

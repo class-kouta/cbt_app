@@ -305,15 +305,6 @@
                                 </svg>
                             </button>
                             <div x-show="conditionCheckOpen" x-collapse class="">
-                                @if(request()->is('condition-checks') && !request()->is('condition-checks/*'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">トップ</span>
-                                    </span>
-                                @else
-                                    <a href="/condition-checks" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">トップ</span>
-                                    </a>
-                                @endif
                                 @if(request()->is('condition-checks/create'))
                                     <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
                                         <span class="text-base">新規作成</span>
@@ -323,12 +314,12 @@
                                         <span class="text-base">新規作成</span>
                                     </a>
                                 @endif
-                                @if(request()->is('condition-checks/list'))
+                                @if(request()->is('condition-checks') && !request()->is('condition-checks/*'))
                                     <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
                                         <span class="text-base">一覧</span>
                                     </span>
                                 @else
-                                    <a href="/condition-checks/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <a href="/condition-checks" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif

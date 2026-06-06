@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Repository;
 
+use App\Application\DTO\ConditionCheckSearchCriteriaData;
 use App\Domain\Entity\ConditionCheck as ConditionCheckEntity;
 use App\Domain\Repository\ConditionCheckRepositoryInterface;
 use App\Infrastructure\Database\Models\ConditionCheck as ConditionCheckModel;
@@ -23,13 +24,43 @@ class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterf
         );
     }
 
-    public function findAllForMember(int $memberId): array
+    /**
+     * @return array<string, mixed>
+     */
+    private function toArray(ConditionCheckEntity $conditionCheck): array
     {
-        return ConditionCheckModel::where('member_id', $memberId)
+        return [
+            'id' => $conditionCheck->getId(),
+            'mood' => $conditionCheck->getMood(),
+            'fatigue' => $conditionCheck->getFatigue(),
+            'anxiety' => $conditionCheck->getAnxiety(),
+            'sleepiness' => $conditionCheck->getSleepiness(),
+            'physical_condition' => $conditionCheck->getPhysicalCondition(),
+            'memo' => $conditionCheck->getMemo(),
+            'created_at' => $conditionCheck->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $conditionCheck->getUpdatedAt()->format(DATE_ATOM),
+        ];
+    }
+
+    public function searchForMember(ConditionCheckSearchCriteriaData $criteria, int $memberId): array
+    {
+        $paginator = ConditionCheckModel::where('member_id', $memberId)
             ->orderByDesc('created_at')
-            ->get()
-            ->map(fn ($model) => $this->toEntity($model))
-            ->all();
+            ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
+
+        $items = collect($paginator->items())
+            ->map(fn ($model) => $this->toArray($this->toEntity($model)))
+            ->toArray();
+
+        return [
+            'data' => $items,
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'from' => $paginator->firstItem(),
+            'to' => $paginator->lastItem(),
+        ];
     }
 
     public function saveForMember(ConditionCheckEntity $conditionCheck, int $memberId): ConditionCheckEntity

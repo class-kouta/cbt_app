@@ -62,15 +62,13 @@ Route::middleware('auth')->group(function () {
 
         // コンディションチェック
         Route::get('/condition-checks', function () {
-            return view('condition-checks');
+            return view('condition-checks-list');
         });
+
+        Route::redirect('/condition-checks/list', '/condition-checks');
 
         Route::get('/condition-checks/create', function () {
             return view('condition-checks-form');
-        });
-
-        Route::get('/condition-checks/list', function () {
-            return view('condition-checks-list');
         });
 
         Route::get('/condition-checks/{id}/edit', function ($id) {

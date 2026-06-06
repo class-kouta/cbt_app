@@ -13,7 +13,7 @@ $ratingLabels = ConditionCheckRating::labelsByField();
 @section('content')
 <div x-data="conditionCheckFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
     <div class="flex justify-between items-center mb-4" x-show="isEditMode">
-        <a href="/condition-checks/list" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
+        <a href="/condition-checks" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
             ← 一覧に戻る
         </a>
     </div>
@@ -184,7 +184,7 @@ function conditionCheckFormApp(itemId) {
                     throw new Error(message);
                 }
 
-                window.location.href = '/condition-checks/list';
+                window.location.href = '/condition-checks';
             } catch (e) {
                 this.error = e.message;
                 this.loading = false;

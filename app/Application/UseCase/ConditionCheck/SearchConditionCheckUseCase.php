@@ -2,6 +2,7 @@
 
 namespace App\Application\UseCase\ConditionCheck;
 
+use App\Application\DTO\ConditionCheckSearchCriteriaData;
 use App\Domain\Repository\ConditionCheckRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,8 +12,11 @@ class SearchConditionCheckUseCase
     {
     }
 
-    public function handle(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function handle(ConditionCheckSearchCriteriaData $criteria): array
     {
-        return $this->conditionCheckRepository->findAllForMember((int) Auth::id());
+        return $this->conditionCheckRepository->searchForMember($criteria, (int) Auth::id());
     }
 }

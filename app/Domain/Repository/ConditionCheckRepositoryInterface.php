@@ -2,11 +2,15 @@
 
 namespace App\Domain\Repository;
 
+use App\Application\DTO\ConditionCheckSearchCriteriaData;
 use App\Domain\Entity\ConditionCheck;
 
 interface ConditionCheckRepositoryInterface
 {
-    public function findAllForMember(int $memberId): array;
+    /**
+     * @return array<string, mixed>
+     */
+    public function searchForMember(ConditionCheckSearchCriteriaData $criteria, int $memberId): array;
 
     public function saveForMember(ConditionCheck $conditionCheck, int $memberId): ConditionCheck;
 

@@ -39,9 +39,40 @@ class ConditionCheckControllerTest extends TestCase
         $response = $this->actingAs($member, 'sanctum')->getJson('/api/condition-checks');
 
         $response->assertOk();
-        $response->assertJsonCount(1);
-        $response->assertJsonPath('0.id', $ownRecord->id);
-        $response->assertJsonPath('0.memo', '自分のメモ');
+        $response->assertJsonPath('total', 1);
+        $response->assertJsonPath('data.0.id', $ownRecord->id);
+        $response->assertJsonPath('data.0.memo', '自分のメモ');
+        $response->assertJsonPath('per_page', 30);
+    }
+
+    public function test_index_supports_pagination(): void
+    {
+        $member = Member::factory()->create();
+
+        for ($i = 1; $i <= 31; $i++) {
+            ConditionCheck::create([
+                'member_id' => $member->id,
+                'mood' => 3,
+                'fatigue' => 3,
+                'anxiety' => 3,
+                'sleepiness' => 3,
+                'physical_condition' => 3,
+                'created_at' => now()->subMinutes($i),
+                'updated_at' => now()->subMinutes($i),
+            ]);
+        }
+
+        $page1 = $this->actingAs($member, 'sanctum')->getJson('/api/condition-checks?page=1');
+        $page1->assertOk();
+        $page1->assertJsonPath('total', 31);
+        $page1->assertJsonPath('current_page', 1);
+        $page1->assertJsonPath('last_page', 2);
+        $page1->assertJsonCount(30, 'data');
+
+        $page2 = $this->actingAs($member, 'sanctum')->getJson('/api/condition-checks?page=2');
+        $page2->assertOk();
+        $page2->assertJsonPath('current_page', 2);
+        $page2->assertJsonCount(1, 'data');
     }
 
     public function test_store_creates_condition_check(): void
