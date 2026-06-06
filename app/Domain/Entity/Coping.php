@@ -12,29 +12,25 @@ class Coping
     private int $point;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
-    /** @var int[] */
-    private array $copingTagIds;
 
     private function __construct(
         ?int $id,
         CopingContent $content,
         int $point,
         DateTimeImmutable $createdAt,
-        DateTimeImmutable $updatedAt,
-        array $copingTagIds = []
+        DateTimeImmutable $updatedAt
     ) {
         $this->id = $id;
         $this->content = $content;
         $this->point = $point;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-        $this->copingTagIds = array_values(array_unique(array_map('intval', $copingTagIds)));
     }
 
-    public static function createNew(string $content, array $copingTagIds = []): self
+    public static function createNew(string $content): self
     {
         $now = new DateTimeImmutable('now');
-        return new self(null, new CopingContent($content), 0, $now, $now, $copingTagIds);
+        return new self(null, new CopingContent($content), 0, $now, $now);
     }
 
     public static function reconstitute(
@@ -42,10 +38,9 @@ class Coping
         string $content,
         int $point,
         DateTimeImmutable $createdAt,
-        DateTimeImmutable $updatedAt,
-        array $copingTagIds = []
+        DateTimeImmutable $updatedAt
     ): self {
-        return new self($id, new CopingContent($content), $point, $createdAt, $updatedAt, $copingTagIds);
+        return new self($id, new CopingContent($content), $point, $createdAt, $updatedAt);
     }
 
     public function getId(): ?int
@@ -73,17 +68,9 @@ class Coping
         return $this->updatedAt;
     }
 
-    /**
-     * @return int[]
-     */
-    public function getCopingTagIds(): array
-    {
-        return $this->copingTagIds;
-    }
-
     public function withId(int $id): self
     {
-        return new self($id, $this->content, $this->point, $this->createdAt, $this->updatedAt, $this->copingTagIds);
+        return new self($id, $this->content, $this->point, $this->createdAt, $this->updatedAt);
     }
 
     public function incrementPoint(): self
@@ -93,8 +80,7 @@ class Coping
             $this->content,
             $this->point + 1,
             $this->createdAt,
-            new DateTimeImmutable('now'),
-            $this->copingTagIds
+            new DateTimeImmutable('now')
         );
     }
 
@@ -106,20 +92,18 @@ class Coping
             $this->content,
             $newPoint,
             $this->createdAt,
-            new DateTimeImmutable('now'),
-            $this->copingTagIds
+            new DateTimeImmutable('now')
         );
     }
 
-    public function updateContent(string $content, array $copingTagIds, ?int $point = null): self
+    public function updateContent(string $content, ?int $point = null): self
     {
         return new self(
             $this->id,
             new CopingContent($content),
             $point ?? $this->point,
             $this->createdAt,
-            new DateTimeImmutable('now'),
-            $copingTagIds
+            new DateTimeImmutable('now')
         );
     }
 }

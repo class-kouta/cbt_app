@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ChronologyController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
-use App\Http\Controllers\CopingTagController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
 use App\Http\Controllers\ProblemSolvingController;
 use App\Http\Controllers\SimpleNotepadController;
@@ -40,9 +39,6 @@ Route::get('/copings', [CopingController::class, 'index']);
 Route::post('/copings', [CopingController::class, 'store']);
 Route::put('/copings/{coping}', [CopingController::class, 'update']);
 Route::delete('/copings/{coping}', [CopingController::class, 'destroy']);
-
-// CopingTag API（一覧取得のみ）
-Route::get('/coping-tags', [CopingTagController::class, 'index']);
 
 // Tag API（汎用タグ一覧取得）
 Route::get('/tags', [TagController::class, 'index']);

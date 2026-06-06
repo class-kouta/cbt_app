@@ -7,7 +7,6 @@ use App\Models\Member;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Coping extends Model
 {
@@ -23,14 +22,6 @@ class Coping extends Model
     protected $casts = [
         'point' => 'integer',
     ];
-
-    /**
-     * コーピングに紐づくタグ一覧
-     */
-    public function copingTags(): BelongsToMany
-    {
-        return $this->belongsToMany(CopingTag::class, 'coping_coping_tag');
-    }
 
     public function member(): BelongsTo
     {
