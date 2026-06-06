@@ -11,7 +11,8 @@ use App\Application\UseCase\ConditionCheck\UpdateConditionCheckUseCase;
 use App\Enums\ConditionCheckRating;
 use App\Http\Requests\ConditionCheck\CreateConditionCheckRequest;
 use App\Http\Requests\ConditionCheck\UpdateConditionCheckRequest;
-use App\Infrastructure\Database\Models\ConditionCheck;
+use DomainException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 
 class ConditionCheckController extends Controller
@@ -31,10 +32,14 @@ class ConditionCheckController extends Controller
      * コンディションチェック詳細を取得
      */
     public function show(
-        ConditionCheck $conditionCheck,
+        int $conditionCheck,
         FindConditionCheckUseCase $findConditionCheck,
     ): JsonResponse {
-        $item = $findConditionCheck->handle($conditionCheck->id);
+        try {
+            $item = $findConditionCheck->handle($conditionCheck);
+        } catch (DomainException) {
+            abort(404);
+        }
 
         return response()->json($this->toArray($item));
     }
@@ -58,12 +63,16 @@ class ConditionCheckController extends Controller
      */
     public function update(
         UpdateConditionCheckRequest $request,
-        ConditionCheck $conditionCheck,
+        int $conditionCheck,
         UpdateConditionCheckUseCase $updateConditionCheck,
     ): JsonResponse {
         $data = $this->toData($request);
 
-        $item = $updateConditionCheck->handle($conditionCheck->id, $data);
+        try {
+            $item = $updateConditionCheck->handle($conditionCheck, $data);
+        } catch (DomainException) {
+            abort(404);
+        }
 
         return response()->json($this->toArray($item));
     }
@@ -72,15 +81,19 @@ class ConditionCheckController extends Controller
      * コンディションチェックを削除
      */
     public function destroy(
-        ConditionCheck $conditionCheck,
+        int $conditionCheck,
         DeleteConditionCheckUseCase $deleteConditionCheck,
     ): JsonResponse {
-        $deleteConditionCheck->handle($conditionCheck->id);
+        try {
+            $deleteConditionCheck->handle($conditionCheck);
+        } catch (DomainException) {
+            abort(404);
+        }
 
         return response()->json(null, 204);
     }
 
-    private function toData(CreateConditionCheckRequest $request): ConditionCheckData
+    private function toData(FormRequest $request): ConditionCheckData
     {
         $validated = $request->validated();
         $memo = $validated['memo'] ?? null;
@@ -97,7 +110,7 @@ class ConditionCheckController extends Controller
 
     private function ratingValue(mixed $value): int
     {
-        return $value instanceof \App\Enums\ConditionCheckRating ? $value->value : (int) $value;
+        return $value instanceof ConditionCheckRating ? $value->value : (int) $value;
     }
 
     /**

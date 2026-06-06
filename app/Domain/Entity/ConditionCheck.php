@@ -26,10 +26,9 @@ class ConditionCheck
         int $sleepiness,
         int $physicalCondition,
         ?string $memo,
+        DateTimeImmutable $createdAt,
     ): self {
-        $now = now()->toDateTimeImmutable();
-
-        return new self(null, $mood, $fatigue, $anxiety, $sleepiness, $physicalCondition, $memo, $now, $now);
+        return new self(null, $mood, $fatigue, $anxiety, $sleepiness, $physicalCondition, $memo, $createdAt, $createdAt);
     }
 
     public static function reconstitute(
@@ -113,6 +112,7 @@ class ConditionCheck
         int $sleepiness,
         int $physicalCondition,
         ?string $memo,
+        DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             $this->id,
@@ -123,7 +123,7 @@ class ConditionCheck
             $physicalCondition,
             $memo,
             $this->createdAt,
-            now()->toDateTimeImmutable(),
+            $updatedAt,
         );
     }
 }

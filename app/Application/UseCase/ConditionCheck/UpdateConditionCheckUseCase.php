@@ -30,6 +30,7 @@ class UpdateConditionCheckUseCase
             sleepiness: $data->sleepiness,
             physicalCondition: $data->physicalCondition,
             memo: $data->memo,
+            updatedAt: now()->toDateTimeImmutable(),
         );
 
         return $this->conditionCheckRepository->saveForMember($updated, $memberId);

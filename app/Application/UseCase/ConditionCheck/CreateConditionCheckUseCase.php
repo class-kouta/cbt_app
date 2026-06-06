@@ -15,6 +15,8 @@ class CreateConditionCheckUseCase
 
     public function handle(ConditionCheckData $data): ConditionCheckEntity
     {
+        $now = now()->toDateTimeImmutable();
+
         $conditionCheck = ConditionCheckEntity::createNew(
             mood: $data->mood,
             fatigue: $data->fatigue,
@@ -22,6 +24,7 @@ class CreateConditionCheckUseCase
             sleepiness: $data->sleepiness,
             physicalCondition: $data->physicalCondition,
             memo: $data->memo,
+            createdAt: $now,
         );
 
         return $this->conditionCheckRepository->saveForMember($conditionCheck, (int) Auth::id());

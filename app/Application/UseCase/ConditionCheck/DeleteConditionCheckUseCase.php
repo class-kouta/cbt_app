@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\ConditionCheck;
 
 use App\Domain\Repository\ConditionCheckRepositoryInterface;
+use DomainException;
 use Illuminate\Support\Facades\Auth;
 
 class DeleteConditionCheckUseCase
@@ -13,6 +14,13 @@ class DeleteConditionCheckUseCase
 
     public function handle(int $id): void
     {
-        $this->conditionCheckRepository->deleteForMember($id, (int) Auth::id());
+        $memberId = (int) Auth::id();
+        $conditionCheck = $this->conditionCheckRepository->findByIdForMember($id, $memberId);
+
+        if ($conditionCheck === null) {
+            throw new DomainException('Condition check not found.');
+        }
+
+        $this->conditionCheckRepository->deleteForMember($id, $memberId);
     }
 }

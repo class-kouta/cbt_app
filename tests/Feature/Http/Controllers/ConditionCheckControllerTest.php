@@ -149,4 +149,70 @@ class ConditionCheckControllerTest extends TestCase
             ->assertJsonPath('mood', 1)
             ->assertJsonPath('memo', '更新後');
     }
+
+    public function test_update_returns_not_found_for_other_members_record(): void
+    {
+        $member = Member::factory()->create();
+        $otherMember = Member::factory()->create();
+
+        $otherRecord = ConditionCheck::create([
+            'member_id' => $otherMember->id,
+            'mood' => 3,
+            'fatigue' => 3,
+            'anxiety' => 3,
+            'sleepiness' => 3,
+            'physical_condition' => 3,
+        ]);
+
+        $this->actingAs($member, 'sanctum')
+            ->putJson("/api/condition-checks/{$otherRecord->id}", [
+                'mood' => 1,
+                'fatigue' => 1,
+                'anxiety' => 1,
+                'sleepiness' => 1,
+                'physical_condition' => 1,
+            ])
+            ->assertNotFound();
+    }
+
+    public function test_destroy_deletes_own_record(): void
+    {
+        $member = Member::factory()->create();
+
+        $record = ConditionCheck::create([
+            'member_id' => $member->id,
+            'mood' => 3,
+            'fatigue' => 3,
+            'anxiety' => 3,
+            'sleepiness' => 3,
+            'physical_condition' => 3,
+        ]);
+
+        $this->actingAs($member, 'sanctum')
+            ->deleteJson("/api/condition-checks/{$record->id}")
+            ->assertNoContent();
+
+        $this->assertDatabaseMissing('condition_checks', ['id' => $record->id]);
+    }
+
+    public function test_destroy_returns_not_found_for_other_members_record(): void
+    {
+        $member = Member::factory()->create();
+        $otherMember = Member::factory()->create();
+
+        $otherRecord = ConditionCheck::create([
+            'member_id' => $otherMember->id,
+            'mood' => 3,
+            'fatigue' => 3,
+            'anxiety' => 3,
+            'sleepiness' => 3,
+            'physical_condition' => 3,
+        ]);
+
+        $this->actingAs($member, 'sanctum')
+            ->deleteJson("/api/condition-checks/{$otherRecord->id}")
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('condition_checks', ['id' => $otherRecord->id]);
+    }
 }
