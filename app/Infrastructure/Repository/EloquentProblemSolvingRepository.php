@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Application\DTO\PlanSearchCriteriaData;
 use App\Application\DTO\SearchCriteriaData;
+use App\Support\LikeSearch;
 use App\Domain\Entity\ProblemSolving as ProblemSolvingEntity;
 use App\Domain\Entity\ProblemSolvingSolution as ProblemSolvingSolutionEntity;
 use App\Domain\Entity\ProblemSolvingPlan as ProblemSolvingPlanEntity;
@@ -196,13 +197,13 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             ->whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId));
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $column) {
-                    $q->orWhere("problem_solving_plans.{$column}", 'like', "%{$keyword}%");
+                    $q->orWhere("problem_solving_plans.{$column}", 'like', $pattern);
                 }
-                $q->orWhereHas('problemSolving', function ($subQ) use ($keyword) {
-                    $subQ->where('problem_situation', 'like', "%{$keyword}%");
+                $q->orWhereHas('problemSolving', function ($subQ) use ($pattern) {
+                    $subQ->where('problem_situation', 'like', $pattern);
                 });
             });
         }
@@ -262,13 +263,13 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $index => $column) {
                     if ($index === 0) {
-                        $q->where($column, 'like', "%{$keyword}%");
+                        $q->where($column, 'like', $pattern);
                     } else {
-                        $q->orWhere($column, 'like', "%{$keyword}%");
+                        $q->orWhere($column, 'like', $pattern);
                     }
                 }
             });
@@ -341,10 +342,10 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $column) {
-                    $q->orWhere($column, 'like', "%{$keyword}%");
+                    $q->orWhere($column, 'like', $pattern);
                 }
             });
         }

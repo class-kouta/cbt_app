@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository;
 
 use App\Application\DTO\SearchCriteriaData;
+use App\Support\LikeSearch;
 use App\Domain\Entity\Column as ColumnEntity;
 use App\Domain\Repository\ColumnRepositoryInterface;
 use App\Infrastructure\Database\Models\Column as ColumnModel;
@@ -142,13 +143,13 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $index => $column) {
                     if ($index === 0) {
-                        $q->where($column, 'like', "%{$keyword}%");
+                        $q->where($column, 'like', $pattern);
                     } else {
-                        $q->orWhere($column, 'like', "%{$keyword}%");
+                        $q->orWhere($column, 'like', $pattern);
                     }
                 }
             });
@@ -211,10 +212,10 @@ class EloquentColumnRepository implements ColumnRepositoryInterface
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $keyword = $criteria->keyword;
-            $query->where(function ($q) use ($keyword, $searchableColumns) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
                 foreach ($searchableColumns as $column) {
-                    $q->orWhere($column, 'like', "%{$keyword}%");
+                    $q->orWhere($column, 'like', $pattern);
                 }
             });
         }
