@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ConditionCheck;
 
+use App\Enums\ConditionCheckRating;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,7 +28,7 @@ class CreateConditionCheckRequest extends FormRequest
      */
     protected function sharedRules(): array
     {
-        $ratingRule = ['required', 'integer', Rule::in([1, 2, 3, 4, 5])];
+        $ratingRule = ['required', Rule::enum(ConditionCheckRating::class)];
 
         return [
             'mood' => $ratingRule,

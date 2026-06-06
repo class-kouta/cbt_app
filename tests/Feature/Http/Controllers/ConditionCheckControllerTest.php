@@ -100,6 +100,28 @@ class ConditionCheckControllerTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_show_returns_own_record(): void
+    {
+        $member = Member::factory()->create();
+
+        $record = ConditionCheck::create([
+            'member_id' => $member->id,
+            'mood' => 2,
+            'fatigue' => 3,
+            'anxiety' => 1,
+            'sleepiness' => 2,
+            'physical_condition' => 2,
+            'memo' => 'テスト',
+        ]);
+
+        $this->actingAs($member, 'sanctum')
+            ->getJson("/api/condition-checks/{$record->id}")
+            ->assertOk()
+            ->assertJsonPath('id', $record->id)
+            ->assertJsonPath('mood', 2)
+            ->assertJsonPath('memo', 'テスト');
+    }
+
     public function test_update_updates_own_record(): void
     {
         $member = Member::factory()->create();

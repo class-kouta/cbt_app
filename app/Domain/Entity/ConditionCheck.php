@@ -27,7 +27,7 @@ class ConditionCheck
         int $physicalCondition,
         ?string $memo,
     ): self {
-        $now = new DateTimeImmutable('now');
+        $now = now()->toDateTimeImmutable();
 
         return new self(null, $mood, $fatigue, $anxiety, $sleepiness, $physicalCondition, $memo, $now, $now);
     }
@@ -123,7 +123,7 @@ class ConditionCheck
             $physicalCondition,
             $memo,
             $this->createdAt,
-            new DateTimeImmutable('now'),
+            now()->toDateTimeImmutable(),
         );
     }
 }

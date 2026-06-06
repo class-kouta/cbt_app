@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Application\DTO\ConditionCheckData;
 use App\Application\UseCase\ConditionCheck\CreateConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\DeleteConditionCheckUseCase;
+use App\Application\UseCase\ConditionCheck\FindConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\SearchConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\UpdateConditionCheckUseCase;
+use App\Enums\ConditionCheckRating;
 use App\Http\Requests\ConditionCheck\CreateConditionCheckRequest;
 use App\Http\Requests\ConditionCheck\UpdateConditionCheckRequest;
 use App\Infrastructure\Database\Models\ConditionCheck;
@@ -28,19 +30,13 @@ class ConditionCheckController extends Controller
     /**
      * コンディションチェック詳細を取得
      */
-    public function show(ConditionCheck $conditionCheck): JsonResponse
-    {
-        return response()->json([
-            'id' => $conditionCheck->id,
-            'mood' => $conditionCheck->mood,
-            'fatigue' => $conditionCheck->fatigue,
-            'anxiety' => $conditionCheck->anxiety,
-            'sleepiness' => $conditionCheck->sleepiness,
-            'physical_condition' => $conditionCheck->physical_condition,
-            'memo' => $conditionCheck->memo,
-            'created_at' => $conditionCheck->created_at?->format(DATE_ATOM),
-            'updated_at' => $conditionCheck->updated_at?->format(DATE_ATOM),
-        ]);
+    public function show(
+        ConditionCheck $conditionCheck,
+        FindConditionCheckUseCase $findConditionCheck,
+    ): JsonResponse {
+        $item = $findConditionCheck->handle($conditionCheck->id);
+
+        return response()->json($this->toArray($item));
     }
 
     /**
@@ -86,16 +82,22 @@ class ConditionCheckController extends Controller
 
     private function toData(CreateConditionCheckRequest $request): ConditionCheckData
     {
-        $memo = $request->input('memo');
+        $validated = $request->validated();
+        $memo = $validated['memo'] ?? null;
 
         return new ConditionCheckData(
-            mood: (int) $request->input('mood'),
-            fatigue: (int) $request->input('fatigue'),
-            anxiety: (int) $request->input('anxiety'),
-            sleepiness: (int) $request->input('sleepiness'),
-            physicalCondition: (int) $request->input('physical_condition'),
+            mood: $this->ratingValue($validated['mood']),
+            fatigue: $this->ratingValue($validated['fatigue']),
+            anxiety: $this->ratingValue($validated['anxiety']),
+            sleepiness: $this->ratingValue($validated['sleepiness']),
+            physicalCondition: $this->ratingValue($validated['physical_condition']),
             memo: is_string($memo) && $memo !== '' ? $memo : null,
         );
+    }
+
+    private function ratingValue(mixed $value): int
+    {
+        return $value instanceof \App\Enums\ConditionCheckRating ? $value->value : (int) $value;
     }
 
     /**

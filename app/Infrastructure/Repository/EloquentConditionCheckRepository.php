@@ -5,24 +5,9 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\ConditionCheck as ConditionCheckEntity;
 use App\Domain\Repository\ConditionCheckRepositoryInterface;
 use App\Infrastructure\Database\Models\ConditionCheck as ConditionCheckModel;
-use Carbon\Carbon;
-use DateTimeImmutable;
 
 class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterface
 {
-    private function toDateTimeImmutable(mixed $value): DateTimeImmutable
-    {
-        if ($value instanceof DateTimeImmutable) {
-            return $value;
-        }
-
-        if ($value instanceof Carbon) {
-            return DateTimeImmutable::createFromMutable($value);
-        }
-
-        return new DateTimeImmutable((string) $value);
-    }
-
     private function toEntity(ConditionCheckModel $model): ConditionCheckEntity
     {
         return ConditionCheckEntity::reconstitute(
@@ -33,8 +18,8 @@ class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterf
             sleepiness: (int) $model->sleepiness,
             physicalCondition: (int) $model->physical_condition,
             memo: $model->memo !== null ? (string) $model->memo : null,
-            createdAt: $this->toDateTimeImmutable($model->created_at),
-            updatedAt: $this->toDateTimeImmutable($model->updated_at),
+            createdAt: $model->created_at->toDateTimeImmutable(),
+            updatedAt: $model->updated_at->toDateTimeImmutable(),
         );
     }
 
