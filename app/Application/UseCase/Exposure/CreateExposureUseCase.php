@@ -6,6 +6,7 @@ use App\Application\DTO\ExposureData;
 use App\Domain\Entity\Exposure as ExposureEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CreateExposureUseCase
 {
@@ -15,14 +16,21 @@ class CreateExposureUseCase
 
     public function handle(ExposureData $data): ExposureEntity
     {
-        $exposure = ExposureEntity::createNew(
-            $data->avoidanceTarget,
-            $data->exposureType,
-            $data->selfTalk,
-            $data->overallReflection,
-            $data->nextGoal
-        );
+        return DB::transaction(function () use ($data) {
+            $memberId = (int) Auth::id();
 
-        return $this->repository->saveForMember($exposure, (int) Auth::id());
+            $exposure = ExposureEntity::createNew(
+                $data->avoidanceTarget,
+                $data->exposureType,
+                $data->selfTalk,
+                $data->overallReflection,
+                $data->nextGoal
+            );
+
+            $saved = $this->repository->saveForMember($exposure, $memberId);
+            $this->repository->syncTagsForMember($saved->getId(), $data->tagIds, $memberId);
+
+            return $saved;
+        });
     }
 }

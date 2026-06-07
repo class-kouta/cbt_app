@@ -6,6 +6,7 @@ use App\Application\DTO\ExposureData;
 use App\Domain\Entity\Exposure as ExposureEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UpdateExposureUseCase
 {
@@ -15,20 +16,26 @@ class UpdateExposureUseCase
 
     public function handle(int $id, ExposureData $data): ExposureEntity
     {
-        $existing = $this->repository->findByIdForMember($id, (int) Auth::id());
+        return DB::transaction(function () use ($id, $data) {
+            $memberId = (int) Auth::id();
+            $existing = $this->repository->findByIdForMember($id, $memberId);
 
-        if ($existing === null) {
-            throw new \RuntimeException('Exposure not found');
-        }
+            if ($existing === null) {
+                throw new \RuntimeException('Exposure not found');
+            }
 
-        $updated = $existing->update(
-            $data->avoidanceTarget,
-            $data->exposureType,
-            $data->selfTalk,
-            $data->overallReflection,
-            $data->nextGoal
-        );
+            $updated = $existing->update(
+                $data->avoidanceTarget,
+                $data->exposureType,
+                $data->selfTalk,
+                $data->overallReflection,
+                $data->nextGoal
+            );
 
-        return $this->repository->saveForMember($updated, (int) Auth::id());
+            $saved = $this->repository->saveForMember($updated, $memberId);
+            $this->repository->syncTagsForMember($saved->getId(), $data->tagIds, $memberId);
+
+            return $saved;
+        });
     }
 }

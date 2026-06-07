@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Infrastructure\Database\Models\Exposure;
+use App\Infrastructure\Database\Models\ExposureHierarchyItem;
 use App\Infrastructure\Database\Models\ExposureSession;
 use App\Models\Member;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -67,6 +68,7 @@ class ExposureSessionSearchTest extends TestCase
         $create = $this->asMember()->postJson('/api/exposures', [
             'avoidance_target' => 'エレベーターに乗れない',
             'exposure_type' => 'in_vivo',
+            'tag_ids' => [],
         ]);
 
         $create->assertStatus(201);
@@ -78,8 +80,108 @@ class ExposureSessionSearchTest extends TestCase
 
         $this->asMember()->putJson("/api/exposures/{$id}", [
             'avoidance_target' => 'エレベーターに1階だけ乗る',
+            'tag_ids' => [],
         ])->assertStatus(200);
 
         $this->asMember()->deleteJson("/api/exposures/{$id}")->assertStatus(204);
+    }
+
+    public function test_sync_hierarchy_items_in_single_request(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/hierarchy-items/sync", [
+            'items' => [
+                ['content' => '場面1', 'sort_order' => 1, 'expected_suds' => 30],
+                ['content' => '場面2', 'sort_order' => 2, 'expected_suds' => 60],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(2, 'items');
+        $this->assertDatabaseCount('exposure_hierarchy_items', 2);
+    }
+
+    public function test_add_session_rejects_foreign_hierarchy_item(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $otherExposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => '別のテスト',
+        ]);
+
+        $foreignItem = ExposureHierarchyItem::create([
+            'exposure_id' => $otherExposure->id,
+            'content' => '他人の階段',
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->asMember()->postJson("/api/exposures/{$exposure->id}/sessions", [
+            'hierarchy_item_id' => $foreignItem->id,
+            'action_plan' => '実施する',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_sync_sessions_rejects_foreign_hierarchy_item(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $otherExposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => '別のテスト',
+        ]);
+
+        $foreignItem = ExposureHierarchyItem::create([
+            'exposure_id' => $otherExposure->id,
+            'content' => '他人の階段',
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
+            'sessions' => [
+                [
+                    'hierarchy_item_id' => $foreignItem->id,
+                    'action_plan' => '実施する',
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_sync_sessions_in_single_request(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
+            'sessions' => [
+                [
+                    'action_plan' => '1駅だけ乗る',
+                    'suds_before' => 80,
+                    'suds_peak' => 90,
+                    'suds_after' => 60,
+                    'reflection' => 'なんとかできた',
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(1, 'sessions');
+        $this->assertDatabaseCount('exposure_sessions', 1);
     }
 }

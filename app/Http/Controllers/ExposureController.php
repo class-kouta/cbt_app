@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\DTO\ExposureData;
 use App\Application\DTO\ExposureHierarchyItemData;
+use App\Application\DTO\ExposureSessionBulkItemData;
 use App\Application\DTO\ExposureSessionData;
 use App\Application\UseCase\Exposure\AddHierarchyItemUseCase;
 use App\Application\UseCase\Exposure\AddSessionUseCase;
@@ -14,6 +15,8 @@ use App\Application\UseCase\Exposure\DeleteSessionUseCase;
 use App\Application\UseCase\Exposure\ExportExposureCsvUseCase;
 use App\Application\UseCase\Exposure\SearchExposureUseCase;
 use App\Application\UseCase\Exposure\SearchSessionUseCase;
+use App\Application\UseCase\Exposure\SyncHierarchyItemsUseCase;
+use App\Application\UseCase\Exposure\SyncSessionsUseCase;
 use App\Application\UseCase\Exposure\UpdateExposureUseCase;
 use App\Application\UseCase\Exposure\UpdateHierarchyItemUseCase;
 use App\Application\UseCase\Exposure\UpdateSessionUseCase;
@@ -22,6 +25,8 @@ use App\Http\Requests\Exposure\AddHierarchyItemRequest;
 use App\Http\Requests\Exposure\AddSessionRequest;
 use App\Http\Requests\Exposure\CreateExposureRequest;
 use App\Http\Requests\Exposure\SearchSessionRequest;
+use App\Http\Requests\Exposure\SyncHierarchyItemsRequest;
+use App\Http\Requests\Exposure\SyncSessionsRequest;
 use App\Http\Requests\Exposure\UpdateExposureRequest;
 use App\Http\Requests\Exposure\UpdateHierarchyItemRequest;
 use App\Http\Requests\Exposure\UpdateSessionRequest;
@@ -59,56 +64,19 @@ class ExposureController extends Controller
 
     public function store(CreateExposureRequest $request, CreateExposureUseCase $createExposure): JsonResponse
     {
-        $data = new ExposureData(
-            avoidanceTarget: (string) $request->string('avoidance_target'),
-            exposureType: $request->filled('exposure_type') ? (string) $request->string('exposure_type') : null,
-            selfTalk: $request->filled('self_talk') ? (string) $request->string('self_talk') : null,
-            overallReflection: $request->filled('overall_reflection') ? (string) $request->string('overall_reflection') : null,
-            nextGoal: $request->filled('next_goal') ? (string) $request->string('next_goal') : null
-        );
+        $exposureEntity = $createExposure->handle($this->toExposureData($request));
 
-        $exposureEntity = $createExposure->handle($data);
+        $exposure = Exposure::with(['hierarchyItems', 'sessions', 'tags'])
+            ->where('member_id', (int) Auth::id())
+            ->findOrFail($exposureEntity->getId());
 
-        $tagIds = $request->input('tag_ids', []);
-        $model = Exposure::with('tags')->where('member_id', (int) Auth::id())->findOrFail($exposureEntity->getId());
-        if (! empty($tagIds)) {
-            $model->tags()->sync($tagIds);
-            $model->load('tags');
-        }
-
-        return response()->json([
-            'id' => $exposureEntity->getId(),
-            'avoidance_target' => $exposureEntity->getAvoidanceTarget(),
-            'exposure_type' => $exposureEntity->getExposureType(),
-            'self_talk' => $exposureEntity->getSelfTalk(),
-            'overall_reflection' => $exposureEntity->getOverallReflection(),
-            'next_goal' => $exposureEntity->getNextGoal(),
-            'hierarchy_items' => [],
-            'sessions' => [],
-            'tags' => $model->tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->toArray(),
-            'tag_ids' => $model->tags->pluck('id')->toArray(),
-            'created_at' => $exposureEntity->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $exposureEntity->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
+        return response()->json($this->formatExposure($exposure), 201);
     }
 
     public function update(UpdateExposureRequest $request, Exposure $exposure, UpdateExposureUseCase $updateExposure): JsonResponse
     {
-        $data = new ExposureData(
-            avoidanceTarget: (string) $request->string('avoidance_target'),
-            exposureType: $request->filled('exposure_type') ? (string) $request->string('exposure_type') : null,
-            selfTalk: $request->filled('self_talk') ? (string) $request->string('self_talk') : null,
-            overallReflection: $request->filled('overall_reflection') ? (string) $request->string('overall_reflection') : null,
-            nextGoal: $request->filled('next_goal') ? (string) $request->string('next_goal') : null
-        );
+        $updateExposure->handle($exposure->id, $this->toExposureData($request));
 
-        $updateExposure->handle($exposure->id, $data);
-
-        $tagIds = $request->input('tag_ids', []);
-        $exposure->tags()->sync($tagIds);
         $exposure->refresh();
         $exposure->load(['hierarchyItems', 'sessions', 'tags']);
 
@@ -120,6 +88,72 @@ class ExposureController extends Controller
         $deleteExposure->handle($exposure->id);
 
         return response()->json(null, 204);
+    }
+
+    public function syncHierarchyItems(
+        SyncHierarchyItemsRequest $request,
+        Exposure $exposure,
+        SyncHierarchyItemsUseCase $syncHierarchyItems
+    ): JsonResponse {
+        $itemsData = array_map(
+            fn (array $item) => new ExposureHierarchyItemData(
+                content: $item['content'],
+                sortOrder: (int) $item['sort_order'],
+                expectedSuds: isset($item['expected_suds']) ? (int) $item['expected_suds'] : null
+            ),
+            $request->validated('items')
+        );
+
+        $items = $syncHierarchyItems->handle($exposure->id, $itemsData);
+
+        return response()->json([
+            'items' => array_map(fn ($item) => [
+                'id' => $item->getId(),
+                'content' => $item->getContent(),
+                'expected_suds' => $item->getExpectedSuds(),
+                'sort_order' => $item->getSortOrder(),
+            ], $items),
+        ]);
+    }
+
+    public function syncSessions(
+        SyncSessionsRequest $request,
+        Exposure $exposure,
+        SyncSessionsUseCase $syncSessions
+    ): JsonResponse {
+        try {
+            $sessionsData = array_map(
+                fn (array $session) => new ExposureSessionBulkItemData(
+                    id: isset($session['id']) ? (int) $session['id'] : null,
+                    hierarchyItemId: isset($session['hierarchy_item_id']) ? (int) $session['hierarchy_item_id'] : null,
+                    actionPlan: $session['action_plan'] ?? null,
+                    sudsBefore: isset($session['suds_before']) ? (int) $session['suds_before'] : null,
+                    sudsPeak: isset($session['suds_peak']) ? (int) $session['suds_peak'] : null,
+                    sudsAfter: isset($session['suds_after']) ? (int) $session['suds_after'] : null,
+                    performedAt: $session['performed_at'] ?? null,
+                    reflection: $session['reflection'] ?? null
+                ),
+                $request->validated('sessions')
+            );
+
+            $sessions = $syncSessions->handle($exposure->id, $sessionsData);
+        } catch (\InvalidArgumentException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        return response()->json([
+            'sessions' => array_map(fn ($session) => [
+                'id' => $session->getId(),
+                'hierarchy_item_id' => $session->getHierarchyItemId(),
+                'session_number' => $session->getSessionNumber(),
+                'action_plan' => $session->getActionPlan(),
+                'suds_before' => $session->getSudsBefore(),
+                'suds_peak' => $session->getSudsPeak(),
+                'suds_after' => $session->getSudsAfter(),
+                'performed_at' => $session->getPerformedAt()?->format(DATE_ATOM),
+                'reflection' => $session->getReflection(),
+            ], $sessions),
+        ]);
     }
 
     public function addHierarchyItem(AddHierarchyItemRequest $request, Exposure $exposure, AddHierarchyItemUseCase $addHierarchyItem): JsonResponse
@@ -188,32 +222,14 @@ class ExposureController extends Controller
 
     public function addSession(AddSessionRequest $request, Exposure $exposure, AddSessionUseCase $addSession): JsonResponse
     {
-        $data = new ExposureSessionData(
-            hierarchyItemId: $request->filled('hierarchy_item_id') ? (int) $request->integer('hierarchy_item_id') : null,
-            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            sudsBefore: $request->filled('suds_before') ? (int) $request->integer('suds_before') : null,
-            sudsPeak: $request->filled('suds_peak') ? (int) $request->integer('suds_peak') : null,
-            sudsAfter: $request->filled('suds_after') ? (int) $request->integer('suds_after') : null,
-            performedAt: $request->filled('performed_at') ? (string) $request->string('performed_at') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
-        );
+        try {
+            $data = $this->toSessionData($request);
+            $session = $addSession->handle($exposure->id, $data);
+        } catch (\InvalidArgumentException $e) {
+            abort(422, $e->getMessage());
+        }
 
-        $session = $addSession->handle($exposure->id, $data);
-
-        return response()->json([
-            'id' => $session->getId(),
-            'exposure_id' => $session->getExposureId(),
-            'hierarchy_item_id' => $session->getHierarchyItemId(),
-            'session_number' => $session->getSessionNumber(),
-            'action_plan' => $session->getActionPlan(),
-            'suds_before' => $session->getSudsBefore(),
-            'suds_peak' => $session->getSudsPeak(),
-            'suds_after' => $session->getSudsAfter(),
-            'performed_at' => $session->getPerformedAt()?->format(DATE_ATOM),
-            'reflection' => $session->getReflection(),
-            'created_at' => $session->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $session->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
+        return response()->json($this->formatSession($session), 201);
     }
 
     public function updateSession(
@@ -226,32 +242,14 @@ class ExposureController extends Controller
             abort(404);
         }
 
-        $data = new ExposureSessionData(
-            hierarchyItemId: $request->filled('hierarchy_item_id') ? (int) $request->integer('hierarchy_item_id') : null,
-            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
-            sudsBefore: $request->filled('suds_before') ? (int) $request->integer('suds_before') : null,
-            sudsPeak: $request->filled('suds_peak') ? (int) $request->integer('suds_peak') : null,
-            sudsAfter: $request->filled('suds_after') ? (int) $request->integer('suds_after') : null,
-            performedAt: $request->filled('performed_at') ? (string) $request->string('performed_at') : null,
-            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
-        );
+        try {
+            $data = $this->toSessionData($request);
+            $updated = $updateSession->handle($session->id, $data);
+        } catch (\InvalidArgumentException $e) {
+            abort(422, $e->getMessage());
+        }
 
-        $updated = $updateSession->handle($session->id, $data);
-
-        return response()->json([
-            'id' => $updated->getId(),
-            'exposure_id' => $updated->getExposureId(),
-            'hierarchy_item_id' => $updated->getHierarchyItemId(),
-            'session_number' => $updated->getSessionNumber(),
-            'action_plan' => $updated->getActionPlan(),
-            'suds_before' => $updated->getSudsBefore(),
-            'suds_peak' => $updated->getSudsPeak(),
-            'suds_after' => $updated->getSudsAfter(),
-            'performed_at' => $updated->getPerformedAt()?->format(DATE_ATOM),
-            'reflection' => $updated->getReflection(),
-            'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
-        ]);
+        return response()->json($this->formatSession($updated));
     }
 
     public function deleteSession(
@@ -273,6 +271,31 @@ class ExposureController extends Controller
         $criteria = $request->toSearchCriteriaData();
 
         return $exportUseCase->handle($criteria);
+    }
+
+    private function toExposureData(CreateExposureRequest|UpdateExposureRequest $request): ExposureData
+    {
+        return new ExposureData(
+            avoidanceTarget: (string) $request->string('avoidance_target'),
+            exposureType: $request->filled('exposure_type') ? (string) $request->string('exposure_type') : null,
+            selfTalk: $request->filled('self_talk') ? (string) $request->string('self_talk') : null,
+            overallReflection: $request->filled('overall_reflection') ? (string) $request->string('overall_reflection') : null,
+            nextGoal: $request->filled('next_goal') ? (string) $request->string('next_goal') : null,
+            tagIds: array_map('intval', $request->input('tag_ids', []))
+        );
+    }
+
+    private function toSessionData(AddSessionRequest $request): ExposureSessionData
+    {
+        return new ExposureSessionData(
+            hierarchyItemId: $request->filled('hierarchy_item_id') ? (int) $request->integer('hierarchy_item_id') : null,
+            actionPlan: $request->filled('action_plan') ? (string) $request->string('action_plan') : null,
+            sudsBefore: $request->filled('suds_before') ? (int) $request->integer('suds_before') : null,
+            sudsPeak: $request->filled('suds_peak') ? (int) $request->integer('suds_peak') : null,
+            sudsAfter: $request->filled('suds_after') ? (int) $request->integer('suds_after') : null,
+            performedAt: $request->filled('performed_at') ? (string) $request->string('performed_at') : null,
+            reflection: $request->filled('reflection') ? (string) $request->string('reflection') : null
+        );
     }
 
     /**
@@ -313,6 +336,27 @@ class ExposureController extends Controller
             'tag_ids' => $exposure->tags->pluck('id')->toArray(),
             'created_at' => $exposure->created_at->format(DATE_ATOM),
             'updated_at' => $exposure->updated_at->format(DATE_ATOM),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function formatSession(\App\Domain\Entity\ExposureSession $session): array
+    {
+        return [
+            'id' => $session->getId(),
+            'exposure_id' => $session->getExposureId(),
+            'hierarchy_item_id' => $session->getHierarchyItemId(),
+            'session_number' => $session->getSessionNumber(),
+            'action_plan' => $session->getActionPlan(),
+            'suds_before' => $session->getSudsBefore(),
+            'suds_peak' => $session->getSudsPeak(),
+            'suds_after' => $session->getSudsAfter(),
+            'performed_at' => $session->getPerformedAt()?->format(DATE_ATOM),
+            'reflection' => $session->getReflection(),
+            'created_at' => $session->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $session->getUpdatedAt()->format(DATE_ATOM),
         ];
     }
 }

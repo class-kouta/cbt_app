@@ -415,27 +415,32 @@ function exposureFormApp(itemId) {
 
         async saveHierarchyItems(exposureId) {
             const valid = this.hierarchyItems.filter(i => i.content.trim());
-            for (const o of this.originalHierarchyItems.filter(o => o.id)) {
-                await apiFetch(`/api/exposures/${exposureId}/hierarchy-items/${o.id}`, { method: 'DELETE' });
-            }
-            const saved = [];
-            for (let i = 0; i < valid.length; i++) {
-                const item = valid[i];
-                const res = await apiFetch(`/api/exposures/${exposureId}/hierarchy-items`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: item.content, sort_order: i + 1, expected_suds: item.expected_suds !== '' ? parseInt(item.expected_suds) : null })
-                });
-                if (res.ok) saved.push(await res.json());
-            }
+            const res = await apiFetch(`/api/exposures/${exposureId}/hierarchy-items/sync`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: valid.map((item, i) => ({
+                        content: item.content,
+                        sort_order: i + 1,
+                        expected_suds: item.expected_suds !== '' ? parseInt(item.expected_suds) : null
+                    }))
+                })
+            });
+            if (!res.ok) throw new Error('hierarchy sync failed');
+            const result = await res.json();
+            const saved = result.items || [];
             this.originalHierarchyItems = saved.map(s => ({ id: s.id, content: s.content, expected_suds: s.expected_suds ?? '' }));
             this.savedHierarchyItems = this.originalHierarchyItems;
+            this.sessions.forEach(session => { session.hierarchy_item_id = ''; });
             this.hierarchyItems = [...this.originalHierarchyItems];
             while (this.hierarchyItems.length < 3) this.hierarchyItems.push({ content: '', expected_suds: '' });
         },
 
         async saveSessions(exposureId) {
-            for (const session of this.sessions) {
-                const body = {
+            const payload = this.sessions
+                .filter(session => session.id || (session.action_plan && session.action_plan.trim()) || (session.reflection && session.reflection.trim()))
+                .map(session => ({
+                    id: session.id || null,
                     hierarchy_item_id: session.hierarchy_item_id ? parseInt(session.hierarchy_item_id) : null,
                     action_plan: session.action_plan || null,
                     suds_before: session.suds_before !== '' ? parseInt(session.suds_before) : null,
@@ -443,19 +448,30 @@ function exposureFormApp(itemId) {
                     suds_after: session.suds_after !== '' ? parseInt(session.suds_after) : null,
                     performed_at: this.toIsoLocal(session.performed_at_local),
                     reflection: session.reflection || null
-                };
-                if (session.id) {
-                    await apiFetch(`/api/exposures/${exposureId}/sessions/${session.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                } else if ((body.action_plan && body.action_plan.trim()) || (body.reflection && body.reflection.trim())) {
-                    const res = await apiFetch(`/api/exposures/${exposureId}/sessions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                    if (res.ok) { const c = await res.json(); session.id = c.id; }
-                }
-            }
-            for (const o of this.originalSessions.filter(o => o.id)) {
-                if (!this.sessions.find(s => s.id === o.id)) {
-                    await apiFetch(`/api/exposures/${exposureId}/sessions/${o.id}`, { method: 'DELETE' });
-                }
-            }
+                }));
+
+            const res = await apiFetch(`/api/exposures/${exposureId}/sessions/sync`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessions: payload })
+            });
+            if (!res.ok) throw new Error('sessions sync failed');
+            const result = await res.json();
+            const saved = result.sessions || [];
+            this.sessions = saved.length
+                ? saved.map(s => ({
+                    id: s.id,
+                    session_number: s.session_number,
+                    hierarchy_item_id: s.hierarchy_item_id ? String(s.hierarchy_item_id) : '',
+                    action_plan: s.action_plan || '',
+                    suds_before: s.suds_before ?? '',
+                    suds_peak: s.suds_peak ?? '',
+                    suds_after: s.suds_after ?? '',
+                    performed_at_local: this.fromIsoLocal(s.performed_at),
+                    reflection: s.reflection || '',
+                    expanded: true
+                }))
+                : [this.emptySession(1)];
             this.originalSessions = JSON.parse(JSON.stringify(this.sessions));
         },
 

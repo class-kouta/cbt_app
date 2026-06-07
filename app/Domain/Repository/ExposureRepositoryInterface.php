@@ -47,4 +47,23 @@ interface ExposureRepositoryInterface
     public function updateSessionForMember(ExposureSession $session, int $memberId): ExposureSession;
 
     public function deleteSessionForMember(int $sessionId, int $memberId): void;
+
+    /**
+     * @param array<int> $tagIds
+     */
+    public function syncTagsForMember(int $exposureId, array $tagIds, int $memberId): void;
+
+    /**
+     * @param ExposureHierarchyItem[] $items
+     * @return ExposureHierarchyItem[]
+     */
+    public function syncHierarchyItemsForMember(int $exposureId, array $items, int $memberId): array;
+
+    /**
+     * @param ExposureSession[] $sessions
+     * @return ExposureSession[]
+     */
+    public function syncSessionsForMember(int $exposureId, array $sessions, int $memberId): array;
+
+    public function hierarchyItemBelongsToExposureForMember(int $hierarchyItemId, int $exposureId, int $memberId): bool;
 }

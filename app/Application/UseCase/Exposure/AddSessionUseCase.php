@@ -22,6 +22,13 @@ class AddSessionUseCase
             throw new \RuntimeException('Exposure not found');
         }
 
+        $memberId = (int) Auth::id();
+
+        if ($data->hierarchyItemId !== null
+            && ! $this->repository->hierarchyItemBelongsToExposureForMember($data->hierarchyItemId, $exposureId, $memberId)) {
+            throw new \InvalidArgumentException('Invalid hierarchy item');
+        }
+
         $latestSession = $exposure->getLatestSession();
         $nextSessionNumber = $latestSession ? $latestSession->getSessionNumber() + 1 : 1;
 

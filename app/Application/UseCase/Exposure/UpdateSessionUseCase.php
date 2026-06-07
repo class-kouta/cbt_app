@@ -22,6 +22,17 @@ class UpdateSessionUseCase
             throw new \RuntimeException('Session not found');
         }
 
+        $memberId = (int) Auth::id();
+
+        if ($data->hierarchyItemId !== null
+            && ! $this->repository->hierarchyItemBelongsToExposureForMember(
+                $data->hierarchyItemId,
+                (int) $existing->getExposureId(),
+                $memberId
+            )) {
+            throw new \InvalidArgumentException('Invalid hierarchy item');
+        }
+
         $performedAt = $data->performedAt
             ? new DateTimeImmutable($data->performedAt)
             : null;

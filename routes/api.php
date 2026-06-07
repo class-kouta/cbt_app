@@ -86,6 +86,8 @@ Route::get('/exposures/{exposure}', [ExposureController::class, 'show']);
 Route::post('/exposures', [ExposureController::class, 'store']);
 Route::put('/exposures/{exposure}', [ExposureController::class, 'update']);
 Route::delete('/exposures/{exposure}', [ExposureController::class, 'destroy']);
+Route::put('/exposures/{exposure}/hierarchy-items/sync', [ExposureController::class, 'syncHierarchyItems']);
+Route::put('/exposures/{exposure}/sessions/sync', [ExposureController::class, 'syncSessions']);
 Route::post('/exposures/{exposure}/hierarchy-items', [ExposureController::class, 'addHierarchyItem']);
 Route::put('/exposures/{exposure}/hierarchy-items/{hierarchyItem}', [ExposureController::class, 'updateHierarchyItem']);
 Route::delete('/exposures/{exposure}/hierarchy-items/{hierarchyItem}', [ExposureController::class, 'deleteHierarchyItem']);

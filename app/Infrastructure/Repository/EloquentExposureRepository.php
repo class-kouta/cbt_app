@@ -13,6 +13,7 @@ use App\Infrastructure\Database\Models\ExposureHierarchyItem as ExposureHierarch
 use App\Infrastructure\Database\Models\ExposureSession as ExposureSessionModel;
 use App\Support\LikeSearch;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\DB;
 
 class EloquentExposureRepository implements ExposureRepositoryInterface
 {
@@ -20,24 +21,19 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
     {
         if ($exposure->getId() !== null) {
             $model = ExposureModel::where('member_id', $memberId)->findOrFail($exposure->getId());
-            $model->avoidance_target = $exposure->getAvoidanceTarget();
-            $model->exposure_type = $exposure->getExposureType();
-            $model->self_talk = $exposure->getSelfTalk();
-            $model->overall_reflection = $exposure->getOverallReflection();
-            $model->next_goal = $exposure->getNextGoal();
-            $model->member_id = $memberId;
-            $model->save();
-            $model->load(['hierarchyItems', 'sessions']);
         } else {
             $model = new ExposureModel();
-            $model->avoidance_target = $exposure->getAvoidanceTarget();
-            $model->exposure_type = $exposure->getExposureType();
-            $model->self_talk = $exposure->getSelfTalk();
-            $model->overall_reflection = $exposure->getOverallReflection();
-            $model->next_goal = $exposure->getNextGoal();
-            $model->member_id = $memberId;
-            $model->save();
         }
+
+        $model->avoidance_target = $exposure->getAvoidanceTarget();
+        $model->exposure_type = $exposure->getExposureType();
+        $model->self_talk = $exposure->getSelfTalk();
+        $model->overall_reflection = $exposure->getOverallReflection();
+        $model->next_goal = $exposure->getNextGoal();
+        $model->member_id = $memberId;
+        $model->save();
+
+        $model->load(['hierarchyItems', 'sessions']);
 
         return $this->toEntity($model);
     }
@@ -206,6 +202,91 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         if ($model !== null) {
             $model->delete();
         }
+    }
+
+    public function syncTagsForMember(int $exposureId, array $tagIds, int $memberId): void
+    {
+        $model = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
+        $model->tags()->sync($tagIds);
+    }
+
+    /**
+     * @param ExposureHierarchyItemEntity[] $items
+     * @return ExposureHierarchyItemEntity[]
+     */
+    public function syncHierarchyItemsForMember(int $exposureId, array $items, int $memberId): array
+    {
+        return DB::transaction(function () use ($exposureId, $items, $memberId) {
+            $exposure = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
+            $exposure->hierarchyItems()->delete();
+
+            $entities = [];
+            foreach ($items as $item) {
+                $model = new ExposureHierarchyItemModel();
+                $model->exposure_id = $exposure->id;
+                $model->content = $item->getContent();
+                $model->expected_suds = $item->getExpectedSuds();
+                $model->sort_order = $item->getSortOrder();
+                $model->save();
+                $entities[] = $this->toHierarchyItemEntity($model);
+            }
+
+            return $entities;
+        });
+    }
+
+    /**
+     * @param ExposureSessionEntity[] $sessions
+     * @return ExposureSessionEntity[]
+     */
+    public function syncSessionsForMember(int $exposureId, array $sessions, int $memberId): array
+    {
+        return DB::transaction(function () use ($exposureId, $sessions, $memberId) {
+            $exposure = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
+
+            $keepIds = array_values(array_filter(array_map(
+                fn (ExposureSessionEntity $session) => $session->getId(),
+                $sessions
+            )));
+
+            $deleteQuery = ExposureSessionModel::where('exposure_id', $exposure->id);
+            if (count($keepIds) > 0) {
+                $deleteQuery->whereNotIn('id', $keepIds);
+            }
+            $deleteQuery->delete();
+
+            $entities = [];
+            foreach ($sessions as $index => $session) {
+                if ($session->getId() !== null) {
+                    $model = ExposureSessionModel::where('exposure_id', $exposure->id)->findOrFail($session->getId());
+                } else {
+                    $model = new ExposureSessionModel();
+                    $model->exposure_id = $exposure->id;
+                    $model->session_number = $session->getSessionNumber();
+                }
+
+                $model->hierarchy_item_id = $session->getHierarchyItemId();
+                $model->action_plan = $session->getActionPlan();
+                $model->suds_before = $session->getSudsBefore();
+                $model->suds_peak = $session->getSudsPeak();
+                $model->suds_after = $session->getSudsAfter();
+                $model->performed_at = $session->getPerformedAt();
+                $model->reflection = $session->getReflection();
+                $model->save();
+
+                $entities[] = $this->toSessionEntity($model);
+            }
+
+            return $entities;
+        });
+    }
+
+    public function hierarchyItemBelongsToExposureForMember(int $hierarchyItemId, int $exposureId, int $memberId): bool
+    {
+        return ExposureHierarchyItemModel::where('id', $hierarchyItemId)
+            ->where('exposure_id', $exposureId)
+            ->whereHas('exposure', fn ($q) => $q->where('member_id', $memberId))
+            ->exists();
     }
 
     public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
