@@ -142,40 +142,33 @@
                 <x-icon name="user-group" class="w-5 h-5 text-amber-600 flex-shrink-0" />
                 <h3 class="text-sm font-semibold text-amber-900">テストアカウント（本番以外）</h3>
             </div>
-            <p class="text-xs text-amber-800 mb-4">検証用のログイン情報です。コピーボタンでそのまま貼り付けできます。</p>
+            <p class="text-xs text-amber-800 mb-4">検証用のログイン情報です。ボタンを押すとフォームに自動入力されます。</p>
 
             <div class="space-y-3">
                 @foreach (config('test_members.accounts', []) as $account)
                     <div class="bg-white border border-amber-100 rounded-xl p-3 sm:p-4">
-                        <p class="text-sm font-semibold text-gray-800 mb-2">{{ $account['name'] }}</p>
+                        <div class="flex items-start justify-between gap-3 mb-2">
+                            <p class="text-sm font-semibold text-gray-800">{{ $account['name'] }}</p>
+                            <button
+                                type="button"
+                                @click="fillTestAccount(@js($account['email']), @js(config('test_members.password')))"
+                                class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
+                                title="フォームに入力"
+                            >
+                                <x-icon name="pencil-square" class="w-4 h-4" />
+                                フォームに入力
+                            </button>
+                        </div>
 
                         <div class="space-y-2">
                             <div class="flex items-center gap-2">
                                 <span class="text-xs text-gray-500 w-20 flex-shrink-0">メール</span>
                                 <code class="flex-1 min-w-0 text-xs sm:text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 truncate">{{ $account['email'] }}</code>
-                                <button
-                                    type="button"
-                                    @click="copyText(@js($account['email']))"
-                                    class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
-                                    title="メールアドレスをコピー"
-                                >
-                                    <x-icon name="clipboard-document" class="w-4 h-4" />
-                                    コピー
-                                </button>
                             </div>
 
                             <div class="flex items-center gap-2">
                                 <span class="text-xs text-gray-500 w-20 flex-shrink-0">PW</span>
                                 <code class="flex-1 min-w-0 text-xs sm:text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">{{ config('test_members.password') }}</code>
-                                <button
-                                    type="button"
-                                    @click="copyText(@js(config('test_members.password')))"
-                                    class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors"
-                                    title="パスワードをコピー"
-                                >
-                                    <x-icon name="clipboard-document" class="w-4 h-4" />
-                                    コピー
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -184,9 +177,9 @@
         </div>
     @endunless
 
-    <!-- コピー成功トースト -->
+    <!-- 入力成功トースト -->
     <div
-        x-show="showCopyToast"
+        x-show="showFillToast"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 transform translate-y-2"
         x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -195,8 +188,8 @@
         x-transition:leave-end="opacity-0 transform translate-y-2"
         class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2"
     >
-        <x-icon name="clipboard-document" class="w-5 h-5" />
-        <span>コピーしました！</span>
+        <x-icon name="pencil-square" class="w-5 h-5" />
+        <span>フォームに入力しました！</span>
     </div>
 </div>
 
@@ -216,38 +209,20 @@ function loginApp() {
         resendCooldown: 0,
         resendSuccess: '',
         verified: new URLSearchParams(window.location.search).has('verified'),
-        showCopyToast: false,
+        showFillToast: false,
 
-        async copyText(text) {
-            let copied = false;
+        fillTestAccount(email, password) {
+            this.form.email = email;
+            this.form.password = password;
+            this.errors = {};
+            this.generalError = '';
+            this.emailNotVerified = false;
+            this.resendSuccess = '';
 
-            try {
-                await navigator.clipboard.writeText(text);
-                copied = true;
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                textArea.style.top = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    copied = true;
-                } catch (err) {
-                    console.error('コピーに失敗しました:', err);
-                }
-                document.body.removeChild(textArea);
-            }
-
-            if (copied) {
-                this.showCopyToast = true;
-                setTimeout(() => {
-                    this.showCopyToast = false;
-                }, 2000);
-            }
+            this.showFillToast = true;
+            setTimeout(() => {
+                this.showFillToast = false;
+            }, 2000);
         },
 
         async login() {
