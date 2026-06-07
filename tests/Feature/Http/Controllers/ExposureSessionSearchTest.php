@@ -184,4 +184,70 @@ class ExposureSessionSearchTest extends TestCase
         $response->assertJsonCount(1, 'sessions');
         $this->assertDatabaseCount('exposure_sessions', 1);
     }
+
+    public function test_sync_sessions_reassigns_session_numbers_when_order_changes(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $existingSession = ExposureSession::create([
+            'exposure_id' => $exposure->id,
+            'session_number' => 1,
+            'action_plan' => '既存の計画',
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
+            'sessions' => [
+                [
+                    'action_plan' => '新規の計画',
+                ],
+                [
+                    'id' => $existingSession->id,
+                    'action_plan' => '既存の計画',
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('sessions.0.session_number', 1);
+        $response->assertJsonPath('sessions.1.session_number', 2);
+
+        $this->assertDatabaseHas('exposure_sessions', [
+            'id' => $existingSession->id,
+            'session_number' => 2,
+        ]);
+    }
+
+    public function test_update_hierarchy_item_preserves_existing_entity(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $item = ExposureHierarchyItem::create([
+            'exposure_id' => $exposure->id,
+            'content' => '元の場面',
+            'sort_order' => 1,
+            'expected_suds' => 40,
+        ]);
+
+        $response = $this->asMember()->putJson(
+            "/api/exposures/{$exposure->id}/hierarchy-items/{$item->id}",
+            [
+                'content' => '更新後の場面',
+                'sort_order' => 2,
+                'expected_suds' => 70,
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'content' => '更新後の場面',
+            'sort_order' => 2,
+            'expected_suds' => 70,
+        ]);
+    }
 }

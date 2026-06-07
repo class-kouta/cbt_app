@@ -30,6 +30,8 @@ interface ExposureRepositoryInterface
 
     public function saveHierarchyItemForMember(int $exposureId, ExposureHierarchyItem $item, int $memberId): ExposureHierarchyItem;
 
+    public function findHierarchyItemByIdForMember(int $itemId, int $memberId): ?ExposureHierarchyItem;
+
     public function updateHierarchyItemForMember(ExposureHierarchyItem $item, int $memberId): ExposureHierarchyItem;
 
     public function deleteHierarchyItemForMember(int $itemId, int $memberId): void;

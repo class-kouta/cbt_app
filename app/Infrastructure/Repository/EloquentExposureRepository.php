@@ -72,6 +72,17 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         return $this->toHierarchyItemEntity($model);
     }
 
+    public function findHierarchyItemByIdForMember(int $itemId, int $memberId): ?ExposureHierarchyItemEntity
+    {
+        $model = ExposureHierarchyItemModel::whereHas('exposure', fn ($q) => $q->where('member_id', $memberId))->find($itemId);
+
+        if ($model === null) {
+            return null;
+        }
+
+        return $this->toHierarchyItemEntity($model);
+    }
+
     public function updateHierarchyItemForMember(ExposureHierarchyItemEntity $item, int $memberId): ExposureHierarchyItemEntity
     {
         $model = ExposureHierarchyItemModel::whereHas('exposure', fn ($q) => $q->where('member_id', $memberId))->findOrFail($item->getId());
@@ -256,15 +267,15 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             $deleteQuery->delete();
 
             $entities = [];
-            foreach ($sessions as $index => $session) {
+            foreach ($sessions as $session) {
                 if ($session->getId() !== null) {
                     $model = ExposureSessionModel::where('exposure_id', $exposure->id)->findOrFail($session->getId());
                 } else {
                     $model = new ExposureSessionModel();
                     $model->exposure_id = $exposure->id;
-                    $model->session_number = $session->getSessionNumber();
                 }
 
+                $model->session_number = $session->getSessionNumber();
                 $model->hierarchy_item_id = $session->getHierarchyItemId();
                 $model->action_plan = $session->getActionPlan();
                 $model->suds_before = $session->getSudsBefore();

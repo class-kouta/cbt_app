@@ -58,7 +58,7 @@ class SyncSessionsUseCase
                     $itemData->sudsAfter,
                     $performedAt,
                     $itemData->reflection
-                );
+                )->withSessionNumber($sessionNumber);
             } else {
                 $sessions[] = ExposureSessionEntity::createNew(
                     $sessionNumber,

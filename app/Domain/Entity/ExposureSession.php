@@ -169,4 +169,22 @@ class ExposureSession
             new DateTimeImmutable('now')
         );
     }
+
+    public function withSessionNumber(int $sessionNumber): self
+    {
+        return new self(
+            $this->id,
+            $this->exposureId,
+            $this->hierarchyItemId,
+            $sessionNumber,
+            $this->actionPlan,
+            $this->sudsBefore,
+            $this->sudsPeak,
+            $this->sudsAfter,
+            $this->performedAt,
+            $this->reflection,
+            $this->createdAt,
+            $this->updatedAt
+        );
+    }
 }

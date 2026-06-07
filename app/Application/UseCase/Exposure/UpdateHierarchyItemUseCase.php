@@ -5,7 +5,6 @@ namespace App\Application\UseCase\Exposure;
 use App\Application\DTO\ExposureHierarchyItemData;
 use App\Domain\Entity\ExposureHierarchyItem as ExposureHierarchyItemEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\Auth;
 
 class UpdateHierarchyItemUseCase
@@ -16,16 +15,19 @@ class UpdateHierarchyItemUseCase
 
     public function handle(int $itemId, ExposureHierarchyItemData $data): ExposureHierarchyItemEntity
     {
-        $item = ExposureHierarchyItemEntity::reconstitute(
-            id: $itemId,
-            exposureId: 0,
-            content: $data->content,
-            expectedSuds: $data->expectedSuds,
-            sortOrder: $data->sortOrder,
-            createdAt: new DateTimeImmutable('now'),
-            updatedAt: new DateTimeImmutable('now')
+        $memberId = (int) Auth::id();
+        $existing = $this->repository->findHierarchyItemByIdForMember($itemId, $memberId);
+
+        if ($existing === null) {
+            throw new \RuntimeException('Hierarchy item not found');
+        }
+
+        $updated = $existing->update(
+            $data->content,
+            $data->sortOrder,
+            $data->expectedSuds
         );
 
-        return $this->repository->updateHierarchyItemForMember($item, (int) Auth::id());
+        return $this->repository->updateHierarchyItemForMember($updated, $memberId);
     }
 }
