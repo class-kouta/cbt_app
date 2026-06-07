@@ -41,9 +41,11 @@ class WebRouteAuthTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('テストアカウント（本番以外）');
+        $response->assertSee('フォームに入力');
         $response->assertSee('ff03csm26test1@example.com');
         $response->assertSee('ff03csm26test2@example.com');
         $response->assertSee('testtesttest');
+        $response->assertDontSee('コピー');
     }
 
     public function test_login_page_hides_test_accounts_in_production(): void
