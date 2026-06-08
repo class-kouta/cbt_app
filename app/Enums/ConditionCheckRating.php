@@ -53,6 +53,34 @@ enum ConditionCheckRating: int
         return [1, 2, 3, 4, 5];
     }
 
+    public static function maxScore(): int
+    {
+        return count(self::fieldLabels()) * self::Level5->value;
+    }
+
+    public static function calculateTotalScore(
+        int $mood,
+        int $fatigue,
+        int $anxiety,
+        int $sleepiness,
+        int $physicalCondition,
+    ): int {
+        return $mood + $fatigue + $anxiety + $sleepiness + $physicalCondition;
+    }
+
+    /**
+     * 合計スコアに応じたテキスト色のCSSクラス（低いほど良好）
+     */
+    public static function scoreTextClassFor(int $score): string
+    {
+        return match (true) {
+            $score <= 9 => 'text-blue-700',
+            $score <= 14 => 'text-emerald-700',
+            $score <= 19 => 'text-orange-700',
+            default => 'text-red-700',
+        };
+    }
+
     /**
      * 評価値に応じたバッジのCSSクラス（1=良い→青、5=悪い→赤）
      */
