@@ -67,8 +67,6 @@ class ExposureSessionSearchTest extends TestCase
     {
         $create = $this->asMember()->postJson('/api/exposures', [
             'avoidance_target' => 'エレベーターに乗れない',
-            'exposure_type' => 'in_vivo',
-            'tag_ids' => [],
         ]);
 
         $create->assertStatus(201);
@@ -80,7 +78,6 @@ class ExposureSessionSearchTest extends TestCase
 
         $this->asMember()->putJson("/api/exposures/{$id}", [
             'avoidance_target' => 'エレベーターに1階だけ乗る',
-            'tag_ids' => [],
         ])->assertStatus(200);
 
         $this->asMember()->deleteJson("/api/exposures/{$id}")->assertStatus(204);

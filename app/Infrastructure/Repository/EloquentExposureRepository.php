@@ -215,12 +215,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         }
     }
 
-    public function syncTagsForMember(int $exposureId, array $tagIds, int $memberId): void
-    {
-        $model = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
-        $model->tags()->sync($tagIds);
-    }
-
     /**
      * @param ExposureHierarchyItemEntity[] $items
      * @return ExposureHierarchyItemEntity[]
@@ -302,7 +296,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
 
     public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ExposureModel::with(['hierarchyItems', 'sessions', 'tags'])->where('member_id', $memberId);
+        $query = ExposureModel::with(['hierarchyItems', 'sessions'])->where('member_id', $memberId);
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
             $pattern = LikeSearch::containsPattern($criteria->keyword);
@@ -314,12 +308,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
                         $q->orWhere($column, 'like', $pattern);
                     }
                 }
-            });
-        }
-
-        if ($criteria->hasTagIds()) {
-            $query->whereHas('tags', function ($q) use ($criteria) {
-                $q->whereIn('tags.id', $criteria->tagIds);
             });
         }
 
@@ -343,7 +331,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
 
     public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ExposureModel::with(['hierarchyItems', 'sessions', 'tags'])->where('member_id', $memberId);
+        $query = ExposureModel::with(['hierarchyItems', 'sessions'])->where('member_id', $memberId);
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
             $pattern = LikeSearch::containsPattern($criteria->keyword);
@@ -351,12 +339,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
                 foreach ($searchableColumns as $column) {
                     $q->orWhere($column, 'like', $pattern);
                 }
-            });
-        }
-
-        if ($criteria->hasTagIds()) {
-            $query->whereHas('tags', function ($q) use ($criteria) {
-                $q->whereIn('tags.id', $criteria->tagIds);
             });
         }
 
@@ -424,7 +406,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         return [
             'id' => $exposure->id,
             'avoidance_target' => $exposure->avoidance_target,
-            'exposure_type' => $exposure->exposure_type,
             'self_talk' => $exposure->self_talk,
             'overall_reflection' => $exposure->overall_reflection,
             'next_goal' => $exposure->next_goal,
@@ -447,11 +428,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
                 'created_at' => $session->created_at->format(DATE_ATOM),
                 'updated_at' => $session->updated_at->format(DATE_ATOM),
             ])->toArray(),
-            'tags' => $exposure->tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->toArray(),
-            'tag_ids' => $exposure->tags->pluck('id')->toArray(),
             'created_at' => $exposure->created_at->format(DATE_ATOM),
             'updated_at' => $exposure->updated_at->format(DATE_ATOM),
         ];

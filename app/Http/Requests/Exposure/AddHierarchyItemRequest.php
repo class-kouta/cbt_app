@@ -25,8 +25,8 @@ class AddHierarchyItemRequest extends FormRequest
         return [
             'content.required' => '状況の内容を入力してください',
             'content.max' => '状況の内容は500文字以内で入力してください',
-            'expected_suds.min' => '予想不安度は0以上で入力してください',
-            'expected_suds.max' => '予想不安度は100以下で入力してください',
+            'expected_suds.min' => '不安レベルは0以上で入力してください',
+            'expected_suds.max' => '不安レベルは100以下で入力してください',
         ];
     }
 }

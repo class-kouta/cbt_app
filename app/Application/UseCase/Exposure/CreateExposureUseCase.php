@@ -21,16 +21,13 @@ class CreateExposureUseCase
 
             $exposure = ExposureEntity::createNew(
                 $data->avoidanceTarget,
-                $data->exposureType,
+                null,
                 $data->selfTalk,
                 $data->overallReflection,
                 $data->nextGoal
             );
 
-            $saved = $this->repository->saveForMember($exposure, $memberId);
-            $this->repository->syncTagsForMember($saved->getId(), $data->tagIds, $memberId);
-
-            return $saved;
+            return $this->repository->saveForMember($exposure, $memberId);
         });
     }
 }

@@ -24,11 +24,11 @@ class SyncHierarchyItemsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'items.required' => '恐怖の階段のデータが必要です',
+            'items.required' => '不安階層表のデータが必要です',
             'items.*.content.required' => '状況の内容を入力してください',
             'items.*.content.max' => '状況の内容は500文字以内で入力してください',
-            'items.*.expected_suds.min' => '予想不安度は0以上で入力してください',
-            'items.*.expected_suds.max' => '予想不安度は100以下で入力してください',
+            'items.*.expected_suds.min' => '不安レベルは0以上で入力してください',
+            'items.*.expected_suds.max' => '不安レベルは100以下で入力してください',
         ];
     }
 }

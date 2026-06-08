@@ -49,7 +49,7 @@ class ExposureController extends Controller
 
     public function show(Exposure $exposure): JsonResponse
     {
-        $exposure->load(['hierarchyItems', 'sessions', 'tags']);
+        $exposure->load(['hierarchyItems', 'sessions']);
 
         return response()->json($this->formatExposure($exposure));
     }
@@ -66,7 +66,7 @@ class ExposureController extends Controller
     {
         $exposureEntity = $createExposure->handle($this->toExposureData($request));
 
-        $exposure = Exposure::with(['hierarchyItems', 'sessions', 'tags'])
+        $exposure = Exposure::with(['hierarchyItems', 'sessions'])
             ->where('member_id', (int) Auth::id())
             ->findOrFail($exposureEntity->getId());
 
@@ -78,7 +78,7 @@ class ExposureController extends Controller
         $updateExposure->handle($exposure->id, $this->toExposureData($request));
 
         $exposure->refresh();
-        $exposure->load(['hierarchyItems', 'sessions', 'tags']);
+        $exposure->load(['hierarchyItems', 'sessions']);
 
         return response()->json($this->formatExposure($exposure));
     }
@@ -277,11 +277,9 @@ class ExposureController extends Controller
     {
         return new ExposureData(
             avoidanceTarget: (string) $request->string('avoidance_target'),
-            exposureType: $request->filled('exposure_type') ? (string) $request->string('exposure_type') : null,
             selfTalk: $request->filled('self_talk') ? (string) $request->string('self_talk') : null,
             overallReflection: $request->filled('overall_reflection') ? (string) $request->string('overall_reflection') : null,
-            nextGoal: $request->filled('next_goal') ? (string) $request->string('next_goal') : null,
-            tagIds: array_map('intval', $request->input('tag_ids', []))
+            nextGoal: $request->filled('next_goal') ? (string) $request->string('next_goal') : null
         );
     }
 
@@ -306,7 +304,6 @@ class ExposureController extends Controller
         return [
             'id' => $exposure->id,
             'avoidance_target' => $exposure->avoidance_target,
-            'exposure_type' => $exposure->exposure_type,
             'self_talk' => $exposure->self_talk,
             'overall_reflection' => $exposure->overall_reflection,
             'next_goal' => $exposure->next_goal,
@@ -329,11 +326,6 @@ class ExposureController extends Controller
                 'created_at' => $session->created_at->format(DATE_ATOM),
                 'updated_at' => $session->updated_at->format(DATE_ATOM),
             ])->toArray(),
-            'tags' => $exposure->tags->map(fn ($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-            ])->toArray(),
-            'tag_ids' => $exposure->tags->pluck('id')->toArray(),
             'created_at' => $exposure->created_at->format(DATE_ATOM),
             'updated_at' => $exposure->updated_at->format(DATE_ATOM),
         ];

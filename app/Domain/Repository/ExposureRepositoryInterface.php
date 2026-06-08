@@ -51,11 +51,6 @@ interface ExposureRepositoryInterface
     public function deleteSessionForMember(int $sessionId, int $memberId): void;
 
     /**
-     * @param array<int> $tagIds
-     */
-    public function syncTagsForMember(int $exposureId, array $tagIds, int $memberId): void;
-
-    /**
      * @param ExposureHierarchyItem[] $items
      * @return ExposureHierarchyItem[]
      */

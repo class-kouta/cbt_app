@@ -25,29 +25,13 @@
             </div>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">タグで絞り込み</label>
-            <div class="flex flex-wrap gap-2">
-                <template x-for="tag in allTags" :key="tag.id">
-                    <button
-                        @click="toggleTag(tag.id)"
-                        :class="selectedTagIds.includes(tag.id)
-                            ? 'bg-emerald-500 text-white border-emerald-500'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400'"
-                        class="px-3 py-1 text-sm rounded-full border transition-all"
-                        x-text="tag.name"
-                    ></button>
-                </template>
-            </div>
-        </div>
-
         <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
-            <div x-show="keyword || selectedTagIds.length > 0">
+            <div x-show="keyword">
                 <button @click="clearSearch()" class="text-sm text-gray-500 hover:text-gray-700 underline">
                     検索条件をクリア
                 </button>
             </div>
-            <div x-show="!(keyword || selectedTagIds.length > 0)"></div>
+            <div x-show="!keyword"></div>
             <button
                 @click="exportCsv()"
                 :disabled="exporting || loading"
@@ -67,11 +51,6 @@
                 <div class="p-4">
                     <div class="text-xs text-emerald-500 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
                     <p class="text-gray-800 line-clamp-2 break-words overflow-wrap-anywhere mb-2" x-text="item.avoidance_target"></p>
-                    <div x-show="item.tags && item.tags.length > 0" class="flex flex-wrap gap-1 mb-2">
-                        <template x-for="tag in item.tags" :key="tag.id">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-sky-100 text-sky-700" x-text="tag.name"></span>
-                        </template>
-                    </div>
                     <div class="flex items-center gap-1">
                         <span class="text-xs text-gray-500">実施記録 :</span>
                         <span
@@ -121,9 +100,7 @@ function exposureListApp() {
         items: [],
         loading: true,
         exporting: false,
-        allTags: [],
         keyword: '',
-        selectedTagIds: [],
         currentPage: 1,
         perPage: 10,
         total: 0,
@@ -132,19 +109,13 @@ function exposureListApp() {
         to: 0,
 
         async init() {
-            await Promise.all([this.loadTags(), this.loadItems()]);
-        },
-
-        async loadTags() {
-            const res = await apiFetch('/api/tags');
-            this.allTags = await res.json();
+            await this.loadItems();
         },
 
         async loadItems() {
             this.loading = true;
             const params = new URLSearchParams();
             if (this.keyword) params.append('keyword', this.keyword);
-            this.selectedTagIds.forEach(id => params.append('tag_ids[]', id));
             params.append('page', this.currentPage);
             params.append('per_page', this.perPage);
 
@@ -165,16 +136,8 @@ function exposureListApp() {
             await this.loadItems();
         },
 
-        toggleTag(tagId) {
-            const index = this.selectedTagIds.indexOf(tagId);
-            if (index === -1) this.selectedTagIds.push(tagId);
-            else this.selectedTagIds.splice(index, 1);
-            this.search();
-        },
-
         async clearSearch() {
             this.keyword = '';
-            this.selectedTagIds = [];
             this.currentPage = 1;
             await this.loadItems();
         },
@@ -201,7 +164,7 @@ function exposureListApp() {
         async exportCsv() {
             this.exporting = true;
             try {
-                await exportCsvFromApi('/api/exposures/export/csv', { keyword: this.keyword, tagIds: this.selectedTagIds }, 'exposures.csv', 'エクスポージャー療法');
+                await exportCsvFromApi('/api/exposures/export/csv', { keyword: this.keyword }, 'exposures.csv', 'エクスポージャー療法');
             } catch (error) {
                 alert('CSVエクスポートに失敗しました');
             } finally {

@@ -55,11 +55,11 @@
                         <p class="text-gray-700 text-sm line-clamp-1" x-text="session.avoidanceTarget"></p>
                     </div>
                     <div x-show="session.hierarchyItemContent" class="mb-2">
-                        <span class="text-xs text-emerald-600">恐怖の階段</span>
+                        <span class="text-xs text-emerald-600">不安階層表</span>
                         <p class="text-gray-800 text-sm" x-text="session.hierarchyItemContent"></p>
                     </div>
                     <div x-show="session.sudsBefore !== null || session.sudsAfter !== null" class="mb-2">
-                        <span class="text-xs text-gray-500">SUDS</span>
+                        <span class="text-xs text-gray-500">不安レベル</span>
                         <p class="text-sm font-medium text-gray-800">
                             <span x-text="session.sudsBefore ?? '-'"></span>
                             →

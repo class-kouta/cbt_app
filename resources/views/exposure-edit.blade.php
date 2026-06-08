@@ -49,35 +49,6 @@
                         placeholder="例：人前で話すことを避けている、電車に乗るのが怖い" :required="isEditing"></textarea>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">エクスポージャーの種類（任意）</label>
-                    <select x-model="form.exposure_type" :disabled="!isEditing"
-                        class="w-full border rounded-lg px-4 py-3" :class="isEditing ? 'bg-white' : 'bg-gray-50 cursor-not-allowed'">
-                        <option value="">選択してください</option>
-                        <option value="in_vivo">その場での暴露（in-vivo）</option>
-                        <option value="imaginal">イメージ暴露（imaginal）</option>
-                        <option value="interoceptive">内受容暴露（interoceptive）</option>
-                    </select>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <h3 class="text-base font-semibold text-gray-700 mb-2"><x-icon name="tag" class="w-4 h-4 inline" /> タグ</h3>
-                    <div x-show="isEditing" class="flex flex-wrap gap-2">
-                        <template x-for="tag in availableTags" :key="tag.id">
-                            <button type="button" @click="toggleTag(tag.id)"
-                                class="px-3 py-1.5 text-sm rounded-full border"
-                                :class="isTagSelected(tag.id) ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-gray-700 border-gray-300'"
-                                x-text="tag.name"></button>
-                        </template>
-                    </div>
-                    <div x-show="!isEditing" class="flex flex-wrap gap-2">
-                        <template x-for="tag in selectedTagObjects" :key="tag.id">
-                            <span class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm" x-text="tag.name"></span>
-                        </template>
-                        <span x-show="form.tag_ids.length === 0" class="text-gray-400 text-sm">タグなし</span>
-                    </div>
-                </div>
-
                 <!-- Step 2 -->
                 <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -100,7 +71,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
-                        恐怖の階段
+                        不安階層表
                         <span class="text-gray-400 font-normal ml-1">いちばん不安が少ないものから並べましょう</span>
                     </label>
                     <div class="space-y-3">
@@ -114,7 +85,7 @@
                                 </div>
                                 <textarea x-model="item.content" rows="2" :disabled="!isEditing" maxlength="500"
                                     class="w-full border rounded-lg px-3 py-2 mb-2" placeholder="例：1人でコンビニに行く"></textarea>
-                                <label class="block text-xs text-gray-600 mb-1">予想不安度（SUDS 0-100）</label>
+                                <label class="block text-xs text-gray-600 mb-1">不安レベル</label>
                                 <select x-model="item.expected_suds" :disabled="!isEditing" class="w-full border rounded-lg px-3 py-2">
                                     <option value="">選択してください</option>
                                     <template x-for="n in 21" :key="n">
@@ -147,7 +118,7 @@
                                 </div>
                                 <div x-show="session.expanded" x-collapse class="px-4 py-4 space-y-4">
                                     <div>
-                                        <label class="block text-xs text-gray-600 mb-1">恐怖の階段から選択（任意）</label>
+                                        <label class="block text-xs text-gray-600 mb-1">不安階層表から選択（任意）</label>
                                         <select x-model="session.hierarchy_item_id" :disabled="!isEditing" class="w-full border rounded-lg px-3 py-2">
                                             <option value="">選択してください</option>
                                             <template x-for="item in savedHierarchyItems" :key="item.id">
@@ -162,21 +133,21 @@
                                     </div>
                                     <div class="grid grid-cols-3 gap-2">
                                         <div>
-                                            <label class="block text-xs text-gray-600 mb-1">実施前 SUDS</label>
+                                            <label class="block text-xs text-gray-600 mb-1">実施前 不安レベル</label>
                                             <select x-model="session.suds_before" :disabled="!isEditing" class="w-full border rounded-lg px-2 py-2 text-sm">
                                                 <option value="">-</option>
                                                 <template x-for="n in 21" :key="'b'+n"><option :value="(n-1)*5" x-text="(n-1)*5"></option></template>
                                             </select>
                                         </div>
                                         <div>
-                                            <label class="block text-xs text-gray-600 mb-1">最高 SUDS</label>
+                                            <label class="block text-xs text-gray-600 mb-1">最高 不安レベル</label>
                                             <select x-model="session.suds_peak" :disabled="!isEditing" class="w-full border rounded-lg px-2 py-2 text-sm">
                                                 <option value="">-</option>
                                                 <template x-for="n in 21" :key="'p'+n"><option :value="(n-1)*5" x-text="(n-1)*5"></option></template>
                                             </select>
                                         </div>
                                         <div>
-                                            <label class="block text-xs text-gray-600 mb-1">実施後 SUDS</label>
+                                            <label class="block text-xs text-gray-600 mb-1">実施後 不安レベル</label>
                                             <select x-model="session.suds_after" :disabled="!isEditing" class="w-full border rounded-lg px-2 py-2 text-sm">
                                                 <option value="">-</option>
                                                 <template x-for="n in 21" :key="'a'+n"><option :value="(n-1)*5" x-text="(n-1)*5"></option></template>
@@ -233,7 +204,7 @@
 function exposureFormApp(itemId) {
     return {
         itemId, hasExistingRecord: itemId !== null, isEditing: itemId === null,
-        form: { avoidance_target: '', exposure_type: '', self_talk: '', overall_reflection: '', next_goal: '', tag_ids: [] },
+        form: { avoidance_target: '', self_talk: '', overall_reflection: '', next_goal: '' },
         hierarchyItems: [{ content: '', expected_suds: '' }, { content: '', expected_suds: '' }, { content: '', expected_suds: '' }],
         originalHierarchyItems: [],
         sessions: [],
@@ -241,19 +212,16 @@ function exposureFormApp(itemId) {
         savedHierarchyItems: [],
         loading: itemId !== null, submitting: false, floatingSaving: false,
         showManualSaveToast: false, showAutoSaveToast: false, showCopyToast: false,
-        availableTags: [], autoSaveSnapshots: [], autoSaveInterval: null, autoSaving: false,
+        autoSaveSnapshots: [], autoSaveInterval: null, autoSaving: false,
         fromPage: 'list', scrollTargetSessionId: null,
 
         get backUrl() { return this.fromPage === 'sessions' ? '/exposures/sessions' : '/exposures/list'; },
         get backLabel() { return this.fromPage === 'sessions' ? '実施記録一覧に戻る' : 'エクスポージャー療法一覧に戻る'; },
-        get selectedTagObjects() { return this.availableTags.filter(t => this.form.tag_ids.includes(t.id)); },
-
         async init() {
             const p = new URLSearchParams(window.location.search);
             this.fromPage = p.get('from') || 'list';
             this.scrollTargetSessionId = p.get('session_id') || null;
             if (this.hasExistingRecord && this.fromPage === 'sessions') this.isEditing = true;
-            await this.loadTags();
             if (this.hasExistingRecord) {
                 await this.loadItem();
                 if (this.isEditing) this.startAutoSave();
@@ -296,15 +264,6 @@ function exposureFormApp(itemId) {
             this.autoSaveInterval = null;
             this.autoSaveSnapshots = [];
         },
-
-        async loadTags() {
-            try { const r = await apiFetch('/api/tags'); if (r.ok) this.availableTags = await r.json(); } catch (e) {}
-        },
-        toggleTag(id) {
-            const i = this.form.tag_ids.indexOf(id);
-            if (i > -1) this.form.tag_ids.splice(i, 1); else this.form.tag_ids.push(id);
-        },
-        isTagSelected(id) { return this.form.tag_ids.includes(id); },
 
         takeSnapshot() {
             const s = {
@@ -350,11 +309,9 @@ function exposureFormApp(itemId) {
                 if (!r.ok) return;
                 const item = await r.json();
                 this.form.avoidance_target = item.avoidance_target || '';
-                this.form.exposure_type = item.exposure_type || '';
                 this.form.self_talk = item.self_talk || '';
                 this.form.overall_reflection = item.overall_reflection || '';
                 this.form.next_goal = item.next_goal || '';
-                this.form.tag_ids = item.tag_ids || [];
 
                 this.hierarchyItems = item.hierarchy_items.map(h => ({ id: h.id, content: h.content, expected_suds: h.expected_suds ?? '' }));
                 this.originalHierarchyItems = JSON.parse(JSON.stringify(this.hierarchyItems));
@@ -498,11 +455,11 @@ function exposureFormApp(itemId) {
             const lines = ['【エクスポージャー療法】', '', '■ 回避していること', this.form.avoidance_target.trim() || '未入力'];
             if (this.form.self_talk.trim()) { lines.push('', '■ 自分への声かけ', this.form.self_talk.trim()); }
             const items = this.hierarchyItems.filter(i => i.content.trim());
-            lines.push('', '■ 恐怖の階段');
-            lines.push(items.length ? items.map((i, idx) => `${idx+1}. ${i.content}${i.expected_suds !== '' ? ' (SUDS:'+i.expected_suds+')' : ''}`).join('\n') : '未入力');
+            lines.push('', '■ 不安階層表');
+            lines.push(items.length ? items.map((i, idx) => `${idx+1}. ${i.content}${i.expected_suds !== '' ? ' (不安レベル:'+i.expected_suds+')' : ''}`).join('\n') : '未入力');
             this.sessions.forEach((s, idx) => {
                 lines.push('', `■ 実施記録 ${idx+1}`, s.action_plan?.trim() || '未入力');
-                if (s.suds_before !== '' || s.suds_after !== '') lines.push(`SUDS: ${s.suds_before||'-'} → ${s.suds_peak||'-'} → ${s.suds_after||'-'}`);
+                if (s.suds_before !== '' || s.suds_after !== '') lines.push(`不安レベル: ${s.suds_before||'-'} → ${s.suds_peak||'-'} → ${s.suds_after||'-'}`);
                 lines.push('振り返り: ' + (s.reflection?.trim() || '未入力'));
             });
             if (this.form.overall_reflection.trim()) { lines.push('', '■ 全体振り返り', this.form.overall_reflection.trim()); }

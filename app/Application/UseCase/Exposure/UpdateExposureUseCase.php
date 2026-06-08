@@ -26,16 +26,13 @@ class UpdateExposureUseCase
 
             $updated = $existing->update(
                 $data->avoidanceTarget,
-                $data->exposureType,
+                null,
                 $data->selfTalk,
                 $data->overallReflection,
                 $data->nextGoal
             );
 
-            $saved = $this->repository->saveForMember($updated, $memberId);
-            $this->repository->syncTagsForMember($saved->getId(), $data->tagIds, $memberId);
-
-            return $saved;
+            return $this->repository->saveForMember($updated, $memberId);
         });
     }
 }

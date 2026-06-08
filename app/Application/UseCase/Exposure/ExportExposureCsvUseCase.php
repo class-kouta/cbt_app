@@ -21,13 +21,11 @@ class ExportExposureCsvUseCase
         'ID',
         '作成日時',
         '回避していること',
-        'エクスポージャーの種類',
         '自分への声かけ',
-        '恐怖の階段',
+        '不安階層表',
         '実施記録',
         '全体振り返り',
         '次の目標',
-        'タグ',
     ];
 
     public function __construct(
@@ -46,8 +44,8 @@ class ExportExposureCsvUseCase
 
             $hierarchyTexts = [];
             foreach ($hierarchyItems as $index => $hierarchyItem) {
-                $suds = $hierarchyItem['expected_suds'] !== null ? " (SUDS: {$hierarchyItem['expected_suds']})" : '';
-                $hierarchyTexts[] = '[' . ($index + 1) . '] ' . $hierarchyItem['content'] . $suds;
+                $anxietyLevel = $hierarchyItem['expected_suds'] !== null ? " (不安レベル: {$hierarchyItem['expected_suds']})" : '';
+                $hierarchyTexts[] = '[' . ($index + 1) . '] ' . $hierarchyItem['content'] . $anxietyLevel;
             }
 
             $sessions = $item['sessions'] ?? [];
@@ -59,18 +57,18 @@ class ExportExposureCsvUseCase
                 if (! empty(trim($session['action_plan'] ?? ''))) {
                     $parts[] = '計画: ' . $session['action_plan'];
                 }
-                $sudsParts = [];
+                $anxietyLevelParts = [];
                 if ($session['suds_before'] !== null) {
-                    $sudsParts[] = '前' . $session['suds_before'];
+                    $anxietyLevelParts[] = '前' . $session['suds_before'];
                 }
                 if ($session['suds_peak'] !== null) {
-                    $sudsParts[] = '最高' . $session['suds_peak'];
+                    $anxietyLevelParts[] = '最高' . $session['suds_peak'];
                 }
                 if ($session['suds_after'] !== null) {
-                    $sudsParts[] = '後' . $session['suds_after'];
+                    $anxietyLevelParts[] = '後' . $session['suds_after'];
                 }
-                if (! empty($sudsParts)) {
-                    $parts[] = 'SUDS(' . implode('→', $sudsParts) . ')';
+                if (! empty($anxietyLevelParts)) {
+                    $parts[] = '不安レベル(' . implode('→', $anxietyLevelParts) . ')';
                 }
                 if (! empty(trim($session['reflection'] ?? ''))) {
                     $parts[] = '振り返り: ' . $session['reflection'];
@@ -80,24 +78,15 @@ class ExportExposureCsvUseCase
                 }
             }
 
-            $exposureTypeLabel = match ($item['exposure_type'] ?? null) {
-                'in_vivo' => 'その場での暴露',
-                'imaginal' => 'イメージ暴露',
-                'interoceptive' => '内受容暴露',
-                default => '',
-            };
-
             return [
                 $item['id'],
                 $this->csvExportService->formatDatetime($item['created_at']),
                 $item['avoidance_target'] ?? '',
-                $exposureTypeLabel,
                 $item['self_talk'] ?? '',
                 implode(' / ', $hierarchyTexts),
                 implode(' / ', $sessionTexts),
                 $item['overall_reflection'] ?? '',
                 $item['next_goal'] ?? '',
-                $this->csvExportService->joinArray($item['tags'] ?? [], 'name'),
             ];
         }, $items);
 

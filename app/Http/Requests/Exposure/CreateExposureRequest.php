@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Exposure;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CreateExposureRequest extends FormRequest
 {
@@ -16,7 +15,6 @@ class CreateExposureRequest extends FormRequest
     {
         return [
             'avoidance_target' => ['required', 'string', 'max:5000'],
-            'exposure_type' => ['nullable', 'string', Rule::in(['in_vivo', 'imaginal', 'interoceptive'])],
             'self_talk' => ['nullable', 'string', 'max:2000'],
             'overall_reflection' => ['nullable', 'string', 'max:5000'],
             'next_goal' => ['nullable', 'string', 'max:2000'],
