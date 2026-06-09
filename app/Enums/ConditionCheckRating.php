@@ -63,6 +63,15 @@ enum ConditionCheckRating: int
         return count(self::fieldLabels()) * self::Level5->value;
     }
 
+    public static function positivePointsFor(int $rating): int
+    {
+        if ($rating < self::Level1->value || $rating > self::Level5->value) {
+            throw new \InvalidArgumentException("Invalid rating: {$rating}");
+        }
+
+        return (self::Level1->value + self::Level5->value) - $rating;
+    }
+
     public static function calculateTotalScore(
         int $mood,
         int $fatigue,
@@ -70,11 +79,15 @@ enum ConditionCheckRating: int
         int $sleepiness,
         int $physicalCondition,
     ): int {
-        return $mood + $fatigue + $anxiety + $sleepiness + $physicalCondition;
+        return self::positivePointsFor($mood)
+            + self::positivePointsFor($fatigue)
+            + self::positivePointsFor($anxiety)
+            + self::positivePointsFor($sleepiness)
+            + self::positivePointsFor($physicalCondition);
     }
 
     /**
-     * 合計スコアに応じた抽象ステータス（低いほど良好）
+     * 合計スコアに応じた抽象ステータス（高いほど良好）
      */
     public static function scoreStatusFor(int $score): string
     {
@@ -82,10 +95,12 @@ enum ConditionCheckRating: int
             throw new \InvalidArgumentException("Invalid score: {$score}");
         }
 
+        $fieldCount = count(self::fieldLabels());
+
         return match (true) {
-            $score <= 9 => 'excellent',
-            $score <= 14 => 'good',
-            $score <= 19 => 'warning',
+            $score >= $fieldCount * 4.2 => 'excellent',
+            $score >= $fieldCount * 3.2 => 'good',
+            $score >= $fieldCount * 2.2 => 'warning',
             default => 'danger',
         };
     }

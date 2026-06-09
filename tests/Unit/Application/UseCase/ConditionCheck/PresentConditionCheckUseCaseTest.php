@@ -25,7 +25,7 @@ class PresentConditionCheckUseCaseTest extends TestCase
 
         $result = (new PresentConditionCheckUseCase())->handle($entity);
 
-        $this->assertSame(7, $result['score']);
+        $this->assertSame(23, $result['score']);
         $this->assertSame(25, $result['max_score']);
         $this->assertSame('excellent', $result['score_status']);
         $this->assertSame('テスト', $result['memo']);

@@ -12,20 +12,26 @@ class ConditionCheckRatingTest extends TestCase
         $this->assertSame(25, ConditionCheckRating::maxScore());
     }
 
-    public function test_calculate_total_score_sums_all_ratings(): void
+    public function test_positive_points_for_inverts_rating_to_positive_score(): void
+    {
+        $this->assertSame(5, ConditionCheckRating::positivePointsFor(1));
+        $this->assertSame(1, ConditionCheckRating::positivePointsFor(5));
+    }
+
+    public function test_calculate_total_score_sums_positive_points(): void
     {
         $this->assertSame(
-            7,
+            23,
             ConditionCheckRating::calculateTotalScore(1, 2, 1, 2, 1),
         );
     }
 
     public function test_score_status_for_returns_abstract_status(): void
     {
-        $this->assertSame('excellent', ConditionCheckRating::scoreStatusFor(7));
-        $this->assertSame('good', ConditionCheckRating::scoreStatusFor(12));
-        $this->assertSame('warning', ConditionCheckRating::scoreStatusFor(17));
-        $this->assertSame('danger', ConditionCheckRating::scoreStatusFor(22));
+        $this->assertSame('excellent', ConditionCheckRating::scoreStatusFor(23));
+        $this->assertSame('good', ConditionCheckRating::scoreStatusFor(18));
+        $this->assertSame('warning', ConditionCheckRating::scoreStatusFor(13));
+        $this->assertSame('danger', ConditionCheckRating::scoreStatusFor(8));
     }
 
     public function test_score_status_for_throws_exception_for_invalid_score(): void
