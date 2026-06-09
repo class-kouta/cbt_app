@@ -23,7 +23,7 @@ class ExposureSession extends Model
     ];
 
     protected $casts = [
-        'performed_at' => 'datetime',
+        'performed_at' => 'immutable_datetime',
     ];
 
     public function exposure(): BelongsTo

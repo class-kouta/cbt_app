@@ -223,12 +223,27 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
     {
         return DB::transaction(function () use ($exposureId, $items, $memberId) {
             $exposure = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
-            $exposure->hierarchyItems()->delete();
+
+            $keepIds = array_values(array_filter(array_map(
+                fn (ExposureHierarchyItemEntity $item) => $item->getId(),
+                $items
+            )));
+
+            $deleteQuery = ExposureHierarchyItemModel::where('exposure_id', $exposure->id);
+            if (count($keepIds) > 0) {
+                $deleteQuery->whereNotIn('id', $keepIds);
+            }
+            $deleteQuery->delete();
 
             $entities = [];
             foreach ($items as $item) {
-                $model = new ExposureHierarchyItemModel();
-                $model->exposure_id = $exposure->id;
+                if ($item->getId() !== null) {
+                    $model = ExposureHierarchyItemModel::where('exposure_id', $exposure->id)->findOrFail($item->getId());
+                } else {
+                    $model = new ExposureHierarchyItemModel();
+                    $model->exposure_id = $exposure->id;
+                }
+
                 $model->content = $item->getContent();
                 $model->expected_suds = $item->getExpectedSuds();
                 $model->sort_order = $item->getSortOrder();
@@ -391,7 +406,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             sudsBefore: $model->suds_before,
             sudsPeak: $model->suds_peak,
             sudsAfter: $model->suds_after,
-            performedAt: $model->performed_at ? new DateTimeImmutable($model->performed_at) : null,
+            performedAt: $model->performed_at ? DateTimeImmutable::createFromInterface($model->performed_at) : null,
             reflection: $model->reflection,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),

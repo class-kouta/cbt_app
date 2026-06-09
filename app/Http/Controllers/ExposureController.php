@@ -95,16 +95,21 @@ class ExposureController extends Controller
         Exposure $exposure,
         SyncHierarchyItemsUseCase $syncHierarchyItems
     ): JsonResponse {
-        $itemsData = array_map(
-            fn (array $item) => new ExposureHierarchyItemData(
-                content: $item['content'],
-                sortOrder: (int) $item['sort_order'],
-                expectedSuds: isset($item['expected_suds']) ? (int) $item['expected_suds'] : null
-            ),
-            $request->validated('items')
-        );
+        try {
+            $itemsData = array_map(
+                fn (array $item) => new ExposureHierarchyItemData(
+                    content: $item['content'],
+                    sortOrder: (int) $item['sort_order'],
+                    expectedSuds: isset($item['expected_suds']) ? (int) $item['expected_suds'] : null,
+                    id: isset($item['id']) ? (int) $item['id'] : null
+                ),
+                $request->validated('items')
+            );
 
-        $items = $syncHierarchyItems->handle($exposure->id, $itemsData);
+            $items = $syncHierarchyItems->handle($exposure->id, $itemsData);
+        } catch (\InvalidArgumentException $e) {
+            abort(422, $e->getMessage());
+        }
 
         return response()->json([
             'items' => array_map(fn ($item) => [

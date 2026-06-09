@@ -293,7 +293,8 @@ function exposureFormApp(itemId) {
 
         toIsoLocal(dtLocal) {
             if (!dtLocal) return null;
-            return new Date(dtLocal).toISOString();
+            const date = new Date(dtLocal);
+            return isNaN(date.getTime()) ? null : date.toISOString();
         },
         fromIsoLocal(iso) {
             if (!iso) return '';
@@ -377,6 +378,7 @@ function exposureFormApp(itemId) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     items: valid.map((item, i) => ({
+                        id: item.id || null,
                         content: item.content,
                         sort_order: i + 1,
                         expected_suds: item.expected_suds !== '' ? parseInt(item.expected_suds) : null
@@ -388,7 +390,6 @@ function exposureFormApp(itemId) {
             const saved = result.items || [];
             this.originalHierarchyItems = saved.map(s => ({ id: s.id, content: s.content, expected_suds: s.expected_suds ?? '' }));
             this.savedHierarchyItems = this.originalHierarchyItems;
-            this.sessions.forEach(session => { session.hierarchy_item_id = ''; });
             this.hierarchyItems = [...this.originalHierarchyItems];
             while (this.hierarchyItems.length < 3) this.hierarchyItems.push({ content: '', expected_suds: '' });
         },

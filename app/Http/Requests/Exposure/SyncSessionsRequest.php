@@ -21,8 +21,17 @@ class SyncSessionsRequest extends AddSessionRequest
 
     public function messages(): array
     {
-        return array_merge(parent::messages(), [
+        return [
             'sessions.required' => '実施記録のデータが必要です',
-        ]);
+            'sessions.*.suds_before.min' => '実施前の不安レベルは0以上で入力してください',
+            'sessions.*.suds_before.max' => '実施前の不安レベルは100以下で入力してください',
+            'sessions.*.suds_peak.min' => '最高の不安レベルは0以上で入力してください',
+            'sessions.*.suds_peak.max' => '最高の不安レベルは100以下で入力してください',
+            'sessions.*.suds_after.min' => '実施後の不安レベルは0以上で入力してください',
+            'sessions.*.suds_after.max' => '実施後の不安レベルは100以下で入力してください',
+            'sessions.*.performed_at.date' => '正しい日付形式で入力してください',
+            'sessions.*.action_plan.max' => '実施計画は5000文字以内で入力してください',
+            'sessions.*.reflection.max' => '振り返りは5000文字以内で入力してください',
+        ];
     }
 }

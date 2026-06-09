@@ -27,6 +27,16 @@ class SyncSessionsUseCase
             throw new \RuntimeException('Exposure not found');
         }
 
+        $validHierarchyItemIds = array_map(
+            fn ($item) => $item->getId(),
+            $exposure->getHierarchyItems()
+        );
+
+        $existingSessions = [];
+        foreach ($exposure->getSessions() as $session) {
+            $existingSessions[$session->getId()] = $session;
+        }
+
         $sessions = [];
         $sessionNumber = 1;
 
@@ -36,7 +46,7 @@ class SyncSessionsUseCase
             }
 
             if ($itemData->hierarchyItemId !== null
-                && ! $this->repository->hierarchyItemBelongsToExposureForMember($itemData->hierarchyItemId, $exposureId, $memberId)) {
+                && ! in_array($itemData->hierarchyItemId, $validHierarchyItemIds, true)) {
                 throw new \InvalidArgumentException('Invalid hierarchy item');
             }
 
@@ -45,8 +55,8 @@ class SyncSessionsUseCase
                 : null;
 
             if ($itemData->id !== null) {
-                $existing = $this->repository->findSessionByIdForMember($itemData->id, $memberId);
-                if ($existing === null || $existing->getExposureId() !== $exposureId) {
+                $existing = $existingSessions[$itemData->id] ?? null;
+                if ($existing === null) {
                     throw new \InvalidArgumentException('Invalid session');
                 }
 

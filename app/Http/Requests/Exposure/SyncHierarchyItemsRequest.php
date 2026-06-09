@@ -15,6 +15,7 @@ class SyncHierarchyItemsRequest extends FormRequest
     {
         return [
             'items' => ['required', 'array'],
+            'items.*.id' => ['nullable', 'integer'],
             'items.*.content' => ['required', 'string', 'max:500'],
             'items.*.sort_order' => ['required', 'integer', 'min:1'],
             'items.*.expected_suds' => ['nullable', 'integer', 'min:0', 'max:100'],

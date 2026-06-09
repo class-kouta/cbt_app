@@ -102,6 +102,82 @@ class ExposureSessionSearchTest extends TestCase
         $this->assertDatabaseCount('exposure_hierarchy_items', 2);
     }
 
+    public function test_sync_hierarchy_items_preserves_session_links(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $item = ExposureHierarchyItem::create([
+            'exposure_id' => $exposure->id,
+            'content' => '元の場面',
+            'sort_order' => 1,
+            'expected_suds' => 40,
+        ]);
+
+        $session = ExposureSession::create([
+            'exposure_id' => $exposure->id,
+            'hierarchy_item_id' => $item->id,
+            'session_number' => 1,
+            'action_plan' => '実施する',
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/hierarchy-items/sync", [
+            'items' => [
+                [
+                    'id' => $item->id,
+                    'content' => '更新後の場面',
+                    'sort_order' => 1,
+                    'expected_suds' => 70,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('items.0.id', $item->id);
+        $this->assertDatabaseHas('exposure_hierarchy_items', [
+            'id' => $item->id,
+            'content' => '更新後の場面',
+            'expected_suds' => 70,
+        ]);
+        $this->assertDatabaseHas('exposure_sessions', [
+            'id' => $session->id,
+            'hierarchy_item_id' => $item->id,
+        ]);
+    }
+
+    public function test_sync_hierarchy_items_rejects_foreign_item_id(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'テスト',
+        ]);
+
+        $otherExposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => '別のテスト',
+        ]);
+
+        $foreignItem = ExposureHierarchyItem::create([
+            'exposure_id' => $otherExposure->id,
+            'content' => '他人の場面',
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/hierarchy-items/sync", [
+            'items' => [
+                [
+                    'id' => $foreignItem->id,
+                    'content' => '不正な更新',
+                    'sort_order' => 1,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+    }
+
     public function test_add_session_rejects_foreign_hierarchy_item(): void
     {
         $exposure = Exposure::create([

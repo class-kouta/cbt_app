@@ -25,14 +25,32 @@ class SyncHierarchyItemsUseCase
             throw new \RuntimeException('Exposure not found');
         }
 
-        $items = array_map(
-            fn (ExposureHierarchyItemData $data) => ExposureHierarchyItemEntity::createNew(
-                $data->content,
-                $data->sortOrder,
-                $data->expectedSuds
-            ),
-            $itemsData
-        );
+        $existingItems = [];
+        foreach ($exposure->getHierarchyItems() as $item) {
+            $existingItems[$item->getId()] = $item;
+        }
+
+        $items = [];
+        foreach ($itemsData as $data) {
+            if ($data->id !== null) {
+                $existing = $existingItems[$data->id] ?? null;
+                if ($existing === null) {
+                    throw new \InvalidArgumentException('Invalid hierarchy item');
+                }
+
+                $items[] = $existing->update(
+                    $data->content,
+                    $data->sortOrder,
+                    $data->expectedSuds
+                );
+            } else {
+                $items[] = ExposureHierarchyItemEntity::createNew(
+                    $data->content,
+                    $data->sortOrder,
+                    $data->expectedSuds
+                );
+            }
+        }
 
         return $this->repository->syncHierarchyItemsForMember($exposureId, $items, (int) Auth::id());
     }
