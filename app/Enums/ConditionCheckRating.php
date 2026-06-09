@@ -53,6 +53,58 @@ enum ConditionCheckRating: int
         return [1, 2, 3, 4, 5];
     }
 
+    public static function minScore(): int
+    {
+        return count(self::fieldLabels()) * self::Level1->value;
+    }
+
+    public static function maxScore(): int
+    {
+        return count(self::fieldLabels()) * self::Level5->value;
+    }
+
+    public static function positivePointsFor(int $rating): int
+    {
+        if ($rating < self::Level1->value || $rating > self::Level5->value) {
+            throw new \InvalidArgumentException("Invalid rating: {$rating}");
+        }
+
+        return (self::Level1->value + self::Level5->value) - $rating;
+    }
+
+    public static function calculateTotalScore(
+        int $mood,
+        int $fatigue,
+        int $anxiety,
+        int $sleepiness,
+        int $physicalCondition,
+    ): int {
+        return self::positivePointsFor($mood)
+            + self::positivePointsFor($fatigue)
+            + self::positivePointsFor($anxiety)
+            + self::positivePointsFor($sleepiness)
+            + self::positivePointsFor($physicalCondition);
+    }
+
+    /**
+     * 合計スコアに応じた抽象ステータス（高いほど良好）
+     */
+    public static function scoreStatusFor(int $score): string
+    {
+        if ($score < self::minScore() || $score > self::maxScore()) {
+            throw new \InvalidArgumentException("Invalid score: {$score}");
+        }
+
+        $fieldCount = count(self::fieldLabels());
+
+        return match (true) {
+            $score >= $fieldCount * 4.2 => 'excellent',
+            $score >= $fieldCount * 3.2 => 'good',
+            $score >= $fieldCount * 2.2 => 'warning',
+            default => 'danger',
+        };
+    }
+
     /**
      * 評価値に応じたバッジのCSSクラス（1=良い→青、5=悪い→赤）
      */

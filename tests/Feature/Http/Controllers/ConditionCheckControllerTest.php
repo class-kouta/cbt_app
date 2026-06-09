@@ -42,6 +42,9 @@ class ConditionCheckControllerTest extends TestCase
         $response->assertJsonPath('total', 1);
         $response->assertJsonPath('data.0.id', $ownRecord->id);
         $response->assertJsonPath('data.0.memo', '自分のメモ');
+        $response->assertJsonPath('data.0.score', 23);
+        $response->assertJsonPath('data.0.max_score', 25);
+        $response->assertJsonPath('data.0.score_status', 'excellent');
         $response->assertJsonPath('per_page', 30);
     }
 
@@ -90,6 +93,9 @@ class ConditionCheckControllerTest extends TestCase
 
         $response->assertCreated();
         $response->assertJsonPath('mood', 1);
+        $response->assertJsonPath('score', 21);
+        $response->assertJsonPath('max_score', 25);
+        $response->assertJsonPath('score_status', 'excellent');
         $response->assertJsonPath('memo', '今日はまあまあ');
 
         $this->assertDatabaseHas('condition_checks', [

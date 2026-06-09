@@ -3,6 +3,13 @@ use App\Enums\ConditionCheckRating;
 
 $ratingLabels = ConditionCheckRating::labelsByField();
 $ratingBadgeClasses = ConditionCheckRating::badgeClassesByValue();
+$maxScore = ConditionCheckRating::maxScore();
+$scoreStatusClasses = [
+    'excellent' => 'text-blue-700',
+    'good' => 'text-emerald-700',
+    'warning' => 'text-orange-700',
+    'danger' => 'text-red-700',
+];
 $shortLabels = [
     'mood' => '気分',
     'fatigue' => '疲労',
@@ -35,7 +42,7 @@ $shortLabels = [
                 <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg hover:bg-emerald-50 cursor-pointer">
                     <div class="font-semibold text-gray-900 mb-3" x-text="formatDate(item.created_at)"></div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
                         @foreach ($shortLabels as $field => $shortLabel)
                             <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-center">
                                 <div class="text-[10px] sm:text-xs text-gray-500 mb-1">{{ $shortLabel }}</div>
@@ -46,6 +53,15 @@ $shortLabels = [
                                 ></span>
                             </div>
                         @endforeach
+
+                        <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-center leading-tight flex flex-col justify-center">
+                            <div class="text-[10px] sm:text-xs text-gray-500" x-text="`${maxScore}点満点中`"></div>
+                            <div
+                                class="text-lg sm:text-base font-bold"
+                                :class="getScoreClass(item.score_status)"
+                                x-text="`${item.score}点`"
+                            ></div>
+                        </div>
                     </div>
 
                     <p
@@ -104,12 +120,16 @@ $shortLabels = [
 function conditionCheckListApp() {
     const ratingLabels = @json($ratingLabels);
     const ratingBadgeClasses = @json($ratingBadgeClasses);
+    const scoreStatusClasses = @json($scoreStatusClasses);
+    const maxScore = @json($maxScore);
 
     return {
         items: [],
         loading: true,
         ratingLabels,
         ratingBadgeClasses,
+        scoreStatusClasses,
+        maxScore,
         currentPage: 1,
         perPage: 30,
         total: 0,
@@ -171,6 +191,10 @@ function conditionCheckListApp() {
 
         getRatingClass(value) {
             return this.ratingBadgeClasses[value] || 'bg-gray-100 text-gray-800';
+        },
+
+        getScoreClass(status) {
+            return this.scoreStatusClasses[status] || 'text-gray-700';
         },
     };
 }
