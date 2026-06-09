@@ -37,7 +37,7 @@ $shortLabels = [
                     <div class="font-semibold text-gray-900 mb-3" x-text="formatDate(item.created_at)"></div>
 
                     <div class="relative">
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:pr-28">
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
                             @foreach ($shortLabels as $field => $shortLabel)
                                 <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-center">
                                     <div class="text-[10px] sm:text-xs text-gray-500 mb-1">{{ $shortLabel }}</div>
@@ -48,13 +48,11 @@ $shortLabels = [
                                     ></span>
                                 </div>
                             @endforeach
-                        </div>
 
-                        <div class="mt-2 flex justify-end sm:absolute sm:bottom-0 sm:right-0 sm:mt-0">
-                            <div class="text-right leading-tight">
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-right leading-tight flex flex-col justify-center sm:absolute sm:bottom-0 sm:right-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div class="text-[10px] sm:text-xs text-gray-500" x-text="`${maxScore}点満点中`"></div>
                                 <div
-                                    class="text-sm sm:text-base font-bold"
+                                    class="text-lg sm:text-base font-bold"
                                     :class="item.score_class"
                                     x-text="`${item.score}点`"
                                 ></div>
