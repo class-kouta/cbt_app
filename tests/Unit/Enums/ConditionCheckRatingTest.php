@@ -19,4 +19,12 @@ class ConditionCheckRatingTest extends TestCase
             ConditionCheckRating::calculateTotalScore(1, 2, 1, 2, 1),
         );
     }
+
+    public function test_score_status_for_returns_abstract_status(): void
+    {
+        $this->assertSame('excellent', ConditionCheckRating::scoreStatusFor(7));
+        $this->assertSame('good', ConditionCheckRating::scoreStatusFor(12));
+        $this->assertSame('warning', ConditionCheckRating::scoreStatusFor(17));
+        $this->assertSame('danger', ConditionCheckRating::scoreStatusFor(22));
+    }
 }

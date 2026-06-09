@@ -4,7 +4,6 @@ namespace Tests\Unit\Application\UseCase\ConditionCheck;
 
 use App\Application\UseCase\ConditionCheck\PresentConditionCheckUseCase;
 use App\Domain\Entity\ConditionCheck;
-use App\Enums\ConditionCheckRating;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
@@ -28,10 +27,7 @@ class PresentConditionCheckUseCaseTest extends TestCase
 
         $this->assertSame(7, $result['score']);
         $this->assertSame(25, $result['max_score']);
-        $this->assertSame(
-            ConditionCheckRating::scoreTextClassFor(7),
-            $result['score_class'],
-        );
+        $this->assertSame('text-blue-700', $result['score_class']);
         $this->assertSame('テスト', $result['memo']);
     }
 }

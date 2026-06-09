@@ -69,15 +69,15 @@ enum ConditionCheckRating: int
     }
 
     /**
-     * 合計スコアに応じたテキスト色のCSSクラス（低いほど良好）
+     * 合計スコアに応じた抽象ステータス（低いほど良好）
      */
-    public static function scoreTextClassFor(int $score): string
+    public static function scoreStatusFor(int $score): string
     {
         return match (true) {
-            $score <= 9 => 'text-blue-700',
-            $score <= 14 => 'text-emerald-700',
-            $score <= 19 => 'text-orange-700',
-            default => 'text-red-700',
+            $score <= 9 => 'excellent',
+            $score <= 14 => 'good',
+            $score <= 19 => 'warning',
+            default => 'danger',
         };
     }
 
