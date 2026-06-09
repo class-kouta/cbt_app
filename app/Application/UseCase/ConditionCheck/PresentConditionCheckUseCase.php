@@ -28,22 +28,11 @@ class PresentConditionCheckUseCase
             'sleepiness' => $item->getSleepiness(),
             'physical_condition' => $item->getPhysicalCondition(),
             'score' => $score,
-            'score_class' => $this->scoreTextClassFor($score),
+            'score_status' => ConditionCheckRating::scoreStatusFor($score),
             'max_score' => ConditionCheckRating::maxScore(),
             'memo' => $item->getMemo(),
             'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
             'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
         ];
-    }
-
-    private function scoreTextClassFor(int $score): string
-    {
-        return match (ConditionCheckRating::scoreStatusFor($score)) {
-            'excellent' => 'text-blue-700',
-            'good' => 'text-emerald-700',
-            'warning' => 'text-orange-700',
-            'danger' => 'text-red-700',
-            default => 'text-gray-700',
-        };
     }
 }

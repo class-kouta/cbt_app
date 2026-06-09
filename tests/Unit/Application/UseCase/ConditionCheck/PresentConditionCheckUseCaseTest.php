@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class PresentConditionCheckUseCaseTest extends TestCase
 {
-    public function test_handle_includes_score_and_score_class(): void
+    public function test_handle_includes_score_and_score_status(): void
     {
         $entity = ConditionCheck::reconstitute(
             id: 1,
@@ -27,7 +27,7 @@ class PresentConditionCheckUseCaseTest extends TestCase
 
         $this->assertSame(7, $result['score']);
         $this->assertSame(25, $result['max_score']);
-        $this->assertSame('text-blue-700', $result['score_class']);
+        $this->assertSame('excellent', $result['score_status']);
         $this->assertSame('テスト', $result['memo']);
     }
 }

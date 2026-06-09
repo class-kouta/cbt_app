@@ -53,6 +53,11 @@ enum ConditionCheckRating: int
         return [1, 2, 3, 4, 5];
     }
 
+    public static function minScore(): int
+    {
+        return count(self::fieldLabels()) * self::Level1->value;
+    }
+
     public static function maxScore(): int
     {
         return count(self::fieldLabels()) * self::Level5->value;
@@ -73,6 +78,10 @@ enum ConditionCheckRating: int
      */
     public static function scoreStatusFor(int $score): string
     {
+        if ($score < self::minScore() || $score > self::maxScore()) {
+            throw new \InvalidArgumentException("Invalid score: {$score}");
+        }
+
         return match (true) {
             $score <= 9 => 'excellent',
             $score <= 14 => 'good',

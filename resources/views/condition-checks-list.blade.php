@@ -4,6 +4,12 @@ use App\Enums\ConditionCheckRating;
 $ratingLabels = ConditionCheckRating::labelsByField();
 $ratingBadgeClasses = ConditionCheckRating::badgeClassesByValue();
 $maxScore = ConditionCheckRating::maxScore();
+$scoreStatusClasses = [
+    'excellent' => 'text-blue-700',
+    'good' => 'text-emerald-700',
+    'warning' => 'text-orange-700',
+    'danger' => 'text-red-700',
+];
 $shortLabels = [
     'mood' => '気分',
     'fatigue' => '疲労',
@@ -53,7 +59,7 @@ $shortLabels = [
                                 <div class="text-[10px] sm:text-xs text-gray-500" x-text="`${maxScore}点満点中`"></div>
                                 <div
                                     class="text-lg sm:text-base font-bold"
-                                    :class="item.score_class"
+                                    :class="getScoreClass(item.score_status)"
                                     x-text="`${item.score}点`"
                                 ></div>
                             </div>
@@ -116,6 +122,7 @@ $shortLabels = [
 function conditionCheckListApp() {
     const ratingLabels = @json($ratingLabels);
     const ratingBadgeClasses = @json($ratingBadgeClasses);
+    const scoreStatusClasses = @json($scoreStatusClasses);
     const maxScore = @json($maxScore);
 
     return {
@@ -123,6 +130,7 @@ function conditionCheckListApp() {
         loading: true,
         ratingLabels,
         ratingBadgeClasses,
+        scoreStatusClasses,
         maxScore,
         currentPage: 1,
         perPage: 30,
@@ -185,6 +193,10 @@ function conditionCheckListApp() {
 
         getRatingClass(value) {
             return this.ratingBadgeClasses[value] || 'bg-gray-100 text-gray-800';
+        },
+
+        getScoreClass(status) {
+            return this.scoreStatusClasses[status] || 'text-gray-700';
         },
     };
 }

@@ -27,4 +27,11 @@ class ConditionCheckRatingTest extends TestCase
         $this->assertSame('warning', ConditionCheckRating::scoreStatusFor(17));
         $this->assertSame('danger', ConditionCheckRating::scoreStatusFor(22));
     }
+
+    public function test_score_status_for_throws_exception_for_invalid_score(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        ConditionCheckRating::scoreStatusFor(4);
+    }
 }
