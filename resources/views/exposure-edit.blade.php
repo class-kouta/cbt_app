@@ -20,9 +20,11 @@
         <div x-show="!hasExistingRecord"></div>
         <div class="flex items-center gap-2">
             <button x-show="hasExistingRecord" type="button" @click="isEditing ? saveAndStopEditing() : startEditing()"
-                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg text-white"
-                :class="isEditing ? 'bg-emerald-600' : 'bg-green-600'">
-                <span x-text="isEditing ? '保存する' : '編集する'"></span>
+                class="inline-flex items-center justify-center p-2 rounded-lg transition-colors"
+                :class="isEditing ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
+                :title="isEditing ? '保存する' : '編集する'">
+                <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
+                <span x-show="isEditing"><x-icon name="check-circle" class="w-5 h-5" /></span>
             </button>
             <button x-show="hasExistingRecord" @click="deleteItem()" class="text-red-400 hover:text-red-600 p-2" title="削除">
                 <x-icon name="trash" class="w-5 h-5" />
@@ -155,11 +157,6 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-gray-600 mb-1">実施日時（任意）</label>
-                                        <input type="datetime-local" x-model="session.performed_at_local" :disabled="!isEditing"
-                                            class="w-full border rounded-lg px-3 py-2">
-                                    </div>
-                                    <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">振り返り</label>
                                         <textarea x-model="session.reflection" rows="5" :disabled="!isEditing" maxlength="5000"
                                             class="w-full border rounded-lg px-4 py-3" placeholder="何が起きたか、予想は当たったか、学んだこと"></textarea>
@@ -170,21 +167,6 @@
                     </div>
                     <button x-show="isEditing" type="button" @click="addNewSession()"
                         class="mt-4 w-full py-3 border-2 border-dashed border-teal-300 text-teal-600 rounded-xl">＋ 実施記録を追加</button>
-                </div>
-
-                <!-- Step 5 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">5</span>
-                        全体の振り返り（任意）
-                    </label>
-                    <textarea x-model="form.overall_reflection" rows="5" :disabled="!isEditing" maxlength="5000"
-                        class="w-full border rounded-lg px-4 py-3" :class="isEditing ? 'bg-white' : 'bg-gray-50'"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">次の目標（任意）</label>
-                    <textarea x-model="form.next_goal" rows="3" :disabled="!isEditing" maxlength="2000"
-                        class="w-full border rounded-lg px-4 py-3" :class="isEditing ? 'bg-white' : 'bg-gray-50'"></textarea>
                 </div>
 
                 <div class="space-y-3">
@@ -204,7 +186,7 @@
 function exposureFormApp(itemId) {
     return {
         itemId, hasExistingRecord: itemId !== null, isEditing: itemId === null,
-        form: { avoidance_target: '', self_talk: '', overall_reflection: '', next_goal: '' },
+        form: { avoidance_target: '', self_talk: '' },
         hierarchyItems: [{ content: '', expected_suds: '' }, { content: '', expected_suds: '' }, { content: '', expected_suds: '' }],
         originalHierarchyItems: [],
         sessions: [],
@@ -216,7 +198,7 @@ function exposureFormApp(itemId) {
         fromPage: 'list', scrollTargetSessionId: null,
 
         get backUrl() { return this.fromPage === 'sessions' ? '/exposures/sessions' : '/exposures/list'; },
-        get backLabel() { return this.fromPage === 'sessions' ? '実施記録一覧に戻る' : 'エクスポージャー療法一覧に戻る'; },
+        get backLabel() { return this.fromPage === 'sessions' ? '実施記録一覧に戻る' : '一覧に戻る'; },
         async init() {
             const p = new URLSearchParams(window.location.search);
             this.fromPage = p.get('from') || 'list';
@@ -234,7 +216,7 @@ function exposureFormApp(itemId) {
         },
 
         emptySession(num) {
-            return { id: null, session_number: num, hierarchy_item_id: '', action_plan: '', suds_before: '', suds_peak: '', suds_after: '', performed_at_local: '', reflection: '', expanded: true };
+            return { id: null, session_number: num, hierarchy_item_id: '', action_plan: '', suds_before: '', suds_peak: '', suds_after: '', reflection: '', expanded: true };
         },
 
         scrollToSessionIfNeeded() {
@@ -291,18 +273,6 @@ function exposureFormApp(itemId) {
             finally { this.autoSaving = false; this.takeSnapshot(); }
         },
 
-        toIsoLocal(dtLocal) {
-            if (!dtLocal) return null;
-            const date = new Date(dtLocal);
-            return isNaN(date.getTime()) ? null : date.toISOString();
-        },
-        fromIsoLocal(iso) {
-            if (!iso) return '';
-            const d = new Date(iso);
-            const pad = n => String(n).padStart(2, '0');
-            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        },
-
         async loadItem() {
             this.loading = true;
             try {
@@ -311,8 +281,6 @@ function exposureFormApp(itemId) {
                 const item = await r.json();
                 this.form.avoidance_target = item.avoidance_target || '';
                 this.form.self_talk = item.self_talk || '';
-                this.form.overall_reflection = item.overall_reflection || '';
-                this.form.next_goal = item.next_goal || '';
 
                 this.hierarchyItems = item.hierarchy_items.map(h => ({ id: h.id, content: h.content, expected_suds: h.expected_suds ?? '' }));
                 this.originalHierarchyItems = JSON.parse(JSON.stringify(this.hierarchyItems));
@@ -323,7 +291,7 @@ function exposureFormApp(itemId) {
                         id: s.id, session_number: s.session_number,
                         hierarchy_item_id: s.hierarchy_item_id ? String(s.hierarchy_item_id) : '',
                         action_plan: s.action_plan || '', suds_before: s.suds_before ?? '', suds_peak: s.suds_peak ?? '', suds_after: s.suds_after ?? '',
-                        performed_at_local: this.fromIsoLocal(s.performed_at), reflection: s.reflection || '', expanded: true
+                        reflection: s.reflection || '', expanded: true
                     }));
                 } else {
                     this.sessions = [this.emptySession(1)];
@@ -404,7 +372,6 @@ function exposureFormApp(itemId) {
                     suds_before: session.suds_before !== '' ? parseInt(session.suds_before) : null,
                     suds_peak: session.suds_peak !== '' ? parseInt(session.suds_peak) : null,
                     suds_after: session.suds_after !== '' ? parseInt(session.suds_after) : null,
-                    performed_at: this.toIsoLocal(session.performed_at_local),
                     reflection: session.reflection || null
                 }));
 
@@ -425,7 +392,6 @@ function exposureFormApp(itemId) {
                     suds_before: s.suds_before ?? '',
                     suds_peak: s.suds_peak ?? '',
                     suds_after: s.suds_after ?? '',
-                    performed_at_local: this.fromIsoLocal(s.performed_at),
                     reflection: s.reflection || '',
                     expanded: true
                 }))
@@ -463,7 +429,6 @@ function exposureFormApp(itemId) {
                 if (s.suds_before !== '' || s.suds_after !== '') lines.push(`不安レベル: ${s.suds_before||'-'} → ${s.suds_peak||'-'} → ${s.suds_after||'-'}`);
                 lines.push('振り返り: ' + (s.reflection?.trim() || '未入力'));
             });
-            if (this.form.overall_reflection.trim()) { lines.push('', '■ 全体振り返り', this.form.overall_reflection.trim()); }
             return lines.join('\n');
         },
 
