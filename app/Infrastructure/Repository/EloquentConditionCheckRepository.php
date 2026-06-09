@@ -24,24 +24,6 @@ class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterf
         );
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function toArray(ConditionCheckEntity $conditionCheck): array
-    {
-        return [
-            'id' => $conditionCheck->getId(),
-            'mood' => $conditionCheck->getMood(),
-            'fatigue' => $conditionCheck->getFatigue(),
-            'anxiety' => $conditionCheck->getAnxiety(),
-            'sleepiness' => $conditionCheck->getSleepiness(),
-            'physical_condition' => $conditionCheck->getPhysicalCondition(),
-            'memo' => $conditionCheck->getMemo(),
-            'created_at' => $conditionCheck->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $conditionCheck->getUpdatedAt()->format(DATE_ATOM),
-        ];
-    }
-
     public function searchForMember(ConditionCheckSearchCriteriaData $criteria, int $memberId): array
     {
         $paginator = ConditionCheckModel::where('member_id', $memberId)
@@ -49,8 +31,9 @@ class EloquentConditionCheckRepository implements ConditionCheckRepositoryInterf
             ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
 
         $items = collect($paginator->items())
-            ->map(fn ($model) => $this->toArray($this->toEntity($model)))
-            ->toArray();
+            ->map(fn ($model) => $this->toEntity($model))
+            ->values()
+            ->all();
 
         return [
             'data' => $items,

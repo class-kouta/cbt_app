@@ -55,7 +55,7 @@ $shortLabels = [
                                 <div class="text-[10px] sm:text-xs text-gray-500" x-text="`${maxScore}点満点中`"></div>
                                 <div
                                     class="text-sm sm:text-base font-bold"
-                                    :class="getScoreClass(item.score)"
+                                    :class="item.score_class"
                                     x-text="`${item.score}点`"
                                 ></div>
                             </div>
@@ -118,12 +118,6 @@ $shortLabels = [
 function conditionCheckListApp() {
     const ratingLabels = @json($ratingLabels);
     const ratingBadgeClasses = @json($ratingBadgeClasses);
-    const scoreTextClasses = @json([
-        'low' => ConditionCheckRating::scoreTextClassFor(5),
-        'midLow' => ConditionCheckRating::scoreTextClassFor(12),
-        'midHigh' => ConditionCheckRating::scoreTextClassFor(17),
-        'high' => ConditionCheckRating::scoreTextClassFor(22),
-    ]);
     const maxScore = @json($maxScore);
 
     return {
@@ -131,7 +125,6 @@ function conditionCheckListApp() {
         loading: true,
         ratingLabels,
         ratingBadgeClasses,
-        scoreTextClasses,
         maxScore,
         currentPage: 1,
         perPage: 30,
@@ -194,13 +187,6 @@ function conditionCheckListApp() {
 
         getRatingClass(value) {
             return this.ratingBadgeClasses[value] || 'bg-gray-100 text-gray-800';
-        },
-
-        getScoreClass(score) {
-            if (score <= 9) return this.scoreTextClasses.low;
-            if (score <= 14) return this.scoreTextClasses.midLow;
-            if (score <= 19) return this.scoreTextClasses.midHigh;
-            return this.scoreTextClasses.high;
         },
     };
 }

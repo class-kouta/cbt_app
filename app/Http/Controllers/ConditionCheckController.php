@@ -6,6 +6,7 @@ use App\Application\DTO\ConditionCheckData;
 use App\Application\UseCase\ConditionCheck\CreateConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\DeleteConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\FindConditionCheckUseCase;
+use App\Application\UseCase\ConditionCheck\PresentConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\SearchConditionCheckUseCase;
 use App\Application\UseCase\ConditionCheck\UpdateConditionCheckUseCase;
 use App\Enums\ConditionCheckRating;
@@ -36,6 +37,7 @@ class ConditionCheckController extends Controller
     public function show(
         int $conditionCheck,
         FindConditionCheckUseCase $findConditionCheck,
+        PresentConditionCheckUseCase $presentConditionCheck,
     ): JsonResponse {
         try {
             $item = $findConditionCheck->handle($conditionCheck);
@@ -43,7 +45,7 @@ class ConditionCheckController extends Controller
             abort(404);
         }
 
-        return response()->json($this->toArray($item));
+        return response()->json($presentConditionCheck->handle($item));
     }
 
     /**
@@ -52,12 +54,13 @@ class ConditionCheckController extends Controller
     public function store(
         CreateConditionCheckRequest $request,
         CreateConditionCheckUseCase $createConditionCheck,
+        PresentConditionCheckUseCase $presentConditionCheck,
     ): JsonResponse {
         $data = $this->toData($request);
 
         $item = $createConditionCheck->handle($data);
 
-        return response()->json($this->toArray($item), 201);
+        return response()->json($presentConditionCheck->handle($item), 201);
     }
 
     /**
@@ -67,6 +70,7 @@ class ConditionCheckController extends Controller
         UpdateConditionCheckRequest $request,
         int $conditionCheck,
         UpdateConditionCheckUseCase $updateConditionCheck,
+        PresentConditionCheckUseCase $presentConditionCheck,
     ): JsonResponse {
         $data = $this->toData($request);
 
@@ -76,7 +80,7 @@ class ConditionCheckController extends Controller
             abort(404);
         }
 
-        return response()->json($this->toArray($item));
+        return response()->json($presentConditionCheck->handle($item));
     }
 
     /**
@@ -113,32 +117,5 @@ class ConditionCheckController extends Controller
     private function ratingValue(mixed $value): int
     {
         return $value instanceof ConditionCheckRating ? $value->value : (int) $value;
-    }
-
-    /**
-     * @param \App\Domain\Entity\ConditionCheck $item
-     * @return array<string, mixed>
-     */
-    private function toArray($item): array
-    {
-        return [
-            'id' => $item->getId(),
-            'mood' => $item->getMood(),
-            'fatigue' => $item->getFatigue(),
-            'anxiety' => $item->getAnxiety(),
-            'sleepiness' => $item->getSleepiness(),
-            'physical_condition' => $item->getPhysicalCondition(),
-            'score' => ConditionCheckRating::calculateTotalScore(
-                $item->getMood(),
-                $item->getFatigue(),
-                $item->getAnxiety(),
-                $item->getSleepiness(),
-                $item->getPhysicalCondition(),
-            ),
-            'max_score' => ConditionCheckRating::maxScore(),
-            'memo' => $item->getMemo(),
-            'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
-        ];
     }
 }
