@@ -49,7 +49,7 @@ $shortLabels = [
                                 </div>
                             @endforeach
 
-                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-right leading-tight flex flex-col justify-center sm:absolute sm:bottom-0 sm:right-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+                            <div class="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2 text-center leading-tight flex flex-col justify-center sm:absolute sm:bottom-0 sm:right-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
                                 <div class="text-[10px] sm:text-xs text-gray-500" x-text="`${maxScore}点満点中`"></div>
                                 <div
                                     class="text-lg sm:text-base font-bold"
