@@ -41,7 +41,15 @@ class SyncSessionsUseCase
         $sessionNumber = 1;
 
         foreach ($itemsData as $itemData) {
-            if ($itemData->id === null && ! $itemData->hasContent()) {
+            if ($itemData->id === null && ! ExposureSessionEntity::shouldPersistNewBulkItem(
+                $itemData->actionPlan,
+                $itemData->reflection,
+                $itemData->hierarchyItemId,
+                $itemData->sudsBefore,
+                $itemData->sudsPeak,
+                $itemData->sudsAfter,
+                $itemData->performedAt
+            )) {
                 continue;
             }
 

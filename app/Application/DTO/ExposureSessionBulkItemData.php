@@ -15,10 +15,4 @@ readonly class ExposureSessionBulkItemData
         public ?string $reflection = null
     ) {
     }
-
-    public function hasContent(): bool
-    {
-        return ($this->actionPlan !== null && trim($this->actionPlan) !== '')
-            || ($this->reflection !== null && trim($this->reflection) !== '');
-    }
 }

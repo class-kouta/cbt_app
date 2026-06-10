@@ -29,15 +29,12 @@ class AddSessionUseCase
             throw new \InvalidArgumentException('Invalid hierarchy item');
         }
 
-        $latestSession = $exposure->getLatestSession();
-        $nextSessionNumber = $latestSession ? $latestSession->getSessionNumber() + 1 : 1;
-
         $performedAt = $data->performedAt
             ? new DateTimeImmutable($data->performedAt)
             : null;
 
         $session = ExposureSessionEntity::createNew(
-            $nextSessionNumber,
+            0,
             $data->hierarchyItemId,
             $data->actionPlan,
             $data->sudsBefore,

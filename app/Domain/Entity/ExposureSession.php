@@ -145,6 +145,49 @@ class ExposureSession
         return $this->reflection !== null && trim($this->reflection) !== '';
     }
 
+    /**
+     * バルク同期で新規セッションとして保存すべき入力かどうかを判定する。
+     */
+    public static function shouldPersistNewBulkItem(
+        ?string $actionPlan,
+        ?string $reflection,
+        ?int $hierarchyItemId,
+        ?int $sudsBefore,
+        ?int $sudsPeak,
+        ?int $sudsAfter,
+        ?string $performedAt
+    ): bool {
+        if ($actionPlan !== null && trim($actionPlan) !== '') {
+            return true;
+        }
+
+        if ($reflection !== null && trim($reflection) !== '') {
+            return true;
+        }
+
+        if ($hierarchyItemId !== null) {
+            return true;
+        }
+
+        if ($sudsBefore !== null) {
+            return true;
+        }
+
+        if ($sudsPeak !== null) {
+            return true;
+        }
+
+        if ($sudsAfter !== null) {
+            return true;
+        }
+
+        if ($performedAt !== null && trim($performedAt) !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
     public function update(
         ?int $hierarchyItemId,
         ?string $actionPlan,

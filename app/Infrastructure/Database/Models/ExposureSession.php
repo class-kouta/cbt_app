@@ -2,12 +2,14 @@
 
 namespace App\Infrastructure\Database\Models;
 
+use App\Infrastructure\Database\Models\Concerns\BelongsToExposureOfAuthenticatedMember;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ExposureSession extends Model
 {
+    use BelongsToExposureOfAuthenticatedMember;
     use HasFactory;
 
     protected $fillable = [

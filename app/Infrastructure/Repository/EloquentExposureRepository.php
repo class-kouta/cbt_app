@@ -164,21 +164,28 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
 
     public function saveSessionForMember(int $exposureId, ExposureSessionEntity $session, int $memberId): ExposureSessionEntity
     {
-        $ownerScopedExposure = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
+        return DB::transaction(function () use ($exposureId, $session, $memberId) {
+            $ownerScopedExposure = ExposureModel::where('member_id', $memberId)->lockForUpdate()->findOrFail($exposureId);
 
-        $model = new ExposureSessionModel();
-        $model->exposure_id = $ownerScopedExposure->id;
-        $model->hierarchy_item_id = $session->getHierarchyItemId();
-        $model->session_number = $session->getSessionNumber();
-        $model->action_plan = $session->getActionPlan();
-        $model->suds_before = $session->getSudsBefore();
-        $model->suds_peak = $session->getSudsPeak();
-        $model->suds_after = $session->getSudsAfter();
-        $model->performed_at = $session->getPerformedAt();
-        $model->reflection = $session->getReflection();
-        $model->save();
+            $maxSessionNumber = ExposureSessionModel::where('exposure_id', $ownerScopedExposure->id)
+                ->lockForUpdate()
+                ->max('session_number');
+            $nextSessionNumber = ($maxSessionNumber ?? 0) + 1;
 
-        return $this->toSessionEntity($model);
+            $model = new ExposureSessionModel();
+            $model->exposure_id = $ownerScopedExposure->id;
+            $model->hierarchy_item_id = $session->getHierarchyItemId();
+            $model->session_number = $nextSessionNumber;
+            $model->action_plan = $session->getActionPlan();
+            $model->suds_before = $session->getSudsBefore();
+            $model->suds_peak = $session->getSudsPeak();
+            $model->suds_after = $session->getSudsAfter();
+            $model->performed_at = $session->getPerformedAt();
+            $model->reflection = $session->getReflection();
+            $model->save();
+
+            return $this->toSessionEntity($model);
+        });
     }
 
     public function findSessionByIdForMember(int $sessionId, int $memberId): ?ExposureSessionEntity
@@ -263,12 +270,21 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
     public function syncSessionsForMember(int $exposureId, array $sessions, int $memberId): array
     {
         return DB::transaction(function () use ($exposureId, $sessions, $memberId) {
-            $exposure = ExposureModel::where('member_id', $memberId)->findOrFail($exposureId);
+            $exposure = ExposureModel::where('member_id', $memberId)->lockForUpdate()->findOrFail($exposureId);
 
             $keepIds = array_values(array_filter(array_map(
                 fn (ExposureSessionEntity $session) => $session->getId(),
                 $sessions
             )));
+
+            $shiftQuery = ExposureSessionModel::where('exposure_id', $exposure->id);
+            if (count($keepIds) > 0) {
+                $shiftQuery->whereIn('id', $keepIds);
+            }
+            foreach ($shiftQuery->lockForUpdate()->get() as $existingModel) {
+                $existingModel->session_number = $existingModel->session_number + 100000;
+                $existingModel->save();
+            }
 
             $deleteQuery = ExposureSessionModel::where('exposure_id', $exposure->id);
             if (count($keepIds) > 0) {
@@ -362,6 +378,24 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             ->get()
             ->map(fn ($exposure) => $this->formatExposureArray($exposure))
             ->toArray();
+    }
+
+    public function cursorAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): \Generator
+    {
+        $query = ExposureModel::with(['hierarchyItems', 'sessions'])->where('member_id', $memberId);
+
+        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
+            $pattern = LikeSearch::containsPattern($criteria->keyword);
+            $query->where(function ($q) use ($pattern, $searchableColumns) {
+                foreach ($searchableColumns as $column) {
+                    $q->orWhere($column, 'like', $pattern);
+                }
+            });
+        }
+
+        foreach ($query->orderByDesc('created_at')->cursor() as $exposure) {
+            yield $this->formatExposureArray($exposure);
+        }
     }
 
     private function toEntity(ExposureModel $model): ExposureEntity

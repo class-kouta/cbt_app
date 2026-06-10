@@ -14,10 +14,10 @@ class CsvExportService
      * CSVをストリームレスポンスとして出力
      *
      * @param  array<string>  $headers  CSVヘッダー行
-     * @param  array<int, array<int, mixed>>  $rows  CSVデータ行
+     * @param  iterable<int, array<int, mixed>>  $rows  CSVデータ行
      * @param  string  $filename  ファイル名
      */
-    public function export(array $headers, array $rows, string $filename): StreamedResponse
+    public function export(array $headers, iterable $rows, string $filename): StreamedResponse
     {
         return response()->streamDownload(function () use ($headers, $rows) {
             $handle = fopen('php://output', 'w');

@@ -67,10 +67,6 @@ class ExposureController extends Controller
         $session->load(['exposure', 'hierarchyItem']);
         $exposure = $session->exposure;
 
-        if ($exposure === null || $exposure->member_id !== (int) Auth::id()) {
-            abort(404);
-        }
-
         return response()->json([
             'id' => $session->id,
             'exposure_id' => $session->exposure_id,

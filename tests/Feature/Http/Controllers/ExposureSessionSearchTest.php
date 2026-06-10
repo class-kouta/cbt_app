@@ -226,4 +226,88 @@ class ExposureSessionSearchTest extends TestCase
         $response->assertJsonPath('suds_after', 55);
         $response->assertJsonPath('reflection', '振り返り');
     }
+
+    public function test_show_session_returns_not_found_for_other_members_session(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+        $session = $this->createSession($exposure, $item);
+
+        $otherMember = Member::factory()->create();
+
+        $this->actingAs($otherMember, 'sanctum')
+            ->getJson("/api/exposures/sessions/{$session->id}")
+            ->assertStatus(404);
+    }
+
+    public function test_show_exposure_returns_not_found_for_other_members_exposure(): void
+    {
+        $exposure = Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => '他人のデータ',
+        ]);
+
+        $otherMember = Member::factory()->create();
+
+        $this->actingAs($otherMember, 'sanctum')
+            ->getJson("/api/exposures/{$exposure->id}")
+            ->assertStatus(404);
+    }
+
+    public function test_sync_sessions_can_reorder_without_unique_constraint_violation(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+
+        $session1 = ExposureSession::create([
+            'exposure_id' => $exposure->id,
+            'hierarchy_item_id' => $item->id,
+            'session_number' => 1,
+            'suds_after' => 30,
+        ]);
+        $session2 = ExposureSession::create([
+            'exposure_id' => $exposure->id,
+            'hierarchy_item_id' => $item->id,
+            'session_number' => 2,
+            'suds_after' => 50,
+        ]);
+
+        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
+            'sessions' => [
+                [
+                    'id' => $session2->id,
+                    'hierarchy_item_id' => $item->id,
+                    'suds_after' => 50,
+                ],
+                [
+                    'id' => $session1->id,
+                    'hierarchy_item_id' => $item->id,
+                    'suds_after' => 30,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('exposure_sessions', [
+            'id' => $session2->id,
+            'session_number' => 1,
+        ]);
+        $this->assertDatabaseHas('exposure_sessions', [
+            'id' => $session1->id,
+            'session_number' => 2,
+        ]);
+    }
+
+    public function test_add_session_assigns_incrementing_session_numbers(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+
+        $this->asMember()->postJson("/api/exposures/{$exposure->id}/sessions", [
+            'hierarchy_item_id' => $item->id,
+            'suds_after' => 40,
+        ])->assertStatus(201)->assertJsonPath('session_number', 1);
+
+        $this->asMember()->postJson("/api/exposures/{$exposure->id}/sessions", [
+            'hierarchy_item_id' => $item->id,
+            'suds_after' => 20,
+        ])->assertStatus(201)->assertJsonPath('session_number', 2);
+    }
 }

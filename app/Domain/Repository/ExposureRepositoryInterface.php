@@ -28,6 +28,12 @@ interface ExposureRepositoryInterface
      */
     public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
 
+    /**
+     * @param array<int, string> $searchableColumns
+     * @return \Generator<int, array<string, mixed>>
+     */
+    public function cursorAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): \Generator;
+
     public function saveHierarchyItemForMember(int $exposureId, ExposureHierarchyItem $item, int $memberId): ExposureHierarchyItem;
 
     public function findHierarchyItemByIdForMember(int $itemId, int $memberId): ?ExposureHierarchyItem;
