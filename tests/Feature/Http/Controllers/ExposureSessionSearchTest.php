@@ -83,6 +83,18 @@ class ExposureSessionSearchTest extends TestCase
         $response->assertJsonPath('data.0.exposure_id', $exposure->id);
     }
 
+    public function test_sessions_filter_by_exposure_id_without_hierarchy_item_id(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy('あたたほやな');
+        $this->createSession($exposure, $item, 35);
+
+        $response = $this->asMember()->getJson("/api/exposures/sessions?exposure_id={$exposure->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('total', 1);
+        $response->assertJsonPath('data.0.avoidance_target', 'あたたほやな');
+    }
+
     public function test_sessions_filter_by_hierarchy_item_id(): void
     {
         [$exposure, $item] = $this->createExposureWithHierarchy();

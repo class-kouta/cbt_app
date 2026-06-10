@@ -19,7 +19,7 @@ class SearchSessionRequest extends FormRequest
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
             'exposure_id' => ['nullable', 'integer'],
-            'hierarchy_item_id' => ['nullable', 'integer', 'required_with:exposure_id'],
+            'hierarchy_item_id' => ['nullable', 'integer'],
         ];
     }
 

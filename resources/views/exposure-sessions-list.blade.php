@@ -140,6 +140,11 @@ function exposureSessionsListApp() {
             params.append('per_page', this.perPage);
 
             const res = await apiFetch('/api/exposures/sessions?' + params.toString());
+            if (!res.ok) {
+                this.allSessions = [];
+                this.loading = false;
+                return;
+            }
             const result = await res.json();
 
             this.allSessions = (result.data || []).map(s => ({
