@@ -106,9 +106,15 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
     public function searchSessionsForMember(SessionSearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
         $query = ExposureSessionModel::with(['exposure', 'hierarchyItem'])
-            ->whereNotNull('action_plan')
-            ->where('action_plan', '!=', '')
             ->whereHas('exposure', fn ($q) => $q->where('member_id', $memberId));
+
+        if ($criteria->hasExposureId()) {
+            $query->where('exposure_id', $criteria->exposureId);
+        }
+
+        if ($criteria->hasHierarchyItemId()) {
+            $query->where('hierarchy_item_id', $criteria->hierarchyItemId);
+        }
 
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
             $pattern = LikeSearch::containsPattern($criteria->keyword);
@@ -119,15 +125,10 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
                 $q->orWhereHas('exposure', function ($subQ) use ($pattern) {
                     $subQ->where('avoidance_target', 'like', $pattern);
                 });
+                $q->orWhereHas('hierarchyItem', function ($subQ) use ($pattern) {
+                    $subQ->where('content', 'like', $pattern);
+                });
             });
-        }
-
-        if ($criteria->filter === 'pending') {
-            $query->where(function ($q) {
-                $q->whereNull('reflection')->orWhere('reflection', '');
-            });
-        } elseif ($criteria->filter === 'completed') {
-            $query->whereNotNull('reflection')->where('reflection', '!=', '');
         }
 
         $paginator = $query->orderByDesc('created_at')

@@ -82,6 +82,7 @@ Route::delete('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolving
 Route::get('/exposures', [ExposureController::class, 'index']);
 Route::get('/exposures/export/csv', [ExposureController::class, 'exportCsv']);
 Route::get('/exposures/sessions', [ExposureController::class, 'sessions']);
+Route::get('/exposures/sessions/{session}', [ExposureController::class, 'showSession']);
 Route::get('/exposures/{exposure}', [ExposureController::class, 'show']);
 Route::post('/exposures', [ExposureController::class, 'store']);
 Route::put('/exposures/{exposure}', [ExposureController::class, 'update']);

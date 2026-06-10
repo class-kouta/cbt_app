@@ -158,7 +158,7 @@ function exposureListApp() {
         },
 
         hasSession(item) {
-            return item.sessions && item.sessions.some(s => s.action_plan && s.action_plan.trim() !== '');
+            return item.sessions && item.sessions.length > 0;
         },
 
         async exportCsv() {

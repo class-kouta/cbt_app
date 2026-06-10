@@ -62,6 +62,28 @@ class ExposureController extends Controller
         return response()->json($sessions);
     }
 
+    public function showSession(ExposureSession $session): JsonResponse
+    {
+        $session->load(['exposure', 'hierarchyItem']);
+        $exposure = $session->exposure;
+
+        if ($exposure === null || $exposure->member_id !== (int) Auth::id()) {
+            abort(404);
+        }
+
+        return response()->json([
+            'id' => $session->id,
+            'exposure_id' => $session->exposure_id,
+            'avoidance_target' => $exposure->avoidance_target,
+            'hierarchy_item_id' => $session->hierarchy_item_id,
+            'hierarchy_item_content' => $session->hierarchyItem->content ?? '',
+            'suds_after' => $session->suds_after,
+            'reflection' => $session->reflection,
+            'created_at' => $session->created_at->format(DATE_ATOM),
+            'updated_at' => $session->updated_at->format(DATE_ATOM),
+        ]);
+    }
+
     public function store(CreateExposureRequest $request, CreateExposureUseCase $createExposure): JsonResponse
     {
         $exposureEntity = $createExposure->handle($this->toExposureData($request));

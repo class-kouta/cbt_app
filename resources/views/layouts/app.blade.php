@@ -524,7 +524,12 @@
                                 @else
                                     <a href="/exposures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">シート一覧</span></a>
                                 @endif
-                                @if(request()->is('exposures/sessions'))
+                                @if(request()->is('exposures/sessions/new'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">実施記録作成</span></span>
+                                @else
+                                    <a href="/exposures/sessions/new" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">実施記録作成</span></a>
+                                @endif
+                                @if(request()->is('exposures/sessions') && !request()->is('exposures/sessions/*'))
                                     <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">実施記録一覧</span></span>
                                 @else
                                     <a href="/exposures/sessions" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">実施記録一覧</span></a>

@@ -5,49 +5,47 @@
 
 @section('content')
 <div x-data="exposureSessionsListApp()" x-init="init()" x-cloak>
-    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-        <div class="mb-3">
-            <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
-            <input
-                type="text"
-                x-model="keyword"
-                @keyup.enter="search()"
-                placeholder="実施計画、振り返り、回避していることで検索..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
-            >
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4 space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">回避していること</label>
+            <select x-model="exposureId" @change="onExposureChange()"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white">
+                <option value="">すべて</option>
+                <template x-for="exposure in exposures" :key="exposure.id">
+                    <option :value="exposure.id" x-text="exposure.avoidance_target"></option>
+                </template>
+            </select>
         </div>
-        <div class="mt-3 pt-3 border-t border-gray-200 flex items-center gap-3">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">不安階層表</label>
+            <select x-model="hierarchyItemId" @change="search()" :disabled="!exposureId"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base"
+                :class="exposureId ? 'bg-white' : 'bg-gray-100 cursor-not-allowed'">
+                <option value="">すべて</option>
+                <template x-for="item in hierarchyItems" :key="item.id">
+                    <option :value="item.id" x-text="item.content"></option>
+                </template>
+            </select>
+            <p x-show="!exposureId" class="text-xs text-gray-500 mt-1">「回避していること」を選択すると絞り込めます</p>
+        </div>
+        <div class="pt-2 border-t border-gray-200 flex items-center gap-3">
             <button @click="search()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-medium">
-                検索
+                絞り込む
             </button>
-            <button x-show="keyword" @click="clearSearch()" class="text-sm text-gray-500 hover:text-gray-700 underline">
-                検索条件をクリア
+            <button x-show="exposureId || hierarchyItemId" @click="clearFilters()" class="text-sm text-gray-500 hover:text-gray-700 underline">
+                絞り込みをクリア
             </button>
         </div>
-    </div>
-
-    <div class="mb-4 flex gap-2">
-        <button @click="setFilter('all')" class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'all' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'">すべて</button>
-        <button @click="setFilter('pending')" class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'">振り返り待ち</button>
-        <button @click="setFilter('completed')" class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'completed' ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'">振り返り済み</button>
     </div>
 
     <div class="space-y-3">
         <template x-for="session in allSessions" :key="session.sessionId">
             <a
-                :href="'/exposures/' + session.exposureId + '?from=sessions&session_id=' + session.sessionId"
+                :href="'/exposures/sessions/' + session.sessionId"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <span
-                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                            :class="session.hasReflection ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
-                            x-text="session.hasReflection ? '振り返り済み' : '振り返り待ち'"
-                        ></span>
+                    <div class="flex items-center justify-end mb-2">
                         <span class="text-xs text-gray-400" x-text="formatDate(session.createdAt)"></span>
                     </div>
                     <div class="mb-2">
@@ -58,19 +56,16 @@
                         <span class="text-xs text-emerald-600">不安階層表</span>
                         <p class="text-gray-800 text-sm" x-text="session.hierarchyItemContent"></p>
                     </div>
-                    <div x-show="session.sudsBefore !== null || session.sudsAfter !== null" class="mb-2">
-                        <span class="text-xs text-gray-500">不安レベル</span>
-                        <p class="text-sm font-medium text-gray-800">
-                            <span x-text="session.sudsBefore ?? '-'"></span>
-                            →
-                            <span x-text="session.sudsPeak ?? '-'"></span>
-                            →
-                            <span x-text="session.sudsAfter ?? '-'"></span>
-                        </p>
+                    <div x-show="session.sudsAfter !== null" class="mb-2">
+                        <span class="text-xs text-gray-500">実施後の不安レベル</span>
+                        <p class="text-sm font-medium text-gray-800" x-text="session.sudsAfter"></p>
                     </div>
-                    <p class="text-gray-800 text-sm line-clamp-2 whitespace-pre-wrap" x-text="session.actionPlan || '未入力'"></p>
+                    <div x-show="session.reflection">
+                        <span class="text-xs text-gray-500">振り返り</span>
+                        <p class="text-gray-800 text-sm line-clamp-2 whitespace-pre-wrap" x-text="session.reflection"></p>
+                    </div>
                 </div>
-                <div class="h-1" :class="session.hasReflection ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-yellow-400 to-orange-400'"></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
             </a>
         </template>
 
@@ -80,15 +75,15 @@
 
         <div x-show="!loading && allSessions.length === 0" class="text-center py-16 bg-white rounded-xl shadow-md">
             <p class="text-gray-600 text-lg mb-2">まだ実施記録がありません</p>
-            <a href="/exposures" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium">
-                エクスポージャーを始める
+            <a href="/exposures/sessions/new" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium">
+                実施記録を作成する
             </a>
         </div>
 
         <x-pagination theme-color-from="emerald-500" theme-color-to="teal-500" theme-border-color="emerald-500" />
     </div>
 
-    <a href="/exposures" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg flex items-center justify-center text-2xl">＋</a>
+    <a href="/exposures/sessions/new" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg flex items-center justify-center text-2xl" title="実施記録を作成">＋</a>
 </div>
 
 <style>
@@ -100,22 +95,47 @@
 function exposureSessionsListApp() {
     return {
         allSessions: [],
+        exposures: [],
+        hierarchyItems: [],
+        exposureId: '',
+        hierarchyItemId: '',
         loading: true,
-        filter: new URLSearchParams(window.location.search).get('filter') || 'all',
-        keyword: '',
         currentPage: 1,
         perPage: 10,
         lastPage: 1,
 
         async init() {
+            await this.loadExposures();
             await this.loadSessions();
+        },
+
+        async loadExposures() {
+            const res = await apiFetch('/api/exposures?per_page=100');
+            if (!res.ok) return;
+            const data = await res.json();
+            this.exposures = data.data || [];
+        },
+
+        async onExposureChange() {
+            this.hierarchyItemId = '';
+            this.hierarchyItems = [];
+            if (!this.exposureId) {
+                await this.search();
+                return;
+            }
+            const res = await apiFetch(`/api/exposures/${this.exposureId}`);
+            if (res.ok) {
+                const exposure = await res.json();
+                this.hierarchyItems = exposure.hierarchy_items || [];
+            }
+            await this.search();
         },
 
         async loadSessions() {
             this.loading = true;
             const params = new URLSearchParams();
-            if (this.keyword) params.append('keyword', this.keyword);
-            if (this.filter && this.filter !== 'all') params.append('filter', this.filter);
+            if (this.exposureId) params.append('exposure_id', this.exposureId);
+            if (this.hierarchyItemId) params.append('hierarchy_item_id', this.hierarchyItemId);
             params.append('page', this.currentPage);
             params.append('per_page', this.perPage);
 
@@ -127,12 +147,8 @@ function exposureSessionsListApp() {
                 exposureId: s.exposure_id,
                 avoidanceTarget: s.avoidance_target,
                 hierarchyItemContent: s.hierarchy_item_content,
-                actionPlan: s.action_plan,
-                sudsBefore: s.suds_before,
-                sudsPeak: s.suds_peak,
                 sudsAfter: s.suds_after,
                 reflection: s.reflection,
-                hasReflection: s.reflection && s.reflection.trim() !== '',
                 createdAt: s.created_at
             }));
 
@@ -145,13 +161,10 @@ function exposureSessionsListApp() {
             await this.loadSessions();
         },
 
-        setFilter(filter) {
-            this.filter = filter;
-            this.search();
-        },
-
-        async clearSearch() {
-            this.keyword = '';
+        async clearFilters() {
+            this.exposureId = '';
+            this.hierarchyItemId = '';
+            this.hierarchyItems = [];
             this.currentPage = 1;
             await this.loadSessions();
         },

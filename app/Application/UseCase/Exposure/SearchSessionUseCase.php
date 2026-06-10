@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 class SearchSessionUseCase
 {
     private const SEARCHABLE_COLUMNS = [
-        'action_plan',
         'reflection',
     ];
 

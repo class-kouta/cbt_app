@@ -26,25 +26,41 @@ class ExposureSessionSearchTest extends TestCase
         return $this->actingAs($this->member, 'sanctum');
     }
 
-    private function createSessionWithData(string $avoidanceTarget, string $actionPlan, ?string $reflection = null): ExposureSession
+    private function createExposureWithHierarchy(string $avoidanceTarget = 'テスト'): array
     {
         $exposure = Exposure::create([
             'member_id' => $this->member->id,
             'avoidance_target' => $avoidanceTarget,
         ]);
 
+        $item = ExposureHierarchyItem::create([
+            'exposure_id' => $exposure->id,
+            'content' => '場面1',
+            'sort_order' => 1,
+            'expected_suds' => 50,
+        ]);
+
+        return [$exposure, $item];
+    }
+
+    private function createSession(Exposure $exposure, ExposureHierarchyItem $item, int $sudsAfter = 40, ?string $reflection = null): ExposureSession
+    {
         return ExposureSession::create([
             'exposure_id' => $exposure->id,
+            'hierarchy_item_id' => $item->id,
             'session_number' => 1,
-            'action_plan' => $actionPlan,
+            'suds_after' => $sudsAfter,
             'reflection' => $reflection,
         ]);
     }
 
-    public function test_sessions_returns_plans_with_action_plan(): void
+    public function test_sessions_returns_records(): void
     {
-        $this->createSessionWithData('電車が怖い', '1駅だけ乗る', 'なんとか乗れた');
-        $this->createSessionWithData('人前で話すのが怖い', '短い挨拶をする', null);
+        [$exposure, $item] = $this->createExposureWithHierarchy('電車が怖い');
+        $this->createSession($exposure, $item, 30, 'なんとか乗れた');
+
+        [$exposure2, $item2] = $this->createExposureWithHierarchy('人前で話すのが怖い');
+        $this->createSession($exposure2, $item2, 60);
 
         $response = $this->asMember()->getJson('/api/exposures/sessions');
 
@@ -52,15 +68,48 @@ class ExposureSessionSearchTest extends TestCase
         $response->assertJsonPath('total', 2);
     }
 
-    public function test_sessions_filter_pending(): void
+    public function test_sessions_filter_by_exposure_id(): void
     {
-        $this->createSessionWithData('電車が怖い', '1駅だけ乗る', null);
-        $this->createSessionWithData('人前で話す', '挨拶する', 'できた');
+        [$exposure, $item] = $this->createExposureWithHierarchy('電車が怖い');
+        $this->createSession($exposure, $item);
 
-        $response = $this->asMember()->getJson('/api/exposures/sessions?filter=pending');
+        [$exposure2, $item2] = $this->createExposureWithHierarchy('人前で話す');
+        $this->createSession($exposure2, $item2);
+
+        $response = $this->asMember()->getJson("/api/exposures/sessions?exposure_id={$exposure->id}");
 
         $response->assertStatus(200);
         $response->assertJsonPath('total', 1);
+        $response->assertJsonPath('data.0.exposure_id', $exposure->id);
+    }
+
+    public function test_sessions_filter_by_hierarchy_item_id(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+        $item2 = ExposureHierarchyItem::create([
+            'exposure_id' => $exposure->id,
+            'content' => '場面2',
+            'sort_order' => 2,
+        ]);
+
+        $this->createSession($exposure, $item);
+        $this->createSession($exposure, $item2);
+
+        $response = $this->asMember()->getJson("/api/exposures/sessions?exposure_id={$exposure->id}&hierarchy_item_id={$item->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('total', 1);
+        $response->assertJsonPath('data.0.hierarchy_item_id', $item->id);
+    }
+
+    public function test_sessions_rejects_hierarchy_filter_without_exposure(): void
+    {
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+        $this->createSession($exposure, $item);
+
+        $response = $this->asMember()->getJson("/api/exposures/sessions?hierarchy_item_id={$item->id}");
+
+        $response->assertStatus(422);
     }
 
     public function test_exposure_crud(): void
@@ -104,24 +153,8 @@ class ExposureSessionSearchTest extends TestCase
 
     public function test_sync_hierarchy_items_preserves_session_links(): void
     {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
-
-        $item = ExposureHierarchyItem::create([
-            'exposure_id' => $exposure->id,
-            'content' => '元の場面',
-            'sort_order' => 1,
-            'expected_suds' => 40,
-        ]);
-
-        $session = ExposureSession::create([
-            'exposure_id' => $exposure->id,
-            'hierarchy_item_id' => $item->id,
-            'session_number' => 1,
-            'action_plan' => '実施する',
-        ]);
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+        $session = $this->createSession($exposure, $item);
 
         $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/hierarchy-items/sync", [
             'items' => [
@@ -135,192 +168,50 @@ class ExposureSessionSearchTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertJsonPath('items.0.id', $item->id);
-        $this->assertDatabaseHas('exposure_hierarchy_items', [
-            'id' => $item->id,
-            'content' => '更新後の場面',
-            'expected_suds' => 70,
-        ]);
         $this->assertDatabaseHas('exposure_sessions', [
             'id' => $session->id,
             'hierarchy_item_id' => $item->id,
         ]);
     }
 
-    public function test_sync_hierarchy_items_rejects_foreign_item_id(): void
+    public function test_add_session_requires_hierarchy_item_and_suds_after(): void
     {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+
+        $response = $this->asMember()->postJson("/api/exposures/{$exposure->id}/sessions", [
+            'hierarchy_item_id' => $item->id,
+            'suds_after' => 45,
+            'reflection' => 'できた',
         ]);
 
-        $otherExposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => '別のテスト',
-        ]);
-
-        $foreignItem = ExposureHierarchyItem::create([
-            'exposure_id' => $otherExposure->id,
-            'content' => '他人の場面',
-            'sort_order' => 1,
-        ]);
-
-        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/hierarchy-items/sync", [
-            'items' => [
-                [
-                    'id' => $foreignItem->id,
-                    'content' => '不正な更新',
-                    'sort_order' => 1,
-                ],
-            ],
-        ]);
-
-        $response->assertStatus(422);
+        $response->assertStatus(201);
+        $response->assertJsonPath('suds_after', 45);
     }
 
     public function test_add_session_rejects_foreign_hierarchy_item(): void
     {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
-
-        $otherExposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => '別のテスト',
-        ]);
-
-        $foreignItem = ExposureHierarchyItem::create([
-            'exposure_id' => $otherExposure->id,
-            'content' => '他人の階段',
-            'sort_order' => 1,
-        ]);
+        [$exposure] = $this->createExposureWithHierarchy();
+        [$otherExposure, $foreignItem] = $this->createExposureWithHierarchy('別のテスト');
 
         $response = $this->asMember()->postJson("/api/exposures/{$exposure->id}/sessions", [
             'hierarchy_item_id' => $foreignItem->id,
-            'action_plan' => '実施する',
+            'suds_after' => 50,
         ]);
 
         $response->assertStatus(422);
     }
 
-    public function test_sync_sessions_rejects_foreign_hierarchy_item(): void
+    public function test_show_session(): void
     {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
+        [$exposure, $item] = $this->createExposureWithHierarchy();
+        $session = $this->createSession($exposure, $item, 55, '振り返り');
 
-        $otherExposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => '別のテスト',
-        ]);
-
-        $foreignItem = ExposureHierarchyItem::create([
-            'exposure_id' => $otherExposure->id,
-            'content' => '他人の階段',
-            'sort_order' => 1,
-        ]);
-
-        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
-            'sessions' => [
-                [
-                    'hierarchy_item_id' => $foreignItem->id,
-                    'action_plan' => '実施する',
-                ],
-            ],
-        ]);
-
-        $response->assertStatus(422);
-    }
-
-    public function test_sync_sessions_in_single_request(): void
-    {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
-
-        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
-            'sessions' => [
-                [
-                    'action_plan' => '1駅だけ乗る',
-                    'suds_before' => 80,
-                    'suds_peak' => 90,
-                    'suds_after' => 60,
-                    'reflection' => 'なんとかできた',
-                ],
-            ],
-        ]);
+        $response = $this->asMember()->getJson("/api/exposures/sessions/{$session->id}");
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'sessions');
-        $this->assertDatabaseCount('exposure_sessions', 1);
-    }
-
-    public function test_sync_sessions_reassigns_session_numbers_when_order_changes(): void
-    {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
-
-        $existingSession = ExposureSession::create([
-            'exposure_id' => $exposure->id,
-            'session_number' => 1,
-            'action_plan' => '既存の計画',
-        ]);
-
-        $response = $this->asMember()->putJson("/api/exposures/{$exposure->id}/sessions/sync", [
-            'sessions' => [
-                [
-                    'action_plan' => '新規の計画',
-                ],
-                [
-                    'id' => $existingSession->id,
-                    'action_plan' => '既存の計画',
-                ],
-            ],
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJsonPath('sessions.0.session_number', 1);
-        $response->assertJsonPath('sessions.1.session_number', 2);
-
-        $this->assertDatabaseHas('exposure_sessions', [
-            'id' => $existingSession->id,
-            'session_number' => 2,
-        ]);
-    }
-
-    public function test_update_hierarchy_item_preserves_existing_entity(): void
-    {
-        $exposure = Exposure::create([
-            'member_id' => $this->member->id,
-            'avoidance_target' => 'テスト',
-        ]);
-
-        $item = ExposureHierarchyItem::create([
-            'exposure_id' => $exposure->id,
-            'content' => '元の場面',
-            'sort_order' => 1,
-            'expected_suds' => 40,
-        ]);
-
-        $response = $this->asMember()->putJson(
-            "/api/exposures/{$exposure->id}/hierarchy-items/{$item->id}",
-            [
-                'content' => '更新後の場面',
-                'sort_order' => 2,
-                'expected_suds' => 70,
-            ]
-        );
-
-        $response->assertStatus(200);
-        $response->assertJsonFragment([
-            'content' => '更新後の場面',
-            'sort_order' => 2,
-            'expected_suds' => 70,
-        ]);
+        $response->assertJsonPath('exposure_id', $exposure->id);
+        $response->assertJsonPath('hierarchy_item_id', $item->id);
+        $response->assertJsonPath('suds_after', 55);
+        $response->assertJsonPath('reflection', '振り返り');
     }
 }

@@ -126,6 +126,14 @@ Route::middleware('auth')->group(function () {
         });
 
         // 実施記録一覧ページ
+        Route::get('/exposures/sessions/new', function () {
+            return view('exposure-session-edit');
+        });
+
+        Route::get('/exposures/sessions/{id}', function ($id) {
+            return view('exposure-session-edit', ['sessionId' => $id]);
+        })->where('id', '[0-9]+');
+
         Route::get('/exposures/sessions', function () {
             return view('exposure-sessions-list');
         });
