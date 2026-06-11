@@ -7,6 +7,7 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\CopingController;
 use App\Http\Controllers\EarlyMaladaptiveSchemaController;
 use App\Http\Controllers\ProblemSolvingController;
+use App\Http\Controllers\ExposureController;
 use App\Http\Controllers\SimpleNotepadController;
 use App\Http\Controllers\SimpleNotepadTagController;
 use App\Http\Controllers\StressorAndResponseController;
@@ -76,6 +77,24 @@ Route::delete('/problem-solvings/{problemSolving}/solutions/{solution}', [Proble
 Route::post('/problem-solvings/{problemSolving}/plans', [ProblemSolvingController::class, 'addPlan']);
 Route::put('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolvingController::class, 'updatePlan']);
 Route::delete('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolvingController::class, 'deletePlan']);
+
+// Exposure API（エクスポージャー療法）
+Route::get('/exposures', [ExposureController::class, 'index']);
+Route::get('/exposures/export/csv', [ExposureController::class, 'exportCsv']);
+Route::get('/exposures/sessions', [ExposureController::class, 'sessions']);
+Route::get('/exposures/sessions/{session}', [ExposureController::class, 'showSession']);
+Route::get('/exposures/{exposure}', [ExposureController::class, 'show']);
+Route::post('/exposures', [ExposureController::class, 'store']);
+Route::put('/exposures/{exposure}', [ExposureController::class, 'update']);
+Route::delete('/exposures/{exposure}', [ExposureController::class, 'destroy']);
+Route::put('/exposures/{exposure}/hierarchy-items/sync', [ExposureController::class, 'syncHierarchyItems']);
+Route::put('/exposures/{exposure}/sessions/sync', [ExposureController::class, 'syncSessions']);
+Route::post('/exposures/{exposure}/hierarchy-items', [ExposureController::class, 'addHierarchyItem']);
+Route::put('/exposures/{exposure}/hierarchy-items/{hierarchyItem}', [ExposureController::class, 'updateHierarchyItem']);
+Route::delete('/exposures/{exposure}/hierarchy-items/{hierarchyItem}', [ExposureController::class, 'deleteHierarchyItem']);
+Route::post('/exposures/{exposure}/sessions', [ExposureController::class, 'addSession']);
+Route::put('/exposures/{exposure}/sessions/{session}', [ExposureController::class, 'updateSession']);
+Route::delete('/exposures/{exposure}/sessions/{session}', [ExposureController::class, 'deleteSession']);
 
 // SimpleNotepad API（シンプルメモ帳）
 Route::get('/simple-notepads', [SimpleNotepadController::class, 'index']);

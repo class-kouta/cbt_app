@@ -232,6 +232,7 @@
                             'stressor' => request()->is('stressor-and-responses*'),
                             'column' => request()->is('columns*'),
                             'problem' => request()->is('problem-solvings*'),
+                            'exposure' => request()->is('exposures*'),
                             'support' => request()->is('support-networks*'),
                             'coping' => request()->is('copings*'),
                             'mindfulness' => request()->is('mindfulness*'),
@@ -250,6 +251,7 @@
                             columnOpen: {{ $menuActive['column'] ? 'true' : 'false' }},
                             writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
                             problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
+                            exposureOpen: {{ $menuActive['exposure'] ? 'true' : 'false' }},
                             notepadOpen: {{ $menuActive['notepad'] ? 'true' : 'false' }},
                             modeDialogueOpen: {{ $menuActive['modeDialogue'] ? 'true' : 'false' }},
                             chronologyOpen: {{ $menuActive['chronology'] ? 'true' : 'false' }}
@@ -496,6 +498,41 @@
                                     <a href="/problem-solvings/plans" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">計画一覧</span>
                                     </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- エクスポージャー療法（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['exposure'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="exposureOpen = !exposureOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">エクスポージャー療法</span>
+                                <svg class="w-5 h-5 transition-transform duration-200" :class="exposureOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="exposureOpen" x-collapse class="">
+                                @if(request()->is('exposures') && !request()->is('exposures/*'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">新規作成</span></span>
+                                @else
+                                    <a href="/exposures" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">新規作成</span></a>
+                                @endif
+                                @if(request()->is('exposures/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">シート一覧</span></span>
+                                @else
+                                    <a href="/exposures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">シート一覧</span></a>
+                                @endif
+                                @if(request()->is('exposures/sessions/new'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">実施記録作成</span></span>
+                                @else
+                                    <a href="/exposures/sessions/new" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">実施記録作成</span></a>
+                                @endif
+                                @if(request()->is('exposures/sessions') && !request()->is('exposures/sessions/*'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default"><span class="text-base">実施記録一覧</span></span>
+                                @else
+                                    <a href="/exposures/sessions" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors"><span class="text-base">実施記録一覧</span></a>
                                 @endif
                             </div>
                         </div>

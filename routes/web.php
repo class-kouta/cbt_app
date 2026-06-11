@@ -115,6 +115,38 @@ Route::middleware('auth')->group(function () {
             return view('simple-notepad-tags');
         });
 
+        // エクスポージャー療法作成ページ
+        Route::get('/exposures', function () {
+            return view('exposure-edit');
+        });
+
+        // エクスポージャー療法一覧ページ
+        Route::get('/exposures/list', function () {
+            return view('exposures-list');
+        });
+
+        // 実施記録一覧ページ
+        Route::get('/exposures/sessions/new', function () {
+            return view('exposure-session-edit');
+        });
+
+        Route::get('/exposures/sessions/{id}', function ($id) {
+            return view('exposure-session-edit', ['sessionId' => $id]);
+        })->where('id', '[0-9]+');
+
+        Route::get('/exposures/sessions', function () {
+            return view('exposure-sessions-list');
+        });
+
+        // エクスポージャー療法詳細・編集ページ（統合）
+        Route::get('/exposures/{id}', function ($id) {
+            return view('exposure-edit', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
+        Route::get('/exposures/{id}/edit', function ($id) {
+            return redirect('/exposures/' . $id);
+        })->where('id', '[0-9]+');
+
         // 問題解決法作成ページ
         Route::get('/problem-solvings', function () {
             return view('problem-solving-edit');
