@@ -13,6 +13,8 @@ use App\Infrastructure\Database\Models\ExposureHierarchyItem as ExposureHierarch
 use App\Infrastructure\Database\Models\ExposureSession as ExposureSessionModel;
 use App\Support\LikeSearch;
 use DateTimeImmutable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class EloquentExposureRepository implements ExposureRepositoryInterface
@@ -243,10 +245,21 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             }
             $deleteQuery->delete();
 
+            /** @var Collection<int, ExposureHierarchyItemModel> $existingModels */
+            $existingModels = count($keepIds) > 0
+                ? ExposureHierarchyItemModel::where('exposure_id', $exposure->id)
+                    ->whereIn('id', $keepIds)
+                    ->get()
+                    ->keyBy('id')
+                : collect();
+
             $entities = [];
             foreach ($items as $item) {
                 if ($item->getId() !== null) {
-                    $model = ExposureHierarchyItemModel::where('exposure_id', $exposure->id)->findOrFail($item->getId());
+                    $model = $existingModels->get($item->getId());
+                    if ($model === null) {
+                        throw (new ModelNotFoundException)->setModel(ExposureHierarchyItemModel::class, $item->getId());
+                    }
                 } else {
                     $model = new ExposureHierarchyItemModel();
                     $model->exposure_id = $exposure->id;
@@ -292,10 +305,21 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             }
             $deleteQuery->delete();
 
+            /** @var Collection<int, ExposureSessionModel> $existingSessionModels */
+            $existingSessionModels = count($keepIds) > 0
+                ? ExposureSessionModel::where('exposure_id', $exposure->id)
+                    ->whereIn('id', $keepIds)
+                    ->get()
+                    ->keyBy('id')
+                : collect();
+
             $entities = [];
             foreach ($sessions as $session) {
                 if ($session->getId() !== null) {
-                    $model = ExposureSessionModel::where('exposure_id', $exposure->id)->findOrFail($session->getId());
+                    $model = $existingSessionModels->get($session->getId());
+                    if ($model === null) {
+                        throw (new ModelNotFoundException)->setModel(ExposureSessionModel::class, $session->getId());
+                    }
                 } else {
                     $model = new ExposureSessionModel();
                     $model->exposure_id = $exposure->id;
@@ -393,7 +417,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             });
         }
 
-        foreach ($query->orderByDesc('created_at')->cursor() as $exposure) {
+        foreach ($query->orderByDesc('created_at')->lazy() as $exposure) {
             yield $this->formatExposureArray($exposure);
         }
     }
