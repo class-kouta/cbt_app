@@ -92,6 +92,43 @@
             return fetch(input, requestInit);
         }
 
+        async function parseApiErrorMessage(response, fallback = '保存に失敗しました') {
+            try {
+                const data = await response.json();
+                if (data.errors) {
+                    const messages = Object.values(data.errors).flat();
+                    if (messages.length > 0) {
+                        return messages.join('\n');
+                    }
+                }
+                if (data.message) {
+                    return data.message;
+                }
+            } catch (error) {}
+
+            return fallback;
+        }
+
+        async function fetchAllExposures() {
+            const exposures = [];
+            let page = 1;
+            let lastPage = 1;
+
+            do {
+                const response = await apiFetch(`/api/exposures?per_page=100&page=${page}`);
+                if (!response.ok) {
+                    break;
+                }
+
+                const data = await response.json();
+                exposures.push(...(data.data || []));
+                lastPage = data.last_page || 1;
+                page++;
+            } while (page <= lastPage);
+
+            return exposures;
+        }
+
         /**
          * ページネーションで表示するページ番号の配列を計算する
          * @param {number} currentPage - 現在のページ

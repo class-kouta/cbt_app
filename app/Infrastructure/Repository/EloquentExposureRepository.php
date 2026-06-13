@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Application\DTO\SessionSearchCriteriaData;
+use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Entity\Exposure as ExposureEntity;
 use App\Domain\Entity\ExposureHierarchyItem as ExposureHierarchyItemEntity;
 use App\Domain\Entity\ExposureSession as ExposureSessionEntity;
@@ -19,6 +20,10 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentExposureRepository implements ExposureRepositoryInterface
 {
+    public function __construct(private readonly ExposureResponseFormatter $formatter)
+    {
+    }
+
     public function saveForMember(ExposureEntity $exposure, int $memberId): ExposureEntity
     {
         if ($exposure->getId() !== null) {
@@ -28,10 +33,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         }
 
         $model->avoidance_target = $exposure->getAvoidanceTarget();
-        $model->exposure_type = $exposure->getExposureType();
-        $model->self_talk = $exposure->getSelfTalk();
-        $model->overall_reflection = $exposure->getOverallReflection();
-        $model->next_goal = $exposure->getNextGoal();
         $model->member_id = $memberId;
         $model->save();
 
@@ -137,24 +138,9 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
 
         return [
-            'data' => collect($paginator->items())->map(function ($session) {
-                return [
-                    'id' => $session->id,
-                    'exposure_id' => $session->exposure_id,
-                    'avoidance_target' => $session->exposure->avoidance_target ?? '',
-                    'hierarchy_item_id' => $session->hierarchy_item_id,
-                    'hierarchy_item_content' => $session->hierarchyItem->content ?? '',
-                    'session_number' => $session->session_number,
-                    'action_plan' => $session->action_plan,
-                    'suds_before' => $session->suds_before,
-                    'suds_peak' => $session->suds_peak,
-                    'suds_after' => $session->suds_after,
-                    'performed_at' => $session->performed_at?->format(DATE_ATOM),
-                    'reflection' => $session->reflection,
-                    'created_at' => $session->created_at->format(DATE_ATOM),
-                    'updated_at' => $session->updated_at->format(DATE_ATOM),
-                ];
-            })->toArray(),
+            'data' => collect($paginator->items())->map(
+                fn ($session) => $this->formatter->sessionSearchRowFromModel($session)
+            )->toArray(),
             'total' => $paginator->total(),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
@@ -178,11 +164,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             $model->exposure_id = $ownerScopedExposure->id;
             $model->hierarchy_item_id = $session->getHierarchyItemId();
             $model->session_number = $nextSessionNumber;
-            $model->action_plan = $session->getActionPlan();
-            $model->suds_before = $session->getSudsBefore();
-            $model->suds_peak = $session->getSudsPeak();
             $model->suds_after = $session->getSudsAfter();
-            $model->performed_at = $session->getPerformedAt();
             $model->reflection = $session->getReflection();
             $model->save();
 
@@ -205,11 +187,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
     {
         $model = ExposureSessionModel::whereHas('exposure', fn ($q) => $q->where('member_id', $memberId))->findOrFail($session->getId());
         $model->hierarchy_item_id = $session->getHierarchyItemId();
-        $model->action_plan = $session->getActionPlan();
-        $model->suds_before = $session->getSudsBefore();
-        $model->suds_peak = $session->getSudsPeak();
         $model->suds_after = $session->getSudsAfter();
-        $model->performed_at = $session->getPerformedAt();
         $model->reflection = $session->getReflection();
         $model->save();
 
@@ -327,11 +305,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
 
                 $model->session_number = $session->getSessionNumber();
                 $model->hierarchy_item_id = $session->getHierarchyItemId();
-                $model->action_plan = $session->getActionPlan();
-                $model->suds_before = $session->getSudsBefore();
-                $model->suds_peak = $session->getSudsPeak();
                 $model->suds_after = $session->getSudsAfter();
-                $model->performed_at = $session->getPerformedAt();
                 $model->reflection = $session->getReflection();
                 $model->save();
 
@@ -371,7 +345,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
 
         $items = collect($paginator->items())
-            ->map(fn ($exposure) => $this->formatExposureArray($exposure))
+            ->map(fn ($exposure) => $this->formatter->exposureFromModel($exposure))
             ->toArray();
 
         return [
@@ -383,25 +357,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             'from' => $paginator->firstItem(),
             'to' => $paginator->lastItem(),
         ];
-    }
-
-    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
-    {
-        $query = ExposureModel::with(['hierarchyItems', 'sessions'])->where('member_id', $memberId);
-
-        if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
-            $pattern = LikeSearch::containsPattern($criteria->keyword);
-            $query->where(function ($q) use ($pattern, $searchableColumns) {
-                foreach ($searchableColumns as $column) {
-                    $q->orWhere($column, 'like', $pattern);
-                }
-            });
-        }
-
-        return $query->orderByDesc('created_at')
-            ->get()
-            ->map(fn ($exposure) => $this->formatExposureArray($exposure))
-            ->toArray();
     }
 
     public function cursorAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): \Generator
@@ -418,7 +373,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         }
 
         foreach ($query->orderByDesc('created_at')->lazy() as $exposure) {
-            yield $this->formatExposureArray($exposure);
+            yield $this->formatter->exposureFromModel($exposure);
         }
     }
 
@@ -430,10 +385,6 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         return ExposureEntity::reconstitute(
             id: (int) $model->id,
             avoidanceTarget: (string) $model->avoidance_target,
-            exposureType: $model->exposure_type,
-            selfTalk: $model->self_talk,
-            overallReflection: $model->overall_reflection,
-            nextGoal: $model->next_goal,
             hierarchyItems: $hierarchyItems,
             sessions: $sessions,
             createdAt: new DateTimeImmutable($model->created_at),
@@ -461,49 +412,10 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             exposureId: (int) $model->exposure_id,
             hierarchyItemId: $model->hierarchy_item_id,
             sessionNumber: (int) $model->session_number,
-            actionPlan: $model->action_plan,
-            sudsBefore: $model->suds_before,
-            sudsPeak: $model->suds_peak,
             sudsAfter: $model->suds_after,
-            performedAt: $model->performed_at ? DateTimeImmutable::createFromInterface($model->performed_at) : null,
             reflection: $model->reflection,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function formatExposureArray(ExposureModel $exposure): array
-    {
-        return [
-            'id' => $exposure->id,
-            'avoidance_target' => $exposure->avoidance_target,
-            'self_talk' => $exposure->self_talk,
-            'overall_reflection' => $exposure->overall_reflection,
-            'next_goal' => $exposure->next_goal,
-            'hierarchy_items' => $exposure->hierarchyItems->map(fn ($item) => [
-                'id' => $item->id,
-                'content' => $item->content,
-                'expected_suds' => $item->expected_suds,
-                'sort_order' => $item->sort_order,
-            ])->toArray(),
-            'sessions' => $exposure->sessions->map(fn ($session) => [
-                'id' => $session->id,
-                'hierarchy_item_id' => $session->hierarchy_item_id,
-                'session_number' => $session->session_number,
-                'action_plan' => $session->action_plan,
-                'suds_before' => $session->suds_before,
-                'suds_peak' => $session->suds_peak,
-                'suds_after' => $session->suds_after,
-                'performed_at' => $session->performed_at?->format(DATE_ATOM),
-                'reflection' => $session->reflection,
-                'created_at' => $session->created_at->format(DATE_ATOM),
-                'updated_at' => $session->updated_at->format(DATE_ATOM),
-            ])->toArray(),
-            'created_at' => $exposure->created_at->format(DATE_ATOM),
-            'updated_at' => $exposure->updated_at->format(DATE_ATOM),
-        ];
     }
 }

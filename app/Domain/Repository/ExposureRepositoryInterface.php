@@ -24,12 +24,6 @@ interface ExposureRepositoryInterface
 
     /**
      * @param array<int, string> $searchableColumns
-     * @return array<int, array<string, mixed>>
-     */
-    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
-
-    /**
-     * @param array<int, string> $searchableColumns
      * @return \Generator<int, array<string, mixed>>
      */
     public function cursorAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): \Generator;

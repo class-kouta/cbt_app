@@ -13,10 +13,6 @@ class Exposure
     private function __construct(
         private ?int $id,
         private string $avoidanceTarget,
-        private ?string $exposureType,
-        private ?string $selfTalk,
-        private ?string $overallReflection,
-        private ?string $nextGoal,
         private array $hierarchyItems,
         private array $sessions,
         private DateTimeImmutable $createdAt,
@@ -24,27 +20,11 @@ class Exposure
     ) {
     }
 
-    public static function createNew(
-        string $avoidanceTarget,
-        ?string $exposureType = null,
-        ?string $selfTalk = null,
-        ?string $overallReflection = null,
-        ?string $nextGoal = null
-    ): self {
+    public static function createNew(string $avoidanceTarget): self
+    {
         $now = new DateTimeImmutable('now');
 
-        return new self(
-            null,
-            $avoidanceTarget,
-            $exposureType,
-            $selfTalk,
-            $overallReflection,
-            $nextGoal,
-            [],
-            [],
-            $now,
-            $now
-        );
+        return new self(null, $avoidanceTarget, [], [], $now, $now);
     }
 
     /**
@@ -54,27 +34,12 @@ class Exposure
     public static function reconstitute(
         int $id,
         string $avoidanceTarget,
-        ?string $exposureType,
-        ?string $selfTalk,
-        ?string $overallReflection,
-        ?string $nextGoal,
         array $hierarchyItems,
         array $sessions,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
-        return new self(
-            $id,
-            $avoidanceTarget,
-            $exposureType,
-            $selfTalk,
-            $overallReflection,
-            $nextGoal,
-            $hierarchyItems,
-            $sessions,
-            $createdAt,
-            $updatedAt
-        );
+        return new self($id, $avoidanceTarget, $hierarchyItems, $sessions, $createdAt, $updatedAt);
     }
 
     public function getId(): ?int
@@ -85,26 +50,6 @@ class Exposure
     public function getAvoidanceTarget(): string
     {
         return $this->avoidanceTarget;
-    }
-
-    public function getExposureType(): ?string
-    {
-        return $this->exposureType;
-    }
-
-    public function getSelfTalk(): ?string
-    {
-        return $this->selfTalk;
-    }
-
-    public function getOverallReflection(): ?string
-    {
-        return $this->overallReflection;
-    }
-
-    public function getNextGoal(): ?string
-    {
-        return $this->nextGoal;
     }
 
     /**
@@ -163,20 +108,11 @@ class Exposure
         return $this->updatedAt;
     }
 
-    public function update(
-        string $avoidanceTarget,
-        ?string $exposureType,
-        ?string $selfTalk,
-        ?string $overallReflection,
-        ?string $nextGoal
-    ): self {
+    public function update(string $avoidanceTarget): self
+    {
         return new self(
             $this->id,
             $avoidanceTarget,
-            $exposureType,
-            $selfTalk,
-            $overallReflection,
-            $nextGoal,
             $this->hierarchyItems,
             $this->sessions,
             $this->createdAt,

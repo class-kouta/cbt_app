@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Exposure;
 
+use App\Rules\SudsScore;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AddHierarchyItemRequest extends FormRequest
@@ -16,7 +17,7 @@ class AddHierarchyItemRequest extends FormRequest
         return [
             'content' => ['required', 'string', 'max:500'],
             'sort_order' => ['required', 'integer', 'min:1'],
-            'expected_suds' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'expected_suds' => ['nullable', 'integer', new SudsScore],
         ];
     }
 
@@ -25,8 +26,6 @@ class AddHierarchyItemRequest extends FormRequest
         return [
             'content.required' => '状況の内容を入力してください',
             'content.max' => '状況の内容は500文字以内で入力してください',
-            'expected_suds.min' => '不安レベルは0以上で入力してください',
-            'expected_suds.max' => '不安レベルは100以下で入力してください',
         ];
     }
 }

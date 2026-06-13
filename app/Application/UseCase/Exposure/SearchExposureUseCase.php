@@ -10,9 +10,6 @@ class SearchExposureUseCase
 {
     private const SEARCHABLE_COLUMNS = [
         'avoidance_target',
-        'self_talk',
-        'overall_reflection',
-        'next_goal',
     ];
 
     public function __construct(private readonly ExposureRepositoryInterface $repository)

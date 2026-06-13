@@ -5,7 +5,6 @@ namespace App\Application\UseCase\Exposure;
 use App\Application\DTO\ExposureSessionData;
 use App\Domain\Entity\ExposureSession as ExposureSessionEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\Auth;
 
 class AddSessionUseCase
@@ -22,6 +21,10 @@ class AddSessionUseCase
             throw new \RuntimeException('Exposure not found');
         }
 
+        if (! $exposure->canAddNewSession()) {
+            throw new \InvalidArgumentException('前回の実施記録の振り返りを完了してから、新しい記録を追加してください');
+        }
+
         $memberId = (int) Auth::id();
 
         if ($data->hierarchyItemId !== null
@@ -29,18 +32,10 @@ class AddSessionUseCase
             throw new \InvalidArgumentException('Invalid hierarchy item');
         }
 
-        $performedAt = $data->performedAt
-            ? new DateTimeImmutable($data->performedAt)
-            : null;
-
         $session = ExposureSessionEntity::createNew(
             0,
             $data->hierarchyItemId,
-            $data->actionPlan,
-            $data->sudsBefore,
-            $data->sudsPeak,
             $data->sudsAfter,
-            $performedAt,
             $data->reflection
         );
 
