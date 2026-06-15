@@ -154,8 +154,9 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         return DB::transaction(function () use ($exposureId, $session, $memberId) {
             $ownerScopedExposure = ExposureModel::where('member_id', $memberId)->lockForUpdate()->findOrFail($exposureId);
 
+            // exposure 行のロックで同一 exposure への同時追加を直列化する。
+            // PostgreSQL では集約関数と FOR UPDATE の併用ができないため、max 取得時は lockForUpdate しない。
             $maxSessionNumber = ExposureSessionModel::where('exposure_id', $ownerScopedExposure->id)
-                ->lockForUpdate()
                 ->max('session_number');
             $nextSessionNumber = ($maxSessionNumber ?? 0) + 1;
 
