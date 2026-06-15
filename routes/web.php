@@ -75,6 +75,15 @@ Route::middleware('auth')->group(function () {
             return view('condition-checks-form', ['itemId' => $id]);
         })->where('id', '[0-9]+');
 
+        // セルフコンパッション日記
+        Route::get('/self-compassion-journals', function () {
+            return view('self-compassion-journals');
+        });
+
+        Route::get('/self-compassion-journals/list', function () {
+            return view('self-compassion-journals-list');
+        });
+
         // 筆記開示ページ
         Route::get('/writing-disclosures', function () {
             return view('writing-disclosures');

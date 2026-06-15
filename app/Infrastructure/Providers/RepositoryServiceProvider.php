@@ -15,6 +15,7 @@ use App\Domain\Repository\EarlyMaladaptiveSchemaRepositoryInterface;
 use App\Domain\Repository\TagRepositoryInterface;
 use App\Domain\Repository\ChronologyRepositoryInterface;
 use App\Domain\Repository\ConditionCheckRepositoryInterface;
+use App\Domain\Repository\SelfCompassionJournalRepositoryInterface;
 use App\Domain\Repository\MemberRepositoryInterface;
 
 use App\Infrastructure\Repository\EloquentCopingRepository;
@@ -30,6 +31,7 @@ use App\Infrastructure\Repository\EloquentEarlyMaladaptiveSchemaRepository;
 use App\Infrastructure\Repository\EloquentTagRepository;
 use App\Infrastructure\Repository\EloquentChronologyRepository;
 use App\Infrastructure\Repository\EloquentConditionCheckRepository;
+use App\Infrastructure\Repository\EloquentSelfCompassionJournalRepository;
 use App\Infrastructure\Repository\EloquentMemberRepository;
 
 use Illuminate\Support\ServiceProvider;
@@ -51,6 +53,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TagRepositoryInterface::class, EloquentTagRepository::class);
         $this->app->bind(ChronologyRepositoryInterface::class, EloquentChronologyRepository::class);
         $this->app->bind(ConditionCheckRepositoryInterface::class, EloquentConditionCheckRepository::class);
+        $this->app->bind(SelfCompassionJournalRepositoryInterface::class, EloquentSelfCompassionJournalRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, EloquentMemberRepository::class);
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
+use App\Http\Controllers\SelfCompassionJournalController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -144,6 +145,10 @@ Route::get('/condition-checks/{conditionCheck}', [ConditionCheckController::clas
 Route::post('/condition-checks', [ConditionCheckController::class, 'store']);
 Route::put('/condition-checks/{conditionCheck}', [ConditionCheckController::class, 'update']);
 Route::delete('/condition-checks/{conditionCheck}', [ConditionCheckController::class, 'destroy']);
+
+// SelfCompassionJournal API（セルフコンパッション日記）
+Route::get('/self-compassion-journals', [SelfCompassionJournalController::class, 'index']);
+Route::post('/self-compassion-journals', [SelfCompassionJournalController::class, 'store']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

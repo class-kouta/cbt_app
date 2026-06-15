@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Infrastructure\Repository;
+
+use App\Domain\Entity\SelfCompassionJournal as SelfCompassionJournalEntity;
+use App\Domain\Repository\SelfCompassionJournalRepositoryInterface;
+use App\Infrastructure\Database\Models\SelfCompassionJournal as SelfCompassionJournalModel;
+
+class EloquentSelfCompassionJournalRepository implements SelfCompassionJournalRepositoryInterface
+{
+    private function toEntity(SelfCompassionJournalModel $model): SelfCompassionJournalEntity
+    {
+        return SelfCompassionJournalEntity::reconstitute(
+            id: (int) $model->id,
+            difficultExperience: (string) $model->difficult_experience,
+            effortMade: (string) $model->effort_made,
+            friendVoice: (string) $model->friend_voice,
+            wordToSelf: (string) $model->word_to_self,
+            createdAt: $model->created_at->toDateTimeImmutable(),
+            updatedAt: $model->updated_at->toDateTimeImmutable(),
+        );
+    }
+
+    public function findAllForMember(int $memberId): array
+    {
+        return SelfCompassionJournalModel::where('member_id', $memberId)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($model) => $this->toEntity($model))
+            ->values()
+            ->all();
+    }
+
+    public function saveForMember(SelfCompassionJournalEntity $journal, int $memberId): SelfCompassionJournalEntity
+    {
+        $model = new SelfCompassionJournalModel();
+        $model->member_id = $memberId;
+        $model->difficult_experience = $journal->getDifficultExperience();
+        $model->effort_made = $journal->getEffortMade();
+        $model->friend_voice = $journal->getFriendVoice();
+        $model->word_to_self = $journal->getWordToSelf();
+        $model->save();
+
+        return $this->toEntity($model);
+    }
+}
