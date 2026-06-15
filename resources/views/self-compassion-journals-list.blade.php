@@ -20,45 +20,16 @@ $fieldLabels = [
         </div>
 
         <template x-for="item in journals" :key="item.id">
-            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                <button
-                    type="button"
-                    @click="toggleItem(item.id)"
-                    class="w-full text-left p-4 hover:bg-emerald-50 transition-colors"
-                >
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-xs text-emerald-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
-                            <p class="text-gray-800 line-clamp-2 break-words" x-text="item.difficult_experience"></p>
-                        </div>
-                        <svg
-                            class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform"
-                            :class="expandedId === item.id ? 'rotate-180' : ''"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </button>
-
-                <div x-show="expandedId === item.id" x-collapse class="border-t border-gray-100">
-                    <div class="p-4 space-y-4 bg-emerald-50/50">
-                        @foreach ($fieldLabels as $key => $label)
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">{{ $loop->iteration }}</span>
-                                    <span class="text-xs font-semibold text-emerald-700">{{ $label }}</span>
-                                </div>
-                                <p class="text-sm text-gray-800 whitespace-pre-wrap break-words pl-7" x-text="item.{{ $key }}"></p>
-                            </div>
-                        @endforeach
-                    </div>
+            <a
+                :href="'/self-compassion-journals/' + item.id"
+                class="block bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg hover:border-emerald-300 transition-all"
+            >
+                <div class="p-4">
+                    <div class="text-xs text-emerald-600 font-medium mb-2" x-text="formatDate(item.created_at)"></div>
+                    <p class="text-gray-800 line-clamp-2 break-words" x-text="item.difficult_experience"></p>
                 </div>
-
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
-            </div>
+            </a>
         </template>
 
         <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
@@ -103,7 +74,6 @@ function selfCompassionJournalListApp() {
     return {
         journals: [],
         loading: true,
-        expandedId: null,
 
         async init() {
             await this.loadJournals();
@@ -117,10 +87,6 @@ function selfCompassionJournalListApp() {
             } finally {
                 this.loading = false;
             }
-        },
-
-        toggleItem(id) {
-            this.expandedId = this.expandedId === id ? null : id;
         },
 
         formatDate(dateString) {

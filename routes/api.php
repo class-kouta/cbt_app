@@ -148,7 +148,10 @@ Route::delete('/condition-checks/{conditionCheck}', [ConditionCheckController::c
 
 // SelfCompassionJournal API（セルフコンパッション日記）
 Route::get('/self-compassion-journals', [SelfCompassionJournalController::class, 'index']);
+Route::get('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJournalController::class, 'show']);
 Route::post('/self-compassion-journals', [SelfCompassionJournalController::class, 'store']);
+Route::put('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJournalController::class, 'update']);
+Route::delete('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJournalController::class, 'destroy']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

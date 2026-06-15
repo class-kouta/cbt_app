@@ -84,6 +84,14 @@ Route::middleware('auth')->group(function () {
             return view('self-compassion-journals-list');
         });
 
+        Route::get('/self-compassion-journals/{id}', function ($id) {
+            return view('self-compassion-journal-detail', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
+        Route::get('/self-compassion-journals/{id}/edit', function ($id) {
+            return view('self-compassion-journals', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
         // 筆記開示ページ
         Route::get('/writing-disclosures', function () {
             return view('writing-disclosures');

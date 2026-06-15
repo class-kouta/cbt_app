@@ -49,4 +49,24 @@ class EloquentSelfCompassionJournalRepository implements SelfCompassionJournalRe
 
         return $this->toEntity($model);
     }
+
+    public function findByIdForMember(int $id, int $memberId): ?SelfCompassionJournalEntity
+    {
+        $model = SelfCompassionJournalModel::where('member_id', $memberId)->find($id);
+
+        if ($model === null) {
+            return null;
+        }
+
+        return $this->toEntity($model);
+    }
+
+    public function deleteForMember(int $id, int $memberId): void
+    {
+        $model = SelfCompassionJournalModel::where('member_id', $memberId)->find($id);
+
+        if ($model !== null) {
+            $model->delete();
+        }
+    }
 }

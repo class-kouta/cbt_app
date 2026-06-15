@@ -12,4 +12,8 @@ interface SelfCompassionJournalRepositoryInterface
     public function findAllForMember(int $memberId): array;
 
     public function saveForMember(SelfCompassionJournal $journal, int $memberId): SelfCompassionJournal;
+
+    public function findByIdForMember(int $id, int $memberId): ?SelfCompassionJournal;
+
+    public function deleteForMember(int $id, int $memberId): void;
 }

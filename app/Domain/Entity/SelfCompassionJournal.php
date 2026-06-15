@@ -102,4 +102,22 @@ class SelfCompassionJournal
             $this->updatedAt,
         );
     }
+
+    public function update(
+        string $difficultExperience,
+        string $effortMade,
+        string $friendVoice,
+        string $wordToSelf,
+        DateTimeImmutable $updatedAt,
+    ): self {
+        return new self(
+            $this->id,
+            $difficultExperience,
+            $effortMade,
+            $friendVoice,
+            $wordToSelf,
+            $this->createdAt,
+            $updatedAt,
+        );
+    }
 }
