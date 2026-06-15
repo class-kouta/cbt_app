@@ -34,8 +34,8 @@ $fields = [
 
 @section('content')
 <div x-data="selfCompassionJournalApp()" x-init="init()" x-cloak>
-    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-4">
-        <p class="text-rose-800 text-sm">
+    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+        <p class="text-emerald-800 text-sm">
             しんどい気持ちを認めながら、自分に優しく声をかける日記です。4つの項目をすべて記入して保存しましょう。
         </p>
     </div>
@@ -46,7 +46,7 @@ $fields = [
                 @foreach ($fields as $index => $field)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-rose-500 text-white text-xs font-bold mr-1">{{ $index + 1 }}</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">{{ $index + 1 }}</span>
                             {{ $field['label'] }}
                             <span class="text-red-500">*</span>
                             <span class="text-gray-400 font-normal ml-1">{{ $field['hint'] }}</span>
@@ -54,7 +54,7 @@ $fields = [
                         <textarea
                             x-model="form.{{ $field['key'] }}"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                             placeholder="{{ $field['placeholder'] }}"
                             maxlength="10000"
                             required
@@ -68,7 +68,7 @@ $fields = [
                 <div>
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-rose-600 hover:to-pink-600 transition-colors disabled:opacity-50"
+                        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-colors disabled:opacity-50"
                         :disabled="loading || !isFormValid()"
                     >
                         <span x-show="!loading">保存する</span>
