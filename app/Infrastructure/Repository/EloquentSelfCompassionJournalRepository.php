@@ -33,8 +33,14 @@ class EloquentSelfCompassionJournalRepository implements SelfCompassionJournalRe
 
     public function saveForMember(SelfCompassionJournalEntity $journal, int $memberId): SelfCompassionJournalEntity
     {
-        $model = new SelfCompassionJournalModel();
-        $model->member_id = $memberId;
+        if ($journal->getId() !== null) {
+            $model = SelfCompassionJournalModel::where('member_id', $memberId)
+                ->findOrFail($journal->getId());
+        } else {
+            $model = new SelfCompassionJournalModel();
+            $model->member_id = $memberId;
+        }
+
         $model->difficult_experience = $journal->getDifficultExperience();
         $model->effort_made = $journal->getEffortMade();
         $model->friend_voice = $journal->getFriendVoice();
