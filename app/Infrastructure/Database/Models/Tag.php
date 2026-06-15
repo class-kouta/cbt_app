@@ -38,11 +38,4 @@ class Tag extends Model
         return $this->belongsToMany(ProblemSolving::class, 'problem_solving_tag');
     }
 
-    /**
-     * タグに紐づくエクスポージャー療法一覧
-     */
-    public function exposures(): BelongsToMany
-    {
-        return $this->belongsToMany(Exposure::class, 'exposure_tag');
-    }
 }

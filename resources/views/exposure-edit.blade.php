@@ -57,7 +57,7 @@
                         <span class="text-gray-400 font-normal ml-1">いちばん不安が少ないものから並べましょう</span>
                     </label>
                     <div class="space-y-3">
-                        <template x-for="(item, index) in hierarchyItems" :key="index">
+                        <template x-for="(item, index) in hierarchyItems" :key="item.id ? 'item-' + item.id : 'new-' + index">
                             <div class="border rounded-lg p-3" :class="isEditing ? 'border-gray-300' : 'border-gray-200 bg-gray-50'">
                                 <div class="flex justify-between mb-2">
                                     <span class="text-sm text-gray-500 font-medium" x-text="'場面 ' + (index + 1)"></span>
@@ -121,7 +121,7 @@ function exposureFormApp(itemId) {
             if (!this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(true); this.stopEditing(); }
-            catch (e) { alert('保存に失敗しました'); }
+            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
             finally { this.submitting = false; }
         },
 
@@ -185,7 +185,7 @@ function exposureFormApp(itemId) {
 
         async saveNewItem() {
             const r = await apiFetch('/api/exposures', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.form) });
-            if (!r.ok) throw new Error('create failed');
+            if (!r.ok) throw await parseApiErrorMessage(r);
             const created = await r.json();
             this.itemId = created.id;
             this.hasExistingRecord = true;
@@ -195,7 +195,7 @@ function exposureFormApp(itemId) {
 
         async saveExistingItem() {
             const r = await apiFetch(`/api/exposures/${this.itemId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.form) });
-            if (!r.ok) throw new Error('update failed');
+            if (!r.ok) throw await parseApiErrorMessage(r);
             await this.saveHierarchyItems(this.itemId);
         },
 
@@ -213,7 +213,7 @@ function exposureFormApp(itemId) {
                     }))
                 })
             });
-            if (!res.ok) throw new Error('hierarchy sync failed');
+            if (!res.ok) throw await parseApiErrorMessage(res);
             const result = await res.json();
             const saved = result.items || [];
             this.hierarchyItems = saved.map(s => ({ id: s.id, content: s.content, expected_suds: s.expected_suds ?? '' }));
@@ -224,7 +224,7 @@ function exposureFormApp(itemId) {
             if (this.submitting || !this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(true); this.stopEditing(); }
-            catch (e) { alert('保存に失敗しました'); }
+            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
             finally { this.submitting = false; }
         },
 
@@ -232,7 +232,7 @@ function exposureFormApp(itemId) {
             if (!confirm('この記録を削除しますか？')) return;
             const r = await apiFetch(`/api/exposures/${this.itemId}`, { method: 'DELETE' });
             if (r.ok) window.location.href = '/exposures/list';
-            else alert('削除に失敗しました');
+            else alert(await parseApiErrorMessage(r, '削除に失敗しました'));
         },
 
         hasAnyContent() {

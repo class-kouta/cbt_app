@@ -16,16 +16,8 @@ class ExposureSession extends Model
         'exposure_id',
         'hierarchy_item_id',
         'session_number',
-        'action_plan',
-        'suds_before',
-        'suds_peak',
         'suds_after',
-        'performed_at',
         'reflection',
-    ];
-
-    protected $casts = [
-        'performed_at' => 'immutable_datetime',
     ];
 
     public function exposure(): BelongsTo
@@ -36,10 +28,5 @@ class ExposureSession extends Model
     public function hierarchyItem(): BelongsTo
     {
         return $this->belongsTo(ExposureHierarchyItem::class, 'hierarchy_item_id');
-    }
-
-    public function isReflectionCompleted(): bool
-    {
-        return $this->reflection !== null && trim($this->reflection) !== '';
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\Exposure;
 
 use App\Application\DTO\SearchCriteriaData;
+use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,13 +11,12 @@ class SearchExposureUseCase
 {
     private const SEARCHABLE_COLUMNS = [
         'avoidance_target',
-        'self_talk',
-        'overall_reflection',
-        'next_goal',
     ];
 
-    public function __construct(private readonly ExposureRepositoryInterface $repository)
-    {
+    public function __construct(
+        private readonly ExposureRepositoryInterface $repository,
+        private readonly ExposureResponseFormatter $formatter
+    ) {
     }
 
     /**
@@ -24,6 +24,19 @@ class SearchExposureUseCase
      */
     public function handle(SearchCriteriaData $criteria): array
     {
-        return $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
+        $result = $this->repository->searchForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
+
+        return [
+            'data' => array_map(
+                fn ($exposure) => $this->formatter->exposureFromEntity($exposure),
+                $result['data']
+            ),
+            'total' => $result['total'],
+            'per_page' => $result['per_page'],
+            'current_page' => $result['current_page'],
+            'last_page' => $result['last_page'],
+            'from' => $result['from'],
+            'to' => $result['to'],
+        ];
     }
 }

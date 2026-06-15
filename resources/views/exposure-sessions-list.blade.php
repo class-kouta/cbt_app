@@ -110,10 +110,7 @@ function exposureSessionsListApp() {
         },
 
         async loadExposures() {
-            const res = await apiFetch('/api/exposures?per_page=100');
-            if (!res.ok) return;
-            const data = await res.json();
-            this.exposures = data.data || [];
+            this.exposures = await fetchExposureOptions();
         },
 
         async onExposureChange() {

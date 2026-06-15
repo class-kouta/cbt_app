@@ -165,10 +165,6 @@
 - id — bigint, 主キー
 - member_id — bigint, 外部キー → members.id, NOT NULL
 - avoidance_target — text, NOT NULL（回避していること）
-- exposure_type — varchar(32), NULL可（未使用・レガシーカラム）
-- self_talk — text, NULL可（自分への声かけ）
-- overall_reflection — text, NULL可（全体振り返り）
-- next_goal — text, NULL可（次の目標）
 - created_at / updated_at — timestamp
 
 ---
@@ -176,7 +172,7 @@
 - id — bigint, 主キー
 - exposure_id — bigint, 外部キー → exposures.id（CASCADE DELETE）
 - content — text, NOT NULL
-- expected_suds — unsigned tinyint, NULL可（不安レベル 0-100）
+- expected_suds — unsigned tinyint, NULL可（不安レベル 0-100、5刻み）
 - sort_order — integer, NOT NULL
 - created_at / updated_at — timestamp
 
@@ -186,20 +182,12 @@
 - exposure_id — bigint, 外部キー → exposures.id（CASCADE DELETE）
 - hierarchy_item_id — bigint, NULL可, 外部キー → exposure_hierarchy_items.id（SET NULL）
 - session_number — unsigned integer, NOT NULL, DEFAULT 1
-- action_plan — text, NULL可（実施計画）
-- suds_before / suds_peak / suds_after — unsigned tinyint, NULL可（不安レベル 0-100）
-- performed_at — timestamp, NULL可
+- suds_after — unsigned tinyint, NULL可（実施後の不安レベル 0-100、5刻み）
 - reflection — text, NULL可（振り返り）
 - created_at / updated_at — timestamp
 
 ユニーク制約:
 - (exposure_id, session_number)
-
----
-## exposure_tag（未使用・レガシーテーブル）
-- exposure_id — bigint, 外部キー → exposures.id（CASCADE DELETE）
-- tag_id — bigint, 外部キー → tags.id（CASCADE DELETE）
-- 複合主キー: (exposure_id, tag_id)
 
 ---
 ## simple_notepads（シンプルメモ帳）

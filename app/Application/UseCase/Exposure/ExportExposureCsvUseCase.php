@@ -4,6 +4,7 @@ namespace App\Application\UseCase\Exposure;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Application\Service\CsvExportService;
+use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -12,24 +13,19 @@ class ExportExposureCsvUseCase
 {
     private const SEARCHABLE_COLUMNS = [
         'avoidance_target',
-        'self_talk',
-        'overall_reflection',
-        'next_goal',
     ];
 
     private const CSV_HEADERS = [
         'ID',
         '作成日時',
         '回避していること',
-        '自分への声かけ',
         '不安階層表',
         '実施記録',
-        '全体振り返り',
-        '次の目標',
     ];
 
     public function __construct(
         private readonly ExposureRepositoryInterface $repository,
+        private readonly ExposureResponseFormatter $formatter,
         private readonly CsvExportService $csvExportService
     ) {
     }
@@ -39,8 +35,8 @@ class ExportExposureCsvUseCase
         $memberId = (int) Auth::id();
 
         $rows = (function () use ($criteria, $memberId) {
-            foreach ($this->repository->cursorAllForMember($criteria, self::SEARCHABLE_COLUMNS, $memberId) as $item) {
-                yield $this->formatRow($item);
+            foreach ($this->repository->cursorAllForMember($criteria, self::SEARCHABLE_COLUMNS, $memberId) as $exposure) {
+                yield $this->formatRow($this->formatter->exposureFromEntity($exposure));
             }
         })();
 
@@ -68,21 +64,8 @@ class ExportExposureCsvUseCase
         $sessionTexts = [];
         foreach ($sessions as $index => $session) {
             $parts = [];
-            if (! empty(trim($session['action_plan'] ?? ''))) {
-                $parts[] = '計画: '.$session['action_plan'];
-            }
-            $anxietyLevelParts = [];
-            if ($session['suds_before'] !== null) {
-                $anxietyLevelParts[] = '前'.$session['suds_before'];
-            }
-            if ($session['suds_peak'] !== null) {
-                $anxietyLevelParts[] = '最高'.$session['suds_peak'];
-            }
             if ($session['suds_after'] !== null) {
-                $anxietyLevelParts[] = '後'.$session['suds_after'];
-            }
-            if (! empty($anxietyLevelParts)) {
-                $parts[] = '不安レベル('.implode('→', $anxietyLevelParts).')';
+                $parts[] = '不安レベル(後'.$session['suds_after'].')';
             }
             if (! empty(trim($session['reflection'] ?? ''))) {
                 $parts[] = '振り返り: '.$session['reflection'];
@@ -96,11 +79,8 @@ class ExportExposureCsvUseCase
             $item['id'],
             $this->csvExportService->formatDatetime($item['created_at']),
             $item['avoidance_target'] ?? '',
-            $item['self_talk'] ?? '',
             implode(' / ', $hierarchyTexts),
             implode(' / ', $sessionTexts),
-            $item['overall_reflection'] ?? '',
-            $item['next_goal'] ?? '',
         ];
     }
 }

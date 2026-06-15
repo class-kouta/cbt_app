@@ -5,7 +5,6 @@ namespace App\Application\UseCase\Exposure;
 use App\Application\DTO\ExposureSessionData;
 use App\Domain\Entity\ExposureSession as ExposureSessionEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\Auth;
 
 class UpdateSessionUseCase
@@ -33,17 +32,9 @@ class UpdateSessionUseCase
             throw new \InvalidArgumentException('Invalid hierarchy item');
         }
 
-        $performedAt = $data->performedAt
-            ? new DateTimeImmutable($data->performedAt)
-            : null;
-
         $updated = $existing->update(
             $data->hierarchyItemId,
-            $data->actionPlan,
-            $data->sudsBefore,
-            $data->sudsPeak,
             $data->sudsAfter,
-            $performedAt,
             $data->reflection
         );
 

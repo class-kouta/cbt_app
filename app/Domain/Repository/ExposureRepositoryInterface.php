@@ -18,21 +18,28 @@ interface ExposureRepositoryInterface
 
     /**
      * @param array<int, string> $searchableColumns
-     * @return array<string, mixed>
+     * @return array{
+     *     data: Exposure[],
+     *     total: int,
+     *     per_page: int,
+     *     current_page: int,
+     *     last_page: int,
+     *     from: int|null,
+     *     to: int|null
+     * }
      */
     public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
 
     /**
      * @param array<int, string> $searchableColumns
-     * @return array<int, array<string, mixed>>
-     */
-    public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
-
-    /**
-     * @param array<int, string> $searchableColumns
-     * @return \Generator<int, array<string, mixed>>
+     * @return \Generator<int, Exposure>
      */
     public function cursorAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): \Generator;
+
+    /**
+     * @return array<int, array{id: int, avoidance_target: string}>
+     */
+    public function listOptionsForMember(int $memberId): array;
 
     public function saveHierarchyItemForMember(int $exposureId, ExposureHierarchyItem $item, int $memberId): ExposureHierarchyItem;
 
@@ -44,7 +51,19 @@ interface ExposureRepositoryInterface
 
     /**
      * @param array<int, string> $searchableColumns
-     * @return array<string, mixed>
+     * @return array{
+     *     data: array<int, array{
+     *         session: ExposureSession,
+     *         avoidance_target: string,
+     *         hierarchy_item_content: string
+     *     }>,
+     *     total: int,
+     *     current_page: int,
+     *     last_page: int,
+     *     per_page: int,
+     *     from: int|null,
+     *     to: int|null
+     * }
      */
     public function searchSessionsForMember(SessionSearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
 

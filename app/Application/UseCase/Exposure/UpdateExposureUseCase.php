@@ -24,13 +24,7 @@ class UpdateExposureUseCase
                 throw new \RuntimeException('Exposure not found');
             }
 
-            $updated = $existing->update(
-                $data->avoidanceTarget,
-                null,
-                $data->selfTalk,
-                $data->overallReflection,
-                $data->nextGoal
-            );
+            $updated = $existing->update($data->avoidanceTarget);
 
             return $this->repository->saveForMember($updated, $memberId);
         });

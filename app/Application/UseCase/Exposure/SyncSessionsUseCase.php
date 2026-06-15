@@ -5,7 +5,6 @@ namespace App\Application\UseCase\Exposure;
 use App\Application\DTO\ExposureSessionBulkItemData;
 use App\Domain\Entity\ExposureSession as ExposureSessionEntity;
 use App\Domain\Repository\ExposureRepositoryInterface;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\Auth;
 
 class SyncSessionsUseCase
@@ -42,13 +41,9 @@ class SyncSessionsUseCase
 
         foreach ($itemsData as $itemData) {
             if ($itemData->id === null && ! ExposureSessionEntity::shouldPersistNewBulkItem(
-                $itemData->actionPlan,
                 $itemData->reflection,
                 $itemData->hierarchyItemId,
-                $itemData->sudsBefore,
-                $itemData->sudsPeak,
-                $itemData->sudsAfter,
-                $itemData->performedAt
+                $itemData->sudsAfter
             )) {
                 continue;
             }
@@ -58,10 +53,6 @@ class SyncSessionsUseCase
                 throw new \InvalidArgumentException('Invalid hierarchy item');
             }
 
-            $performedAt = $itemData->performedAt
-                ? new DateTimeImmutable($itemData->performedAt)
-                : null;
-
             if ($itemData->id !== null) {
                 $existing = $existingSessions[$itemData->id] ?? null;
                 if ($existing === null) {
@@ -70,22 +61,14 @@ class SyncSessionsUseCase
 
                 $sessions[] = $existing->update(
                     $itemData->hierarchyItemId,
-                    $itemData->actionPlan,
-                    $itemData->sudsBefore,
-                    $itemData->sudsPeak,
                     $itemData->sudsAfter,
-                    $performedAt,
                     $itemData->reflection
                 )->withSessionNumber($sessionNumber);
             } else {
                 $sessions[] = ExposureSessionEntity::createNew(
                     $sessionNumber,
                     $itemData->hierarchyItemId,
-                    $itemData->actionPlan,
-                    $itemData->sudsBefore,
-                    $itemData->sudsPeak,
                     $itemData->sudsAfter,
-                    $performedAt,
                     $itemData->reflection
                 );
             }

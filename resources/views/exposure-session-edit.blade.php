@@ -107,10 +107,7 @@ function exposureSessionFormApp(sessionId) {
         },
 
         async loadExposures() {
-            const res = await apiFetch('/api/exposures?per_page=100');
-            if (!res.ok) return;
-            const data = await res.json();
-            this.exposures = data.data || [];
+            this.exposures = await fetchExposureOptions();
         },
 
         async onExposureChange() {
@@ -157,7 +154,7 @@ function exposureSessionFormApp(sessionId) {
                         body: JSON.stringify(payload)
                     });
                 }
-                if (!res.ok) throw new Error('save failed');
+                if (!res.ok) throw await parseApiErrorMessage(res);
                 const saved = await res.json();
                 if (!this.hasExistingRecord) {
                     window.location.href = `/exposures/sessions/${saved.id}`;
@@ -166,7 +163,7 @@ function exposureSessionFormApp(sessionId) {
                 this.showSaveToast = true;
                 setTimeout(() => this.showSaveToast = false, 2000);
             } catch (e) {
-                alert('保存に失敗しました');
+                alert(typeof e === 'string' ? e : '保存に失敗しました');
             } finally {
                 this.submitting = false;
             }
@@ -176,7 +173,7 @@ function exposureSessionFormApp(sessionId) {
             if (!confirm('この実施記録を削除しますか？')) return;
             const res = await apiFetch(`/api/exposures/${this.form.exposure_id}/sessions/${this.sessionId}`, { method: 'DELETE' });
             if (res.ok) window.location.href = '/exposures/sessions';
-            else alert('削除に失敗しました');
+            else alert(await parseApiErrorMessage(res, '削除に失敗しました'));
         }
     };
 }
