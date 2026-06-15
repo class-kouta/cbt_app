@@ -4,7 +4,6 @@ namespace App\Infrastructure\Repository;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Application\DTO\SessionSearchCriteriaData;
-use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Entity\Exposure as ExposureEntity;
 use App\Domain\Entity\ExposureHierarchyItem as ExposureHierarchyItemEntity;
 use App\Domain\Entity\ExposureSession as ExposureSessionEntity;
@@ -20,10 +19,6 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentExposureRepository implements ExposureRepositoryInterface
 {
-    public function __construct(private readonly ExposureResponseFormatter $formatter)
-    {
-    }
-
     public function saveForMember(ExposureEntity $exposure, int $memberId): ExposureEntity
     {
         if ($exposure->getId() !== null) {
@@ -138,9 +133,13 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
 
         return [
-            'data' => collect($paginator->items())->map(
-                fn ($session) => $this->formatter->sessionSearchRowFromModel($session)
-            )->toArray(),
+            'data' => collect($paginator->items())->map(function ($session) {
+                return [
+                    'session' => $this->toSessionEntity($session),
+                    'avoidance_target' => $session->exposure->avoidance_target ?? '',
+                    'hierarchy_item_content' => $session->hierarchyItem->content ?? '',
+                ];
+            })->toArray(),
             'total' => $paginator->total(),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
@@ -345,7 +344,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
             ->paginate($criteria->perPage, ['*'], 'page', $criteria->page);
 
         $items = collect($paginator->items())
-            ->map(fn ($exposure) => $this->formatter->exposureFromModel($exposure))
+            ->map(fn ($exposure) => $this->toEntity($exposure))
             ->toArray();
 
         return [
@@ -373,8 +372,21 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         }
 
         foreach ($query->orderByDesc('created_at')->lazy() as $exposure) {
-            yield $this->formatter->exposureFromModel($exposure);
+            yield $this->toEntity($exposure);
         }
+    }
+
+    public function listOptionsForMember(int $memberId): array
+    {
+        return ExposureModel::query()
+            ->where('member_id', $memberId)
+            ->orderByDesc('created_at')
+            ->get(['id', 'avoidance_target'])
+            ->map(fn ($exposure) => [
+                'id' => (int) $exposure->id,
+                'avoidance_target' => (string) $exposure->avoidance_target,
+            ])
+            ->toArray();
     }
 
     private function toEntity(ExposureModel $model): ExposureEntity

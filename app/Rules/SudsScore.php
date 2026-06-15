@@ -13,7 +13,8 @@ class SudsScore implements ValidationRule
             return;
         }
 
-        if (! is_numeric($value) || (int) $value != $value || $value < 0 || $value > 100 || ((int) $value % 5) !== 0) {
+        $intValue = filter_var($value, FILTER_VALIDATE_INT);
+        if ($intValue === false || $intValue < 0 || $intValue > 100 || ($intValue % 5) !== 0) {
             $fail('不安レベルは0から100まで5刻みで入力してください');
         }
     }

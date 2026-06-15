@@ -4,6 +4,7 @@ namespace App\Application\UseCase\Exposure;
 
 use App\Application\DTO\SearchCriteriaData;
 use App\Application\Service\CsvExportService;
+use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -24,6 +25,7 @@ class ExportExposureCsvUseCase
 
     public function __construct(
         private readonly ExposureRepositoryInterface $repository,
+        private readonly ExposureResponseFormatter $formatter,
         private readonly CsvExportService $csvExportService
     ) {
     }
@@ -33,8 +35,8 @@ class ExportExposureCsvUseCase
         $memberId = (int) Auth::id();
 
         $rows = (function () use ($criteria, $memberId) {
-            foreach ($this->repository->cursorAllForMember($criteria, self::SEARCHABLE_COLUMNS, $memberId) as $item) {
-                yield $this->formatRow($item);
+            foreach ($this->repository->cursorAllForMember($criteria, self::SEARCHABLE_COLUMNS, $memberId) as $exposure) {
+                yield $this->formatRow($this->formatter->exposureFromEntity($exposure));
             }
         })();
 

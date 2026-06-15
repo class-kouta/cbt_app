@@ -383,4 +383,23 @@ class ExposureSessionSearchTest extends TestCase
         $response->assertHeader('content-type', 'text/csv; charset=utf-8');
         $this->assertStringContainsString('CSV出力テスト', $response->streamedContent());
     }
+
+    public function test_options_returns_lightweight_exposure_list(): void
+    {
+        Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'オプション1',
+        ]);
+        Exposure::create([
+            'member_id' => $this->member->id,
+            'avoidance_target' => 'オプション2',
+        ]);
+
+        $response = $this->asMember()->getJson('/api/exposures/options');
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(2, 'data');
+        $response->assertJsonFragment(['avoidance_target' => 'オプション1']);
+        $response->assertJsonMissingPath('data.0.hierarchy_items');
+    }
 }

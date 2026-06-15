@@ -107,7 +107,7 @@ function exposureSessionFormApp(sessionId) {
         },
 
         async loadExposures() {
-            this.exposures = await fetchAllExposures();
+            this.exposures = await fetchExposureOptions();
         },
 
         async onExposureChange() {

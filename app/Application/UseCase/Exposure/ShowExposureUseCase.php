@@ -4,6 +4,7 @@ namespace App\Application\UseCase\Exposure;
 
 use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
+use App\Infrastructure\Database\Models\Exposure;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +24,7 @@ class ShowExposureUseCase
         $exposure = $this->repository->findByIdForMember($id, (int) Auth::id());
 
         if ($exposure === null) {
-            throw (new ModelNotFoundException)->setModel('Exposure', $id);
+            throw (new ModelNotFoundException)->setModel(Exposure::class, $id);
         }
 
         return $this->formatter->exposureFromEntity($exposure);

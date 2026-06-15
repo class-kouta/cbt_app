@@ -81,6 +81,7 @@ Route::delete('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolving
 // Exposure API（エクスポージャー療法）
 Route::get('/exposures', [ExposureController::class, 'index']);
 Route::get('/exposures/export/csv', [ExposureController::class, 'exportCsv']);
+Route::get('/exposures/options', [ExposureController::class, 'options']);
 Route::get('/exposures/sessions', [ExposureController::class, 'sessions']);
 Route::get('/exposures/sessions/{session}', [ExposureController::class, 'showSession']);
 Route::get('/exposures/{exposure}', [ExposureController::class, 'show']);

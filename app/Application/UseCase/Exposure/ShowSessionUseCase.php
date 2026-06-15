@@ -3,12 +3,16 @@
 namespace App\Application\UseCase\Exposure;
 
 use App\Application\Service\ExposureResponseFormatter;
+use App\Domain\Repository\ExposureRepositoryInterface;
 use App\Infrastructure\Database\Models\ExposureSession;
+use Illuminate\Support\Facades\Auth;
 
 class ShowSessionUseCase
 {
-    public function __construct(private readonly ExposureResponseFormatter $formatter)
-    {
+    public function __construct(
+        private readonly ExposureRepositoryInterface $repository,
+        private readonly ExposureResponseFormatter $formatter
+    ) {
     }
 
     /**
@@ -16,6 +20,18 @@ class ShowSessionUseCase
      */
     public function handle(ExposureSession $session): array
     {
-        return $this->formatter->sessionDetailFromModel($session);
+        $session->loadMissing(['exposure', 'hierarchyItem']);
+
+        $entity = $this->repository->findSessionByIdForMember($session->id, (int) Auth::id());
+
+        if ($entity === null) {
+            abort(404);
+        }
+
+        return $this->formatter->sessionSearchRowFromEntity(
+            $entity,
+            $session->exposure->avoidance_target ?? '',
+            $session->hierarchyItem->content ?? ''
+        );
     }
 }

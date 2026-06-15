@@ -14,6 +14,7 @@ use App\Application\UseCase\Exposure\DeleteExposureUseCase;
 use App\Application\UseCase\Exposure\DeleteHierarchyItemUseCase;
 use App\Application\UseCase\Exposure\DeleteSessionUseCase;
 use App\Application\UseCase\Exposure\ExportExposureCsvUseCase;
+use App\Application\UseCase\Exposure\ListExposureOptionsUseCase;
 use App\Application\UseCase\Exposure\SearchExposureUseCase;
 use App\Application\UseCase\Exposure\SearchSessionUseCase;
 use App\Application\UseCase\Exposure\ShowExposureUseCase;
@@ -43,6 +44,13 @@ class ExposureController extends Controller
 {
     public function __construct(private readonly ExposureResponseFormatter $formatter)
     {
+    }
+
+    public function options(ListExposureOptionsUseCase $listOptions): JsonResponse
+    {
+        return response()->json([
+            'data' => $listOptions->handle(),
+        ]);
     }
 
     public function index(SearchRequest $request, SearchExposureUseCase $searchUseCase): JsonResponse
@@ -160,14 +168,7 @@ class ExposureController extends Controller
 
         $item = $addHierarchyItem->handle($exposure->id, $data);
 
-        return response()->json(array_merge(
-            $this->formatter->hierarchyItemFromEntity($item),
-            [
-                'exposure_id' => $item->getExposureId(),
-                'created_at' => $item->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $item->getUpdatedAt()->format(DATE_ATOM),
-            ]
-        ), 201);
+        return response()->json($this->formatter->hierarchyItemFromEntity($item), 201);
     }
 
     public function updateHierarchyItem(
@@ -188,14 +189,7 @@ class ExposureController extends Controller
 
         $updated = $updateHierarchyItem->handle($hierarchyItem->id, $data);
 
-        return response()->json(array_merge(
-            $this->formatter->hierarchyItemFromEntity($updated),
-            [
-                'exposure_id' => $updated->getExposureId(),
-                'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
-            ]
-        ));
+        return response()->json($this->formatter->hierarchyItemFromEntity($updated));
     }
 
     public function deleteHierarchyItem(

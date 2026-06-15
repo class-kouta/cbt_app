@@ -109,24 +109,14 @@
             return fallback;
         }
 
-        async function fetchAllExposures() {
-            const exposures = [];
-            let page = 1;
-            let lastPage = 1;
+        async function fetchExposureOptions() {
+            const response = await apiFetch('/api/exposures/options');
+            if (!response.ok) {
+                return [];
+            }
 
-            do {
-                const response = await apiFetch(`/api/exposures?per_page=100&page=${page}`);
-                if (!response.ok) {
-                    break;
-                }
-
-                const data = await response.json();
-                exposures.push(...(data.data || []));
-                lastPage = data.last_page || 1;
-                page++;
-            } while (page <= lastPage);
-
-            return exposures;
+            const data = await response.json();
+            return data.data || [];
         }
 
         /**

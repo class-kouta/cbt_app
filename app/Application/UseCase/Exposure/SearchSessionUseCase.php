@@ -3,6 +3,7 @@
 namespace App\Application\UseCase\Exposure;
 
 use App\Application\DTO\SessionSearchCriteriaData;
+use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,8 +13,10 @@ class SearchSessionUseCase
         'reflection',
     ];
 
-    public function __construct(private readonly ExposureRepositoryInterface $repository)
-    {
+    public function __construct(
+        private readonly ExposureRepositoryInterface $repository,
+        private readonly ExposureResponseFormatter $formatter
+    ) {
     }
 
     /**
@@ -21,6 +24,23 @@ class SearchSessionUseCase
      */
     public function handle(SessionSearchCriteriaData $criteria): array
     {
-        return $this->repository->searchSessionsForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
+        $result = $this->repository->searchSessionsForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
+
+        return [
+            'data' => array_map(
+                fn (array $row) => $this->formatter->sessionSearchRowFromEntity(
+                    $row['session'],
+                    $row['avoidance_target'],
+                    $row['hierarchy_item_content']
+                ),
+                $result['data']
+            ),
+            'total' => $result['total'],
+            'current_page' => $result['current_page'],
+            'last_page' => $result['last_page'],
+            'per_page' => $result['per_page'],
+            'from' => $result['from'],
+            'to' => $result['to'],
+        ];
     }
 }
