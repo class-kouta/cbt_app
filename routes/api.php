@@ -16,6 +16,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
 use App\Http\Controllers\SelfCompassionJournalController;
+use App\Http\Controllers\StressPersonEncyclopediaController;
 use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
@@ -153,6 +154,13 @@ Route::get('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJ
 Route::post('/self-compassion-journals', [SelfCompassionJournalController::class, 'store']);
 Route::put('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJournalController::class, 'update']);
 Route::delete('/self-compassion-journals/{selfCompassionJournal}', [SelfCompassionJournalController::class, 'destroy']);
+
+// StressPersonEncyclopedia API（ストレス人物図鑑）
+Route::get('/stress-person-encyclopedias', [StressPersonEncyclopediaController::class, 'index']);
+Route::get('/stress-person-encyclopedias/{stressPersonEncyclopedia}', [StressPersonEncyclopediaController::class, 'show']);
+Route::post('/stress-person-encyclopedias', [StressPersonEncyclopediaController::class, 'store']);
+Route::put('/stress-person-encyclopedias/{stressPersonEncyclopedia}', [StressPersonEncyclopediaController::class, 'update']);
+Route::delete('/stress-person-encyclopedias/{stressPersonEncyclopedia}', [StressPersonEncyclopediaController::class, 'destroy']);
 
 // Chronology API（スキーマ療法 - 年表）
 Route::get('/chronologies', [ChronologyController::class, 'index']);

@@ -92,6 +92,23 @@ Route::middleware('auth')->group(function () {
             return view('self-compassion-journals', ['itemId' => $id]);
         })->where('id', '[0-9]+');
 
+        // ストレス人物図鑑
+        Route::get('/stress-person-encyclopedias', function () {
+            return view('stress-person-encyclopedias');
+        });
+
+        Route::get('/stress-person-encyclopedias/list', function () {
+            return view('stress-person-encyclopedias-list');
+        });
+
+        Route::get('/stress-person-encyclopedias/{id}', function ($id) {
+            return view('stress-person-encyclopedia-detail', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
+        Route::get('/stress-person-encyclopedias/{id}/edit', function ($id) {
+            return view('stress-person-encyclopedias', ['itemId' => $id]);
+        })->where('id', '[0-9]+');
+
         // 筆記開示ページ
         Route::get('/writing-disclosures', function () {
             return view('writing-disclosures');
