@@ -229,6 +229,7 @@
                             'home' => request()->routeIs('home'),
                             'conditionCheck' => request()->is('condition-checks*'),
                             'writing' => request()->is('writing-disclosures*'),
+                            'selfCompassion' => request()->is('self-compassion-journals*'),
                             'stressor' => request()->is('stressor-and-responses*'),
                             'column' => request()->is('columns*'),
                             'problem' => request()->is('problem-solvings*'),
@@ -250,6 +251,7 @@
                             conditionCheckOpen: {{ $menuActive['conditionCheck'] ? 'true' : 'false' }},
                             columnOpen: {{ $menuActive['column'] ? 'true' : 'false' }},
                             writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
+                            selfCompassionOpen: {{ $menuActive['selfCompassion'] ? 'true' : 'false' }},
                             problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
                             exposureOpen: {{ $menuActive['exposure'] ? 'true' : 'false' }},
                             notepadOpen: {{ $menuActive['notepad'] ? 'true' : 'false' }},
@@ -361,6 +363,45 @@
                                     </span>
                                 @else
                                     <a href="/writing-disclosures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- セルフコンパッション日記（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['selfCompassion'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="selfCompassionOpen = !selfCompassionOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">セルフコンパッション日記</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="selfCompassionOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="selfCompassionOpen" x-collapse class="">
+                                @if(request()->is('self-compassion-journals') && !request()->is('self-compassion-journals/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/self-compassion-journals" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('self-compassion-journals/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/self-compassion-journals/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif
