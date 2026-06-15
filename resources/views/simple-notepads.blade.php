@@ -120,22 +120,6 @@
 
     <!-- フォーム -->
     <div class="space-y-4">
-        <!-- タイトル -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">タイトル</label>
-            <input
-                type="text"
-                x-model="formData.title"
-                :disabled="isEditMode && !isEditing"
-                class="w-full border rounded-lg px-4 py-2 text-base transition-all"
-                :class="(isEditMode && !isEditing)
-                    ? 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
-                    : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'"
-                placeholder="タイトル（任意）"
-                maxlength="255"
-            >
-        </div>
-
         <!-- メモ内容 -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">内容</label>
@@ -294,7 +278,6 @@ function simpleNotepadApp(itemId) {
         isEditMode: itemId !== null,
         isEditing: false,
         formData: {
-            title: '',
             content: '',
             tag_ids: []
         },
@@ -407,7 +390,6 @@ function simpleNotepadApp(itemId) {
             try {
                 const res = await apiFetch(`/api/simple-notepads/${this.itemId}`);
                 const item = await res.json();
-                this.formData.title = item.title || '';
                 this.formData.content = item.content || '';
                 this.formData.tag_ids = item.tag_ids || [];
             } catch (error) {
@@ -418,7 +400,6 @@ function simpleNotepadApp(itemId) {
         startEditing() {
             this.isEditing = true;
             this.lastSavedState = {
-                title: this.formData.title,
                 content: this.formData.content,
                 tag_ids: [...this.formData.tag_ids]
             };
@@ -445,7 +426,6 @@ function simpleNotepadApp(itemId) {
             if (!this.isEditing || this.saving) return;
 
             const currentState = {
-                title: this.formData.title,
                 content: this.formData.content,
                 tag_ids: [...this.formData.tag_ids]
             };
@@ -475,7 +455,6 @@ function simpleNotepadApp(itemId) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        title: this.formData.title,
                         content: this.formData.content,
                         tag_ids: this.formData.tag_ids
                     })
@@ -512,7 +491,6 @@ function simpleNotepadApp(itemId) {
             const success = await this.performSave(true);
             if (success) {
                 this.lastSavedState = {
-                    title: this.formData.title,
                     content: this.formData.content,
                     tag_ids: [...this.formData.tag_ids]
                 };
@@ -535,7 +513,6 @@ function simpleNotepadApp(itemId) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        title: this.formData.title,
                         content: this.formData.content,
                         tag_ids: this.formData.tag_ids
                     })

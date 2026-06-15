@@ -16,7 +16,6 @@ class SimpleNotepad extends Model
 
     protected $fillable = [
         'member_id',
-        'title',
         'content',
     ];
 

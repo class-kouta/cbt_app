@@ -18,13 +18,11 @@ class SimpleNotepadControllerTest extends TestCase
 
         $ownNotepad = SimpleNotepad::create([
             'member_id' => $member->id,
-            'title' => '自分のメモ',
             'content' => '自分の内容',
         ]);
 
         SimpleNotepad::create([
             'member_id' => $otherMember->id,
-            'title' => '他人のメモ',
             'content' => '他人の内容',
         ]);
 
@@ -33,7 +31,7 @@ class SimpleNotepadControllerTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('total', 1);
         $response->assertJsonPath('data.0.id', $ownNotepad->id);
-        $response->assertJsonPath('data.0.title', '自分のメモ');
+        $response->assertJsonPath('data.0.content', '自分の内容');
     }
 
     public function test_show_returns_not_found_for_other_members_notepad(): void
@@ -43,7 +41,6 @@ class SimpleNotepadControllerTest extends TestCase
 
         $otherNotepad = SimpleNotepad::create([
             'member_id' => $otherMember->id,
-            'title' => '他人のメモ',
             'content' => '他人の内容',
         ]);
 
@@ -58,7 +55,6 @@ class SimpleNotepadControllerTest extends TestCase
 
         $notepad = SimpleNotepad::create([
             'member_id' => $member->id,
-            'title' => '自分のメモ',
             'content' => '自分の内容',
         ]);
 
@@ -66,7 +62,6 @@ class SimpleNotepadControllerTest extends TestCase
             ->getJson("/api/simple-notepads/{$notepad->id}")
             ->assertOk()
             ->assertJsonPath('id', $notepad->id)
-            ->assertJsonPath('title', '自分のメモ')
             ->assertJsonPath('content', '自分の内容');
     }
 }

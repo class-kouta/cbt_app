@@ -23,7 +23,7 @@ class UpdateSimpleNotepadUseCase
             throw new DomainException('Simple notepad not found.');
         }
 
-        $updatedSimpleNotepad = $simpleNotepad->update($data->title, $data->content);
+        $updatedSimpleNotepad = $simpleNotepad->update($data->content);
 
         return $this->simpleNotepadRepository->saveWithTagsForMember($updatedSimpleNotepad, $data->tagIds, $memberId);
     }
