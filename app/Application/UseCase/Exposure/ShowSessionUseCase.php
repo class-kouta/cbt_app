@@ -5,6 +5,7 @@ namespace App\Application\UseCase\Exposure;
 use App\Application\Service\ExposureResponseFormatter;
 use App\Domain\Repository\ExposureRepositoryInterface;
 use App\Infrastructure\Database\Models\ExposureSession;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 
 class ShowSessionUseCase
@@ -25,7 +26,7 @@ class ShowSessionUseCase
         $entity = $this->repository->findSessionByIdForMember($session->id, (int) Auth::id());
 
         if ($entity === null) {
-            abort(404);
+            throw (new ModelNotFoundException)->setModel(ExposureSession::class, $session->id);
         }
 
         return $this->formatter->sessionSearchRowFromEntity(
