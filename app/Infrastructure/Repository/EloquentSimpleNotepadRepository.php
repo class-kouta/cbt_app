@@ -63,14 +63,13 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
         if ($simpleNotepad->getId() !== null) {
             $model = SimpleNotepadModel::where('member_id', $memberId)
                 ->findOrFail($simpleNotepad->getId());
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
         } else {
             $model = new SimpleNotepadModel();
             $model->member_id = $memberId;
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
         }
+
+        $model->content = $simpleNotepad->getContent();
+        $model->save();
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->getKey(),
