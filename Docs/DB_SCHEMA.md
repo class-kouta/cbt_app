@@ -321,6 +321,26 @@
 - `type='schema'`の場合、これらのフィールドは使用されず`NULL`になります。
 
 ---
+## stress_person_encyclopedias（ストレス人物図鑑）
+- id — bigint, 主キー
+- member_id — bigint, 外部キー → members.id, NOT NULL, ON DELETE CASCADE
+- name — varchar(255), NOT NULL（名前）
+- relationship — text, NULL可（関係性）
+- difficult_traits — text, NULL可（苦手な特徴）
+- my_reaction — text, NULL可（自分の反応）
+- coping_strategy — text, NULL可（対応方針）
+- notes — text, NULL可（備考）
+- created_at / updated_at — timestamp
+
+インデックス:
+- member_id
+- member_id, created_at
+
+**用途:**
+- ストレスを感じる人物について整理・記録する機能
+- 名前のみ必須、その他の項目は任意
+
+---
 
 ### 補足メモ
 - Laravel標準テーブルとして、ユーザー認証、パスワードリセット、セッション、キャッシュ、キュー関連のテーブルを追記しました。
@@ -331,4 +351,5 @@
 - `problem_solvings` は認知行動療法の問題解決法を実践するための記録です。
 - `simple_notepads` は特定の心理療法に紐づかないシンプルなメモ帳機能です。
 - `stressor_and_responses` はストレッサーとそれに対するストレス反応（認知・感情・身体・行動）を記録する機能です。
+- `stress_person_encyclopedias` はストレスを感じる人物について整理・記録する機能です。
 - `early_maladaptive_schemas` はスキーマ療法の18の早期不適応スキーマの囚われ度を記録する機能です。
