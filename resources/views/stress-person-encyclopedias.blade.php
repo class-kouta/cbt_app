@@ -41,21 +41,21 @@ $fields = [
 @section('content')
 <div x-data="stressPersonEncyclopediaApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
     <div class="flex justify-between items-center mb-4" x-show="isEditMode">
-        <a :href="'/stress-person-encyclopedias/' + itemId" class="text-violet-600 hover:text-violet-800 flex items-center gap-1">
+        <a :href="'/stress-person-encyclopedias/' + itemId" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
             ← 詳細に戻る
         </a>
     </div>
 
     <div x-show="dataLoading && isEditMode" class="text-center py-16 bg-white rounded-xl shadow-md">
-        <svg class="animate-spin h-8 w-8 text-violet-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         <p class="text-gray-600 mt-2">読み込み中...</p>
     </div>
 
-    <div x-show="!isEditMode" class="bg-violet-50 border border-violet-200 rounded-lg p-4 mb-4">
-        <p class="text-violet-800 text-sm">
+    <div x-show="!isEditMode" class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+        <p class="text-emerald-800 text-sm">
             ストレスを感じる人物について整理する図鑑です。名前は必須、その他の項目は任意で記入できます。
         </p>
     </div>
@@ -65,7 +65,7 @@ $fields = [
             <div class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-violet-500 text-white text-xs font-bold mr-1">1</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">1</span>
                         名前
                         <span class="text-red-500">*</span>
                         <span class="text-gray-400 font-normal ml-1">ストレスを感じる人物の名前や呼び方</span>
@@ -73,7 +73,7 @@ $fields = [
                     <input
                         type="text"
                         x-model="form.name"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                         placeholder="例：Aさん、上司の田中さん"
                         maxlength="255"
                         required
@@ -84,14 +84,14 @@ $fields = [
                 @foreach ($fields as $index => $field)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-violet-500 text-white text-xs font-bold mr-1">{{ $index + 2 }}</span>
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">{{ $index + 2 }}</span>
                             {{ $field['label'] }}
                             <span class="text-gray-400 font-normal ml-1">{{ $field['hint'] }}</span>
                         </label>
                         <textarea
                             x-model="form.{{ $field['key'] }}"
                             rows="6"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                             placeholder="{{ $field['placeholder'] }}"
                             maxlength="10000"
                         ></textarea>
@@ -104,7 +104,7 @@ $fields = [
                 <div>
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-violet-600 hover:to-purple-600 transition-colors disabled:opacity-50"
+                        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-600 transition-colors disabled:opacity-50"
                         :disabled="loading || !isFormValid()"
                     >
                         <span x-show="!loading && !isEditMode">保存する</span>
