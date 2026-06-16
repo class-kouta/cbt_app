@@ -37,7 +37,6 @@ class SimpleNotepadController extends Controller
 
         return response()->json([
             'id' => $simpleNotepad->id,
-            'title' => $simpleNotepad->title,
             'content' => $simpleNotepad->content,
             'tags' => $simpleNotepad->tags->map(fn ($tag) => [
                 'id' => $tag->id,
@@ -57,7 +56,6 @@ class SimpleNotepadController extends Controller
         CreateSimpleNotepadUseCase $createSimpleNotepad
     ): JsonResponse {
         $data = new SimpleNotepadData(
-            title: (string) $request->string('title'),
             content: (string) $request->string('content'),
             tagIds: $request->input('tag_ids', []),
         );
@@ -76,7 +74,6 @@ class SimpleNotepadController extends Controller
         UpdateSimpleNotepadUseCase $updateSimpleNotepad
     ): JsonResponse {
         $data = new SimpleNotepadData(
-            title: (string) $request->string('title'),
             content: (string) $request->string('content'),
             tagIds: $request->input('tag_ids', []),
         );

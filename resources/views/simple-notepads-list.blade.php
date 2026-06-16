@@ -16,7 +16,7 @@
                     type="text"
                     x-model="keyword"
                     @keyup.enter="search()"
-                    placeholder="タイトル、内容で検索..."
+                    placeholder="内容で検索..."
                     class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
                 >
                 <button
@@ -65,7 +65,6 @@
         <template x-for="item in simpleNotepads" :key="item.id">
             <a :href="'/simple-notepads/' + item.id + '/edit'" class="block">
                 <div class="bg-white rounded-lg shadow-md p-4 transition-all hover:shadow-lg hover:bg-emerald-50 cursor-pointer">
-                    <p class="text-gray-900 font-semibold text-sm mb-1 line-clamp-1" x-show="item.title" x-text="item.title"></p>
                     <p class="text-gray-600 line-clamp-2 text-sm" x-text="item.content"></p>
                     <!-- タグ表示 -->
                     <div x-show="item.tags && item.tags.length > 0" class="flex flex-wrap gap-1 mt-2">

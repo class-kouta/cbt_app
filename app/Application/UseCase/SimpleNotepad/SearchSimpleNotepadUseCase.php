@@ -12,7 +12,6 @@ class SearchSimpleNotepadUseCase
      * キーワード検索対象カラム
      */
     private const SEARCHABLE_COLUMNS = [
-        'title',
         'content',
     ];
 

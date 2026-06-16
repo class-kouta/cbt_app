@@ -17,7 +17,7 @@ class CreateSimpleNotepadUseCase
      */
     public function handle(SimpleNotepadData $data, int $memberId): array
     {
-        $simpleNotepad = SimpleNotepadEntity::createNew($data->title, $data->content);
+        $simpleNotepad = SimpleNotepadEntity::createNew($data->content);
 
         return $this->simpleNotepadRepository->saveWithTagsForMember($simpleNotepad, $data->tagIds, $memberId);
     }

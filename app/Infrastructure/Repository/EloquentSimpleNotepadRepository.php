@@ -33,7 +33,6 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             ->get()
             ->map(fn ($model) => SimpleNotepadEntity::reconstitute(
                 id: (int) $model->id,
-                title: (string) $model->title,
                 content: (string) $model->content,
                 createdAt: $this->toDateTimeImmutable($model->created_at),
                 updatedAt: $this->toDateTimeImmutable($model->updated_at),
@@ -50,7 +49,6 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             ->map(fn ($model) => $this->formatWithTags(
                 SimpleNotepadEntity::reconstitute(
                     id: (int) $model->id,
-                    title: (string) $model->title,
                     content: (string) $model->content,
                     createdAt: $this->toDateTimeImmutable($model->created_at),
                     updatedAt: $this->toDateTimeImmutable($model->updated_at),
@@ -65,20 +63,16 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
         if ($simpleNotepad->getId() !== null) {
             $model = SimpleNotepadModel::where('member_id', $memberId)
                 ->findOrFail($simpleNotepad->getId());
-            $model->title = $simpleNotepad->getTitle();
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
         } else {
             $model = new SimpleNotepadModel();
             $model->member_id = $memberId;
-            $model->title = $simpleNotepad->getTitle();
-            $model->content = $simpleNotepad->getContent();
-            $model->save();
         }
+
+        $model->content = $simpleNotepad->getContent();
+        $model->save();
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->getKey(),
-            title: (string) $model->title,
             content: (string) $model->content,
             createdAt: $this->toDateTimeImmutable($model->created_at),
             updatedAt: $this->toDateTimeImmutable($model->updated_at),
@@ -117,7 +111,6 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
 
         return SimpleNotepadEntity::reconstitute(
             id: (int) $model->id,
-            title: (string) $model->title,
             content: (string) $model->content,
             createdAt: $this->toDateTimeImmutable($model->created_at),
             updatedAt: $this->toDateTimeImmutable($model->updated_at),
@@ -163,7 +156,6 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             ->map(fn ($model) => $this->formatWithTags(
                 SimpleNotepadEntity::reconstitute(
                     id: (int) $model->id,
-                    title: (string) $model->title,
                     content: (string) $model->content,
                     createdAt: $this->toDateTimeImmutable($model->created_at),
                     updatedAt: $this->toDateTimeImmutable($model->updated_at),
@@ -190,7 +182,6 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
     {
         return [
             'id' => $simpleNotepad->getId(),
-            'title' => $simpleNotepad->getTitle(),
             'content' => $simpleNotepad->getContent(),
             'tags' => $model->tags->map(fn ($tag) => [
                 'id' => $tag->id,
