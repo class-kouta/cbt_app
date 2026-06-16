@@ -103,9 +103,12 @@ function stressPersonEncyclopediaDetailApp() {
             if (!confirm('この記録を削除しますか？')) return;
 
             try {
-                await apiFetch(`/api/stress-person-encyclopedias/${this.itemId}`, {
+                const res = await apiFetch(`/api/stress-person-encyclopedias/${this.itemId}`, {
                     method: 'DELETE',
                 });
+                if (!res.ok) {
+                    throw new Error('削除に失敗しました');
+                }
                 window.location.href = '/stress-person-encyclopedias/list';
             } catch (e) {
                 console.error(e);

@@ -80,7 +80,12 @@ function stressPersonEncyclopediaListApp() {
             this.loading = true;
             try {
                 const res = await apiFetch('/api/stress-person-encyclopedias');
+                if (!res.ok) {
+                    throw new Error('データの取得に失敗しました');
+                }
                 this.entries = await res.json();
+            } catch (e) {
+                console.error(e);
             } finally {
                 this.loading = false;
             }
