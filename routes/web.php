@@ -21,6 +21,10 @@ Route::middleware('auth')->group(function () {
     })->name('verification.notice');
 
     Route::middleware('verified')->group(function () {
+        Route::get('/mypage', function () {
+            return view('mypage');
+        })->name('mypage');
+
         Route::get('/', function () {
             return view('home');
         })->name('home');
