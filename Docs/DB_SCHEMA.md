@@ -151,16 +151,6 @@
 - (problem_solving_id, plan_number)
 
 ---
-## problem_solving_solutions（問題解決法の解決策）
-- id — bigint, 主キー
-- problem_solving_id — bigint, 外部キー → problem_solvings.id
-- content — text, NOT NULL（解決策の内容）
-- effectiveness — tinyint, NULL可（効果的か 0-100%）
-- feasibility — tinyint, NULL可（実行可能か 0-100%）
-- sort_order — integer, NOT NULL（表示順 1-7）
-- created_at / updated_at — timestamp
-
----
 ## exposures（エクスポージャー療法）
 - id — bigint, 主キー
 - member_id — bigint, 外部キー → members.id, NOT NULL

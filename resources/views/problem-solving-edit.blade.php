@@ -219,135 +219,7 @@
                     ></textarea>
                 </div>
 
-                <!-- Step 3: 解決策 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
-                        解決策
-                        <span class="text-gray-400 font-normal ml-1">解決策を複数出して、それぞれの効果と実行可能性を評価しましょう</span>
-                    </label>
-                    <div class="space-y-3">
-                        <template x-for="(solution, index) in solutions" :key="index">
-                            <div class="border rounded-lg p-3" :class="isEditing ? 'border-gray-300' : 'border-gray-200 bg-gray-50'">
-                                    <div class="flex items-center justify-between gap-2 mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
-                                            <span
-                                                x-show="isEditing"
-                                                class="text-xs"
-                                                :class="solution.content.length > 100 ? 'text-red-500 font-semibold' : 'text-gray-400'"
-                                                x-text="solution.content.length + '/100'"
-                                            ></span>
-                                        </div>
-                                    <button
-                                        x-show="isEditing"
-                                        type="button"
-                                        @click="removeSolution(index)"
-                                        class="text-red-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
-                                        title="削除"
-                                    >
-                                        <x-icon name="trash" class="w-5 h-5" />
-                                    </button>
-                                </div>
-                                <textarea
-                                    x-model="solution.content"
-                                    rows="3"
-                                    :disabled="!isEditing"
-                                    class="w-full border rounded-lg px-3 py-2 mb-3 resize-none transition-all"
-                                    :class="isEditing
-                                        ? (solution.content.length > 100 ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white')
-                                        : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                    placeholder="解決策を入力（100文字以内）"
-                                ></textarea>
-                                <div x-show="isEditing && solution.content.length > 100" class="text-xs text-red-500 mb-2">
-                                    100文字以内で入力してください
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">効果的か</label>
-                                        <select
-                                            x-model="solution.effectiveness"
-                                            :disabled="!isEditing"
-                                            class="w-full border rounded-lg px-3 py-2 transition-all"
-                                            :class="isEditing
-                                                ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
-                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                        >
-                                            <option value="">選択してください</option>
-                                            <option value="0">0%</option>
-                                            <option value="5">5%</option>
-                                            <option value="10">10%</option>
-                                            <option value="15">15%</option>
-                                            <option value="20">20%</option>
-                                            <option value="25">25%</option>
-                                            <option value="30">30%</option>
-                                            <option value="35">35%</option>
-                                            <option value="40">40%</option>
-                                            <option value="45">45%</option>
-                                            <option value="50">50%</option>
-                                            <option value="55">55%</option>
-                                            <option value="60">60%</option>
-                                            <option value="65">65%</option>
-                                            <option value="70">70%</option>
-                                            <option value="75">75%</option>
-                                            <option value="80">80%</option>
-                                            <option value="85">85%</option>
-                                            <option value="90">90%</option>
-                                            <option value="95">95%</option>
-                                            <option value="100">100%</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs text-gray-600 mb-1">実行可能か</label>
-                                        <select
-                                            x-model="solution.feasibility"
-                                            :disabled="!isEditing"
-                                            class="w-full border rounded-lg px-3 py-2 transition-all"
-                                            :class="isEditing
-                                                ? 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
-                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                        >
-                                            <option value="">選択してください</option>
-                                            <option value="0">0%</option>
-                                            <option value="5">5%</option>
-                                            <option value="10">10%</option>
-                                            <option value="15">15%</option>
-                                            <option value="20">20%</option>
-                                            <option value="25">25%</option>
-                                            <option value="30">30%</option>
-                                            <option value="35">35%</option>
-                                            <option value="40">40%</option>
-                                            <option value="45">45%</option>
-                                            <option value="50">50%</option>
-                                            <option value="55">55%</option>
-                                            <option value="60">60%</option>
-                                            <option value="65">65%</option>
-                                            <option value="70">70%</option>
-                                            <option value="75">75%</option>
-                                            <option value="80">80%</option>
-                                            <option value="85">85%</option>
-                                            <option value="90">90%</option>
-                                            <option value="95">95%</option>
-                                            <option value="100">100%</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                    <!-- 閲覧中：解決策が0件の場合 -->
-                    <p x-show="!isEditing && solutions.filter(s => s.content.trim()).length === 0" class="text-gray-400 mt-2">未入力</p>
-                    <button
-                        x-show="isEditing"
-                        type="button"
-                        @click="addSolutionRow()"
-                        class="mt-2 text-sm text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
-                    >
-                        <span>＋</span> 解決策を追加
-                    </button>
-                </div>
-
-                <!-- Step 4 & 5: 実行計画と振り返り -->
+                <!-- Step 3 & 4: 実行計画と振り返り -->
                 <div class="border-t border-gray-200 pt-5">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
@@ -358,7 +230,7 @@
                     <!-- 計画がない場合の説明 -->
                     <div x-show="plans.length === 0" class="bg-gray-50 rounded-lg p-4 mb-4">
                         <p class="text-gray-600 text-sm">
-                            解決策を決めたら、実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
+                            実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
                         </p>
                     </div>
 
@@ -421,7 +293,7 @@
                                     <!-- 実行計画 -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs mr-1">4</span>
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs mr-1">3</span>
                                             実行計画
                                             <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
                                         </label>
@@ -441,7 +313,7 @@
                                     <!-- 振り返り -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">5</span>
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">4</span>
                                             振り返り
                                             <span class="text-gray-400 font-normal ml-1">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</span>
                                         </label>
@@ -555,12 +427,6 @@ function problemSolvingFormApp(itemId) {
             improved_image: '',
             tag_ids: []
         },
-        solutions: [
-            { content: '', effectiveness: '', feasibility: '' },
-            { content: '', effectiveness: '', feasibility: '' },
-            { content: '', effectiveness: '', feasibility: '' }
-        ],
-        originalSolutions: [],
         plans: [],
         originalPlans: [],
         loading: itemId !== null,
@@ -637,10 +503,6 @@ function problemSolvingFormApp(itemId) {
 
         async saveAndStopEditing() {
             if (!this.form.problem_situation.trim()) return;
-            if (!this.validateSolutions()) {
-                alert('解決策は100文字以内で入力してください');
-                return;
-            }
 
             this.submitting = true;
             try {
@@ -707,7 +569,6 @@ function problemSolvingFormApp(itemId) {
             const snapshot = {
                 problem_situation: this.form.problem_situation,
                 improved_image: this.form.improved_image,
-                solutions: JSON.stringify(this.solutions),
                 plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level }))),
                 tag_ids: JSON.stringify(this.form.tag_ids)
             };
@@ -735,7 +596,6 @@ function problemSolvingFormApp(itemId) {
             return (
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
-                JSON.stringify(this.solutions) !== snapshot.solutions ||
                 currentPlans !== snapshot.plans ||
                 JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids
             );
@@ -756,21 +616,7 @@ function problemSolvingFormApp(itemId) {
             this.takeSnapshot();
         },
 
-        validateSolutions() {
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-            for (const solution of validSolutions) {
-                if (solution.content.length > 100) {
-                    return false;
-                }
-            }
-            return true;
-        },
-
         async performSave(isManual = false) {
-            if (!this.validateSolutions()) {
-                return;
-            }
-
             try {
                 if (this.itemId) {
                     await this.saveExistingItem();
@@ -837,15 +683,6 @@ function problemSolvingFormApp(itemId) {
                     this.form.improved_image = item.improved_image || '';
                     this.form.tag_ids = item.tag_ids || [];
 
-                    this.solutions = item.solutions.map(s => ({
-                        id: s.id,
-                        content: s.content,
-                        effectiveness: s.effectiveness,
-                        feasibility: s.feasibility,
-                        sort_order: s.sort_order
-                    }));
-                    this.originalSolutions = JSON.parse(JSON.stringify(this.solutions));
-
                     if (item.plans && item.plans.length > 0) {
                         this.plans = item.plans.map(p => ({
                             id: p.id,
@@ -859,24 +696,12 @@ function problemSolvingFormApp(itemId) {
                         this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
                     }
                     this.originalPlans = JSON.parse(JSON.stringify(this.plans));
-
-                    while (this.solutions.length < 3) {
-                        this.solutions.push({ id: null, content: '', effectiveness: '', feasibility: '' });
-                    }
                 }
             } catch (error) {
                 console.error(error);
             } finally {
                 this.loading = false;
             }
-        },
-
-        addSolutionRow() {
-            this.solutions.push({ id: null, content: '', effectiveness: '', feasibility: '' });
-        },
-
-        removeSolution(index) {
-            this.solutions.splice(index, 1);
         },
 
         addNewPlan() {
@@ -908,8 +733,6 @@ function problemSolvingFormApp(itemId) {
         },
 
         async saveNewItem() {
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-
             const res = await apiFetch('/api/problem-solvings', {
                 method: 'POST',
                 headers: {
@@ -923,28 +746,6 @@ function problemSolvingFormApp(itemId) {
                 this.itemId = created.id;
                 this.hasExistingRecord = true;
 
-                const newOriginalSolutions = [];
-                for (let i = 0; i < validSolutions.length; i++) {
-                    const solution = validSolutions[i];
-                    const solutionRes = await apiFetch(`/api/problem-solvings/${created.id}/solutions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            content: solution.content,
-                            sort_order: i + 1,
-                            effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
-                            feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
-                        })
-                    });
-                    if (solutionRes.ok) {
-                        const createdSolution = await solutionRes.json();
-                        newOriginalSolutions.push(createdSolution);
-                    }
-                }
-                this.originalSolutions = newOriginalSolutions;
-
                 await this.savePlans(created.id);
 
                 history.replaceState(null, '', `/problem-solvings/${created.id}`);
@@ -952,8 +753,6 @@ function problemSolvingFormApp(itemId) {
         },
 
         async saveExistingItem() {
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-
             const res = await apiFetch(`/api/problem-solvings/${this.itemId}`, {
                 method: 'PUT',
                 headers: {
@@ -963,34 +762,6 @@ function problemSolvingFormApp(itemId) {
             });
 
             if (res.ok) {
-                for (const original of this.originalSolutions) {
-                    await apiFetch(`/api/problem-solvings/${this.itemId}/solutions/${original.id}`, {
-                        method: 'DELETE'
-                    });
-                }
-
-                const newOriginalSolutions = [];
-                for (let i = 0; i < validSolutions.length; i++) {
-                    const solution = validSolutions[i];
-                    const solutionRes = await apiFetch(`/api/problem-solvings/${this.itemId}/solutions`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            content: solution.content,
-                            sort_order: i + 1,
-                            effectiveness: solution.effectiveness ? parseInt(solution.effectiveness) : null,
-                            feasibility: solution.feasibility ? parseInt(solution.feasibility) : null
-                        })
-                    });
-                    if (solutionRes.ok) {
-                        const createdSolution = await solutionRes.json();
-                        newOriginalSolutions.push(createdSolution);
-                    }
-                }
-                this.originalSolutions = newOriginalSolutions;
-
                 await this.savePlans(this.itemId);
             }
         },
@@ -1044,14 +815,6 @@ function problemSolvingFormApp(itemId) {
         async createProblemSolving() {
             if (this.submitting || !this.form.problem_situation.trim()) return;
 
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-            for (const solution of validSolutions) {
-                if (solution.content.length > 100) {
-                    alert('解決策は100文字以内で入力してください');
-                    return;
-                }
-            }
-
             this.submitting = true;
 
             try {
@@ -1067,14 +830,6 @@ function problemSolvingFormApp(itemId) {
 
         async updateProblemSolving() {
             if (this.submitting || !this.form.problem_situation.trim()) return;
-
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-            for (const solution of validSolutions) {
-                if (solution.content.length > 100) {
-                    alert('解決策は100文字以内で入力してください');
-                    return;
-                }
-            }
 
             this.submitting = true;
 
@@ -1111,7 +866,6 @@ function problemSolvingFormApp(itemId) {
         hasAnyContent() {
             if (this.form.problem_situation.trim()) return true;
             if (this.form.improved_image.trim()) return true;
-            if (this.solutions.some(s => s.content.trim())) return true;
             if (this.plans.some(p => (p.action_plan && p.action_plan.trim()) || (p.reflection && p.reflection.trim()))) return true;
             return false;
         },
@@ -1127,28 +881,6 @@ function problemSolvingFormApp(itemId) {
 
             sections.push('■ 改善イメージ');
             sections.push(this.form.improved_image.trim() || '未入力');
-            sections.push('');
-
-            const validSolutions = this.solutions.filter(s => s.content.trim());
-            sections.push('■ 解決策');
-            if (validSolutions.length > 0) {
-                validSolutions.forEach((solution, index) => {
-                    let solutionText = `${index + 1}. ${solution.content}`;
-                    const ratings = [];
-                    if (solution.effectiveness !== '' && solution.effectiveness !== null) {
-                        ratings.push(`効果: ${solution.effectiveness}%`);
-                    }
-                    if (solution.feasibility !== '' && solution.feasibility !== null) {
-                        ratings.push(`実行可能: ${solution.feasibility}%`);
-                    }
-                    if (ratings.length > 0) {
-                        solutionText += ` （${ratings.join('、')}）`;
-                    }
-                    sections.push(solutionText);
-                });
-            } else {
-                sections.push('未入力');
-            }
             sections.push('');
 
             this.plans.forEach((plan, index) => {

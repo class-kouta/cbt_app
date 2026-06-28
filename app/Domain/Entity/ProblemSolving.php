@@ -9,22 +9,18 @@ class ProblemSolving
     private ?int $id;
     private string $problemSituation;
     private ?string $improvedImage;
-    /** @var ProblemSolvingSolution[] */
-    private array $solutions;
     /** @var ProblemSolvingPlan[] */
     private array $plans;
     private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
     /**
-     * @param ProblemSolvingSolution[] $solutions
      * @param ProblemSolvingPlan[] $plans
      */
     private function __construct(
         ?int $id,
         string $problemSituation,
         ?string $improvedImage,
-        array $solutions,
         array $plans,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
@@ -32,7 +28,6 @@ class ProblemSolving
         $this->id = $id;
         $this->problemSituation = $problemSituation;
         $this->improvedImage = $improvedImage;
-        $this->solutions = $solutions;
         $this->plans = $plans;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -48,21 +43,18 @@ class ProblemSolving
             $problemSituation,
             $improvedImage,
             [],
-            [],
             $now,
             $now
         );
     }
 
     /**
-     * @param ProblemSolvingSolution[] $solutions
      * @param ProblemSolvingPlan[] $plans
      */
     public static function reconstitute(
         int $id,
         string $problemSituation,
         ?string $improvedImage,
-        array $solutions,
         array $plans,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
@@ -71,7 +63,6 @@ class ProblemSolving
             $id,
             $problemSituation,
             $improvedImage,
-            $solutions,
             $plans,
             $createdAt,
             $updatedAt
@@ -91,14 +82,6 @@ class ProblemSolving
     public function getImprovedImage(): ?string
     {
         return $this->improvedImage;
-    }
-
-    /**
-     * @return ProblemSolvingSolution[]
-     */
-    public function getSolutions(): array
-    {
-        return $this->solutions;
     }
 
     /**
@@ -161,7 +144,6 @@ class ProblemSolving
             $id,
             $this->problemSituation,
             $this->improvedImage,
-            $this->solutions,
             $this->plans,
             $this->createdAt,
             $this->updatedAt
@@ -176,26 +158,9 @@ class ProblemSolving
             $this->id,
             $problemSituation,
             $improvedImage,
-            $this->solutions,
             $this->plans,
             $this->createdAt,
             new DateTimeImmutable('now')
-        );
-    }
-
-    /**
-     * @param ProblemSolvingSolution[] $solutions
-     */
-    public function withSolutions(array $solutions): self
-    {
-        return new self(
-            $this->id,
-            $this->problemSituation,
-            $this->improvedImage,
-            $solutions,
-            $this->plans,
-            $this->createdAt,
-            $this->updatedAt
         );
     }
 
@@ -208,7 +173,6 @@ class ProblemSolving
             $this->id,
             $this->problemSituation,
             $this->improvedImage,
-            $this->solutions,
             $plans,
             $this->createdAt,
             $this->updatedAt

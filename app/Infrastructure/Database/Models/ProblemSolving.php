@@ -22,14 +22,6 @@ class ProblemSolving extends Model
     ];
 
     /**
-     * 解決策のリレーション
-     */
-    public function solutions(): HasMany
-    {
-        return $this->hasMany(ProblemSolvingSolution::class)->orderBy('sort_order');
-    }
-
-    /**
      * 実行計画・振り返りのリレーション
      */
     public function plans(): HasMany

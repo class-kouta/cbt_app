@@ -72,10 +72,6 @@ Route::get('/problem-solvings/{problemSolving}', [ProblemSolvingController::clas
 Route::post('/problem-solvings', [ProblemSolvingController::class, 'store']);
 Route::put('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'update']);
 Route::delete('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'destroy']);
-// 解決策
-Route::post('/problem-solvings/{problemSolving}/solutions', [ProblemSolvingController::class, 'addSolution']);
-Route::put('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'updateSolution']);
-Route::delete('/problem-solvings/{problemSolving}/solutions/{solution}', [ProblemSolvingController::class, 'deleteSolution']);
 // 計画
 Route::post('/problem-solvings/{problemSolving}/plans', [ProblemSolvingController::class, 'addPlan']);
 Route::put('/problem-solvings/{problemSolving}/plans/{plan}', [ProblemSolvingController::class, 'updatePlan']);

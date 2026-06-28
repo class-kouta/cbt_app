@@ -86,36 +86,7 @@
                 <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!item?.improved_image ? 'text-gray-400' : ''" x-text="item?.improved_image || '未入力'"></p>
             </div>
 
-            <!-- Step 3: 解決策 -->
-            <div class="bg-cyan-50 rounded-lg p-4">
-                <div class="text-xs font-semibold text-cyan-600 mb-2 flex items-center gap-1">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-cyan-600 text-white text-xs">3</span>
-                    解決策
-                </div>
-                <div x-show="item?.solutions && item.solutions.length > 0" class="space-y-3">
-                    <template x-for="(solution, index) in item?.solutions" :key="solution.id">
-                        <div class="border border-cyan-200 rounded-lg p-3 bg-white">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-sm text-gray-500 font-medium" x-text="'解決策 ' + (index + 1)"></span>
-                            </div>
-                            <p class="text-gray-800 mb-2" x-text="solution.content"></p>
-                            <div class="grid grid-cols-2 gap-3 text-sm">
-                                <div>
-                                    <span class="text-xs text-gray-600">効果的か：</span>
-                                    <span class="font-medium" x-text="solution.effectiveness !== null ? solution.effectiveness + '%' : '-'"></span>
-                                </div>
-                                <div>
-                                    <span class="text-xs text-gray-600">実行可能か：</span>
-                                    <span class="font-medium" x-text="solution.feasibility !== null ? solution.feasibility + '%' : '-'"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                <p x-show="!item?.solutions || item.solutions.length === 0" class="text-gray-400">未入力</p>
-            </div>
-
-            <!-- Step 4 & 5: 実行計画と振り返り（複数対応） -->
+            <!-- 実行計画と振り返り（複数対応） -->
             <div class="border-t border-gray-200 pt-4">
                 <div class="mb-4">
                     <span class="text-sm font-semibold text-gray-700">実行計画と振り返り</span>
@@ -165,7 +136,7 @@
                                 <!-- 実行計画 -->
                                 <div class="bg-white rounded-lg p-3">
                                     <div class="text-xs font-semibold text-teal-600 mb-2 flex items-center gap-1">
-                                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-teal-500 text-white text-xs">4</span>
+                                        <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-teal-500 text-white text-xs">3</span>
                                         実行計画
                                     </div>
                                     <p class="text-gray-800 whitespace-pre-wrap break-words" :class="!plan.action_plan ? 'text-gray-400' : ''" x-text="plan.action_plan || '未入力'"></p>
@@ -175,7 +146,7 @@
                                 <div class="bg-white rounded-lg p-3">
                                     <div class="text-xs font-semibold text-lime-600 mb-2 flex items-center justify-between">
                                         <div class="flex items-center gap-1">
-                                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-lime-500 text-white text-xs">5</span>
+                                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-lime-500 text-white text-xs">4</span>
                                             振り返り
                                         </div>
                                         <span
@@ -278,28 +249,6 @@ function problemSolvingDetailApp(itemId) {
 
             sections.push('■ 改善イメージ');
             sections.push(this.item?.improved_image || '未入力');
-            sections.push('');
-
-            // 解決策
-            sections.push('■ 解決策');
-            if (this.item?.solutions && this.item.solutions.length > 0) {
-                this.item.solutions.forEach((solution, index) => {
-                    let solutionText = `${index + 1}. ${solution.content}`;
-                    const ratings = [];
-                    if (solution.effectiveness !== null) {
-                        ratings.push(`効果: ${solution.effectiveness}%`);
-                    }
-                    if (solution.feasibility !== null) {
-                        ratings.push(`実行可能: ${solution.feasibility}%`);
-                    }
-                    if (ratings.length > 0) {
-                        solutionText += ` （${ratings.join('、')}）`;
-                    }
-                    sections.push(solutionText);
-                });
-            } else {
-                sections.push('未入力');
-            }
             sections.push('');
 
             // 計画と振り返り
