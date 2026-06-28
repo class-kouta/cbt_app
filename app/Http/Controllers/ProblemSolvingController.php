@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Application\DTO\ProblemSolvingData;
-use App\Application\DTO\ProblemSolvingSolutionData;
 use App\Application\DTO\ProblemSolvingPlanData;
 use App\Application\UseCase\ProblemSolving\CreateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\UpdateProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\DeleteProblemSolvingUseCase;
 use App\Application\UseCase\ProblemSolving\ExportProblemSolvingCsvUseCase;
-use App\Application\UseCase\ProblemSolving\AddSolutionUseCase;
-use App\Application\UseCase\ProblemSolving\UpdateSolutionUseCase;
-use App\Application\UseCase\ProblemSolving\DeleteSolutionUseCase;
 use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
 use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
 use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
@@ -21,12 +17,9 @@ use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\ProblemSolving\SearchPlanRequest;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
 use App\Http\Requests\ProblemSolving\UpdateProblemSolvingRequest;
-use App\Http\Requests\ProblemSolving\AddSolutionRequest;
-use App\Http\Requests\ProblemSolving\UpdateSolutionRequest;
 use App\Http\Requests\ProblemSolving\AddPlanRequest;
 use App\Http\Requests\ProblemSolving\UpdatePlanRequest;
 use App\Infrastructure\Database\Models\ProblemSolving;
-use App\Infrastructure\Database\Models\ProblemSolvingSolution;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +44,7 @@ class ProblemSolvingController extends Controller
      */
     public function show(ProblemSolving $problemSolving): JsonResponse
     {
-        $problemSolving->load(['solutions', 'plans', 'tags']);
+        $problemSolving->load(['plans', 'tags']);
         return response()->json($this->formatProblemSolving($problemSolving));
     }
 
@@ -92,7 +85,6 @@ class ProblemSolvingController extends Controller
             'id' => $problemSolvingEntity->getId(),
             'problem_situation' => $problemSolvingEntity->getProblemSituation(),
             'improved_image' => $problemSolvingEntity->getImprovedImage(),
-            'solutions' => [],
             'plans' => [],
             'tags' => $model->tags->map(fn ($tag) => [
                 'id' => $tag->id,
@@ -125,13 +117,6 @@ class ProblemSolvingController extends Controller
             'id' => $updated->getId(),
             'problem_situation' => $updated->getProblemSituation(),
             'improved_image' => $updated->getImprovedImage(),
-            'solutions' => array_map(fn ($s) => [
-                'id' => $s->getId(),
-                'content' => $s->getContent(),
-                'effectiveness' => $s->getEffectiveness(),
-                'feasibility' => $s->getFeasibility(),
-                'sort_order' => $s->getSortOrder(),
-            ], $updated->getSolutions()),
             'plans' => array_map(fn ($p) => [
                 'id' => $p->getId(),
                 'plan_number' => $p->getPlanNumber(),
@@ -155,76 +140,6 @@ class ProblemSolvingController extends Controller
     public function destroy(ProblemSolving $problemSolving, DeleteProblemSolvingUseCase $deleteProblemSolving): JsonResponse
     {
         $deleteProblemSolving->handle($problemSolving->id);
-
-        return response()->json(null, 204);
-    }
-
-    /**
-     * 解決策を追加
-     */
-    public function addSolution(AddSolutionRequest $request, ProblemSolving $problemSolving, AddSolutionUseCase $addSolution): JsonResponse
-    {
-        $data = new ProblemSolvingSolutionData(
-            content: (string) $request->string('content'),
-            sortOrder: (int) $request->integer('sort_order'),
-            effectiveness: $request->filled('effectiveness') ? (int) $request->integer('effectiveness') : null,
-            feasibility: $request->filled('feasibility') ? (int) $request->integer('feasibility') : null
-        );
-
-        $solution = $addSolution->handle($problemSolving->id, $data);
-
-        return response()->json([
-            'id' => $solution->getId(),
-            'problem_solving_id' => $solution->getProblemSolvingId(),
-            'content' => $solution->getContent(),
-            'effectiveness' => $solution->getEffectiveness(),
-            'feasibility' => $solution->getFeasibility(),
-            'sort_order' => $solution->getSortOrder(),
-            'created_at' => $solution->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $solution->getUpdatedAt()->format(DATE_ATOM),
-        ], 201);
-    }
-
-    /**
-     * 解決策を更新
-     */
-    public function updateSolution(UpdateSolutionRequest $request, ProblemSolving $problemSolving, ProblemSolvingSolution $solution, UpdateSolutionUseCase $updateSolution): JsonResponse
-    {
-        if ($solution->problem_solving_id !== $problemSolving->id) {
-            abort(404);
-        }
-
-        $data = new ProblemSolvingSolutionData(
-            content: (string) $request->string('content'),
-            sortOrder: (int) $request->integer('sort_order'),
-            effectiveness: $request->filled('effectiveness') ? (int) $request->integer('effectiveness') : null,
-            feasibility: $request->filled('feasibility') ? (int) $request->integer('feasibility') : null
-        );
-
-        $updated = $updateSolution->handle($solution->id, $data);
-
-        return response()->json([
-            'id' => $updated->getId(),
-            'problem_solving_id' => $updated->getProblemSolvingId(),
-            'content' => $updated->getContent(),
-            'effectiveness' => $updated->getEffectiveness(),
-            'feasibility' => $updated->getFeasibility(),
-            'sort_order' => $updated->getSortOrder(),
-            'created_at' => $updated->getCreatedAt()->format(DATE_ATOM),
-            'updated_at' => $updated->getUpdatedAt()->format(DATE_ATOM),
-        ]);
-    }
-
-    /**
-     * 解決策を削除
-     */
-    public function deleteSolution(ProblemSolving $problemSolving, ProblemSolvingSolution $solution, DeleteSolutionUseCase $deleteSolution): JsonResponse
-    {
-        if ($solution->problem_solving_id !== $problemSolving->id) {
-            abort(404);
-        }
-
-        $deleteSolution->handle($solution->id);
 
         return response()->json(null, 204);
     }
@@ -326,13 +241,6 @@ class ProblemSolvingController extends Controller
             'id' => $problemSolving->id,
             'problem_situation' => $problemSolving->problem_situation,
             'improved_image' => $problemSolving->improved_image,
-            'solutions' => $problemSolving->solutions->map(fn ($s) => [
-                'id' => $s->id,
-                'content' => $s->content,
-                'effectiveness' => $s->effectiveness,
-                'feasibility' => $s->feasibility,
-                'sort_order' => $s->sort_order,
-            ])->toArray(),
             'plans' => $problemSolving->plans->map(fn ($p) => [
                 'id' => $p->id,
                 'plan_number' => $p->plan_number,

@@ -29,7 +29,6 @@ class ExportProblemSolvingCsvUseCase
         '作成日時',
         '問題状況',
         '改善イメージ',
-        '解決策（全て）※[番号] 内容 (効果%)[実行可能%]',
         '実行計画（全て）',
         '振り返り（全て）※改善レベル付き',
         'タグ',
@@ -49,19 +48,6 @@ class ExportProblemSolvingCsvUseCase
         $items = $this->repository->searchAllForMember($criteria, self::SEARCHABLE_COLUMNS, (int) Auth::id());
 
         $rows = array_map(function ($item) {
-            // 解決策をsort_order順にソートして1列にまとめる
-            $solutions = $item['solutions'] ?? [];
-            usort($solutions, fn ($a, $b) => ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0));
-
-            $solutionTexts = [];
-            foreach ($solutions as $index => $solution) {
-                $effectiveness = $solution['effectiveness'] !== null ? "({$solution['effectiveness']}%)" : '';
-                $feasibility = $solution['feasibility'] !== null ? "[{$solution['feasibility']}%]" : '';
-                $details = ($effectiveness || $feasibility) ? " {$effectiveness}{$feasibility}" : '';
-                $solutionTexts[] = '[' . ($index + 1) . '] ' . $solution['content'] . $details;
-            }
-            $allSolutions = implode(' / ', $solutionTexts);
-
             // 全てのplanをplan_number順にソートして、実行計画と振り返りを結合
             $plans = $item['plans'] ?? [];
             usort($plans, fn ($a, $b) => ($a['plan_number'] ?? 0) <=> ($b['plan_number'] ?? 0));
@@ -95,7 +81,6 @@ class ExportProblemSolvingCsvUseCase
                 $this->csvExportService->formatDatetime($item['created_at']),
                 $item['problem_situation'] ?? '',
                 $item['improved_image'] ?? '',
-                $allSolutions,
                 $allActionPlans,
                 $allReflections,
                 $this->csvExportService->joinArray($item['tags'] ?? [], 'name'),

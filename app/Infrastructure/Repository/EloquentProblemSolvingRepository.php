@@ -6,11 +6,9 @@ use App\Application\DTO\PlanSearchCriteriaData;
 use App\Application\DTO\SearchCriteriaData;
 use App\Support\LikeSearch;
 use App\Domain\Entity\ProblemSolving as ProblemSolvingEntity;
-use App\Domain\Entity\ProblemSolvingSolution as ProblemSolvingSolutionEntity;
 use App\Domain\Entity\ProblemSolvingPlan as ProblemSolvingPlanEntity;
 use App\Domain\Repository\ProblemSolvingRepositoryInterface;
 use App\Infrastructure\Database\Models\ProblemSolving as ProblemSolvingModel;
-use App\Infrastructure\Database\Models\ProblemSolvingSolution as ProblemSolvingSolutionModel;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan as ProblemSolvingPlanModel;
 use DateTimeImmutable;
 
@@ -25,7 +23,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
             $model->improved_image = $problemSolving->getImprovedImage();
             $model->member_id = $memberId;
             $model->save();
-            $model->load(['solutions', 'plans']); // リレーションを再読み込み
+            $model->load(['plans']); // リレーションを再読み込み
         } else {
             // 新規作成
             $model = new ProblemSolvingModel();
@@ -40,7 +38,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
     public function findByIdForMember(int $id, int $memberId): ?ProblemSolvingEntity
     {
-        $model = ProblemSolvingModel::with(['solutions', 'plans'])->where('member_id', $memberId)->find($id);
+        $model = ProblemSolvingModel::with(['plans'])->where('member_id', $memberId)->find($id);
 
         if ($model === null) {
             return null;
@@ -52,42 +50,6 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
     public function deleteForMember(int $id, int $memberId): void
     {
         $model = ProblemSolvingModel::where('member_id', $memberId)->find($id);
-
-        if ($model !== null) {
-            $model->delete();
-        }
-    }
-
-    public function saveSolutionForMember(int $problemSolvingId, ProblemSolvingSolutionEntity $solution, int $memberId): ProblemSolvingSolutionEntity
-    {
-        $ownerScopedProblemSolving = ProblemSolvingModel::where('member_id', $memberId)->findOrFail($problemSolvingId);
-
-        $model = new ProblemSolvingSolutionModel();
-        $model->problem_solving_id = $ownerScopedProblemSolving->id;
-        $model->content = $solution->getContent();
-        $model->effectiveness = $solution->getEffectiveness();
-        $model->feasibility = $solution->getFeasibility();
-        $model->sort_order = $solution->getSortOrder();
-        $model->save();
-
-        return $this->toSolutionEntity($model);
-    }
-
-    public function updateSolutionForMember(ProblemSolvingSolutionEntity $solution, int $memberId): ProblemSolvingSolutionEntity
-    {
-        $model = ProblemSolvingSolutionModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->findOrFail($solution->getId());
-        $model->content = $solution->getContent();
-        $model->effectiveness = $solution->getEffectiveness();
-        $model->feasibility = $solution->getFeasibility();
-        $model->sort_order = $solution->getSortOrder();
-        $model->save();
-
-        return $this->toSolutionEntity($model);
-    }
-
-    public function deleteSolutionForMember(int $solutionId, int $memberId): void
-    {
-        $model = ProblemSolvingSolutionModel::whereHas('problemSolving', fn ($q) => $q->where('member_id', $memberId))->find($solutionId);
 
         if ($model !== null) {
             $model->delete();
@@ -142,29 +104,13 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
 
     private function toEntity(ProblemSolvingModel $model): ProblemSolvingEntity
     {
-        $solutions = $model->solutions->map(fn ($s) => $this->toSolutionEntity($s))->toArray();
         $plans = $model->plans->map(fn ($p) => $this->toPlanEntity($p))->toArray();
 
         return ProblemSolvingEntity::reconstitute(
             id: (int) $model->id,
             problemSituation: (string) $model->problem_situation,
             improvedImage: $model->improved_image,
-            solutions: $solutions,
             plans: $plans,
-            createdAt: new DateTimeImmutable($model->created_at),
-            updatedAt: new DateTimeImmutable($model->updated_at),
-        );
-    }
-
-    private function toSolutionEntity(ProblemSolvingSolutionModel $model): ProblemSolvingSolutionEntity
-    {
-        return ProblemSolvingSolutionEntity::reconstitute(
-            id: (int) $model->id,
-            problemSolvingId: (int) $model->problem_solving_id,
-            content: (string) $model->content,
-            effectiveness: $model->effectiveness,
-            feasibility: $model->feasibility,
-            sortOrder: (int) $model->sort_order,
             createdAt: new DateTimeImmutable($model->created_at),
             updatedAt: new DateTimeImmutable($model->updated_at),
         );
@@ -259,7 +205,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
      */
     public function searchForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags'])->where('member_id', $memberId);
+        $query = ProblemSolvingModel::with(['plans', 'tags'])->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -291,13 +237,6 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                     'id' => $problemSolving->id,
                     'problem_situation' => $problemSolving->problem_situation,
                     'improved_image' => $problemSolving->improved_image,
-                    'solutions' => $problemSolving->solutions->map(fn ($s) => [
-                        'id' => $s->id,
-                        'content' => $s->content,
-                        'effectiveness' => $s->effectiveness,
-                        'feasibility' => $s->feasibility,
-                        'sort_order' => $s->sort_order,
-                    ])->toArray(),
                     'plans' => $problemSolving->plans->map(fn ($p) => [
                         'id' => $p->id,
                         'plan_number' => $p->plan_number,
@@ -338,7 +277,7 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
      */
     public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array
     {
-        $query = ProblemSolvingModel::with(['solutions', 'plans', 'tags'])->where('member_id', $memberId);
+        $query = ProblemSolvingModel::with(['plans', 'tags'])->where('member_id', $memberId);
 
         // キーワード検索
         if ($criteria->hasKeyword() && count($searchableColumns) > 0) {
@@ -364,13 +303,6 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                     'id' => $problemSolving->id,
                     'problem_situation' => $problemSolving->problem_situation,
                     'improved_image' => $problemSolving->improved_image,
-                    'solutions' => $problemSolving->solutions->map(fn ($s) => [
-                        'id' => $s->id,
-                        'content' => $s->content,
-                        'effectiveness' => $s->effectiveness,
-                        'feasibility' => $s->feasibility,
-                        'sort_order' => $s->sort_order,
-                    ])->toArray(),
                     'plans' => $problemSolving->plans->map(fn ($p) => [
                         'id' => $p->id,
                         'plan_number' => $p->plan_number,

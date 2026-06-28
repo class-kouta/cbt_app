@@ -5,7 +5,6 @@ namespace App\Domain\Repository;
 use App\Application\DTO\PlanSearchCriteriaData;
 use App\Application\DTO\SearchCriteriaData;
 use App\Domain\Entity\ProblemSolving;
-use App\Domain\Entity\ProblemSolvingSolution;
 use App\Domain\Entity\ProblemSolvingPlan;
 
 interface ProblemSolvingRepositoryInterface
@@ -33,12 +32,6 @@ interface ProblemSolvingRepositoryInterface
      * @return array<int, array<string, mixed>> 検索結果
      */
     public function searchAllForMember(SearchCriteriaData $criteria, array $searchableColumns, int $memberId): array;
-
-    public function saveSolutionForMember(int $problemSolvingId, ProblemSolvingSolution $solution, int $memberId): ProblemSolvingSolution;
-
-    public function updateSolutionForMember(ProblemSolvingSolution $solution, int $memberId): ProblemSolvingSolution;
-
-    public function deleteSolutionForMember(int $solutionId, int $memberId): void;
 
     /**
      * 検索条件に基づいて計画を検索（ページネーション対応）
