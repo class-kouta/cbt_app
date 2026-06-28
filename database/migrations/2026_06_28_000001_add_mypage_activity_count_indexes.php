@@ -31,6 +31,22 @@ return new class extends Migration
         'exposure_sessions',
     ];
 
+    /**
+     * @param  array<int, string>|string  $columns
+     */
+    private function hasIndex(string $tableName, array|string $columns): bool
+    {
+        $columns = (array) $columns;
+
+        foreach (Schema::getIndexes($tableName) as $index) {
+            if ($index['columns'] === $columns) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function up(): void
     {
         foreach (self::MEMBER_CREATED_AT_INDEX_TABLES as $tableName) {
@@ -38,10 +54,12 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                if (! Schema::hasIndex($tableName, ['member_id', 'created_at'])) {
-                    $table->index(['member_id', 'created_at']);
-                }
+            if ($this->hasIndex($tableName, ['member_id', 'created_at'])) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->index(['member_id', 'created_at']);
             });
         }
 
@@ -50,10 +68,12 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                if (! Schema::hasIndex($tableName, ['created_at'])) {
-                    $table->index('created_at');
-                }
+            if ($this->hasIndex($tableName, 'created_at')) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->index('created_at');
             });
         }
     }
@@ -65,10 +85,12 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                if (Schema::hasIndex($tableName, ['member_id', 'created_at'])) {
-                    $table->dropIndex(['member_id', 'created_at']);
-                }
+            if (! $this->hasIndex($tableName, ['member_id', 'created_at'])) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropIndex(['member_id', 'created_at']);
             });
         }
 
@@ -77,10 +99,12 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                if (Schema::hasIndex($tableName, ['created_at'])) {
-                    $table->dropIndex(['created_at']);
-                }
+            if (! $this->hasIndex($tableName, 'created_at')) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropIndex(['created_at']);
             });
         }
     }

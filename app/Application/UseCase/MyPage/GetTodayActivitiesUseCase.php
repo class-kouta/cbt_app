@@ -2,24 +2,9 @@
 
 namespace App\Application\UseCase\MyPage;
 
-use App\Infrastructure\Database\Models\Chronology;
-use App\Infrastructure\Database\Models\Column;
-use App\Infrastructure\Database\Models\ConditionCheck;
-use App\Infrastructure\Database\Models\Coping;
-use App\Infrastructure\Database\Models\DialogueWork;
-use App\Infrastructure\Database\Models\EarlyMaladaptiveSchema;
-use App\Infrastructure\Database\Models\Exposure;
-use App\Infrastructure\Database\Models\ExposureSession;
-use App\Infrastructure\Database\Models\ProblemSolving;
-use App\Infrastructure\Database\Models\ProblemSolvingPlan;
-use App\Infrastructure\Database\Models\SelfCompassionJournal;
-use App\Infrastructure\Database\Models\SimpleNotepad;
-use App\Infrastructure\Database\Models\StressPersonEncyclopedia;
-use App\Infrastructure\Database\Models\StressorAndResponse;
-use App\Infrastructure\Database\Models\SupportNetwork;
-use App\Infrastructure\Database\Models\WritingDisclosure;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class GetTodayActivitiesUseCase
 {
@@ -36,10 +21,12 @@ class GetTodayActivitiesUseCase
         $start = $targetDate->copy()->startOfDay();
         $end = $targetDate->copy()->addDay()->startOfDay();
 
+        $counts = $this->fetchCountsViaUnionAll($memberId, $start, $end);
+
         $activities = [];
 
         foreach ($this->activityDefinitions() as $definition) {
-            $count = $this->countForMemberOnDate($definition, $memberId, $start, $end);
+            $count = $counts[$definition['key']] ?? 0;
 
             if ($count === 0) {
                 continue;
@@ -60,62 +47,114 @@ class GetTodayActivitiesUseCase
     }
 
     /**
-     * @return list<array{
+     * @return array<string, int>
+     */
+    private function fetchCountsViaUnionAll(int $memberId, Carbon $start, Carbon $end): array
+    {
+        $definitions = $this->activityDefinitions();
+        $unionQuery = $this->buildCountSubquery($definitions[0], $memberId, $start, $end);
+
+        foreach (array_slice($definitions, 1) as $definition) {
+            $unionQuery = $unionQuery->unionAll(
+                $this->buildCountSubquery($definition, $memberId, $start, $end),
+            );
+        }
+
+        return DB::query()
+            ->fromSub($unionQuery, 'activity_counts')
+            ->pluck('count', 'activity_key')
+            ->map(fn ($count) => (int) $count)
+            ->all();
+    }
+
+    /**
+     * @param array{
+     *     key: string,
      *     label: string,
-     *     model: class-string<Model>,
-     *     relation?: string
+     *     table: string,
+     *     parent_table?: string,
+     *     parent_alias?: string,
+     *     child_alias?: string,
+     *     child_foreign_key?: string
+     * } $definition
+     */
+    private function buildCountSubquery(
+        array $definition,
+        int $memberId,
+        Carbon $start,
+        Carbon $end,
+    ): Builder {
+        if (isset($definition['parent_table'])) {
+            $childAlias = $definition['child_alias'];
+            $parentAlias = $definition['parent_alias'];
+
+            return DB::table("{$definition['table']} as {$childAlias}")
+                ->join(
+                    "{$definition['parent_table']} as {$parentAlias}",
+                    "{$parentAlias}.id",
+                    '=',
+                    "{$childAlias}.{$definition['child_foreign_key']}",
+                )
+                ->selectRaw('? as activity_key, COUNT(*) as count', [$definition['key']])
+                ->where("{$parentAlias}.member_id", $memberId)
+                ->where("{$childAlias}.created_at", '>=', $start)
+                ->where("{$childAlias}.created_at", '<', $end);
+        }
+
+        return DB::table($definition['table'])
+            ->selectRaw('? as activity_key, COUNT(*) as count', [$definition['key']])
+            ->where('member_id', $memberId)
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $end);
+    }
+
+    /**
+     * @return list<array{
+     *     key: string,
+     *     label: string,
+     *     table: string,
+     *     parent_table?: string,
+     *     parent_alias?: string,
+     *     child_alias?: string,
+     *     child_foreign_key?: string
      * }>
      */
     private function activityDefinitions(): array
     {
         return [
-            ['label' => 'コンディションチェック', 'model' => ConditionCheck::class],
-            ['label' => '筆記開示', 'model' => WritingDisclosure::class],
-            ['label' => 'セルフコンパッション日記', 'model' => SelfCompassionJournal::class],
-            ['label' => 'ストレス人物図鑑', 'model' => StressPersonEncyclopedia::class],
-            ['label' => 'ストレッサーとストレス反応', 'model' => StressorAndResponse::class],
-            ['label' => 'コラム法', 'model' => Column::class],
-            ['label' => '問題解決法', 'model' => ProblemSolving::class],
-            ['label' => '実行計画', 'model' => ProblemSolvingPlan::class, 'relation' => 'problemSolving'],
-            ['label' => 'エクスポージャー療法', 'model' => Exposure::class],
-            ['label' => 'エクスポージャー実施記録', 'model' => ExposureSession::class, 'relation' => 'exposure'],
-            ['label' => 'サポートネットワーク', 'model' => SupportNetwork::class],
-            ['label' => 'コーピング', 'model' => Coping::class],
-            ['label' => 'スキーマ年表', 'model' => Chronology::class],
-            ['label' => '対話ワーク', 'model' => DialogueWork::class],
-            ['label' => '早期不適応的スキーマ', 'model' => EarlyMaladaptiveSchema::class],
-            ['label' => 'メモ帳', 'model' => SimpleNotepad::class],
+            ['key' => 'condition_check', 'label' => 'コンディションチェック', 'table' => 'condition_checks'],
+            ['key' => 'writing_disclosure', 'label' => '筆記開示', 'table' => 'writing_disclosures'],
+            ['key' => 'self_compassion_journal', 'label' => 'セルフコンパッション日記', 'table' => 'self_compassion_journals'],
+            ['key' => 'stress_person_encyclopedia', 'label' => 'ストレス人物図鑑', 'table' => 'stress_person_encyclopedias'],
+            ['key' => 'stressor_and_response', 'label' => 'ストレッサーとストレス反応', 'table' => 'stressor_and_responses'],
+            ['key' => 'column', 'label' => 'コラム法', 'table' => 'columns'],
+            ['key' => 'problem_solving', 'label' => '問題解決法', 'table' => 'problem_solvings'],
+            [
+                'key' => 'problem_solving_plan',
+                'label' => '実行計画',
+                'table' => 'problem_solving_plans',
+                'child_alias' => 'psp',
+                'parent_table' => 'problem_solvings',
+                'parent_alias' => 'ps',
+                'child_foreign_key' => 'problem_solving_id',
+            ],
+            ['key' => 'exposure', 'label' => 'エクスポージャー療法', 'table' => 'exposures'],
+            [
+                'key' => 'exposure_session',
+                'label' => 'エクスポージャー実施記録',
+                'table' => 'exposure_sessions',
+                'child_alias' => 'es',
+                'parent_table' => 'exposures',
+                'parent_alias' => 'e',
+                'child_foreign_key' => 'exposure_id',
+            ],
+            ['key' => 'support_network', 'label' => 'サポートネットワーク', 'table' => 'support_networks'],
+            ['key' => 'coping', 'label' => 'コーピング', 'table' => 'copings'],
+            ['key' => 'chronology', 'label' => 'スキーマ年表', 'table' => 'chronologies'],
+            ['key' => 'dialogue_work', 'label' => '対話ワーク', 'table' => 'dialogue_works'],
+            ['key' => 'early_maladaptive_schema', 'label' => '早期不適応的スキーマ', 'table' => 'early_maladaptive_schemas'],
+            ['key' => 'simple_notepad', 'label' => 'メモ帳', 'table' => 'simple_notepads'],
         ];
-    }
-
-    /**
-     * @param array{
-     *     label: string,
-     *     model: class-string<Model>,
-     *     relation?: string
-     * } $definition
-     */
-    private function countForMemberOnDate(
-        array $definition,
-        int $memberId,
-        Carbon $start,
-        Carbon $end,
-    ): int {
-        /** @var class-string<Model> $modelClass */
-        $modelClass = $definition['model'];
-        $query = $modelClass::query()
-            ->where('created_at', '>=', $start)
-            ->where('created_at', '<', $end);
-
-        if (isset($definition['relation'])) {
-            $relation = $definition['relation'];
-
-            return $query->whereHas($relation, function ($builder) use ($memberId) {
-                $builder->where('member_id', $memberId);
-            })->count();
-        }
-
-        return $query->where('member_id', $memberId)->count();
     }
 
     private function buildMessage(string $label, int $count): string

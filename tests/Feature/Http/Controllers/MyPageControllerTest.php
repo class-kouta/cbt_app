@@ -4,6 +4,8 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Infrastructure\Database\Models\Column;
 use App\Infrastructure\Database\Models\Coping;
+use App\Infrastructure\Database\Models\ProblemSolving;
+use App\Infrastructure\Database\Models\ProblemSolvingPlan;
 use App\Infrastructure\Database\Models\WritingDisclosure;
 use App\Models\Member;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -71,6 +73,31 @@ class MyPageControllerTest extends TestCase
         $this->assertContains('コラム法を2件作成しました', $messages);
         $this->assertContains('コーピングを1件作成しました', $messages);
         $this->assertNotContains('筆記開示を1件作成しました', $messages);
+    }
+
+    public function test_today_activities_includes_joined_tables_via_union_all(): void
+    {
+        $member = Member::factory()->create();
+
+        $problemSolving = ProblemSolving::create([
+            'member_id' => $member->id,
+            'problem_situation' => '仕事のストレス',
+            'improved_image' => null,
+        ]);
+
+        ProblemSolvingPlan::create([
+            'problem_solving_id' => $problemSolving->id,
+            'plan_number' => 1,
+            'action_plan' => '朝散歩する',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->actingAs($member, 'sanctum')->getJson('/api/mypage/today-activities');
+
+        $response->assertOk();
+        $messages = collect($response->json('activities'))->pluck('message')->all();
+        $this->assertContains('実行計画を1件作成しました', $messages);
     }
 
     public function test_today_activities_returns_empty_when_no_records_for_today(): void
