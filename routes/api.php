@@ -15,6 +15,7 @@ use App\Http\Controllers\SupportNetworkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModeDialogueWorkController;
 use App\Http\Controllers\MindfulnessController;
+use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\SelfCompassionJournalController;
 use App\Http\Controllers\StressPersonEncyclopediaController;
 use App\Http\Controllers\WritingDisclosureController;
@@ -169,4 +170,7 @@ Route::get('/chronologies/{chronology}', [ChronologyController::class, 'show']);
 Route::post('/chronologies', [ChronologyController::class, 'store']);
 Route::put('/chronologies/{chronology}', [ChronologyController::class, 'update']);
 Route::delete('/chronologies/{chronology}', [ChronologyController::class, 'destroy']);
+
+// My Page API
+Route::get('/mypage/today-activities', [MyPageController::class, 'todayActivities']);
 });
