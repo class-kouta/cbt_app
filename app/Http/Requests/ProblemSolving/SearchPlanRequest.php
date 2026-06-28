@@ -24,6 +24,7 @@ class SearchPlanRequest extends FormRequest
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
             'filter' => ['nullable', 'string', 'in:all,pending,completed'],
+            'problem_solving_id' => ['nullable', 'integer'],
         ];
     }
 
@@ -54,7 +55,8 @@ class SearchPlanRequest extends FormRequest
             improvementLevelMax: (int) ($validated['improvement_level_max'] ?? PlanSearchCriteriaData::DEFAULT_IMPROVEMENT_LEVEL_MAX),
             page: (int) ($validated['page'] ?? 1),
             perPage: (int) ($validated['per_page'] ?? PlanSearchCriteriaData::DEFAULT_PER_PAGE),
-            filter: $validated['filter'] ?? null
+            filter: $validated['filter'] ?? null,
+            problemSolvingId: isset($validated['problem_solving_id']) ? (int) $validated['problem_solving_id'] : null
         );
     }
 }

@@ -200,6 +200,16 @@ Route::middleware('auth')->group(function () {
             return view('problem-solving-plans-list');
         })->name('problem-solving-plans.list');
 
+        // 計画作成ページ
+        Route::get('/problem-solvings/plans/new', function () {
+            return view('problem-solving-plan-edit');
+        });
+
+        // 計画編集ページ
+        Route::get('/problem-solvings/plans/{id}', function ($id) {
+            return view('problem-solving-plan-edit', ['planId' => $id]);
+        })->where('id', '[0-9]+');
+
         // 問題解決法詳細・編集ページ（統合）
         Route::get('/problem-solvings/{id}', function ($id) {
             return view('problem-solving-edit', ['itemId' => $id]);

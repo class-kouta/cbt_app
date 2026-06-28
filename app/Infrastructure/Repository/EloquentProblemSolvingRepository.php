@@ -162,6 +162,10 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                 ]);
         }
 
+        if ($criteria->hasProblemSolvingId()) {
+            $query->where('problem_solving_id', $criteria->problemSolvingId);
+        }
+
         if ($criteria->filter === 'pending') {
             $query->where(function ($q) {
                 $q->whereNull('reflection')->orWhere('reflection', '');
@@ -318,6 +322,19 @@ class EloquentProblemSolvingRepository implements ProblemSolvingRepositoryInterf
                     'updated_at' => $problemSolving->updated_at->format(DATE_ATOM),
                 ];
             })
+            ->toArray();
+    }
+
+    public function listOptionsForMember(int $memberId): array
+    {
+        return ProblemSolvingModel::query()
+            ->where('member_id', $memberId)
+            ->orderByDesc('created_at')
+            ->get(['id', 'problem_situation'])
+            ->map(fn ($problemSolving) => [
+                'id' => (int) $problemSolving->id,
+                'problem_situation' => (string) $problemSolving->problem_situation,
+            ])
             ->toArray();
     }
 }

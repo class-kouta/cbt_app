@@ -119,6 +119,16 @@
             return data.data || [];
         }
 
+        async function fetchProblemSolvingOptions() {
+            const response = await apiFetch('/api/problem-solvings/options');
+            if (!response.ok) {
+                return [];
+            }
+
+            const data = await response.json();
+            return data.data || [];
+        }
+
         /**
          * ページネーションで表示するページ番号の配列を計算する
          * @param {number} currentPage - 現在のページ
@@ -619,7 +629,16 @@
                                         <span class="text-base">問題解決法シート一覧</span>
                                     </a>
                                 @endif
-                                @if(request()->is('problem-solvings/plans'))
+                                @if(request()->is('problem-solvings/plans/new'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">計画作成</span>
+                                    </span>
+                                @else
+                                    <a href="/problem-solvings/plans/new" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">計画作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('problem-solvings/plans') && !request()->is('problem-solvings/plans/*'))
                                     <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
                                         <span class="text-base">計画一覧</span>
                                     </span>

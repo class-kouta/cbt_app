@@ -6,7 +6,19 @@
 @section('content')
 <div x-data="plansListApp()" x-init="init()" x-cloak>
     <!-- 検索フォーム -->
-    <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+    <div class="bg-white rounded-xl shadow-md p-4 mb-4 space-y-4">
+        <!-- 問題状況で絞り込み -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">問題状況</label>
+            <select x-model="problemSolvingId" @change="onProblemSolvingChange()"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white">
+                <option value="">すべて</option>
+                <template x-for="ps in problemSolvings" :key="ps.id">
+                    <option :value="ps.id" x-text="ps.problem_situation"></option>
+                </template>
+            </select>
+        </div>
+
         <!-- キーワード検索 -->
         <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
@@ -99,7 +111,7 @@
     <div class="space-y-3">
         <template x-for="plan in allPlans" :key="plan.planId">
             <a
-                :href="'/problem-solvings/' + plan.problemSolvingId + '?from=plans&plan_id=' + plan.planId"
+                :href="'/problem-solvings/plans/' + plan.planId"
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
@@ -175,8 +187,8 @@
         <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter === 'all'" class="text-center py-16 bg-white rounded-xl shadow-md">
             <div class="mb-4 flex justify-center text-gray-300"><x-icon name="clipboard-document" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
-            <a href="/problem-solvings" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
-                問題解決を始める
+            <a href="/problem-solvings/plans/new" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
+                計画を作成する
             </a>
         </div>
 
@@ -210,9 +222,9 @@
 
     <!-- 新規作成ボタン（フローティング） -->
     <a
-        href="/problem-solvings"
+        href="/problem-solvings/plans/new"
         class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
-        title="新しい問題解決を作成"
+        title="計画を作成"
     >
         ＋
     </a>
@@ -237,6 +249,8 @@
 function plansListApp() {
     return {
         allPlans: [],
+        problemSolvings: [],
+        problemSolvingId: '',
         loading: true,
         filter: new URLSearchParams(window.location.search).get('filter') || 'all',
         keyword: '',
@@ -250,6 +264,16 @@ function plansListApp() {
         to: 0,
 
         async init() {
+            await this.loadProblemSolvings();
+            await this.loadPlans();
+        },
+
+        async loadProblemSolvings() {
+            this.problemSolvings = await fetchProblemSolvingOptions();
+        },
+
+        async onProblemSolvingChange() {
+            this.currentPage = 1;
             await this.loadPlans();
         },
 
@@ -266,6 +290,9 @@ function plansListApp() {
                 }
                 if (this.filter && this.filter !== 'all') {
                     params.append('filter', this.filter);
+                }
+                if (this.problemSolvingId) {
+                    params.append('problem_solving_id', this.problemSolvingId);
                 }
                 params.append('page', this.currentPage);
                 params.append('per_page', this.perPage);
@@ -313,6 +340,7 @@ function plansListApp() {
 
         async clearSearch() {
             this.keyword = '';
+            this.problemSolvingId = '';
             this.improvementLevelMin = 1;
             this.improvementLevelMax = 10;
             this.currentPage = 1;
@@ -331,7 +359,7 @@ function plansListApp() {
         },
 
         get hasSearchCondition() {
-            return this.keyword !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
+            return this.keyword !== '' || this.problemSolvingId !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
         },
 
         get hasRangeError() {

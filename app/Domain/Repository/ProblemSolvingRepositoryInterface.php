@@ -49,4 +49,9 @@ interface ProblemSolvingRepositoryInterface
     public function updatePlanForMember(ProblemSolvingPlan $plan, int $memberId): ProblemSolvingPlan;
 
     public function deletePlanForMember(int $planId, int $memberId): void;
+
+    /**
+     * @return array<int, array{id: int, problem_situation: string}>
+     */
+    public function listOptionsForMember(int $memberId): array;
 }

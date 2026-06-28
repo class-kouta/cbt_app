@@ -15,6 +15,7 @@ readonly class PlanSearchCriteriaData
      * @param int $page ページ番号
      * @param int $perPage 1ページあたりの件数
      * @param string|null $filter フィルター（all/pending/completed）
+     * @param int|null $problemSolvingId 問題解決シートID
      */
     public function __construct(
         public ?string $keyword = null,
@@ -22,7 +23,8 @@ readonly class PlanSearchCriteriaData
         public int $improvementLevelMax = self::DEFAULT_IMPROVEMENT_LEVEL_MAX,
         public int $page = 1,
         public int $perPage = self::DEFAULT_PER_PAGE,
-        public ?string $filter = null
+        public ?string $filter = null,
+        public ?int $problemSolvingId = null
     ) {
     }
 
@@ -35,5 +37,10 @@ readonly class PlanSearchCriteriaData
     {
         return $this->improvementLevelMin !== self::DEFAULT_IMPROVEMENT_LEVEL_MIN
             || $this->improvementLevelMax !== self::DEFAULT_IMPROVEMENT_LEVEL_MAX;
+    }
+
+    public function hasProblemSolvingId(): bool
+    {
+        return $this->problemSolvingId !== null;
     }
 }
