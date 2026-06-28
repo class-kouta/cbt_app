@@ -109,13 +109,13 @@ function myPage() {
                 ]);
 
                 const meResult = results[0];
-                if (meResult.status === 'fulfilled' && meResult.value.ok) {
+                if (meResult.status === 'fulfilled' && meResult.value?.ok) {
                     const meData = await meResult.value.json();
                     this.memberName = meData.member?.name ?? '';
                 }
 
                 const activitiesResult = results[1];
-                if (activitiesResult.status === 'fulfilled' && activitiesResult.value.ok) {
+                if (activitiesResult.status === 'fulfilled' && activitiesResult.value?.ok) {
                     const data = await activitiesResult.value.json();
                     this.activities = data.activities ?? [];
                     this.hasActivities = data.has_activities ?? false;
