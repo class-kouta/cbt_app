@@ -95,14 +95,14 @@ class GetTodayActivitiesUseCase
                     '=',
                     "{$childAlias}.{$definition['child_foreign_key']}",
                 )
-                ->selectRaw('? as activity_key, COUNT(*) as count', [$definition['key']])
+                ->selectRaw("'{$definition['key']}' as activity_key, COUNT(*) as count")
                 ->where("{$parentAlias}.member_id", $memberId)
                 ->where("{$childAlias}.created_at", '>=', $start)
                 ->where("{$childAlias}.created_at", '<', $end);
         }
 
         return DB::table($definition['table'])
-            ->selectRaw('? as activity_key, COUNT(*) as count', [$definition['key']])
+            ->selectRaw("'{$definition['key']}' as activity_key, COUNT(*) as count")
             ->where('member_id', $memberId)
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $end);
