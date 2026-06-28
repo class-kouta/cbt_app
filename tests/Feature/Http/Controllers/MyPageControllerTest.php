@@ -68,9 +68,9 @@ class MyPageControllerTest extends TestCase
         $response->assertJsonCount(2, 'activities');
 
         $messages = collect($response->json('activities'))->pluck('message')->all();
-        $this->assertContains('コラム法を二つ作成しました', $messages);
-        $this->assertContains('コーピングを一つ作成しました', $messages);
-        $this->assertNotContains('筆記開示を一つ作成しました', $messages);
+        $this->assertContains('コラム法を2件作成しました', $messages);
+        $this->assertContains('コーピングを1件作成しました', $messages);
+        $this->assertNotContains('筆記開示を1件作成しました', $messages);
     }
 
     public function test_today_activities_returns_empty_when_no_records_for_today(): void

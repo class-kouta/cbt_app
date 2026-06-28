@@ -12,8 +12,13 @@ class MyPageController extends Controller
         Request $request,
         GetTodayActivitiesUseCase $useCase,
     ): JsonResponse {
+        $user = $request->user();
+        if ($user === null) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         return response()->json(
-            $useCase->handle((int) $request->user()->id),
+            $useCase->handle((int) $user->id),
         );
     }
 }

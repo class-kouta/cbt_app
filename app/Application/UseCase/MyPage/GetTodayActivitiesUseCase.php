@@ -32,12 +32,14 @@ class GetTodayActivitiesUseCase
      */
     public function handle(int $memberId, ?Carbon $date = null): array
     {
-        $targetDate = ($date ?? Carbon::today())->toDateString();
+        $targetDate = $date ?? Carbon::today();
+        $start = $targetDate->copy()->startOfDay();
+        $end = $targetDate->copy()->addDay()->startOfDay();
 
         $activities = [];
 
         foreach ($this->activityDefinitions() as $definition) {
-            $count = $this->countForMemberOnDate($definition, $memberId, $targetDate);
+            $count = $this->countForMemberOnDate($definition, $memberId, $start, $end);
 
             if ($count === 0) {
                 continue;
@@ -51,7 +53,7 @@ class GetTodayActivitiesUseCase
         }
 
         return [
-            'date' => $targetDate,
+            'date' => $targetDate->toDateString(),
             'activities' => $activities,
             'has_activities' => count($activities) > 0,
         ];
@@ -93,11 +95,17 @@ class GetTodayActivitiesUseCase
      *     relation?: string
      * } $definition
      */
-    private function countForMemberOnDate(array $definition, int $memberId, string $date): int
-    {
+    private function countForMemberOnDate(
+        array $definition,
+        int $memberId,
+        Carbon $start,
+        Carbon $end,
+    ): int {
         /** @var class-string<Model> $modelClass */
         $modelClass = $definition['model'];
-        $query = $modelClass::query()->whereDate('created_at', $date);
+        $query = $modelClass::query()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $end);
 
         if (isset($definition['relation'])) {
             $relation = $definition['relation'];
@@ -112,28 +120,6 @@ class GetTodayActivitiesUseCase
 
     private function buildMessage(string $label, int $count): string
     {
-        return sprintf('%sを%s作成しました', $label, $this->formatJapaneseCount($count));
-    }
-
-    private function formatJapaneseCount(int $count): string
-    {
-        $counters = [
-            1 => '一つ',
-            2 => '二つ',
-            3 => '三つ',
-            4 => '四つ',
-            5 => '五つ',
-            6 => '六つ',
-            7 => '七つ',
-            8 => '八つ',
-            9 => '九つ',
-            10 => '十',
-        ];
-
-        if (isset($counters[$count])) {
-            return $counters[$count];
-        }
-
-        return (string) $count . '件';
+        return sprintf('%sを%d件作成しました', $label, $count);
     }
 }

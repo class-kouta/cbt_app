@@ -102,28 +102,33 @@ function myPage() {
         formattedDate: '',
 
         async init() {
-            this.formattedDate = new Date().toLocaleDateString('ja-JP', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'short',
-            });
-
             try {
-                const [meRes, activitiesRes] = await Promise.all([
+                const results = await Promise.allSettled([
                     apiFetch('/api/auth/me'),
                     apiFetch('/api/mypage/today-activities'),
                 ]);
 
-                if (meRes.ok) {
-                    const meData = await meRes.json();
+                const meResult = results[0];
+                if (meResult.status === 'fulfilled' && meResult.value.ok) {
+                    const meData = await meResult.value.json();
                     this.memberName = meData.member?.name ?? '';
                 }
 
-                if (activitiesRes.ok) {
-                    const data = await activitiesRes.json();
+                const activitiesResult = results[1];
+                if (activitiesResult.status === 'fulfilled' && activitiesResult.value.ok) {
+                    const data = await activitiesResult.value.json();
                     this.activities = data.activities ?? [];
                     this.hasActivities = data.has_activities ?? false;
+
+                    if (data.date) {
+                        const [year, month, day] = data.date.split('-').map(Number);
+                        this.formattedDate = new Date(year, month - 1, day).toLocaleDateString('ja-JP', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            weekday: 'short',
+                        });
+                    }
                 }
             } catch (e) {
                 // API失敗時は空状態のまま表示
