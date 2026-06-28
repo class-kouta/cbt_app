@@ -96,28 +96,12 @@
                 type="button"
                 @click="isEditing ? saveAndStopEditing() : startEditing()"
                 :disabled="isEditing && (submitting || floatingSaving)"
-                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                :class="isEditing
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    : 'bg-green-600 text-white hover:bg-green-700'"
+                class="inline-flex items-center justify-center p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="isEditing ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
+                :title="isEditing ? '保存する' : '編集する'"
             >
-                <template x-if="!isEditing">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                    </svg>
-                </template>
-                <template x-if="isEditing && !submitting && !floatingSaving">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </template>
-                <template x-if="isEditing && (submitting || floatingSaving)">
-                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </template>
-                <span x-text="isEditing ? ((submitting || floatingSaving) ? '保存中...' : '保存する') : '編集する'"></span>
+                <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
+                <span x-show="isEditing"><x-icon name="check-circle" class="w-5 h-5" /></span>
             </button>
             <!-- 削除ボタン（既存レコードのみ） -->
             <button
@@ -219,6 +203,47 @@
                     ></textarea>
                 </div>
 
+                <!-- Step 3: 実行計画（新規作成時のみ・複数可） -->
+                <div x-show="isCreateMode && isEditing" class="border-t border-gray-200 pt-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
+                        実行計画
+                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
+                    </label>
+                    <div class="space-y-3 mt-3">
+                        <template x-for="(plan, index) in plans" :key="'new-plan-' + index">
+                            <div class="border border-teal-200 rounded-lg p-3 bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-500 font-medium" x-text="'実行計画 ' + (index + 1)"></span>
+                                    <button
+                                        type="button"
+                                        x-show="plans.length > 1"
+                                        @click="removePlanRow(index)"
+                                        class="text-red-400 hover:text-red-600 p-1"
+                                        title="この実行計画を削除"
+                                    >
+                                        <x-icon name="trash" class="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <textarea
+                                    x-model="plan.action_plan"
+                                    rows="6"
+                                    maxlength="5000"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                    placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。…"
+                                ></textarea>
+                            </div>
+                        </template>
+                    </div>
+                    <button
+                        type="button"
+                        @click="addPlanRow()"
+                        class="mt-3 text-sm text-emerald-600 hover:text-emerald-800"
+                    >
+                        ＋ 実行計画を追加
+                    </button>
+                </div>
+
                 <!-- ボタンエリア -->
                 <div class="space-y-3">
                     <!-- 保存ボタン（編集中のみ） -->
@@ -256,12 +281,14 @@ function problemSolvingFormApp(itemId) {
     return {
         itemId: itemId,
         hasExistingRecord: itemId !== null,
+        isCreateMode: itemId === null,
         isEditing: itemId === null,
         form: {
             problem_situation: '',
             improved_image: '',
             tag_ids: []
         },
+        plans: [{ action_plan: '' }],
         loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
@@ -368,7 +395,8 @@ function problemSolvingFormApp(itemId) {
             const snapshot = {
                 problem_situation: this.form.problem_situation,
                 improved_image: this.form.improved_image,
-                tag_ids: JSON.stringify(this.form.tag_ids)
+                tag_ids: JSON.stringify(this.form.tag_ids),
+                plans: JSON.stringify(this.plans.map(p => p.action_plan))
             };
             this.autoSaveSnapshots.push(snapshot);
 
@@ -393,8 +421,18 @@ function problemSolvingFormApp(itemId) {
             return (
                 this.form.problem_situation !== snapshot.problem_situation ||
                 this.form.improved_image !== snapshot.improved_image ||
-                JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids
+                JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids ||
+                JSON.stringify(this.plans.map(p => p.action_plan)) !== snapshot.plans
             );
+        },
+
+        addPlanRow() {
+            this.plans.push({ action_plan: '' });
+        },
+
+        removePlanRow(index) {
+            if (this.plans.length <= 1) return;
+            this.plans.splice(index, 1);
         },
 
         async checkAndAutoSave() {
@@ -416,12 +454,16 @@ function problemSolvingFormApp(itemId) {
             try {
                 if (this.itemId) {
                     await this.saveExistingItem();
+                    if (this.isCreateMode) {
+                        await this.savePlans(this.itemId);
+                    }
                 } else {
                     await this.saveNewItem();
                 }
                 this.showSaveNotification(isManual);
             } catch (error) {
                 console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
+                if (isManual) throw error;
             }
         },
 
@@ -503,12 +545,41 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (res.ok) {
-                const created = await res.json();
-                this.itemId = created.id;
-                this.hasExistingRecord = true;
+            if (!res.ok) throw await parseApiErrorMessage(res);
 
-                history.replaceState(null, '', `/problem-solvings/${created.id}`);
+            const created = await res.json();
+            this.itemId = created.id;
+            this.hasExistingRecord = true;
+
+            if (this.isCreateMode) {
+                await this.savePlans(created.id);
+            }
+
+            history.replaceState(null, '', `/problem-solvings/${created.id}`);
+        },
+
+        async savePlans(problemSolvingId) {
+            for (let i = 0; i < this.plans.length; i++) {
+                const plan = this.plans[i];
+                if (!plan.action_plan || !plan.action_plan.trim()) continue;
+
+                if (plan.id) {
+                    await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action_plan: plan.action_plan })
+                    });
+                } else {
+                    const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action_plan: plan.action_plan })
+                    });
+                    if (planRes.ok) {
+                        const createdPlan = await planRes.json();
+                        plan.id = createdPlan.id;
+                    }
+                }
             }
         },
 
@@ -580,6 +651,7 @@ function problemSolvingFormApp(itemId) {
         hasAnyContent() {
             if (this.form.problem_situation.trim()) return true;
             if (this.form.improved_image.trim()) return true;
+            if (this.plans.some(p => p.action_plan && p.action_plan.trim())) return true;
             return false;
         },
 
@@ -594,6 +666,16 @@ function problemSolvingFormApp(itemId) {
 
             sections.push('■ 改善イメージ');
             sections.push(this.form.improved_image.trim() || '未入力');
+
+            const validPlans = this.plans.filter(p => p.action_plan && p.action_plan.trim());
+            if (validPlans.length > 0) {
+                sections.push('');
+                validPlans.forEach((plan, index) => {
+                    const label = validPlans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
+                    sections.push(label);
+                    sections.push(plan.action_plan.trim());
+                });
+            }
 
             return sections.join('\n').trim();
         },

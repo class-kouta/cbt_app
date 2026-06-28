@@ -631,11 +631,11 @@
                                 @endif
                                 @if(request()->is('problem-solvings/plans/new'))
                                     <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">計画作成</span>
+                                        <span class="text-base">振り返り</span>
                                     </span>
                                 @else
                                     <a href="/problem-solvings/plans/new" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">計画作成</span>
+                                        <span class="text-base">振り返り</span>
                                     </a>
                                 @endif
                                 @if(request()->is('problem-solvings/plans') && !request()->is('problem-solvings/plans/*'))

@@ -188,7 +188,7 @@
             <div class="mb-4 flex justify-center text-gray-300"><x-icon name="clipboard-document" class="w-16 h-16" /></div>
             <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
             <a href="/problem-solvings/plans/new" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
-                計画を作成する
+                振り返りを記録する
             </a>
         </div>
 
@@ -224,7 +224,7 @@
     <a
         href="/problem-solvings/plans/new"
         class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
-        title="計画を作成"
+        title="振り返りを記録"
     >
         ＋
     </a>

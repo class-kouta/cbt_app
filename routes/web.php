@@ -200,12 +200,12 @@ Route::middleware('auth')->group(function () {
             return view('problem-solving-plans-list');
         })->name('problem-solving-plans.list');
 
-        // 計画作成ページ
+        // 振り返りページ
         Route::get('/problem-solvings/plans/new', function () {
             return view('problem-solving-plan-edit');
         });
 
-        // 計画編集ページ
+        // 振り返り編集ページ
         Route::get('/problem-solvings/plans/{id}', function ($id) {
             return view('problem-solving-plan-edit', ['planId' => $id]);
         })->where('id', '[0-9]+');
