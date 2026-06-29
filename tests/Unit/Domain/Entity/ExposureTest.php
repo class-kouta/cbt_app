@@ -32,6 +32,7 @@ class ExposureTest extends TestCase
         $exposure = Exposure::reconstitute(
             id: 1,
             avoidanceTarget: 'テスト',
+            notes: null,
             hierarchyItems: [],
             sessions: [$session],
             createdAt: new DateTimeImmutable('now'),
@@ -57,6 +58,7 @@ class ExposureTest extends TestCase
         $exposure = Exposure::reconstitute(
             id: 1,
             avoidanceTarget: 'テスト',
+            notes: null,
             hierarchyItems: [],
             sessions: [$session],
             createdAt: new DateTimeImmutable('now'),

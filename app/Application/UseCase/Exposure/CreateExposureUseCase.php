@@ -19,7 +19,7 @@ class CreateExposureUseCase
         return DB::transaction(function () use ($data) {
             $memberId = (int) Auth::id();
 
-            $exposure = ExposureEntity::createNew($data->avoidanceTarget);
+            $exposure = ExposureEntity::createNew($data->avoidanceTarget, $data->notes);
 
             return $this->repository->saveForMember($exposure, $memberId);
         });

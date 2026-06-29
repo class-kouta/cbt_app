@@ -5,7 +5,8 @@ namespace App\Application\DTO;
 readonly class ExposureData
 {
     public function __construct(
-        public string $avoidanceTarget
+        public string $avoidanceTarget,
+        public ?string $notes = null
     ) {
     }
 }
