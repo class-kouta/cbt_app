@@ -85,36 +85,21 @@
             >
                 <x-icon name="trash" class="w-5 h-5" />
             </button>
-            <!-- 編集する / 保存して編集をやめるボタン（編集モードのみ） -->
-            <template x-if="isEditMode">
-                <button
-                    type="button"
-                    @click="isEditing ? saveAndStopEditing() : startEditing()"
-                    :disabled="isEditing && saving"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    :class="isEditing
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'bg-green-600 text-white hover:bg-green-700'"
-                >
-                    <template x-if="!isEditing">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                        </svg>
-                    </template>
-                    <template x-if="isEditing && !saving">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </template>
-                    <template x-if="isEditing && saving">
-                        <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </template>
-                    <span x-text="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"></span>
-                </button>
-            </template>
+            <!-- 編集トグルボタン（編集モード時のみ） -->
+            <button
+                x-show="isEditMode"
+                type="button"
+                @click="isEditing ? saveAndStopEditing() : startEditing()"
+                :disabled="isEditing && saving"
+                class="inline-flex items-center justify-center p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="isEditing
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
+                :title="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"
+            >
+                <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
+                <span x-show="isEditing"><x-icon name="check-circle" class="w-5 h-5" /></span>
+            </button>
         </div>
     </div>
 
