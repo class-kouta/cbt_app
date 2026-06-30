@@ -144,7 +144,13 @@ function exposureFormApp(itemId) {
         async manualSave() {
             if (this.floatingSaving || !this.form.avoidance_target.trim()) return;
             this.floatingSaving = true;
-            try { await this.performSave(); } finally { this.floatingSaving = false; }
+            try {
+                await this.performSave();
+            } catch (e) {
+                alert(typeof e === 'string' ? e : '保存に失敗しました');
+            } finally {
+                this.floatingSaving = false;
+            }
         },
 
         async saveNewItem() {
