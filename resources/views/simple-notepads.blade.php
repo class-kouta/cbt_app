@@ -22,7 +22,7 @@
         保存しました
     </div>
 
-    <!-- 手動保存トースト -->
+    <!-- エラートースト -->
     <div
         x-show="showErrorToast"
         x-transition:enter="transition ease-out duration-300"
