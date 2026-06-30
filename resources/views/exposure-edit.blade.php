@@ -6,8 +6,8 @@
 @section('content')
 <div x-data="exposureFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
 
-    <div x-show="showAutoSaveToast" x-transition class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">自動保存しました</div>
     <div x-show="showManualSaveToast" x-transition class="fixed top-16 right-4 bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">保存しました</div>
+    <div x-show="showSaveErrorToast" x-transition class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">保存に失敗しました</div>
     <div x-show="showCopyToast" x-transition class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50">コピーしました！</div>
 
     <button x-show="isEditing" type="button" @click="manualSave()" :disabled="floatingSaving || !form.avoidance_target.trim()"
@@ -101,59 +101,23 @@ function exposureFormApp(itemId) {
         form: { avoidance_target: '' },
         hierarchyItems: [{ content: '', expected_suds: '' }, { content: '', expected_suds: '' }, { content: '', expected_suds: '' }],
         loading: itemId !== null, submitting: false, floatingSaving: false,
-        showManualSaveToast: false, showAutoSaveToast: false, showCopyToast: false,
-        autoSaveSnapshots: [], autoSaveInterval: null, autoSaving: false,
+        showManualSaveToast: false, showSaveErrorToast: false, showCopyToast: false,
 
         async init() {
             if (this.hasExistingRecord) {
                 await this.loadItem();
-                if (this.isEditing) this.startAutoSave();
-            } else {
-                this.startAutoSave();
             }
-            this.takeSnapshot();
         },
 
-        startEditing() { this.isEditing = true; this.takeSnapshot(); this.startAutoSave(); },
-        stopEditing() { this.isEditing = false; this.stopAutoSave(); },
+        startEditing() { this.isEditing = true; },
+        stopEditing() { this.isEditing = false; },
 
         async saveAndStopEditing() {
             if (!this.form.avoidance_target.trim()) return;
             this.submitting = true;
-            try { await this.performSave(true); this.stopEditing(); }
-            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
+            try { await this.performSave(); this.stopEditing(); }
+            catch (e) { this.showSaveErrorNotification(); }
             finally { this.submitting = false; }
-        },
-
-        startAutoSave() {
-            this.stopAutoSave();
-            this.autoSaveInterval = setInterval(() => this.checkAndAutoSave(), 30000);
-        },
-        stopAutoSave() {
-            if (this.autoSaveInterval) clearInterval(this.autoSaveInterval);
-            this.autoSaveInterval = null;
-            this.autoSaveSnapshots = [];
-        },
-
-        takeSnapshot() {
-            const s = { form: JSON.stringify(this.form), hierarchyItems: JSON.stringify(this.hierarchyItems) };
-            this.autoSaveSnapshots.push(s);
-            if (this.autoSaveSnapshots.length > 2) this.autoSaveSnapshots.shift();
-        },
-
-        hasChanged() {
-            if (this.autoSaveSnapshots.length < 1) return false;
-            const old = this.autoSaveSnapshots[0];
-            return JSON.stringify(this.form) !== old.form || JSON.stringify(this.hierarchyItems) !== old.hierarchyItems;
-        },
-
-        async checkAndAutoSave() {
-            if (!this.isEditing || !this.form.avoidance_target.trim() || !this.hasChanged() || this.submitting || this.autoSaving) {
-                this.takeSnapshot(); return;
-            }
-            this.autoSaving = true;
-            try { await this.performSave(false); this.showAutoSaveToast = true; setTimeout(() => this.showAutoSaveToast = false, 2000); }
-            finally { this.autoSaving = false; this.takeSnapshot(); }
         },
 
         async loadItem() {
@@ -171,16 +135,28 @@ function exposureFormApp(itemId) {
         addHierarchyItemRow() { this.hierarchyItems.push({ content: '', expected_suds: '' }); },
         removeHierarchyItem(i) { this.hierarchyItems.splice(i, 1); },
 
-        async performSave(isManual) {
+        async performSave() {
             if (this.itemId) await this.saveExistingItem();
             else await this.saveNewItem();
-            if (isManual) { this.showManualSaveToast = true; setTimeout(() => this.showManualSaveToast = false, 2000); }
+            this.showManualSaveToast = true;
+            setTimeout(() => this.showManualSaveToast = false, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => { this.showSaveErrorToast = false; }, 2000);
         },
 
         async manualSave() {
             if (this.floatingSaving || !this.form.avoidance_target.trim()) return;
             this.floatingSaving = true;
-            try { await this.performSave(true); } finally { this.floatingSaving = false; }
+            try {
+                await this.performSave();
+            } catch (e) {
+                this.showSaveErrorNotification();
+            } finally {
+                this.floatingSaving = false;
+            }
         },
 
         async saveNewItem() {
@@ -223,8 +199,8 @@ function exposureFormApp(itemId) {
         async saveExposure() {
             if (this.submitting || !this.form.avoidance_target.trim()) return;
             this.submitting = true;
-            try { await this.performSave(true); this.stopEditing(); }
-            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
+            try { await this.performSave(); this.stopEditing(); }
+            catch (e) { this.showSaveErrorNotification(); }
             finally { this.submitting = false; }
         },
 

@@ -28,23 +28,6 @@
         <p class="text-gray-600 mt-2">読み込み中...</p>
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -60,6 +43,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         保存しました
+    </div>
+
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
     </div>
 
     <!-- フローティング保存ボタン -->
@@ -275,26 +272,16 @@ function chronologyEditApp(itemId) {
         loading: false,
         submitting: false,
         error: '',
-        showAutoSaveToast: false,
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         floatingSaving: false,
         showDeleteModal: false,
         deleting: false,
-
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
 
         async init() {
             if (this.isEditMode) {
                 await this.loadChronology();
             }
-
-            this.takeSnapshot();
-
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadChronology() {
@@ -319,55 +306,7 @@ function chronologyEditApp(itemId) {
             return this.formData.when_period.trim();
         },
 
-        takeSnapshot() {
-            const snapshot = {
-                when_period: this.formData.when_period,
-                environment_event: this.formData.environment_event,
-                experience_feeling: this.formData.experience_feeling,
-                sentiment_type: this.formData.sentiment_type
-            };
-            this.autoSaveSnapshots.push(snapshot);
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            return this.hasValueChanged(oldSnapshot);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.formData.when_period !== snapshot.when_period ||
-                this.formData.environment_event !== snapshot.environment_event ||
-                this.formData.experience_feeling !== snapshot.experience_feeling ||
-                this.formData.sentiment_type !== snapshot.sentiment_type
-            );
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.formData.when_period.trim() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            this.takeSnapshot();
-        },
-
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
                     const res = await apiFetch(`/api/chronologies/${this.itemId}`, {
@@ -378,9 +317,11 @@ function chronologyEditApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        this.showSaveNotification(isManual);
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    this.showSaveNotification();
                 } else {
                     const res = await apiFetch('/api/chronologies', {
                         method: 'POST',
@@ -390,25 +331,18 @@ function chronologyEditApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/schema-therapy/chronology/${this.itemId}/edit`);
-                        this.showSaveNotification(isManual);
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    const data = await res.json();
+                    this.itemId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/schema-therapy/chronology/${this.itemId}/edit`);
+                    this.showSaveNotification();
                 }
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
-            }
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
+                throw error;
             }
         },
 
@@ -417,24 +351,26 @@ function chronologyEditApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
+            } catch (error) {
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
+            }, 2000);
         },
 
         async saveChronology() {
@@ -490,9 +426,6 @@ function chronologyEditApp(itemId) {
                 });
 
                 if (res.ok || res.status === 204) {
-                    if (this.autoSaveInterval) {
-                        clearInterval(this.autoSaveInterval);
-                    }
                     window.location.href = '/schema-therapy/chronology';
                 } else {
                     this.error = '削除中にエラーが発生しました。';

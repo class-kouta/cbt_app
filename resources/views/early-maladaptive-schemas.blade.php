@@ -14,13 +14,36 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+        class="fixed top-16 right-4 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+        :class="saveToastIsError ? 'bg-red-500' : 'bg-emerald-500'"
     >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         <span x-text="saveToastMessage"></span>
     </div>
+
+    <!-- フローティング保存ボタン -->
+    <button
+        x-show="!loading"
+        type="button"
+        @click="manualSave()"
+        :disabled="floatingSaving"
+        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed z-30"
+        title="保存する"
+    >
+        <template x-if="!floatingSaving">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8zM16 20v-6H8v6M8 4v4h6"></path>
+            </svg>
+        </template>
+        <template x-if="floatingSaving">
+            <svg class="animate-spin w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </template>
+    </button>
 
     <!-- ローディング -->
     <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
@@ -42,7 +65,6 @@
             </p>
             <p class="text-sm text-gray-600 leading-relaxed mt-2">
                 各スキーマについて、自分がどれくらい「囚われている」と感じるかを0%〜100%で評価してみましょう。
-                30秒ごとに自動保存されます。
             </p>
         </div>
 
@@ -754,29 +776,6 @@
                 ></textarea>
             </div>
         </div>
-
-        <!-- エラーメッセージ -->
-        <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
-
-        <!-- 手動保存ボタン -->
-        <div class="mt-6">
-            <button
-                @click="saveManually()"
-                class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="submitting"
-            >
-                <span x-show="!submitting" class="flex items-center justify-center gap-2">
-                    保存する
-                </span>
-                <span x-show="submitting" class="flex items-center justify-center gap-2">
-                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    保存中...
-                </span>
-            </button>
-        </div>
     </div>
 </div>
 
@@ -826,13 +825,10 @@ function schemaApp() {
         },
         notes: '',
         loading: true,
-        submitting: false,
-        error: '',
+        floatingSaving: false,
         showSaveToast: false,
         saveToastMessage: '',
-        autoSaveInterval: null,
-        autoSaveSnapshots: [],
-        autoSaving: false,
+        saveToastIsError: false,
 
         // %の値に応じた背景色クラスを返す
         getIntensityClass(value) {
@@ -858,12 +854,6 @@ function schemaApp() {
 
         async init() {
             await this.loadSchemas();
-            this.takeSnapshot();
-            
-            // 30秒ごとに自動保存チェック
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadSchemas() {
@@ -892,85 +882,27 @@ function schemaApp() {
             }
         },
 
-        takeSnapshot() {
-            const snapshot = { 
-                schemas: { ...this.schemas },
-                experiences: { ...this.experiences },
-                notes: this.notes
-            };
-            this.autoSaveSnapshots.push(snapshot);
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 1) {
-                return false;
-            }
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            // スキーマ値の変更チェック
-            const schemasChanged = Object.keys(this.schemas).some(key => 
-                this.schemas[key] !== oldSnapshot.schemas[key]
-            );
-            // 経験フィールドの変更チェック
-            const experiencesChanged = Object.keys(this.experiences).some(key => 
-                this.experiences[key] !== oldSnapshot.experiences[key]
-            );
-            // 備考欄の変更チェック
-            const notesChanged = this.notes !== oldSnapshot.notes;
-            return schemasChanged || experiencesChanged || notesChanged;
-        },
-
-        hasAnyValue() {
-            const hasSchemaValue = Object.values(this.schemas).some(v => v !== '' && v !== null);
-            const hasExperienceValue = Object.values(this.experiences).some(v => v !== '' && v !== null);
-            const hasNotesValue = this.notes !== '' && this.notes !== null;
-            return hasSchemaValue || hasExperienceValue || hasNotesValue;
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.hasAnyValue() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-            this.takeSnapshot();
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.saveData();
-                this.showNotification('自動保存しました');
-            } catch (error) {
-                console.error('自動保存に失敗しました:', error);
-            } finally {
-                this.autoSaving = false;
-            }
-        },
-
-        showNotification(message) {
+        showNotification(message, isError = false) {
             this.saveToastMessage = message;
+            this.saveToastIsError = isError;
             this.showSaveToast = true;
             setTimeout(() => {
                 this.showSaveToast = false;
+                this.saveToastIsError = false;
             }, 2000);
         },
 
-        async saveManually() {
-            this.submitting = true;
-            this.error = '';
+        async manualSave() {
+            if (this.floatingSaving) return;
+
+            this.floatingSaving = true;
             try {
                 await this.saveData();
                 this.showNotification('保存しました');
             } catch (e) {
-                this.error = e.message;
+                this.showNotification('保存に失敗しました', true);
             } finally {
-                this.submitting = false;
+                this.floatingSaving = false;
             }
         },
 
