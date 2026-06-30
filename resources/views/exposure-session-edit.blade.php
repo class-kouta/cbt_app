@@ -10,7 +10,7 @@
 
     <div class="flex justify-between items-center mb-4">
         <a href="/exposures/sessions" class="text-emerald-600 hover:text-emerald-800">← 実施記録一覧に戻る</a>
-        <button x-show="hasExistingRecord" @click="deleteItem()" class="text-red-400 hover:text-red-600 p-2" title="削除">
+        <button x-show="hasExistingRecord" @click="deleteItem()" class="text-gray-500 hover:text-gray-700 p-2" title="削除">
             <x-icon name="trash" class="w-5 h-5" />
         </button>
     </div>
