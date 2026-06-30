@@ -369,11 +369,9 @@ function stressorApp(itemId) {
             return tag ? tag.name : '';
         },
 
-        // 共通の保存処理
         async performSave() {
             try {
                 if (this.itemId) {
-                    // 既存データの更新
                     const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
@@ -382,11 +380,12 @@ function stressorApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    this.showSaveNotification();
                 } else {
-                    // 新規作成
                     const res = await apiFetch('/api/stressor-and-responses', {
                         method: 'POST',
                         headers: {
@@ -395,16 +394,19 @@ function stressorApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    const data = await res.json();
+                    this.itemId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
+                    this.showSaveNotification();
                 }
             } catch (error) {
                 console.error('保存に失敗しました:', error);
+                throw error;
             }
         },
 
@@ -415,6 +417,8 @@ function stressorApp(itemId) {
             this.floatingSaving = true;
             try {
                 await this.performSave();
+            } catch (error) {
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }

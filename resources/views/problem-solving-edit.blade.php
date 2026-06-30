@@ -529,6 +529,7 @@ function problemSolvingFormApp(itemId) {
                 this.showSaveNotification();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
+                throw error;
             }
         },
 
@@ -538,6 +539,8 @@ function problemSolvingFormApp(itemId) {
             this.floatingSaving = true;
             try {
                 await this.performSave();
+            } catch (error) {
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }
@@ -628,15 +631,17 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (res.ok) {
-                const created = await res.json();
-                this.itemId = created.id;
-                this.hasExistingRecord = true;
-
-                await this.savePlans(created.id);
-
-                history.replaceState(null, '', `/problem-solvings/${created.id}`);
+            if (!res.ok) {
+                throw new Error('保存に失敗しました');
             }
+
+            const created = await res.json();
+            this.itemId = created.id;
+            this.hasExistingRecord = true;
+
+            await this.savePlans(created.id);
+
+            history.replaceState(null, '', `/problem-solvings/${created.id}`);
         },
 
         async saveExistingItem() {
@@ -648,9 +653,11 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (res.ok) {
-                await this.savePlans(this.itemId);
+            if (!res.ok) {
+                throw new Error('保存に失敗しました');
             }
+
+            await this.savePlans(this.itemId);
         },
 
         async savePlans(problemSolvingId) {

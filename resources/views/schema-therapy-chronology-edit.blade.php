@@ -302,9 +302,11 @@ function chronologyEditApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    this.showSaveNotification();
                 } else {
                     const res = await apiFetch('/api/chronologies', {
                         method: 'POST',
@@ -314,16 +316,18 @@ function chronologyEditApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/schema-therapy/chronology/${this.itemId}/edit`);
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    const data = await res.json();
+                    this.itemId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/schema-therapy/chronology/${this.itemId}/edit`);
+                    this.showSaveNotification();
                 }
             } catch (error) {
-                // エラー詳細はセキュリティ上コンソールに出力しない
+                throw error;
             }
         },
 
@@ -333,6 +337,8 @@ function chronologyEditApp(itemId) {
             this.floatingSaving = true;
             try {
                 await this.performSave();
+            } catch (error) {
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }

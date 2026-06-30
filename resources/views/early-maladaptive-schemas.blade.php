@@ -901,7 +901,7 @@ function schemaApp() {
                 await this.saveData();
                 this.showNotification('保存しました');
             } catch (e) {
-                this.error = e.message;
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }

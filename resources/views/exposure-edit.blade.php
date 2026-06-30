@@ -115,7 +115,7 @@ function exposureFormApp(itemId) {
             if (!this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(); this.stopEditing(); }
-            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
+            catch (e) { alert('保存に失敗しました'); }
             finally { this.submitting = false; }
         },
 
@@ -147,7 +147,7 @@ function exposureFormApp(itemId) {
             try {
                 await this.performSave();
             } catch (e) {
-                alert(typeof e === 'string' ? e : '保存に失敗しました');
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }
@@ -194,7 +194,7 @@ function exposureFormApp(itemId) {
             if (this.submitting || !this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(); this.stopEditing(); }
-            catch (e) { alert(typeof e === 'string' ? e : '保存に失敗しました'); }
+            catch (e) { alert('保存に失敗しました'); }
             finally { this.submitting = false; }
         },
 

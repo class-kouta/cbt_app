@@ -381,8 +381,12 @@ function simpleNotepadApp(itemId) {
         },
 
         async saveAndStopEditing() {
-            await this.performSave();
-            this.stopEditing();
+            const success = await this.performSave();
+            if (success) {
+                this.stopEditing();
+            } else {
+                alert('保存に失敗しました');
+            }
         },
 
         stopEditing() {
@@ -434,7 +438,10 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            await this.performSave();
+            const success = await this.performSave();
+            if (!success) {
+                alert('保存に失敗しました');
+            }
         },
 
         async createSimpleNotepad() {

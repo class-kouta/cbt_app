@@ -462,8 +462,7 @@ function modeDialogueWorkEditApp(itemId) {
                 });
 
                 if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
+                    throw new Error('保存に失敗しました');
                 }
 
                 if (!isUpdate) {
@@ -481,9 +480,10 @@ function modeDialogueWorkEditApp(itemId) {
                 this.showSaveNotification();
             } catch (error) {
                 if (redirectOnSuccess) {
-                    this.error = error.message;
+                    this.error = '保存に失敗しました';
                     this.submitting = false;
                 }
+                throw error;
             } finally {
                 this._saveInProgress = false;
             }
@@ -495,6 +495,8 @@ function modeDialogueWorkEditApp(itemId) {
             this.floatingSaving = true;
             try {
                 await this.performSave();
+            } catch (error) {
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }

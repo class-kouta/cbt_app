@@ -772,11 +772,9 @@ function columnApp(columnId) {
             return `${year}/${month}/${day} ${hours}:${minutes}`;
         },
 
-        // 共通の保存処理
         async performSave() {
             try {
                 if (this.columnId) {
-                    // 既存コラムの更新
                     const res = await apiFetch(`/api/columns/${this.columnId}`, {
                         method: 'PUT',
                         headers: {
@@ -785,11 +783,12 @@ function columnApp(columnId) {
                         body: JSON.stringify(this.newColumn)
                     });
 
-                    if (res.ok) {
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    this.showSaveNotification();
                 } else {
-                    // 新規作成
                     const res = await apiFetch('/api/columns', {
                         method: 'POST',
                         headers: {
@@ -798,16 +797,19 @@ function columnApp(columnId) {
                         body: JSON.stringify(this.newColumn)
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.columnId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/columns/${this.columnId}/edit`);
-                        this.showSaveNotification();
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    const data = await res.json();
+                    this.columnId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/columns/${this.columnId}/edit`);
+                    this.showSaveNotification();
                 }
             } catch (error) {
                 console.error('保存に失敗しました:', error);
+                throw error;
             }
         },
 
@@ -818,6 +820,8 @@ function columnApp(columnId) {
             this.floatingSaving = true;
             try {
                 await this.performSave();
+            } catch (error) {
+                alert('保存に失敗しました');
             } finally {
                 this.floatingSaving = false;
             }
