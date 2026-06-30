@@ -384,8 +384,6 @@ function simpleNotepadApp(itemId) {
             const success = await this.performSave();
             if (success) {
                 this.stopEditing();
-            } else {
-                alert('保存に失敗しました');
             }
         },
 
@@ -420,8 +418,7 @@ function simpleNotepadApp(itemId) {
                     setTimeout(() => { this.showSaveToast = false; }, 2000);
                     return true;
                 } else {
-                    const errorData = await res.json();
-                    this.errorMessage = errorData.message || '保存に失敗しました';
+                    this.errorMessage = '保存に失敗しました';
                     this.showErrorToast = true;
                     setTimeout(() => { this.showErrorToast = false; }, 3000);
                     return false;
@@ -438,10 +435,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            const success = await this.performSave();
-            if (!success) {
-                alert('保存に失敗しました');
-            }
+            await this.performSave();
         },
 
         async createSimpleNotepad() {

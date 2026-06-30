@@ -23,6 +23,20 @@
         保存しました
     </div>
 
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
+    </div>
+
     <!-- コピー成功トースト -->
     <div
         x-show="showCopyToast"
@@ -415,6 +429,7 @@ function problemSolvingFormApp(itemId) {
         loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         showCopyToast: false,
         floatingSaving: false,
 
@@ -480,7 +495,7 @@ function problemSolvingFormApp(itemId) {
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }
@@ -540,7 +555,7 @@ function problemSolvingFormApp(itemId) {
             try {
                 await this.performSave();
             } catch (error) {
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
@@ -550,6 +565,13 @@ function problemSolvingFormApp(itemId) {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
             }, 2000);
         },
 
@@ -716,7 +738,7 @@ function problemSolvingFormApp(itemId) {
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }
@@ -732,7 +754,7 @@ function problemSolvingFormApp(itemId) {
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
-                alert('更新に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }

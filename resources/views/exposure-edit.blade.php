@@ -7,6 +7,7 @@
 <div x-data="exposureFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
 
     <div x-show="showManualSaveToast" x-transition class="fixed top-16 right-4 bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">保存しました</div>
+    <div x-show="showSaveErrorToast" x-transition class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">保存に失敗しました</div>
     <div x-show="showCopyToast" x-transition class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50">コピーしました！</div>
 
     <button x-show="isEditing" type="button" @click="manualSave()" :disabled="floatingSaving || !form.avoidance_target.trim()"
@@ -100,7 +101,7 @@ function exposureFormApp(itemId) {
         form: { avoidance_target: '' },
         hierarchyItems: [{ content: '', expected_suds: '' }, { content: '', expected_suds: '' }, { content: '', expected_suds: '' }],
         loading: itemId !== null, submitting: false, floatingSaving: false,
-        showManualSaveToast: false, showCopyToast: false,
+        showManualSaveToast: false, showSaveErrorToast: false, showCopyToast: false,
 
         async init() {
             if (this.hasExistingRecord) {
@@ -115,7 +116,7 @@ function exposureFormApp(itemId) {
             if (!this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(); this.stopEditing(); }
-            catch (e) { alert('保存に失敗しました'); }
+            catch (e) { this.showSaveErrorNotification(); }
             finally { this.submitting = false; }
         },
 
@@ -141,13 +142,18 @@ function exposureFormApp(itemId) {
             setTimeout(() => this.showManualSaveToast = false, 2000);
         },
 
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => { this.showSaveErrorToast = false; }, 2000);
+        },
+
         async manualSave() {
             if (this.floatingSaving || !this.form.avoidance_target.trim()) return;
             this.floatingSaving = true;
             try {
                 await this.performSave();
             } catch (e) {
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
@@ -194,7 +200,7 @@ function exposureFormApp(itemId) {
             if (this.submitting || !this.form.avoidance_target.trim()) return;
             this.submitting = true;
             try { await this.performSave(); this.stopEditing(); }
-            catch (e) { alert('保存に失敗しました'); }
+            catch (e) { this.showSaveErrorNotification(); }
             finally { this.submitting = false; }
         },
 

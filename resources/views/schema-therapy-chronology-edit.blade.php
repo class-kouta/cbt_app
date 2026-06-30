@@ -45,6 +45,20 @@
         保存しました
     </div>
 
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
+    </div>
+
     <!-- フローティング保存ボタン -->
     <button
         type="button"
@@ -259,6 +273,7 @@ function chronologyEditApp(itemId) {
         submitting: false,
         error: '',
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         floatingSaving: false,
         showDeleteModal: false,
         deleting: false,
@@ -338,7 +353,7 @@ function chronologyEditApp(itemId) {
             try {
                 await this.performSave();
             } catch (error) {
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
@@ -348,6 +363,13 @@ function chronologyEditApp(itemId) {
             this.showManualSaveToast = true;
             setTimeout(() => {
                 this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
             }, 2000);
         },
 

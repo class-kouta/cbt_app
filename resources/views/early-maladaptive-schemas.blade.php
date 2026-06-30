@@ -14,7 +14,8 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+        class="fixed top-16 right-4 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+        :class="saveToastIsError ? 'bg-red-500' : 'bg-emerald-500'"
     >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -775,9 +776,6 @@
                 ></textarea>
             </div>
         </div>
-
-        <!-- エラーメッセージ -->
-        <div x-show="error" class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3" x-text="error"></div>
     </div>
 </div>
 
@@ -828,9 +826,9 @@ function schemaApp() {
         notes: '',
         loading: true,
         floatingSaving: false,
-        error: '',
         showSaveToast: false,
         saveToastMessage: '',
+        saveToastIsError: false,
 
         // %の値に応じた背景色クラスを返す
         getIntensityClass(value) {
@@ -884,11 +882,13 @@ function schemaApp() {
             }
         },
 
-        showNotification(message) {
+        showNotification(message, isError = false) {
             this.saveToastMessage = message;
+            this.saveToastIsError = isError;
             this.showSaveToast = true;
             setTimeout(() => {
                 this.showSaveToast = false;
+                this.saveToastIsError = false;
             }, 2000);
         },
 
@@ -896,12 +896,11 @@ function schemaApp() {
             if (this.floatingSaving) return;
 
             this.floatingSaving = true;
-            this.error = '';
             try {
                 await this.saveData();
                 this.showNotification('保存しました');
             } catch (e) {
-                alert('保存に失敗しました');
+                this.showNotification('保存に失敗しました', true);
             } finally {
                 this.floatingSaving = false;
             }
