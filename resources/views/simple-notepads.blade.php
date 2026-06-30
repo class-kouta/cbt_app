@@ -22,24 +22,7 @@
         保存しました
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
-    <!-- エラートースト -->
+    <!-- 手動保存トースト -->
     <div
         x-show="showErrorToast"
         x-transition:enter="transition ease-out duration-300"
@@ -290,12 +273,8 @@ function simpleNotepadApp(itemId) {
         saving: false,
         error: '',
         showSaveToast: false,
-        showAutoSaveToast: false,
         showErrorToast: false,
         errorMessage: '',
-
-        autoSaveInterval: null,
-        lastSavedState: null,
 
         async init() {
             this.loading = true;
@@ -399,46 +378,18 @@ function simpleNotepadApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.lastSavedState = {
-                content: this.formData.content,
-                tag_ids: [...this.formData.tag_ids]
-            };
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async saveAndStopEditing() {
-            await this.performSave(true);
+            await this.performSave();
             this.stopEditing();
         },
 
         stopEditing() {
             this.isEditing = false;
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.lastSavedState = null;
         },
 
-        async checkAndAutoSave() {
-            if (!this.isEditing || this.saving) return;
-
-            const currentState = {
-                content: this.formData.content,
-                tag_ids: [...this.formData.tag_ids]
-            };
-
-            if (JSON.stringify(currentState) !== JSON.stringify(this.lastSavedState)) {
-                const success = await this.performSave(false);
-                if (success) {
-                    this.lastSavedState = currentState;
-                }
-            }
-        },
-
-        async performSave(isManual) {
+        async performSave() {
             if (this.saving) return false;
 
             if (!this.formData.content.trim()) {
@@ -461,13 +412,8 @@ function simpleNotepadApp(itemId) {
                 });
 
                 if (res.ok) {
-                    if (isManual) {
-                        this.showSaveToast = true;
-                        setTimeout(() => { this.showSaveToast = false; }, 2000);
-                    } else {
-                        this.showAutoSaveToast = true;
-                        setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
-                    }
+                    this.showSaveToast = true;
+                    setTimeout(() => { this.showSaveToast = false; }, 2000);
                     return true;
                 } else {
                     const errorData = await res.json();
@@ -488,13 +434,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            const success = await this.performSave(true);
-            if (success) {
-                this.lastSavedState = {
-                    content: this.formData.content,
-                    tag_ids: [...this.formData.tag_ids]
-                };
-            }
+            await this.performSave();
         },
 
         async createSimpleNotepad() {

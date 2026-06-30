@@ -249,23 +249,6 @@
         <span>コピーしました！</span>
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -638,17 +621,11 @@ function columnApp(columnId) {
         submitting: false,
         error: '',
         showCopyToast: false,
-        showAutoSaveToast: false,
         showManualSaveToast: false,
         floatingSaving: false,
 
         // タグ一覧
         availableTags: [],
-
-        // 自動保存用
-        autoSaveSnapshots: [], // 30秒ごとのスナップショット（直近2つ分を保持）
-        autoSaveInterval: null,
-        autoSaving: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
@@ -698,14 +675,6 @@ function columnApp(columnId) {
             if (this.isEditMode) {
                 await this.loadColumn();
             }
-
-            // 初期スナップショットを取得
-            this.takeSnapshot();
-
-            // 30秒ごとに自動保存チェック
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadTags() {
@@ -783,9 +752,6 @@ function columnApp(columnId) {
                 this.showTransferToast = false;
             }, 2000);
 
-            // 転記後に自動保存を実行
-            await this.performAutoSave();
-
             // 選択されたアイテムをクリア
             this.selectedStressorItem = null;
         },
@@ -806,79 +772,8 @@ function columnApp(columnId) {
             return `${year}/${month}/${day} ${hours}:${minutes}`;
         },
 
-        // 現在の値のスナップショットを取得
-        takeSnapshot() {
-            const snapshot = {
-                situation: this.newColumn.situation,
-                mood: this.newColumn.mood,
-                automatic_thought: this.newColumn.automatic_thought,
-                evidence: this.newColumn.evidence,
-                counter_evidence: this.newColumn.counter_evidence,
-                adaptive_thought: this.newColumn.adaptive_thought,
-                current_mood: this.newColumn.current_mood,
-                notes: this.newColumn.notes,
-                tag_ids: JSON.stringify(this.newColumn.tag_ids)
-            };
-            this.autoSaveSnapshots.push(snapshot);
-
-            // 直近2つ分のみ保持（60秒前の値と比較するため）
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        // 60秒前のスナップショットと現在の値を比較
-        hasChangedFromPreviousSnapshot() {
-            // 2回分のスナップショットがない場合（まだ60秒経っていない）
-            if (this.autoSaveSnapshots.length < 2) {
-                // 1つ目のスナップショットと比較
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-
-            // 60秒前（2回前）のスナップショットと比較
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            return this.hasValueChanged(oldSnapshot);
-        },
-
-        // 指定されたスナップショットと現在の値を比較
-        hasValueChanged(snapshot) {
-            return (
-                this.newColumn.situation !== snapshot.situation ||
-                this.newColumn.mood !== snapshot.mood ||
-                this.newColumn.automatic_thought !== snapshot.automatic_thought ||
-                this.newColumn.evidence !== snapshot.evidence ||
-                this.newColumn.counter_evidence !== snapshot.counter_evidence ||
-                this.newColumn.adaptive_thought !== snapshot.adaptive_thought ||
-                this.newColumn.current_mood !== snapshot.current_mood ||
-                this.newColumn.notes !== snapshot.notes ||
-                JSON.stringify(this.newColumn.tag_ids) !== snapshot.tag_ids
-            );
-        },
-
-        // 30秒ごとの自動保存チェック
-        async checkAndAutoSave() {
-            // 条件チェック：
-            // 1. 「状況」が入力済み
-            // 2. 1分前の値から変更がある
-            // 3. 現在保存中でない
-            if (
-                this.newColumn.situation.trim() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            // 新しいスナップショットを取得
-            this.takeSnapshot();
-        },
-
         // 共通の保存処理
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.columnId) {
                     // 既存コラムの更新
@@ -891,7 +786,7 @@ function columnApp(columnId) {
                     });
 
                     if (res.ok) {
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 } else {
                     // 新規作成
@@ -905,26 +800,14 @@ function columnApp(columnId) {
 
                     if (res.ok) {
                         const data = await res.json();
-                        // 新規作成後は編集モードに切り替え（以降の自動保存は更新になる）
                         this.columnId = data.id;
                         this.isEditMode = true;
-                        // URLを編集ページに変更（リロードなし）
                         history.replaceState(null, '', `/columns/${this.columnId}/edit`);
-                        this.showSaveNotification(isManual);
+                        this.showSaveNotification();
                     }
                 }
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
-            }
-        },
-
-        // 自動保存を実行
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
+                console.error('保存に失敗しました:', error);
             }
         },
 
@@ -934,24 +817,17 @@ function columnApp(columnId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
         },
 
         async loadColumn() {

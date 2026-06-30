@@ -6,23 +6,6 @@
 @section('content')
 <div x-data="problemSolvingFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -437,11 +420,6 @@ function problemSolvingFormApp(itemId) {
 
         availableTags: [],
 
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
-        showAutoSaveToast: false,
-
         fromPage: 'list',
         scrollTargetPlanId: null,
 
@@ -470,16 +448,10 @@ function problemSolvingFormApp(itemId) {
 
             if (this.hasExistingRecord) {
                 await this.loadItem();
-                if (this.isEditing) {
-                    this.startAutoSave();
-                }
                 this.scrollToPlanIfNeeded();
             } else {
                 this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
-                this.startAutoSave();
             }
-
-            this.takeSnapshot();
         },
 
         scrollToPlanIfNeeded() {
@@ -497,8 +469,6 @@ function problemSolvingFormApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.takeSnapshot();
-            this.startAutoSave();
         },
 
         async saveAndStopEditing() {
@@ -506,7 +476,7 @@ function problemSolvingFormApp(itemId) {
 
             this.submitting = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
@@ -518,22 +488,6 @@ function problemSolvingFormApp(itemId) {
 
         stopEditing() {
             this.isEditing = false;
-            this.stopAutoSave();
-        },
-
-        startAutoSave() {
-            this.stopAutoSave();
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
-        },
-
-        stopAutoSave() {
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.autoSaveSnapshots = [];
         },
 
         async loadTags() {
@@ -565,76 +519,16 @@ function problemSolvingFormApp(itemId) {
             return tag ? tag.name : '';
         },
 
-        takeSnapshot() {
-            const snapshot = {
-                problem_situation: this.form.problem_situation,
-                improved_image: this.form.improved_image,
-                plans: JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level }))),
-                tag_ids: JSON.stringify(this.form.tag_ids)
-            };
-            this.autoSaveSnapshots.push(snapshot);
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            return this.hasValueChanged(oldSnapshot);
-        },
-
-        hasValueChanged(snapshot) {
-            const currentPlans = JSON.stringify(this.plans.map(p => ({ action_plan: p.action_plan, reflection: p.reflection, improvement_level: p.improvement_level })));
-            return (
-                this.form.problem_situation !== snapshot.problem_situation ||
-                this.form.improved_image !== snapshot.improved_image ||
-                currentPlans !== snapshot.plans ||
-                JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids
-            );
-        },
-
-        async checkAndAutoSave() {
-            if (!this.isEditing) return;
-
-            if (
-                this.form.problem_situation.trim() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            this.takeSnapshot();
-        },
-
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
                     await this.saveExistingItem();
                 } else {
                     await this.saveNewItem();
                 }
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
-            }
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
+                console.error('保存に失敗しました:', error);
             }
         },
 
@@ -643,24 +537,17 @@ function problemSolvingFormApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
         },
 
         formatDate(dateString) {
