@@ -12,7 +12,7 @@
         </a>
         <button
             @click="confirmDelete()"
-            class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 flex items-center gap-1 text-sm"
+            class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-lg hover:bg-gray-50 flex items-center gap-1 text-sm"
             title="削除"
         >
             <x-icon name="trash" class="w-5 h-5" /><span class="hidden sm:inline">削除</span>

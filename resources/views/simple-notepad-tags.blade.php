@@ -86,7 +86,7 @@
                                     <button
                                         type="button"
                                         @click="deleteTag(tag)"
-                                        class="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded hover:bg-red-50"
+                                        class="text-gray-500 hover:text-gray-700 transition-colors p-1.5 rounded hover:bg-gray-50"
                                         title="削除"
                                     >
                                         <x-icon name="trash" class="w-5 h-5" />
