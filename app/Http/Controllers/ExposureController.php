@@ -262,7 +262,8 @@ class ExposureController extends Controller
     private function toExposureData(CreateExposureRequest|UpdateExposureRequest $request): ExposureData
     {
         return new ExposureData(
-            avoidanceTarget: (string) $request->string('avoidance_target')
+            avoidanceTarget: (string) $request->string('avoidance_target'),
+            notes: $request->filled('notes') ? (string) $request->string('notes') : null,
         );
     }
 

@@ -11,6 +11,7 @@ class SearchExposureUseCase
 {
     private const SEARCHABLE_COLUMNS = [
         'avoidance_target',
+        'notes',
     ];
 
     public function __construct(

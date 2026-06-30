@@ -81,6 +81,18 @@
                     <button x-show="isEditing" type="button" @click="addHierarchyItemRow()" class="mt-2 text-sm text-emerald-600">＋ 場面を追加</button>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
+                        備考
+                        <span class="text-gray-400 font-normal ml-1">その他メモがあれば書いてみましょう</span>
+                    </label>
+                    <textarea x-model="form.notes" rows="4" :disabled="!isEditing" maxlength="5000"
+                        class="w-full border rounded-lg px-4 py-3" :class="isEditing ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-50 cursor-not-allowed'"
+                        placeholder="例：治療者からのアドバイス、気づいたことなど"></textarea>
+                    <p x-show="!isEditing && !form.notes.trim()" class="text-gray-400 mt-1 text-sm">未入力</p>
+                </div>
+
                 <div class="space-y-3">
                     <button x-show="isEditing" type="submit" :disabled="submitting || !form.avoidance_target.trim()"
                         class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 rounded-lg font-medium disabled:opacity-50">
@@ -98,7 +110,7 @@
 function exposureFormApp(itemId) {
     return {
         itemId, hasExistingRecord: itemId !== null, isEditing: itemId === null,
-        form: { avoidance_target: '' },
+        form: { avoidance_target: '', notes: '' },
         hierarchyItems: [{ content: '', expected_suds: '' }, { content: '', expected_suds: '' }, { content: '', expected_suds: '' }],
         loading: itemId !== null, submitting: false, floatingSaving: false,
         showManualSaveToast: false, showSaveErrorToast: false, showCopyToast: false,
@@ -127,6 +139,7 @@ function exposureFormApp(itemId) {
                 if (!r.ok) return;
                 const item = await r.json();
                 this.form.avoidance_target = item.avoidance_target || '';
+                this.form.notes = item.notes || '';
                 this.hierarchyItems = item.hierarchy_items.map(h => ({ id: h.id, content: h.content, expected_suds: h.expected_suds ?? '' }));
                 while (this.hierarchyItems.length < 3) this.hierarchyItems.push({ content: '', expected_suds: '' });
             } finally { this.loading = false; }
@@ -212,7 +225,7 @@ function exposureFormApp(itemId) {
         },
 
         hasAnyContent() {
-            return this.form.avoidance_target.trim() || this.hierarchyItems.some(i => i.content.trim());
+            return this.form.avoidance_target.trim() || this.form.notes.trim() || this.hierarchyItems.some(i => i.content.trim());
         },
 
         generateCopyText() {
@@ -220,6 +233,7 @@ function exposureFormApp(itemId) {
             const items = this.hierarchyItems.filter(i => i.content.trim());
             lines.push('', '■ 不安階層表');
             lines.push(items.length ? items.map((i, idx) => `${idx+1}. ${i.content}${i.expected_suds !== '' ? ' (不安レベル:'+i.expected_suds+')' : ''}`).join('\n') : '未入力');
+            lines.push('', '■ 備考', this.form.notes.trim() || '未入力');
             return lines.join('\n');
         },
 

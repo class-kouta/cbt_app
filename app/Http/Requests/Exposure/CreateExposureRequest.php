@@ -16,6 +16,7 @@ class CreateExposureRequest extends FormRequest
     {
         return [
             'avoidance_target' => ['required', 'string', 'max:5000'],
+            'notes' => ['nullable', 'string', 'max:5000'],
         ];
     }
 
@@ -24,6 +25,7 @@ class CreateExposureRequest extends FormRequest
         return [
             'avoidance_target.required' => '回避していることを入力してください',
             'avoidance_target.max' => '回避していることは5000文字以内で入力してください',
+            'notes.max' => '備考は5000文字以内で入力してください',
         ];
     }
 }

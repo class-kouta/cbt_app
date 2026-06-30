@@ -17,6 +17,7 @@ class Exposure extends Model
     protected $fillable = [
         'member_id',
         'avoidance_target',
+        'notes',
     ];
 
     public function hierarchyItems(): HasMany

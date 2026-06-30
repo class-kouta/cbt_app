@@ -28,6 +28,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         }
 
         $model->avoidance_target = $exposure->getAvoidanceTarget();
+        $model->notes = $exposure->getNotes();
         $model->member_id = $memberId;
         $model->save();
 
@@ -398,6 +399,7 @@ class EloquentExposureRepository implements ExposureRepositoryInterface
         return ExposureEntity::reconstitute(
             id: (int) $model->id,
             avoidanceTarget: (string) $model->avoidance_target,
+            notes: $model->notes,
             hierarchyItems: $hierarchyItems,
             sessions: $sessions,
             createdAt: new DateTimeImmutable($model->created_at),
