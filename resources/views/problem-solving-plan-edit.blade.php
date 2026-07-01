@@ -156,7 +156,10 @@ function problemSolvingReflectionFormApp(planId) {
         },
 
         canSubmit() {
-            return this.form.problem_solving_id && this.form.plan_id && this.form.reflection.trim() !== '';
+            return this.form.problem_solving_id
+                && this.form.plan_id
+                && this.selectedPlanActionPlan.trim() !== ''
+                && this.form.reflection.trim() !== '';
         },
 
         async loadProblemSolvings() {
@@ -225,6 +228,11 @@ function problemSolvingReflectionFormApp(planId) {
 
         async deleteReflection() {
             if (!confirm('振り返りの内容を削除しますか？（実行計画は残ります）')) return;
+
+            if (!this.selectedPlanActionPlan.trim()) {
+                alert('実行計画が取得できないため、削除できません。');
+                return;
+            }
 
             const res = await apiFetch(`/api/problem-solvings/${this.originalProblemSolvingId}/plans/${this.planId}`, {
                 method: 'PUT',

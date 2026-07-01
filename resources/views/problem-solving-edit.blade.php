@@ -523,6 +523,7 @@ function problemSolvingFormApp(itemId) {
 
             if (this.isCreateMode) {
                 await this.savePlans(created.id);
+                this.isCreateMode = false;
             }
 
             history.replaceState(null, '', `/problem-solvings/${created.id}`);
