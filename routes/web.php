@@ -195,7 +195,7 @@ Route::middleware('auth')->group(function () {
             return view('problem-solvings-list');
         });
 
-        // 計画一覧ページ
+        // 振り返り一覧ページ
         Route::get('/problem-solvings/plans', function () {
             return view('problem-solving-plans-list');
         })->name('problem-solving-plans.list');

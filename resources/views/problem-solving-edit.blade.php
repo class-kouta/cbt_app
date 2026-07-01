@@ -203,6 +203,42 @@
                     ></textarea>
                 </div>
 
+                <!-- 実行計画（閲覧モード） -->
+                <div x-show="!isEditing && hasExistingRecord" class="border-t border-gray-200 pt-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">実行計画</h3>
+
+                    <div x-show="displayPlans.length === 0" class="bg-gray-50 rounded-lg p-4">
+                        <p class="text-gray-400 text-sm">まだ実行計画がありません</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="(plan, index) in displayPlans" :key="plan.id">
+                            <div class="border border-teal-200 rounded-lg p-4 bg-white">
+                                <p
+                                    x-show="displayPlans.length > 1"
+                                    class="text-xs text-gray-500 font-medium mb-2"
+                                    x-text="'実行計画 ' + (index + 1)"
+                                ></p>
+                                <p class="text-gray-800 whitespace-pre-wrap break-words text-sm" x-text="plan.action_plan"></p>
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <a
+                                        x-show="hasReflection(plan)"
+                                        :href="'/problem-solvings/plans/' + plan.id"
+                                        class="text-sm text-emerald-600 hover:text-emerald-800 underline"
+                                    >振り返りを見る</a>
+                                    <p x-show="!hasReflection(plan)" class="text-sm text-gray-500">
+                                        振り返りがありません。
+                                        <a
+                                            :href="reflectionCreateUrl(plan)"
+                                            class="text-emerald-600 hover:text-emerald-800 underline"
+                                        >振り返りする。</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
                 <!-- Step 3: 実行計画（新規作成時のみ・複数可） -->
                 <div x-show="isCreateMode && isEditing" class="border-t border-gray-200 pt-5">
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -289,6 +325,7 @@ function problemSolvingFormApp(itemId) {
             tag_ids: []
         },
         plans: [{ action_plan: '' }],
+        savedPlans: [],
         loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
@@ -321,6 +358,18 @@ function problemSolvingFormApp(itemId) {
             return this.availableTags.filter(t => this.form.tag_ids.includes(t.id));
         },
 
+        get displayPlans() {
+            return (this.savedPlans || []).filter(p => p.action_plan && p.action_plan.trim() !== '');
+        },
+
+        hasReflection(plan) {
+            return plan.reflection && plan.reflection.trim() !== '';
+        },
+
+        reflectionCreateUrl(plan) {
+            return `/problem-solvings/plans/new?problem_solving_id=${this.itemId}&plan_id=${plan.id}`;
+        },
+
         startEditing() {
             this.isEditing = true;
             this.takeSnapshot();
@@ -333,6 +382,7 @@ function problemSolvingFormApp(itemId) {
             this.submitting = true;
             try {
                 await this.performSave(true);
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
@@ -520,6 +570,7 @@ function problemSolvingFormApp(itemId) {
                     this.form.problem_situation = item.problem_situation || '';
                     this.form.improved_image = item.improved_image || '';
                     this.form.tag_ids = item.tag_ids || [];
+                    this.savedPlans = item.plans || [];
                 }
             } catch (error) {
                 console.error(error);
@@ -604,6 +655,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveNewItem();
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
@@ -620,6 +672,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveExistingItem();
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
@@ -651,7 +704,8 @@ function problemSolvingFormApp(itemId) {
         hasAnyContent() {
             if (this.form.problem_situation.trim()) return true;
             if (this.form.improved_image.trim()) return true;
-            if (this.plans.some(p => p.action_plan && p.action_plan.trim())) return true;
+            if (this.isCreateMode && this.isEditing && this.plans.some(p => p.action_plan && p.action_plan.trim())) return true;
+            if (!this.isEditing && this.displayPlans.length > 0) return true;
             return false;
         },
 
@@ -667,13 +721,16 @@ function problemSolvingFormApp(itemId) {
             sections.push('■ 改善イメージ');
             sections.push(this.form.improved_image.trim() || '未入力');
 
-            const validPlans = this.plans.filter(p => p.action_plan && p.action_plan.trim());
+            const validPlans = this.isCreateMode && this.isEditing
+                ? this.plans.filter(p => p.action_plan && p.action_plan.trim())
+                : this.displayPlans;
+
             if (validPlans.length > 0) {
                 sections.push('');
                 validPlans.forEach((plan, index) => {
                     const label = validPlans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
                     sections.push(label);
-                    sections.push(plan.action_plan.trim());
+                    sections.push((plan.action_plan || '').trim());
                 });
             }
 

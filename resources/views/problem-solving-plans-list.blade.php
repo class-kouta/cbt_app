@@ -1,16 +1,14 @@
 @extends('layouts.app')
 
-@section('title', '計画一覧')
-@section('page-title', '計画一覧')
+@section('title', '振り返り一覧')
+@section('page-title', '振り返り一覧')
 
 @section('content')
-<div x-data="plansListApp()" x-init="init()" x-cloak>
-    <!-- 検索フォーム -->
+<div x-data="reflectionsListApp()" x-init="init()" x-cloak>
     <div class="bg-white rounded-xl shadow-md p-4 mb-4 space-y-4">
-        <!-- 問題状況で絞り込み -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">問題状況</label>
-            <select x-model="problemSolvingId" @change="onProblemSolvingChange()"
+            <select x-model="problemSolvingId"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white">
                 <option value="">すべて</option>
                 <template x-for="ps in problemSolvings" :key="ps.id">
@@ -19,8 +17,17 @@
             </select>
         </div>
 
-        <!-- キーワード検索 -->
-        <div class="mb-3">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
+            <select x-model="filter"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white">
+                <option value="all">すべて</option>
+                <option value="pending">振り返り待ち</option>
+                <option value="completed">振り返り済み</option>
+            </select>
+        </div>
+
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
             <input
                 type="text"
@@ -31,83 +38,52 @@
             >
         </div>
 
-        <!-- 改善レベル範囲検索 -->
-        <div class="mb-3">
-            <label class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700"><x-icon name="chart-bar" class="w-4 h-4" /> 改善レベルで絞り込み</label>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">改善レベルで絞り込み</label>
             <div class="flex items-center gap-2">
                 <select
                     x-model.number="improvementLevelMin"
-                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base bg-white"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white"
                     :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'min-' + n">
-                        <option :value="n" x-text="n" :selected="n === improvementLevelMin"></option>
+                        <option :value="n" x-text="n"></option>
                     </template>
                 </select>
                 <span class="text-gray-500 text-sm font-medium">〜</span>
                 <select
                     x-model.number="improvementLevelMax"
-                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base bg-white"
+                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-base bg-white"
                     :class="hasRangeError ? 'border-red-400' : 'border-gray-300'"
                 >
                     <template x-for="n in 10" :key="'max-' + n">
-                        <option :value="n" x-text="n" :selected="n === improvementLevelMax"></option>
+                        <option :value="n" x-text="n"></option>
                     </template>
                 </select>
             </div>
-            <p
-                x-show="hasRangeError"
-                class="text-red-500 text-xs mt-1"
-            >
+            <p x-show="hasRangeError" class="text-red-500 text-xs mt-1">
                 改善レベルの下限は上限以下にしてください
             </p>
         </div>
 
-        <!-- 検索ボタン & 検索条件クリア -->
-        <div class="mt-3 pt-3 border-t border-gray-200 flex items-center gap-3">
+        <div class="pt-2 border-t border-gray-200 flex items-center gap-3">
             <button
                 @click="search()"
                 :disabled="hasRangeError"
-                class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:from-emerald-600 hover:to-teal-600 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                検索
+                絞り込む
             </button>
             <button
                 x-show="hasSearchCondition"
                 @click="clearSearch()"
                 class="text-sm text-gray-500 hover:text-gray-700 underline"
             >
-                検索条件をクリア
+                絞り込みをクリア
             </button>
         </div>
     </div>
 
-    <!-- フィルター -->
-    <div class="mb-4 flex gap-2">
-        <button
-            @click="setFilter('all')"
-            class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'all' ? 'bg-emerald-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
-        >
-            すべて
-        </button>
-        <button
-            @click="setFilter('pending')"
-            class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'pending' ? 'bg-yellow-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
-        >
-            振り返り待ち
-        </button>
-        <button
-            @click="setFilter('completed')"
-            class="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            :class="filter === 'completed' ? 'bg-green-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'"
-        >
-            振り返り済み
-        </button>
-    </div>
-
-    <!-- 一覧 -->
     <div class="space-y-3">
         <template x-for="plan in allPlans" :key="plan.planId">
             <a
@@ -115,138 +91,61 @@
                 class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100 hover:border-emerald-300"
             >
                 <div class="p-4">
-                    <!-- ステータスバッジ -->
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-2">
-                            <span
-                                x-show="plan.hasReflection"
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                            >
-                                <x-icon name="check" class="w-3.5 h-3.5 inline-block" /> 振り返り済み
-                            </span>
-                            <span
-                                x-show="!plan.hasReflection"
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
-                            >
-                                振り返り待ち
-                            </span>
-                        </div>
+                    <div class="flex items-center justify-end mb-2">
                         <span class="text-xs text-gray-400" x-text="formatDate(plan.createdAt)"></span>
                     </div>
-
-                    <!-- 問題状況（どの問題に紐づくか） -->
-                    <div class="mb-3">
-                        <span class="mb-1 flex items-center gap-1 text-xs text-gray-500"><x-icon name="clipboard-document" class="w-3.5 h-3.5" /> 問題状況</span>
+                    <div class="mb-2">
+                        <span class="text-xs text-gray-500">問題状況</span>
                         <p class="text-gray-700 text-sm line-clamp-1 break-words" x-text="plan.problemSituation"></p>
                     </div>
-
-                    <!-- 実行計画 -->
-                    <div class="mb-3">
-                        <span class="mb-1 flex items-center gap-1 text-xs font-medium text-emerald-600"><x-icon name="document-text" class="w-3.5 h-3.5" /> 実行計画</span>
-                        <p class="text-gray-800 whitespace-pre-wrap break-words" x-text="plan.actionPlan || '未入力'"></p>
+                    <div class="mb-2">
+                        <span class="text-xs text-emerald-600">実行計画</span>
+                        <p class="text-gray-800 text-sm line-clamp-2 whitespace-pre-wrap break-words" x-text="plan.actionPlan"></p>
                     </div>
-
-                    <!-- 振り返り（ある場合のみ表示） -->
-                    <div x-show="plan.hasReflection" class="bg-green-50 rounded-lg p-2">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="flex items-center gap-1 text-xs font-medium text-green-600"><x-icon name="chat-bubble-bottom-center-text" class="w-3.5 h-3.5" /> 振り返り</span>
-                            <span
-                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
-                                :class="{
-                                    'bg-gray-100 text-gray-500': !plan.improvementLevel,
-                                    'bg-red-100 text-red-700': plan.improvementLevel && plan.improvementLevel <= 3,
-                                    'bg-yellow-100 text-yellow-700': plan.improvementLevel && plan.improvementLevel >= 4 && plan.improvementLevel <= 6,
-                                    'bg-green-100 text-green-700': plan.improvementLevel && plan.improvementLevel >= 7
-                                }"
-                            >
-                                <x-icon name="chart-bar" class="w-3.5 h-3.5" /> 改善Lv.<span x-text="plan.improvementLevel || '-'"></span>
-                            </span>
-                        </div>
-                        <p class="text-gray-800 text-sm line-clamp-2 break-words" x-text="plan.reflection"></p>
+                    <div x-show="plan.hasReflection" class="mb-2">
+                        <span class="text-xs text-gray-500">振り返り</span>
+                        <p class="text-gray-800 text-sm line-clamp-2 whitespace-pre-wrap break-words" x-text="plan.reflection"></p>
+                    </div>
+                    <div x-show="plan.improvementLevel !== null && plan.improvementLevel !== ''">
+                        <span class="text-xs text-gray-500">改善レベル</span>
+                        <p class="text-sm font-medium text-gray-800" x-text="plan.improvementLevel"></p>
                     </div>
                 </div>
-                <div
-                    class="h-1"
-                    :class="plan.hasReflection
-                        ? 'bg-gradient-to-r from-green-400 to-emerald-500'
-                        : 'bg-gradient-to-r from-yellow-400 to-orange-400'"
-                ></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1"></div>
             </a>
         </template>
 
-        <!-- ローディング中 -->
         <div x-show="loading" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <svg class="animate-spin h-8 w-8 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
             <p class="text-gray-600 text-lg mt-2">読み込み中...</p>
         </div>
 
-        <!-- 空の状態（検索条件・フィルターなし） -->
-        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter === 'all'" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="clipboard-document" class="w-16 h-16" /></div>
-            <p class="text-gray-600 text-lg mb-2">まだ計画がありません</p>
-            <a href="/problem-solvings/plans/new" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-600 transition-all">
+        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition" class="text-center py-16 bg-white rounded-xl shadow-md">
+            <p class="text-gray-600 text-lg mb-2">まだ振り返りがありません</p>
+            <a href="/problem-solvings/plans/new" class="inline-block mt-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 px-6 rounded-lg font-medium">
                 振り返りを記録する
             </a>
         </div>
 
-        <!-- フィルター結果が空の場合 -->
-        <div x-show="!loading && allPlans.length === 0 && !hasSearchCondition && filter !== 'all'" class="text-center py-12 bg-white rounded-xl shadow-md">
-            <div class="mb-4 flex justify-center text-gray-300">
-                <span x-show="filter === 'completed'"><x-icon name="check-circle" class="w-12 h-12" /></span>
-                <span x-show="filter !== 'completed'" x-cloak><x-icon name="clock" class="w-12 h-12" /></span>
-            </div>
-            <p class="text-gray-600" x-text="filter === 'completed' ? '振り返り済みの計画はまだありません' : '振り返り待ちの計画はありません'"></p>
-        </div>
-
-        <!-- 検索結果が空の場合 -->
         <div x-show="!loading && allPlans.length === 0 && hasSearchCondition" class="text-center py-12 bg-white rounded-xl shadow-md">
-            <div class="mb-4 flex justify-center text-gray-300"><x-icon name="magnifying-glass" class="w-12 h-12" /></div>
-            <p class="text-gray-600 mb-2">条件に一致する計画が見つかりませんでした</p>
-            <button
-                @click="clearSearch()"
-                class="inline-block mt-2 text-emerald-600 hover:text-emerald-700 underline text-sm"
-            >
-                検索条件をクリアする
+            <p class="text-gray-600 mb-2">条件に一致する振り返りが見つかりませんでした</p>
+            <button @click="clearSearch()" class="inline-block mt-2 text-emerald-600 hover:text-emerald-700 underline text-sm">
+                絞り込みをクリアする
             </button>
         </div>
 
-        <x-pagination
-            theme-color-from="emerald-500"
-            theme-color-to="teal-500"
-            theme-border-color="emerald-500"
-        />
+        <x-pagination theme-color-from="emerald-500" theme-color-to="teal-500" theme-border-color="emerald-500" />
     </div>
 
-    <!-- 新規作成ボタン（フローティング） -->
-    <a
-        href="/problem-solvings/plans/new"
-        class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-2xl hover:from-emerald-600 hover:to-teal-600 transition-all"
-        title="振り返りを記録"
-    >
-        ＋
-    </a>
+    <a href="/problem-solvings/plans/new" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-lg flex items-center justify-center text-2xl" title="振り返りを記録">＋</a>
 </div>
 
 <style>
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 </style>
 
 <script>
-function plansListApp() {
+function reflectionsListApp() {
     return {
         allPlans: [],
         problemSolvings: [],
@@ -258,10 +157,7 @@ function plansListApp() {
         improvementLevelMax: 10,
         currentPage: 1,
         perPage: 10,
-        total: 0,
         lastPage: 1,
-        from: 0,
-        to: 0,
 
         async init() {
             await this.loadProblemSolvings();
@@ -272,18 +168,11 @@ function plansListApp() {
             this.problemSolvings = await fetchProblemSolvingOptions();
         },
 
-        async onProblemSolvingChange() {
-            this.currentPage = 1;
-            await this.loadPlans();
-        },
-
         async loadPlans() {
             this.loading = true;
             try {
                 const params = new URLSearchParams();
-                if (this.keyword) {
-                    params.append('keyword', this.keyword);
-                }
+                if (this.keyword) params.append('keyword', this.keyword);
                 if (this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10) {
                     params.append('improvement_level_min', this.improvementLevelMin);
                     params.append('improvement_level_max', this.improvementLevelMax);
@@ -297,15 +186,12 @@ function plansListApp() {
                 params.append('page', this.currentPage);
                 params.append('per_page', this.perPage);
 
-                const url = '/api/problem-solvings/plans' + (params.toString() ? '?' + params.toString() : '');
-                const res = await apiFetch(url);
+                const res = await apiFetch('/api/problem-solvings/plans?' + params.toString());
                 const result = await res.json();
 
                 this.allPlans = (result.data || []).map(plan => ({
                     planId: plan.id,
-                    problemSolvingId: plan.problem_solving_id,
                     problemSituation: plan.problem_situation,
-                    planNumber: plan.plan_number,
                     actionPlan: plan.action_plan,
                     reflection: plan.reflection,
                     hasReflection: plan.reflection && plan.reflection.trim() !== '',
@@ -313,14 +199,9 @@ function plansListApp() {
                     createdAt: plan.created_at
                 }));
 
-                this.total = result.total || 0;
-                this.currentPage = result.current_page || 1;
                 this.lastPage = result.last_page || 1;
-                this.from = result.from || 0;
-                this.to = result.to || 0;
-                this.perPage = result.per_page || 10;
             } catch (error) {
-                console.error('Failed to load plans:', error);
+                console.error('Failed to load reflections:', error);
             } finally {
                 this.loading = false;
             }
@@ -332,15 +213,10 @@ function plansListApp() {
             await this.loadPlans();
         },
 
-        async setFilter(newFilter) {
-            this.filter = newFilter;
-            this.currentPage = 1;
-            await this.loadPlans();
-        },
-
         async clearSearch() {
             this.keyword = '';
             this.problemSolvingId = '';
+            this.filter = 'all';
             this.improvementLevelMin = 1;
             this.improvementLevelMax = 10;
             this.currentPage = 1;
@@ -359,7 +235,11 @@ function plansListApp() {
         },
 
         get hasSearchCondition() {
-            return this.keyword !== '' || this.problemSolvingId !== '' || this.improvementLevelMin !== 1 || this.improvementLevelMax !== 10;
+            return this.keyword !== ''
+                || this.problemSolvingId !== ''
+                || this.filter !== 'all'
+                || this.improvementLevelMin !== 1
+                || this.improvementLevelMax !== 10;
         },
 
         get hasRangeError() {
@@ -368,10 +248,9 @@ function plansListApp() {
 
         formatDate(dateString) {
             if (!dateString) return '';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('ja-JP', {
+            return new Date(dateString).toLocaleDateString('ja-JP', {
                 year: 'numeric',
-                month: 'short',
+                month: 'long',
                 day: 'numeric'
             });
         }

@@ -9,7 +9,7 @@
     <div x-show="showSaveToast" x-transition class="fixed top-16 right-4 bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40">保存しました</div>
 
     <div class="flex justify-between items-center mb-4">
-        <a href="/problem-solvings/plans" class="text-emerald-600 hover:text-emerald-800">← 計画一覧に戻る</a>
+        <a href="/problem-solvings/plans" class="text-emerald-600 hover:text-emerald-800">← 振り返り一覧に戻る</a>
         <button x-show="hasExistingRecord" @click="deleteReflection()" class="text-red-400 hover:text-red-600 p-2" title="振り返りを削除">
             <x-icon name="trash" class="w-5 h-5" />
         </button>
@@ -130,8 +130,23 @@ function problemSolvingReflectionFormApp(planId) {
             await this.loadProblemSolvings();
             if (this.hasExistingRecord) {
                 await this.loadPlan();
+            } else {
+                await this.applyQueryParams();
             }
             this.loading = false;
+        },
+
+        async applyQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const psId = params.get('problem_solving_id');
+            const prePlanId = params.get('plan_id');
+            if (!psId) return;
+
+            this.form.problem_solving_id = psId;
+            await this.onProblemSolvingChange();
+            if (prePlanId) {
+                this.form.plan_id = prePlanId;
+            }
         },
 
         planLabel(plan) {
