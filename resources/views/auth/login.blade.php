@@ -257,7 +257,7 @@ function loginApp() {
                     return;
                 }
 
-                window.location.href = '/';
+                window.location.href = '/mypage';
             } catch (e) {
                 this.generalError = '通信エラーが発生しました。もう一度お試しください。';
             } finally {
