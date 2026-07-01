@@ -430,9 +430,6 @@ function problemSolvingFormApp(itemId) {
             try {
                 if (this.itemId) {
                     await this.saveExistingItem();
-                    if (this.isCreateMode) {
-                        await this.savePlans(this.itemId);
-                    }
                 } else {
                     await this.saveNewItem();
                 }
@@ -534,23 +531,14 @@ function problemSolvingFormApp(itemId) {
                 const plan = this.plans[i];
                 if (!plan.action_plan || !plan.action_plan.trim()) continue;
 
-                if (plan.id) {
-                    const res = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action_plan: plan.action_plan })
-                    });
-                    if (!res.ok) throw await parseApiErrorMessage(res);
-                } else {
-                    const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action_plan: plan.action_plan })
-                    });
-                    if (!planRes.ok) throw await parseApiErrorMessage(planRes);
-                    const createdPlan = await planRes.json();
-                    plan.id = createdPlan.id;
-                }
+                const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action_plan: plan.action_plan })
+                });
+                if (!planRes.ok) throw await parseApiErrorMessage(planRes);
+                const createdPlan = await planRes.json();
+                plan.id = createdPlan.id;
             }
         },
 
