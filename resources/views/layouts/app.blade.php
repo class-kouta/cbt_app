@@ -266,7 +266,6 @@
                             'mypage' => request()->routeIs('mypage'),
                             'home' => request()->routeIs('home'),
                             'conditionCheck' => request()->is('condition-checks*'),
-                            'writing' => request()->is('writing-disclosures*'),
                             'selfCompassion' => request()->is('self-compassion-journals*'),
                             'stressPersonEncyclopedia' => request()->is('stress-person-encyclopedias*'),
                             'stressor' => request()->is('stressor-and-responses*'),
@@ -289,7 +288,6 @@
                             stressorOpen: {{ $menuActive['stressor'] ? 'true' : 'false' }},
                             conditionCheckOpen: {{ $menuActive['conditionCheck'] ? 'true' : 'false' }},
                             columnOpen: {{ $menuActive['column'] ? 'true' : 'false' }},
-                            writingOpen: {{ $menuActive['writing'] ? 'true' : 'false' }},
                             selfCompassionOpen: {{ $menuActive['selfCompassion'] ? 'true' : 'false' }},
                             stressPersonEncyclopediaOpen: {{ $menuActive['stressPersonEncyclopedia'] ? 'true' : 'false' }},
                             problemOpen: {{ $menuActive['problem'] ? 'true' : 'false' }},
@@ -383,45 +381,6 @@
                                     </span>
                                 @else
                                     <a href="/condition-checks" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">一覧</span>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- 筆記開示（多段） -->
-                        <div class="border-b border-gray-500/30 {{ $menuActive['writing'] ? $menuGroupBg : '' }}">
-                            <button
-                                @click="writingOpen = !writingOpen"
-                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
-                            >
-                                <span class="font-medium text-lg">筆記開示</span>
-                                <svg
-                                    class="w-5 h-5 transition-transform duration-200"
-                                    :class="writingOpen ? 'rotate-180' : ''"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="writingOpen" x-collapse class="">
-                                @if(request()->is('writing-disclosures'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">新規作成</span>
-                                    </span>
-                                @else
-                                    <a href="/writing-disclosures" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">新規作成</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('writing-disclosures/list'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">一覧</span>
-                                    </span>
-                                @else
-                                    <a href="/writing-disclosures/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif
