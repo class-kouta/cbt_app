@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
 
         $middleware->redirectGuestsTo(fn () => route('login'));
-        $middleware->redirectUsersTo(fn () => route('home'));
+        $middleware->redirectUsersTo(fn () => route('mypage'));
 
         $middleware->web(append: [
             \App\Http\Middleware\HttpBasicAuth::class,

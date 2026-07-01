@@ -59,13 +59,13 @@ class WebRouteAuthTest extends TestCase
         $response->assertDontSee('ff03csm26test1@example.com');
     }
 
-    public function test_authenticated_member_is_redirected_from_login_to_home(): void
+    public function test_authenticated_member_is_redirected_from_login_to_mypage(): void
     {
         $member = Member::factory()->create();
 
         $response = $this->actingAs($member)->get('/login');
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('mypage'));
     }
 
     public function test_guest_is_redirected_from_protected_page_to_login(): void
@@ -127,13 +127,13 @@ class WebRouteAuthTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_verified_member_is_redirected_from_verify_email_to_home(): void
+    public function test_verified_member_is_redirected_from_verify_email_to_mypage(): void
     {
         $member = Member::factory()->create();
 
         $response = $this->actingAs($member)->get('/verify-email');
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('mypage'));
     }
 
 }

@@ -16,7 +16,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/verify-email', function () {
         return request()->user()->hasVerifiedEmail()
-            ? redirect()->route('home')
+            ? redirect()->route('mypage')
             : view('auth.verify-email');
     })->name('verification.notice');
 
