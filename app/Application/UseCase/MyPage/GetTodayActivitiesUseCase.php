@@ -123,7 +123,6 @@ class GetTodayActivitiesUseCase
     {
         return [
             ['key' => 'condition_check', 'label' => 'コンディションチェック', 'table' => 'condition_checks'],
-            ['key' => 'writing_disclosure', 'label' => '筆記開示', 'table' => 'writing_disclosures'],
             ['key' => 'self_compassion_journal', 'label' => 'セルフコンパッション日記', 'table' => 'self_compassion_journals'],
             ['key' => 'stress_person_encyclopedia', 'label' => 'ストレス人物図鑑', 'table' => 'stress_person_encyclopedias'],
             ['key' => 'stressor_and_response', 'label' => 'ストレッサーとストレス反応', 'table' => 'stressor_and_responses'],

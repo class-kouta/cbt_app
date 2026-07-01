@@ -6,7 +6,6 @@ use App\Infrastructure\Database\Models\Column;
 use App\Infrastructure\Database\Models\Coping;
 use App\Infrastructure\Database\Models\ProblemSolving;
 use App\Infrastructure\Database\Models\ProblemSolvingPlan;
-use App\Infrastructure\Database\Models\WritingDisclosure;
 use App\Models\Member;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -55,13 +54,6 @@ class MyPageControllerTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        WritingDisclosure::create([
-            'member_id' => $otherMember->id,
-            'content' => '他人の筆記開示',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $response = $this->actingAs($member, 'sanctum')->getJson('/api/mypage/today-activities');
 
         $response->assertOk();
@@ -72,7 +64,6 @@ class MyPageControllerTest extends TestCase
         $messages = collect($response->json('activities'))->pluck('message')->all();
         $this->assertContains('コラム法を2件作成しました', $messages);
         $this->assertContains('コーピングを1件作成しました', $messages);
-        $this->assertNotContains('筆記開示を1件作成しました', $messages);
     }
 
     public function test_today_activities_includes_joined_tables_via_union_all(): void

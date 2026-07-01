@@ -113,26 +113,6 @@ Route::middleware('auth')->group(function () {
             return view('stress-person-encyclopedias', ['itemId' => $id]);
         })->where('id', '[0-9]+');
 
-        // 筆記開示ページ
-        Route::get('/writing-disclosures', function () {
-            return view('writing-disclosures');
-        });
-
-        // 筆記開示一覧ページ
-        Route::get('/writing-disclosures/list', function () {
-            return view('writing-disclosures-list');
-        });
-
-        // 筆記開示詳細ページ
-        Route::get('/writing-disclosures/{id}', function ($id) {
-            return view('writing-disclosure-detail', ['itemId' => $id]);
-        })->where('id', '[0-9]+');
-
-        // 筆記開示編集ページ
-        Route::get('/writing-disclosures/{id}/edit', function ($id) {
-            return view('writing-disclosures', ['itemId' => $id]);
-        })->where('id', '[0-9]+');
-
         // シンプルメモ帳新規作成ページ
         Route::get('/simple-notepads', function () {
             return view('simple-notepads');

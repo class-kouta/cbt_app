@@ -18,7 +18,6 @@ use App\Http\Controllers\MindfulnessController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\SelfCompassionJournalController;
 use App\Http\Controllers\StressPersonEncyclopediaController;
-use App\Http\Controllers\WritingDisclosureController;
 use Illuminate\Support\Facades\Route;
 
 // Member Auth API（会員認証）
@@ -56,12 +55,6 @@ Route::get('/columns/{column}', [ColumnController::class, 'show']);
 Route::post('/columns', [ColumnController::class, 'store']);
 Route::put('/columns/{column}', [ColumnController::class, 'update']);
 Route::delete('/columns/{column}', [ColumnController::class, 'destroy']);
-
-// WritingDisclosure API（筆記開示）
-Route::get('/writing-disclosures', [WritingDisclosureController::class, 'index']);
-Route::post('/writing-disclosures', [WritingDisclosureController::class, 'store']);
-Route::put('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'update']);
-Route::delete('/writing-disclosures/{writingDisclosure}', [WritingDisclosureController::class, 'destroy']);
 
 // ProblemSolving API（問題解決法）
 Route::get('/problem-solvings', [ProblemSolvingController::class, 'index']);

@@ -12,7 +12,6 @@ class AssignMemberIdSeeder extends Seeder
     private const MULTI_RECORD_TABLES = [
         'copings',
         'columns',
-        'writing_disclosures',
         'problem_solvings',
         'simple_notepads',
         'stressor_and_responses',
