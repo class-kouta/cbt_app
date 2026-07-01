@@ -157,7 +157,10 @@ function reflectionsListApp() {
         improvementLevelMax: 10,
         currentPage: 1,
         perPage: 10,
+        total: 0,
         lastPage: 1,
+        from: 0,
+        to: 0,
 
         async init() {
             await this.loadProblemSolvings();
@@ -199,7 +202,12 @@ function reflectionsListApp() {
                     createdAt: plan.created_at
                 }));
 
+                this.total = result.total || 0;
+                this.currentPage = result.current_page || 1;
                 this.lastPage = result.last_page || 1;
+                this.from = result.from || 0;
+                this.to = result.to || 0;
+                this.perPage = result.per_page || 10;
             } catch (error) {
                 console.error('Failed to load reflections:', error);
             } finally {
