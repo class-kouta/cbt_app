@@ -155,6 +155,7 @@
 - id — bigint, 主キー
 - member_id — bigint, 外部キー → members.id, NOT NULL
 - avoidance_target — text, NOT NULL（回避していること）
+- notes — text, NULL可（備考）
 - created_at / updated_at — timestamp
 
 ---

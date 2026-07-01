@@ -15,7 +15,7 @@
         <button
             x-show="isEditMode"
             @click="confirmDelete()"
-            class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50/80 flex items-center gap-1 text-sm"
+            class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-lg hover:bg-gray-50/80 flex items-center gap-1 text-sm"
         >
             <x-icon name="trash" class="w-5 h-5" /><span class="hidden sm:inline">削除</span>
         </button>
@@ -28,23 +28,6 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         <p class="text-gray-500 mt-2 text-sm">読み込み中...</p>
-    </div>
-
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
     </div>
 
     <!-- 手動保存トースト -->
@@ -62,6 +45,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         保存しました
+    </div>
+
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
     </div>
 
     <!-- ========== STEP 1: モード選択＋名付け ========== -->
@@ -328,15 +325,12 @@ function modeDialogueWorkEditApp(itemId) {
         loading: false,
         submitting: false,
         error: '',
-        showAutoSaveToast: false,
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         floatingSaving: false,
         showDeleteModal: false,
         deleting: false,
 
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
         _saveInProgress: false,
 
         get modeSuffix() {
@@ -362,21 +356,9 @@ function modeDialogueWorkEditApp(itemId) {
         },
 
         async init() {
-            window.addEventListener('beforeunload', () => {
-                if (this.autoSaveInterval) {
-                    clearInterval(this.autoSaveInterval);
-                }
-            });
-
             if (this.isEditMode) {
                 await this.loadItem();
             }
-
-            this.takeSnapshot();
-
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         startDialogue() {
@@ -468,45 +450,7 @@ function modeDialogueWorkEditApp(itemId) {
             return this.entries.length > 0 && this.entries.some(e => e.text.trim().length > 0);
         },
 
-        getSnapshotString() {
-            return JSON.stringify(this.entries.map(e => ({ type: e.type, text: e.text })));
-        },
-
-        takeSnapshot() {
-            this.autoSaveSnapshots.push(this.getSnapshotString());
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            const current = this.getSnapshotString();
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return current !== this.autoSaveSnapshots[0];
-                }
-                return false;
-            }
-            return current !== this.autoSaveSnapshots[0];
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.step === 'dialogue' &&
-                this.isFormValid() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving &&
-                !this.floatingSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            this.takeSnapshot();
-        },
-
-        async performSave({ isManual = false, redirectOnSuccess = false } = {}) {
+        async performSave({ redirectOnSuccess = false } = {}) {
             if (this._saveInProgress) {
                 return;
             }
@@ -533,8 +477,7 @@ function modeDialogueWorkEditApp(itemId) {
                 });
 
                 if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.message || 'エラーが発生しました');
+                    throw new Error('保存に失敗しました');
                 }
 
                 if (!isUpdate) {
@@ -549,49 +492,43 @@ function modeDialogueWorkEditApp(itemId) {
                     return;
                 }
 
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
                 if (redirectOnSuccess) {
-                    this.error = error.message;
+                    this.error = '保存に失敗しました';
                     this.submitting = false;
                 }
+                throw error;
             } finally {
                 this._saveInProgress = false;
             }
         },
 
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave({ isManual: false });
-            } finally {
-                this.autoSaving = false;
-            }
-        },
-
         async manualSave() {
-            if (this.floatingSaving || this.autoSaving || this.submitting || !this.isFormValid()) return;
+            if (this.floatingSaving || this.submitting || !this.isFormValid()) return;
 
             this.floatingSaving = true;
             try {
-                await this.performSave({ isManual: true });
+                await this.performSave();
+            } catch (error) {
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
+            }, 2000);
         },
 
         confirmDelete() {
@@ -609,9 +546,6 @@ function modeDialogueWorkEditApp(itemId) {
                 });
 
                 if (res.ok || res.status === 204) {
-                    if (this.autoSaveInterval) {
-                        clearInterval(this.autoSaveInterval);
-                    }
                     window.location.href = '/schema-therapy/mode-work/dialogue';
                 } else {
                     this.error = '削除中にエラーが発生しました。';

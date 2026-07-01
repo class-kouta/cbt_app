@@ -13,6 +13,7 @@ class Exposure
     private function __construct(
         private ?int $id,
         private string $avoidanceTarget,
+        private ?string $notes,
         private array $hierarchyItems,
         private array $sessions,
         private DateTimeImmutable $createdAt,
@@ -20,11 +21,11 @@ class Exposure
     ) {
     }
 
-    public static function createNew(string $avoidanceTarget): self
+    public static function createNew(string $avoidanceTarget, ?string $notes = null): self
     {
         $now = new DateTimeImmutable('now');
 
-        return new self(null, $avoidanceTarget, [], [], $now, $now);
+        return new self(null, $avoidanceTarget, $notes, [], [], $now, $now);
     }
 
     /**
@@ -34,12 +35,13 @@ class Exposure
     public static function reconstitute(
         int $id,
         string $avoidanceTarget,
+        ?string $notes,
         array $hierarchyItems,
         array $sessions,
         DateTimeImmutable $createdAt,
         DateTimeImmutable $updatedAt
     ): self {
-        return new self($id, $avoidanceTarget, $hierarchyItems, $sessions, $createdAt, $updatedAt);
+        return new self($id, $avoidanceTarget, $notes, $hierarchyItems, $sessions, $createdAt, $updatedAt);
     }
 
     public function getId(): ?int
@@ -50,6 +52,11 @@ class Exposure
     public function getAvoidanceTarget(): string
     {
         return $this->avoidanceTarget;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
     }
 
     /**
@@ -108,11 +115,12 @@ class Exposure
         return $this->updatedAt;
     }
 
-    public function update(string $avoidanceTarget): self
+    public function update(string $avoidanceTarget, ?string $notes = null): self
     {
         return new self(
             $this->id,
             $avoidanceTarget,
+            $notes,
             $this->hierarchyItems,
             $this->sessions,
             $this->createdAt,

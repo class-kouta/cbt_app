@@ -16,6 +16,7 @@ class ExposureResponseFormatter
         return [
             'id' => $exposure->getId(),
             'avoidance_target' => $exposure->getAvoidanceTarget(),
+            'notes' => $exposure->getNotes(),
             'hierarchy_items' => array_map(
                 fn (ExposureHierarchyItemEntity $item) => $this->hierarchyItemFromEntity($item),
                 $exposure->getHierarchyItems()

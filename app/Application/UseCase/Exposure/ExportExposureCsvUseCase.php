@@ -13,12 +13,14 @@ class ExportExposureCsvUseCase
 {
     private const SEARCHABLE_COLUMNS = [
         'avoidance_target',
+        'notes',
     ];
 
     private const CSV_HEADERS = [
         'ID',
         '作成日時',
         '回避していること',
+        '備考',
         '不安階層表',
         '実施記録',
     ];
@@ -79,6 +81,7 @@ class ExportExposureCsvUseCase
             $item['id'],
             $this->csvExportService->formatDatetime($item['created_at']),
             $item['avoidance_target'] ?? '',
+            $item['notes'] ?? '',
             implode(' / ', $hierarchyTexts),
             implode(' / ', $sessionTexts),
         ];

@@ -6,23 +6,6 @@
 @section('content')
 <div x-data="problemSolvingFormApp({{ $itemId ?? 'null' }})" x-init="init()" x-cloak>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -38,6 +21,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         保存しました
+    </div>
+
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
     </div>
 
     <!-- コピー成功トースト -->
@@ -97,17 +94,25 @@
                 @click="isEditing ? saveAndStopEditing() : startEditing()"
                 :disabled="isEditing && (submitting || floatingSaving)"
                 class="inline-flex items-center justify-center p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                :class="isEditing ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
-                :title="isEditing ? '保存する' : '編集する'"
+                :class="isEditing
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
+                :title="isEditing ? ((submitting || floatingSaving) ? '保存中...' : '保存する') : '編集する'"
             >
                 <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
-                <span x-show="isEditing"><x-icon name="check-circle" class="w-5 h-5" /></span>
+                <span x-show="isEditing && !(submitting || floatingSaving)"><x-icon name="check-circle" class="w-5 h-5" /></span>
+                <span x-show="isEditing && (submitting || floatingSaving)">
+                    <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
             </button>
             <!-- 削除ボタン（既存レコードのみ） -->
             <button
                 x-show="hasExistingRecord"
                 @click="deleteItem()"
-                class="text-red-400 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
+                class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded hover:bg-gray-50"
                 title="削除"
             >
                 <x-icon name="trash" class="w-5 h-5" />
@@ -255,7 +260,7 @@
                                         type="button"
                                         x-show="plans.length > 1"
                                         @click="removePlanRow(index)"
-                                        class="text-red-400 hover:text-red-600 p-1"
+                                        class="text-gray-500 hover:text-gray-700 p-1"
                                         title="この実行計画を削除"
                                     >
                                         <x-icon name="trash" class="w-5 h-5" />
@@ -329,29 +334,18 @@ function problemSolvingFormApp(itemId) {
         loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         showCopyToast: false,
         floatingSaving: false,
 
         availableTags: [],
-
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
-        showAutoSaveToast: false,
 
         async init() {
             await this.loadTags();
 
             if (this.hasExistingRecord) {
                 await this.loadItem();
-                if (this.isEditing) {
-                    this.startAutoSave();
-                }
-            } else {
-                this.startAutoSave();
             }
-
-            this.takeSnapshot();
         },
 
         get selectedTagObjects() {
@@ -372,8 +366,6 @@ function problemSolvingFormApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.takeSnapshot();
-            this.startAutoSave();
         },
 
         async saveAndStopEditing() {
@@ -381,12 +373,12 @@ function problemSolvingFormApp(itemId) {
 
             this.submitting = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
                 await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }
@@ -394,22 +386,6 @@ function problemSolvingFormApp(itemId) {
 
         stopEditing() {
             this.isEditing = false;
-            this.stopAutoSave();
-        },
-
-        startAutoSave() {
-            this.stopAutoSave();
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
-        },
-
-        stopAutoSave() {
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.autoSaveSnapshots = [];
         },
 
         async loadTags() {
@@ -441,41 +417,6 @@ function problemSolvingFormApp(itemId) {
             return tag ? tag.name : '';
         },
 
-        takeSnapshot() {
-            const snapshot = {
-                problem_situation: this.form.problem_situation,
-                improved_image: this.form.improved_image,
-                tag_ids: JSON.stringify(this.form.tag_ids),
-                plans: JSON.stringify(this.plans.map(p => p.action_plan))
-            };
-            this.autoSaveSnapshots.push(snapshot);
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            return this.hasValueChanged(oldSnapshot);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.form.problem_situation !== snapshot.problem_situation ||
-                this.form.improved_image !== snapshot.improved_image ||
-                JSON.stringify(this.form.tag_ids) !== snapshot.tag_ids ||
-                JSON.stringify(this.plans.map(p => p.action_plan)) !== snapshot.plans
-            );
-        },
-
         addPlanRow() {
             this.plans.push({ action_plan: '' });
         },
@@ -485,22 +426,7 @@ function problemSolvingFormApp(itemId) {
             this.plans.splice(index, 1);
         },
 
-        async checkAndAutoSave() {
-            if (!this.isEditing) return;
-
-            if (
-                this.form.problem_situation.trim() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-
-            this.takeSnapshot();
-        },
-
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
                     await this.saveExistingItem();
@@ -510,19 +436,10 @@ function problemSolvingFormApp(itemId) {
                 } else {
                     await this.saveNewItem();
                 }
-                this.showSaveNotification(isManual);
+                this.showSaveNotification();
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
-                if (isManual) throw error;
-            }
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
+                console.error('保存に失敗しました:', error);
+                throw error;
             }
         },
 
@@ -531,24 +448,26 @@ function problemSolvingFormApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
+            } catch (error) {
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
+            }, 2000);
         },
 
         formatDate(dateString) {
@@ -615,21 +534,21 @@ function problemSolvingFormApp(itemId) {
                 if (!plan.action_plan || !plan.action_plan.trim()) continue;
 
                 if (plan.id) {
-                    await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
+                    const res = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action_plan: plan.action_plan })
                     });
+                    if (!res.ok) throw await parseApiErrorMessage(res);
                 } else {
                     const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action_plan: plan.action_plan })
                     });
-                    if (planRes.ok) {
-                        const createdPlan = await planRes.json();
-                        plan.id = createdPlan.id;
-                    }
+                    if (!planRes.ok) throw await parseApiErrorMessage(planRes);
+                    const createdPlan = await planRes.json();
+                    plan.id = createdPlan.id;
                 }
             }
         },
@@ -643,9 +562,7 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (res.ok) {
-                return;
-            }
+            if (!res.ok) throw await parseApiErrorMessage(res);
         },
 
         async createProblemSolving() {
@@ -659,7 +576,7 @@ function problemSolvingFormApp(itemId) {
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
-                alert('保存に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }
@@ -676,7 +593,7 @@ function problemSolvingFormApp(itemId) {
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
-                alert('更新に失敗しました');
+                this.showSaveErrorNotification();
             } finally {
                 this.submitting = false;
             }

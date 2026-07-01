@@ -36,23 +36,6 @@
         <span>コピーしました！</span>
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- 手動保存トースト -->
     <div
         x-show="showManualSaveToast"
@@ -68,6 +51,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         保存しました
+    </div>
+
+    <!-- 保存失敗トースト -->
+    <div
+        x-show="showSaveErrorToast"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="fixed top-16 right-4 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
+    >
+        保存に失敗しました
     </div>
 
     <!-- フローティング保存ボタン -->
@@ -320,17 +317,12 @@ function stressorApp(itemId) {
         submitting: false,
         error: '',
         showCopyToast: false,
-        showAutoSaveToast: false,
         showManualSaveToast: false,
+        showSaveErrorToast: false,
         floatingSaving: false,
 
         // タグ一覧
         availableTags: [],
-
-        // 自動保存用
-        autoSaveSnapshots: [],
-        autoSaveInterval: null,
-        autoSaving: false,
 
         // 感情リストの表示状態
         showMoodEmotions: false,
@@ -361,14 +353,6 @@ function stressorApp(itemId) {
             if (this.isEditMode) {
                 await this.loadItem();
             }
-
-            // 初期スナップショットを取得
-            this.takeSnapshot();
-
-            // 30秒ごとに自動保存チェック
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async loadTags() {
@@ -400,61 +384,9 @@ function stressorApp(itemId) {
             return tag ? tag.name : '';
         },
 
-        takeSnapshot() {
-            const snapshot = {
-                stressor: this.formData.stressor,
-                cognition: this.formData.cognition,
-                mood: this.formData.mood,
-                body_reaction: this.formData.body_reaction,
-                behavior: this.formData.behavior,
-                tag_ids: JSON.stringify(this.formData.tag_ids)
-            };
-            this.autoSaveSnapshots.push(snapshot);
-
-            if (this.autoSaveSnapshots.length > 2) {
-                this.autoSaveSnapshots.shift();
-            }
-        },
-
-        hasChangedFromPreviousSnapshot() {
-            if (this.autoSaveSnapshots.length < 2) {
-                if (this.autoSaveSnapshots.length === 1) {
-                    return this.hasValueChanged(this.autoSaveSnapshots[0]);
-                }
-                return false;
-            }
-            const oldSnapshot = this.autoSaveSnapshots[0];
-            return this.hasValueChanged(oldSnapshot);
-        },
-
-        hasValueChanged(snapshot) {
-            return (
-                this.formData.stressor !== snapshot.stressor ||
-                this.formData.cognition !== snapshot.cognition ||
-                this.formData.mood !== snapshot.mood ||
-                this.formData.body_reaction !== snapshot.body_reaction ||
-                this.formData.behavior !== snapshot.behavior ||
-                JSON.stringify(this.formData.tag_ids) !== snapshot.tag_ids
-            );
-        },
-
-        async checkAndAutoSave() {
-            if (
-                this.formData.stressor.trim() &&
-                this.hasChangedFromPreviousSnapshot() &&
-                !this.submitting &&
-                !this.autoSaving
-            ) {
-                await this.performAutoSave();
-            }
-            this.takeSnapshot();
-        },
-
-        // 共通の保存処理
-        async performSave(isManual = false) {
+        async performSave() {
             try {
                 if (this.itemId) {
-                    // 既存データの更新
                     const res = await apiFetch(`/api/stressor-and-responses/${this.itemId}`, {
                         method: 'PUT',
                         headers: {
@@ -463,11 +395,12 @@ function stressorApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        this.showSaveNotification(isManual);
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    this.showSaveNotification();
                 } else {
-                    // 新規作成
                     const res = await apiFetch('/api/stressor-and-responses', {
                         method: 'POST',
                         headers: {
@@ -476,25 +409,19 @@ function stressorApp(itemId) {
                         body: JSON.stringify(this.formData)
                     });
 
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.itemId = data.id;
-                        this.isEditMode = true;
-                        history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
-                        this.showSaveNotification(isManual);
+                    if (!res.ok) {
+                        throw new Error('保存に失敗しました');
                     }
+
+                    const data = await res.json();
+                    this.itemId = data.id;
+                    this.isEditMode = true;
+                    history.replaceState(null, '', `/stressor-and-responses/${this.itemId}/edit`);
+                    this.showSaveNotification();
                 }
             } catch (error) {
-                console.error(isManual ? '保存に失敗しました:' : '自動保存に失敗しました:', error);
-            }
-        },
-
-        async performAutoSave() {
-            this.autoSaving = true;
-            try {
-                await this.performSave(false);
-            } finally {
-                this.autoSaving = false;
+                console.error('保存に失敗しました:', error);
+                throw error;
             }
         },
 
@@ -504,24 +431,26 @@ function stressorApp(itemId) {
 
             this.floatingSaving = true;
             try {
-                await this.performSave(true);
+                await this.performSave();
+            } catch (error) {
+                this.showSaveErrorNotification();
             } finally {
                 this.floatingSaving = false;
             }
         },
 
-        showSaveNotification(isManual = false) {
-            if (isManual) {
-                this.showManualSaveToast = true;
-                setTimeout(() => {
-                    this.showManualSaveToast = false;
-                }, 2000);
-            } else {
-                this.showAutoSaveToast = true;
-                setTimeout(() => {
-                    this.showAutoSaveToast = false;
-                }, 2000);
-            }
+        showSaveNotification() {
+            this.showManualSaveToast = true;
+            setTimeout(() => {
+                this.showManualSaveToast = false;
+            }, 2000);
+        },
+
+        showSaveErrorNotification() {
+            this.showSaveErrorToast = true;
+            setTimeout(() => {
+                this.showSaveErrorToast = false;
+            }, 2000);
         },
 
         async loadItem() {

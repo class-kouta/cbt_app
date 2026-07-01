@@ -22,23 +22,6 @@
         保存しました
     </div>
 
-    <!-- 自動保存トースト -->
-    <div
-        x-show="showAutoSaveToast"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="fixed top-16 right-4 bg-orange-500 text-white text-sm px-4 py-2 rounded-lg shadow-md z-40 flex items-center gap-2"
-    >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        自動保存しました
-    </div>
-
     <!-- エラートースト -->
     <div
         x-show="showErrorToast"
@@ -85,36 +68,27 @@
             >
                 <x-icon name="trash" class="w-5 h-5" />
             </button>
-            <!-- 編集する / 保存して編集をやめるボタン（編集モードのみ） -->
-            <template x-if="isEditMode">
-                <button
-                    type="button"
-                    @click="isEditing ? saveAndStopEditing() : startEditing()"
-                    :disabled="isEditing && saving"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    :class="isEditing
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'bg-green-600 text-white hover:bg-green-700'"
-                >
-                    <template x-if="!isEditing">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                        </svg>
-                    </template>
-                    <template x-if="isEditing && !saving">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </template>
-                    <template x-if="isEditing && saving">
-                        <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </template>
-                    <span x-text="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"></span>
-                </button>
-            </template>
+            <!-- 編集トグルボタン（編集モード時のみ） -->
+            <button
+                x-show="isEditMode"
+                type="button"
+                @click="isEditing ? saveAndStopEditing() : startEditing()"
+                :disabled="isEditing && saving"
+                class="inline-flex items-center justify-center p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="isEditing
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
+                :title="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"
+            >
+                <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
+                <span x-show="isEditing && !saving"><x-icon name="check-circle" class="w-5 h-5" /></span>
+                <span x-show="isEditing && saving">
+                    <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            </button>
         </div>
     </div>
 
@@ -290,12 +264,8 @@ function simpleNotepadApp(itemId) {
         saving: false,
         error: '',
         showSaveToast: false,
-        showAutoSaveToast: false,
         showErrorToast: false,
         errorMessage: '',
-
-        autoSaveInterval: null,
-        lastSavedState: null,
 
         async init() {
             this.loading = true;
@@ -399,46 +369,20 @@ function simpleNotepadApp(itemId) {
 
         startEditing() {
             this.isEditing = true;
-            this.lastSavedState = {
-                content: this.formData.content,
-                tag_ids: [...this.formData.tag_ids]
-            };
-            this.autoSaveInterval = setInterval(() => {
-                this.checkAndAutoSave();
-            }, 30000);
         },
 
         async saveAndStopEditing() {
-            await this.performSave(true);
-            this.stopEditing();
+            const success = await this.performSave();
+            if (success) {
+                this.stopEditing();
+            }
         },
 
         stopEditing() {
             this.isEditing = false;
-            if (this.autoSaveInterval) {
-                clearInterval(this.autoSaveInterval);
-                this.autoSaveInterval = null;
-            }
-            this.lastSavedState = null;
         },
 
-        async checkAndAutoSave() {
-            if (!this.isEditing || this.saving) return;
-
-            const currentState = {
-                content: this.formData.content,
-                tag_ids: [...this.formData.tag_ids]
-            };
-
-            if (JSON.stringify(currentState) !== JSON.stringify(this.lastSavedState)) {
-                const success = await this.performSave(false);
-                if (success) {
-                    this.lastSavedState = currentState;
-                }
-            }
-        },
-
-        async performSave(isManual) {
+        async performSave() {
             if (this.saving) return false;
 
             if (!this.formData.content.trim()) {
@@ -461,17 +405,11 @@ function simpleNotepadApp(itemId) {
                 });
 
                 if (res.ok) {
-                    if (isManual) {
-                        this.showSaveToast = true;
-                        setTimeout(() => { this.showSaveToast = false; }, 2000);
-                    } else {
-                        this.showAutoSaveToast = true;
-                        setTimeout(() => { this.showAutoSaveToast = false; }, 2000);
-                    }
+                    this.showSaveToast = true;
+                    setTimeout(() => { this.showSaveToast = false; }, 2000);
                     return true;
                 } else {
-                    const errorData = await res.json();
-                    this.errorMessage = errorData.message || '保存に失敗しました';
+                    this.errorMessage = '保存に失敗しました';
                     this.showErrorToast = true;
                     setTimeout(() => { this.showErrorToast = false; }, 3000);
                     return false;
@@ -488,13 +426,7 @@ function simpleNotepadApp(itemId) {
         },
 
         async save() {
-            const success = await this.performSave(true);
-            if (success) {
-                this.lastSavedState = {
-                    content: this.formData.content,
-                    tag_ids: [...this.formData.tag_ids]
-                };
-            }
+            await this.performSave();
         },
 
         async createSimpleNotepad() {
