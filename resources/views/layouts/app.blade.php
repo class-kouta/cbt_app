@@ -348,6 +348,8 @@
                             @endif
                         </div>
 
+                        <x-menu-section-header title="日々のセルフケア" :is-first="true" />
+
                         <!-- コンディションチェック（多段） -->
                         <div class="border-b border-gray-500/30 {{ $menuActive['conditionCheck'] ? $menuGroupBg : '' }}">
                             <button
@@ -426,44 +428,64 @@
                             </div>
                         </div>
 
-                        <!-- ストレス人物図鑑（多段） -->
-                        <div class="border-b border-gray-500/30 {{ $menuActive['stressPersonEncyclopedia'] ? $menuGroupBg : '' }}">
-                            <button
-                                @click="stressPersonEncyclopediaOpen = !stressPersonEncyclopediaOpen"
-                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
-                            >
-                                <span class="font-medium text-lg">ストレス人物図鑑</span>
-                                <svg
-                                    class="w-5 h-5 transition-transform duration-200"
-                                    :class="stressPersonEncyclopediaOpen ? 'rotate-180' : ''"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="stressPersonEncyclopediaOpen" x-collapse class="">
-                                @if(request()->is('stress-person-encyclopedias') && !request()->is('stress-person-encyclopedias/list'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">新規作成</span>
-                                    </span>
-                                @else
-                                    <a href="/stress-person-encyclopedias" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">新規作成</span>
-                                    </a>
-                                @endif
-                                @if(request()->is('stress-person-encyclopedias/list'))
-                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
-                                        <span class="text-base">一覧</span>
-                                    </span>
-                                @else
-                                    <a href="/stress-person-encyclopedias/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                        <span class="text-base">一覧</span>
-                                    </a>
-                                @endif
-                            </div>
+                        <!-- マインドフルネス瞑想 -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['mindfulness'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['mindfulness'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="/mindfulness" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
+
+                        <!-- コーピングリスト -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['coping'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['coping'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">コーピングリスト</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="/copings" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">コーピングリスト</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
+
+                        <!-- サポートネットワーク -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['support'] ? $menuGroupBg : '' }}">
+                            @if($menuActive['support'])
+                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </span>
+                            @else
+                                <a href="/support-networks" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                    <span class="font-medium text-lg">サポートネットワーク</span>
+                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
+
+                        <x-menu-section-header title="認知行動療法（CBT）" />
 
                         <!-- ストレッサーとストレス反応（多段） -->
                         <div class="border-b border-gray-500/30 {{ $menuActive['stressor'] ? $menuGroupBg : '' }}">
@@ -644,62 +666,7 @@
                             </div>
                         </div>
 
-                        <!-- サポートネットワーク -->
-                        <div class="border-b border-gray-500/30 {{ $menuActive['support'] ? $menuGroupBg : '' }}">
-                            @if($menuActive['support'])
-                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">サポートネットワーク</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </span>
-                            @else
-                                <a href="/support-networks" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">サポートネットワーク</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </a>
-                            @endif
-                        </div>
-
-                        <!-- コーピングリスト -->
-                        <div class="border-b border-gray-500/30 {{ $menuActive['coping'] ? $menuGroupBg : '' }}">
-                            @if($menuActive['coping'])
-                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">コーピングリスト</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </span>
-                            @else
-                                <a href="/copings" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">コーピングリスト</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </a>
-                            @endif
-                        </div>
-
-                        <!-- マインドフルネス瞑想 -->
-                        <div class="border-b border-gray-500/30 {{ $menuActive['mindfulness'] ? $menuGroupBg : '' }}">
-                            @if($menuActive['mindfulness'])
-                                <span class="flex items-center justify-between gap-2 px-6 py-3 text-gray-400 cursor-default">
-                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </span>
-                            @else
-                                <a href="/mindfulness" class="flex items-center justify-between gap-2 px-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
-                                    <span class="font-medium text-lg">マインドフルネス瞑想</span>
-                                    <svg class="w-5 h-5 flex-shrink-0 -rotate-90 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </a>
-                            @endif
-                        </div>
+                        <x-menu-section-header title="スキーマ療法" />
 
                         @php
                         $schemaLinks = [
@@ -802,6 +769,47 @@
                                     </span>
                                 @else
                                     <a href="/schema-therapy/mode-work/dialogue" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">一覧</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <x-menu-section-header title="記録・その他" />
+
+                        <!-- ストレス人物図鑑（多段） -->
+                        <div class="border-b border-gray-500/30 {{ $menuActive['stressPersonEncyclopedia'] ? $menuGroupBg : '' }}">
+                            <button
+                                @click="stressPersonEncyclopediaOpen = !stressPersonEncyclopediaOpen"
+                                class="flex items-center justify-between w-full px-6 py-3 text-gray-700"
+                            >
+                                <span class="font-medium text-lg">ストレス人物図鑑</span>
+                                <svg
+                                    class="w-5 h-5 transition-transform duration-200"
+                                    :class="stressPersonEncyclopediaOpen ? 'rotate-180' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div x-show="stressPersonEncyclopediaOpen" x-collapse class="">
+                                @if(request()->is('stress-person-encyclopedias') && !request()->is('stress-person-encyclopedias/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">新規作成</span>
+                                    </span>
+                                @else
+                                    <a href="/stress-person-encyclopedias" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
+                                        <span class="text-base">新規作成</span>
+                                    </a>
+                                @endif
+                                @if(request()->is('stress-person-encyclopedias/list'))
+                                    <span class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-400 cursor-default">
+                                        <span class="text-base">一覧</span>
+                                    </span>
+                                @else
+                                    <a href="/stress-person-encyclopedias/list" class="flex items-center gap-4 pl-10 pr-6 py-3 text-gray-700 hover:bg-white/40 transition-colors">
                                         <span class="text-base">一覧</span>
                                     </a>
                                 @endif
