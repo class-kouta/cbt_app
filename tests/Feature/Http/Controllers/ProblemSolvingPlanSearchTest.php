@@ -161,4 +161,48 @@ class ProblemSolvingPlanSearchTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function test_plans_filters_by_problem_solving_id(): void
+    {
+        $this->createPlanWithData('仕事のストレス', '計画A', null, 5);
+        $this->createPlanWithData('人間関係', '計画B', null, 3);
+
+        $ps = ProblemSolving::where('problem_situation', '仕事のストレス')->first();
+
+        $response = $this->getJson('/api/problem-solvings/plans?problem_solving_id=' . $ps->id);
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(1);
+        $response->assertJsonFragment(['action_plan' => '計画A']);
+    }
+
+    public function test_options_returns_lightweight_problem_solving_list(): void
+    {
+        ProblemSolving::create([
+            'problem_situation' => 'テスト問題',
+            'improved_image' => null,
+        ]);
+
+        $response = $this->getJson('/api/problem-solvings/options');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [['id', 'problem_situation']]]);
+        $response->assertJsonFragment(['problem_situation' => 'テスト問題']);
+    }
+
+    public function test_show_plan_returns_plan_detail(): void
+    {
+        $plan = $this->createPlanWithData('詳細テスト', '実行計画テスト', '振り返りテスト', 8);
+
+        $response = $this->getJson('/api/problem-solvings/plans/' . $plan->id);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'id' => $plan->id,
+            'problem_situation' => '詳細テスト',
+            'action_plan' => '実行計画テスト',
+            'reflection' => '振り返りテスト',
+            'improvement_level' => 8,
+        ]);
+    }
 }

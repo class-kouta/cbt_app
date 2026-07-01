@@ -66,7 +66,9 @@ Route::delete('/writing-disclosures/{writingDisclosure}', [WritingDisclosureCont
 // ProblemSolving API（問題解決法）
 Route::get('/problem-solvings', [ProblemSolvingController::class, 'index']);
 Route::get('/problem-solvings/export/csv', [ProblemSolvingController::class, 'exportCsv']);
+Route::get('/problem-solvings/options', [ProblemSolvingController::class, 'options']);
 Route::get('/problem-solvings/plans', [ProblemSolvingController::class, 'plans']);
+Route::get('/problem-solvings/plans/{plan}', [ProblemSolvingController::class, 'showPlan']);
 Route::get('/problem-solvings/has-overdue-reflection', [ProblemSolvingController::class, 'hasOverdueReflection'])->name('api.problem-solvings.has-overdue-reflection');
 Route::get('/problem-solvings/{problemSolving}', [ProblemSolvingController::class, 'show']);
 Route::post('/problem-solvings', [ProblemSolvingController::class, 'store']);

@@ -195,10 +195,20 @@ Route::middleware('auth')->group(function () {
             return view('problem-solvings-list');
         });
 
-        // 計画一覧ページ
+        // 振り返り一覧ページ
         Route::get('/problem-solvings/plans', function () {
             return view('problem-solving-plans-list');
         })->name('problem-solving-plans.list');
+
+        // 振り返りページ
+        Route::get('/problem-solvings/plans/new', function () {
+            return view('problem-solving-plan-edit');
+        });
+
+        // 振り返り編集ページ
+        Route::get('/problem-solvings/plans/{id}', function ($id) {
+            return view('problem-solving-plan-edit', ['planId' => $id]);
+        })->where('id', '[0-9]+');
 
         // 問題解決法詳細・編集ページ（統合）
         Route::get('/problem-solvings/{id}', function ($id) {

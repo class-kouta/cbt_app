@@ -82,8 +82,8 @@
 
     <!-- ヘッダー -->
     <div class="flex justify-between items-center mb-4">
-        <a x-show="hasExistingRecord" :href="backUrl" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
-            ← <span x-text="backLabel"></span>
+        <a x-show="hasExistingRecord" href="/problem-solvings/list" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-1">
+            ← 一覧に戻る
         </a>
         <div x-show="!hasExistingRecord"></div>
         <div class="flex items-center gap-2">
@@ -208,162 +208,81 @@
                     ></textarea>
                 </div>
 
-                <!-- Step 3 & 4: 実行計画と振り返り -->
-                <div class="border-t border-gray-200 pt-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            実行計画と振り返り
-                        </h3>
+                <!-- 実行計画（閲覧モード） -->
+                <div x-show="!isEditing && hasExistingRecord" class="border-t border-gray-200 pt-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">実行計画</h3>
+
+                    <div x-show="displayPlans.length === 0" class="bg-gray-50 rounded-lg p-4">
+                        <p class="text-gray-400 text-sm">まだ実行計画がありません</p>
                     </div>
 
-                    <!-- 計画がない場合の説明 -->
-                    <div x-show="plans.length === 0" class="bg-gray-50 rounded-lg p-4 mb-4">
-                        <p class="text-gray-600 text-sm">
-                            実行計画を立てましょう。計画を実行した後に振り返りを記入し、必要に応じて新しい計画を追加できます。
-                        </p>
-                    </div>
-
-                    <!-- 計画一覧 -->
                     <div class="space-y-4">
-                        <template x-for="(plan, index) in plans" :key="plan.id || 'new-' + index">
-                            <div
-                                :id="plan.id ? 'plan-' + plan.id : null"
-                                class="border border-teal-200 rounded-xl overflow-hidden bg-white shadow-sm"
-                                :class="scrollTargetPlanId && plan.id && String(plan.id) === String(scrollTargetPlanId) ? 'ring-2 ring-emerald-400 ring-offset-2' : ''"
-                            >
-                                <!-- 計画ヘッダー -->
-                                <div
-                                    class="bg-gradient-to-r from-teal-50 to-lime-50 px-4 py-3 flex items-center justify-between cursor-pointer"
-                                    @click="plan.expanded = !plan.expanded"
-                                >
-                                    <div class="flex items-center gap-3">
-                                        <!-- ステータスバッジ -->
-                                        <span
-                                            x-show="plan.reflection && plan.reflection.trim()"
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                                        >
-                                            <x-icon name="check" class="w-3.5 h-3.5 inline-block" /> 振り返り済み
-                                        </span>
-                                        <span
-                                            x-show="plan.action_plan && plan.action_plan.trim() && (!plan.reflection || !plan.reflection.trim())"
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
-                                        >
-                                            実行中
-                                        </span>
-                                        <span
-                                            x-show="!plan.action_plan || !plan.action_plan.trim()"
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
-                                        >
-                                            計画作成中
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            @click.stop="deletePlan(index)"
-                                            x-show="isEditing && (plans.length > 1 || (plans.length === 1 && !plan.id))"
-                                            class="text-gray-500 hover:text-gray-700 transition-colors p-1 rounded hover:bg-gray-50"
-                                            title="この計画を削除"
-                                        >
-                                            <x-icon name="trash" class="w-5 h-5" />
-                                        </button>
-                                        <svg
-                                            class="w-5 h-5 text-gray-400 transition-transform"
-                                            :class="plan.expanded ? 'rotate-180' : ''"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        >
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
-                                </div>
-
-                                <!-- 計画コンテンツ -->
-                                <div x-show="plan.expanded" x-collapse class="px-4 py-4 space-y-4">
-                                    <!-- 実行計画 -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-xs mr-1">3</span>
-                                            実行計画
-                                            <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
-                                        </label>
-                                        <textarea
-                                            x-model="plan.action_plan"
-                                            rows="8"
-                                            :disabled="!isEditing"
-                                            class="w-full border rounded-lg px-4 py-3 transition-all"
-                                            :class="isEditing
-                                                ? 'border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white'
-                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                            placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。..."
-                                            maxlength="5000"
-                                        ></textarea>
-                                    </div>
-
-                                    <!-- 振り返り -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-lime-500 text-white text-xs mr-1">4</span>
-                                            振り返り
-                                            <span class="text-gray-400 font-normal ml-1">実行後に記入：結果、うまくいったこと、改善点、学んだこと、次に活かせること</span>
-                                        </label>
-                                        <textarea
-                                            x-model="plan.reflection"
-                                            rows="8"
-                                            :disabled="!isEditing"
-                                            class="w-full border rounded-lg px-4 py-3 transition-all"
-                                            :class="isEditing
-                                                ? 'border-gray-300 focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white'
-                                                : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                            placeholder="（実行後に記入してください）"
-                                            maxlength="5000"
-                                        ></textarea>
-
-                                        <!-- 改善レベル -->
-                                        <div class="mt-3">
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                <x-icon name="chart-bar" class="w-4 h-4 inline-block" /> 改善レベル
-                                                <span class="text-gray-400 font-normal ml-1">実行後の改善度合いを1〜10で評価</span>
-                                            </label>
-                                            <select
-                                                x-model="plan.improvement_level"
-                                                :disabled="!isEditing"
-                                                class="w-full border rounded-lg px-4 py-3 transition-all"
-                                                :class="isEditing
-                                                    ? 'border-gray-300 focus:ring-2 focus:ring-lime-500 focus:border-transparent bg-white'
-                                                    : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'"
-                                            >
-                                                <option value="">選択してください</option>
-                                                <option value="1">1 - ほとんど改善なし</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="7">7</option>
-                                                <option value="8">8</option>
-                                                <option value="9">9</option>
-                                                <option value="10">10 - 大幅に改善</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                        <template x-for="(plan, index) in displayPlans" :key="plan.id">
+                            <div class="border border-teal-200 rounded-lg p-4 bg-white">
+                                <p
+                                    x-show="displayPlans.length > 1"
+                                    class="text-xs text-gray-500 font-medium mb-2"
+                                    x-text="'実行計画 ' + (index + 1)"
+                                ></p>
+                                <p class="text-gray-800 whitespace-pre-wrap break-words text-sm" x-text="plan.action_plan"></p>
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <a
+                                        x-show="hasReflection(plan)"
+                                        :href="'/problem-solvings/plans/' + plan.id"
+                                        class="text-sm text-emerald-600 hover:text-emerald-800 underline"
+                                    >振り返りを見る</a>
+                                    <p x-show="!hasReflection(plan)" class="text-sm text-gray-500">
+                                        振り返りがありません。
+                                        <a
+                                            :href="reflectionCreateUrl(plan)"
+                                            class="text-emerald-600 hover:text-emerald-800 underline"
+                                        >振り返りする。</a>
+                                    </p>
                                 </div>
                             </div>
                         </template>
                     </div>
+                </div>
 
-                    <!-- 新しい計画を追加ボタン（編集中のみ） -->
-                    <div x-show="isEditing" class="mt-4">
-                        <button
-                            type="button"
-                            @click="addNewPlan()"
-                            class="w-full py-3 px-4 border-2 border-dashed rounded-xl font-medium transition-all flex items-center justify-center gap-2 border-teal-300 text-teal-600 hover:border-teal-400 hover:bg-teal-50"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            新しい計画を追加
-                        </button>
+                <!-- Step 3: 実行計画（新規作成時のみ・複数可） -->
+                <div x-show="isCreateMode && isEditing" class="border-t border-gray-200 pt-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold mr-1">3</span>
+                        実行計画
+                        <span class="text-gray-400 font-normal ml-1">いつ・どこで・どんなとき・誰と・何をどうする・妨げる要因と対策・検証方法</span>
+                    </label>
+                    <div class="space-y-3 mt-3">
+                        <template x-for="(plan, index) in plans" :key="'new-plan-' + index">
+                            <div class="border border-teal-200 rounded-lg p-3 bg-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-gray-500 font-medium" x-text="'実行計画 ' + (index + 1)"></span>
+                                    <button
+                                        type="button"
+                                        x-show="plans.length > 1"
+                                        @click="removePlanRow(index)"
+                                        class="text-gray-500 hover:text-gray-700 p-1"
+                                        title="この実行計画を削除"
+                                    >
+                                        <x-icon name="trash" class="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <textarea
+                                    x-model="plan.action_plan"
+                                    rows="6"
+                                    maxlength="5000"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                    placeholder="例：明日の朝9時に、まず締め切りが近いものをリストアップする。…"
+                                ></textarea>
+                            </div>
+                        </template>
                     </div>
+                    <button
+                        type="button"
+                        @click="addPlanRow()"
+                        class="mt-3 text-sm text-emerald-600 hover:text-emerald-800"
+                    >
+                        ＋ 実行計画を追加
+                    </button>
                 </div>
 
                 <!-- ボタンエリア -->
@@ -391,13 +310,6 @@
                     >
                         <x-icon name="clipboard-document" class="w-5 h-5" /> 内容をコピー
                     </button>
-
-                    <!-- 一覧に戻るリンク（下部） -->
-                    <div x-show="hasExistingRecord" class="text-center pt-2">
-                        <a :href="backUrl" class="text-emerald-600 hover:text-emerald-800 flex items-center justify-center gap-1">
-                            ← <span x-text="backLabel"></span>
-                        </a>
-                    </div>
                 </div>
             </div>
         </form>
@@ -410,14 +322,15 @@ function problemSolvingFormApp(itemId) {
     return {
         itemId: itemId,
         hasExistingRecord: itemId !== null,
+        isCreateMode: itemId === null,
         isEditing: itemId === null,
         form: {
             problem_situation: '',
             improved_image: '',
             tag_ids: []
         },
-        plans: [],
-        originalPlans: [],
+        plans: [{ action_plan: '' }],
+        savedPlans: [],
         loading: itemId !== null,
         submitting: false,
         showManualSaveToast: false,
@@ -427,51 +340,28 @@ function problemSolvingFormApp(itemId) {
 
         availableTags: [],
 
-        fromPage: 'list',
-        scrollTargetPlanId: null,
+        async init() {
+            await this.loadTags();
 
-        get backUrl() {
-            return this.fromPage === 'plans' ? '/problem-solvings/plans' : '/problem-solvings/list';
-        },
-
-        get backLabel() {
-            return this.fromPage === 'plans' ? '計画一覧に戻る' : '問題解決法一覧に戻る';
+            if (this.hasExistingRecord) {
+                await this.loadItem();
+            }
         },
 
         get selectedTagObjects() {
             return this.availableTags.filter(t => this.form.tag_ids.includes(t.id));
         },
 
-        async init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            this.fromPage = urlParams.get('from') || 'list';
-            this.scrollTargetPlanId = urlParams.get('plan_id') || null;
-
-            if (this.hasExistingRecord && this.fromPage === 'plans') {
-                this.isEditing = true;
-            }
-
-            await this.loadTags();
-
-            if (this.hasExistingRecord) {
-                await this.loadItem();
-                this.scrollToPlanIfNeeded();
-            } else {
-                this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
-            }
+        get displayPlans() {
+            return (this.savedPlans || []).filter(p => p.action_plan && p.action_plan.trim() !== '');
         },
 
-        scrollToPlanIfNeeded() {
-            if (!this.scrollTargetPlanId) return;
+        hasReflection(plan) {
+            return plan.reflection && plan.reflection.trim() !== '';
+        },
 
-            this.$nextTick(() => {
-                setTimeout(() => {
-                    const planEl = document.getElementById('plan-' + this.scrollTargetPlanId);
-                    if (planEl) {
-                        planEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 100);
-            });
+        reflectionCreateUrl(plan) {
+            return `/problem-solvings/plans/new?problem_solving_id=${this.itemId}&plan_id=${plan.id}`;
         },
 
         startEditing() {
@@ -484,6 +374,7 @@ function problemSolvingFormApp(itemId) {
             this.submitting = true;
             try {
                 await this.performSave();
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error('保存に失敗しました:', error);
@@ -524,6 +415,15 @@ function problemSolvingFormApp(itemId) {
         getTagName(tagId) {
             const tag = this.availableTags.find(t => t.id === tagId);
             return tag ? tag.name : '';
+        },
+
+        addPlanRow() {
+            this.plans.push({ action_plan: '' });
+        },
+
+        removePlanRow(index) {
+            if (this.plans.length <= 1) return;
+            this.plans.splice(index, 1);
         },
 
         async performSave() {
@@ -586,46 +486,13 @@ function problemSolvingFormApp(itemId) {
                     this.form.problem_situation = item.problem_situation || '';
                     this.form.improved_image = item.improved_image || '';
                     this.form.tag_ids = item.tag_ids || [];
-
-                    if (item.plans && item.plans.length > 0) {
-                        this.plans = item.plans.map(p => ({
-                            id: p.id,
-                            plan_number: p.plan_number,
-                            action_plan: p.action_plan || '',
-                            reflection: p.reflection || '',
-                            improvement_level: p.improvement_level !== null && p.improvement_level !== undefined ? String(p.improvement_level) : '',
-                            expanded: true
-                        }));
-                    } else {
-                        this.plans = [{ id: null, plan_number: 1, action_plan: '', reflection: '', improvement_level: '', expanded: true }];
-                    }
-                    this.originalPlans = JSON.parse(JSON.stringify(this.plans));
+                    this.savedPlans = item.plans || [];
                 }
             } catch (error) {
                 console.error(error);
             } finally {
                 this.loading = false;
             }
-        },
-
-        addNewPlan() {
-            const nextNumber = this.plans.length > 0
-                ? Math.max(...this.plans.map(p => p.plan_number)) + 1
-                : 1;
-
-            this.plans.push({
-                id: null,
-                plan_number: nextNumber,
-                action_plan: '',
-                reflection: '',
-                improvement_level: '',
-                expanded: true
-            });
-        },
-
-        deletePlan(index) {
-            if (this.plans.length <= 1 && this.plans[index].id) return;
-            this.plans.splice(index, 1);
         },
 
         async saveProblemSolving() {
@@ -645,17 +512,34 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (!res.ok) {
-                throw new Error('保存に失敗しました');
-            }
+            if (!res.ok) throw await parseApiErrorMessage(res);
 
             const created = await res.json();
             this.itemId = created.id;
             this.hasExistingRecord = true;
 
-            await this.savePlans(created.id);
+            if (this.isCreateMode) {
+                await this.savePlans(created.id);
+                this.isCreateMode = false;
+            }
 
             history.replaceState(null, '', `/problem-solvings/${created.id}`);
+        },
+
+        async savePlans(problemSolvingId) {
+            for (let i = 0; i < this.plans.length; i++) {
+                const plan = this.plans[i];
+                if (!plan.action_plan || !plan.action_plan.trim()) continue;
+
+                const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action_plan: plan.action_plan })
+                });
+                if (!planRes.ok) throw await parseApiErrorMessage(planRes);
+                const createdPlan = await planRes.json();
+                plan.id = createdPlan.id;
+            }
         },
 
         async saveExistingItem() {
@@ -667,57 +551,7 @@ function problemSolvingFormApp(itemId) {
                 body: JSON.stringify(this.form)
             });
 
-            if (!res.ok) {
-                throw new Error('保存に失敗しました');
-            }
-
-            await this.savePlans(this.itemId);
-        },
-
-        async savePlans(problemSolvingId) {
-            for (const plan of this.plans) {
-                if (plan.id) {
-                    await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${plan.id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            action_plan: plan.action_plan || null,
-                            reflection: plan.reflection || null,
-                            improvement_level: plan.improvement_level ? parseInt(plan.improvement_level) : null
-                        })
-                    });
-                } else {
-                    if ((plan.action_plan && plan.action_plan.trim()) || (plan.reflection && plan.reflection.trim())) {
-                        const planRes = await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                action_plan: plan.action_plan || null,
-                                reflection: plan.reflection || null,
-                                improvement_level: plan.improvement_level ? parseInt(plan.improvement_level) : null
-                            })
-                        });
-                        if (planRes.ok) {
-                            const createdPlan = await planRes.json();
-                            plan.id = createdPlan.id;
-                        }
-                    }
-                }
-            }
-
-            for (const original of this.originalPlans) {
-                if (!this.plans.find(p => p.id === original.id)) {
-                    await apiFetch(`/api/problem-solvings/${problemSolvingId}/plans/${original.id}`, {
-                        method: 'DELETE'
-                    });
-                }
-            }
-
-            this.originalPlans = JSON.parse(JSON.stringify(this.plans));
+            if (!res.ok) throw await parseApiErrorMessage(res);
         },
 
         async createProblemSolving() {
@@ -727,6 +561,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveNewItem();
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
@@ -743,6 +578,7 @@ function problemSolvingFormApp(itemId) {
 
             try {
                 await this.saveExistingItem();
+                await this.loadItem();
                 this.stopEditing();
             } catch (error) {
                 console.error(error);
@@ -761,7 +597,7 @@ function problemSolvingFormApp(itemId) {
                 });
 
                 if (res.ok) {
-                    window.location.href = this.backUrl;
+                    window.location.href = '/problem-solvings/list';
                 } else {
                     alert('削除に失敗しました');
                 }
@@ -774,7 +610,8 @@ function problemSolvingFormApp(itemId) {
         hasAnyContent() {
             if (this.form.problem_situation.trim()) return true;
             if (this.form.improved_image.trim()) return true;
-            if (this.plans.some(p => (p.action_plan && p.action_plan.trim()) || (p.reflection && p.reflection.trim()))) return true;
+            if (this.isCreateMode && this.isEditing && this.plans.some(p => p.action_plan && p.action_plan.trim())) return true;
+            if (!this.isEditing && this.displayPlans.length > 0) return true;
             return false;
         },
 
@@ -789,19 +626,19 @@ function problemSolvingFormApp(itemId) {
 
             sections.push('■ 改善イメージ');
             sections.push(this.form.improved_image.trim() || '未入力');
-            sections.push('');
 
-            this.plans.forEach((plan, index) => {
-                const planLabel = this.plans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
-                sections.push(planLabel);
-                sections.push((plan.action_plan && plan.action_plan.trim()) || '未入力');
-                sections.push('');
+            const validPlans = this.isCreateMode && this.isEditing
+                ? this.plans.filter(p => p.action_plan && p.action_plan.trim())
+                : this.displayPlans;
 
-                const reflectionLabel = this.plans.length > 1 ? `■ 振り返り ${index + 1}` : '■ 振り返り';
-                sections.push(reflectionLabel);
-                sections.push((plan.reflection && plan.reflection.trim()) || '未入力');
+            if (validPlans.length > 0) {
                 sections.push('');
-            });
+                validPlans.forEach((plan, index) => {
+                    const label = validPlans.length > 1 ? `■ 実行計画 ${index + 1}` : '■ 実行計画';
+                    sections.push(label);
+                    sections.push((plan.action_plan || '').trim());
+                });
+            }
 
             return sections.join('\n').trim();
         },

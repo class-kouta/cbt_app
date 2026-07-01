@@ -11,8 +11,10 @@ use App\Application\UseCase\ProblemSolving\ExportProblemSolvingCsvUseCase;
 use App\Application\UseCase\ProblemSolving\AddPlanUseCase;
 use App\Application\UseCase\ProblemSolving\UpdatePlanUseCase;
 use App\Application\UseCase\ProblemSolving\DeletePlanUseCase;
+use App\Application\UseCase\ProblemSolving\ListProblemSolvingOptionsUseCase;
 use App\Application\UseCase\ProblemSolving\SearchPlanUseCase;
 use App\Application\UseCase\ProblemSolving\SearchProblemSolvingUseCase;
+use App\Application\UseCase\ProblemSolving\ShowPlanUseCase;
 use App\Http\Requests\Common\SearchRequest;
 use App\Http\Requests\ProblemSolving\SearchPlanRequest;
 use App\Http\Requests\ProblemSolving\CreateProblemSolvingRequest;
@@ -27,6 +29,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProblemSolvingController extends Controller
 {
+    /**
+     * 問題解決シート選択用の軽量一覧を取得
+     */
+    public function options(ListProblemSolvingOptionsUseCase $listOptions): JsonResponse
+    {
+        return response()->json([
+            'data' => $listOptions->handle(),
+        ]);
+    }
+
     /**
      * 問題解決一覧を取得（作成日時降順）
      * キーワード検索とタグ検索に対応
@@ -59,6 +71,14 @@ class ProblemSolvingController extends Controller
         $plans = $searchPlanUseCase->handle($criteria);
 
         return response()->json($plans);
+    }
+
+    /**
+     * 計画詳細を取得
+     */
+    public function showPlan(ProblemSolvingPlan $plan, ShowPlanUseCase $showPlan): JsonResponse
+    {
+        return response()->json($showPlan->handle($plan));
     }
 
     /**

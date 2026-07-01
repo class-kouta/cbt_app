@@ -12,7 +12,7 @@
         <div class="bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3 flex items-start gap-3">
             <x-icon name="exclamation-triangle" class="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" />
             <p class="text-sm text-yellow-800">
-                振り返りしてない実行計画があります。<a href="/problem-solvings/plans?filter=pending" class="text-yellow-900 font-bold underline hover:text-yellow-700">計画一覧</a>から確認できます。
+                振り返りしてない実行計画があります。<a href="/problem-solvings/plans?filter=pending" class="text-yellow-900 font-bold underline hover:text-yellow-700">振り返り一覧</a>から確認できます。
             </p>
         </div>
     </div>
