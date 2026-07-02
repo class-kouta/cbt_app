@@ -179,7 +179,6 @@ function simpleNotepadTagApp() {
         colorKeys: SIMPLE_NOTEPAD_TAG_COLOR_KEYS,
         newTag: {
             name: '',
-            color: defaultSimpleNotepadTagColor(0),
         },
         editingId: null,
         editName: '',
@@ -243,10 +242,7 @@ function simpleNotepadTagApp() {
                     throw new Error(message);
                 }
 
-                this.newTag = {
-                    name: '',
-                    color: defaultSimpleNotepadTagColor(this.tags.length + 1),
-                };
+                this.newTag.name = '';
                 await this.loadTags();
                 this.resetNewTagColor();
             } catch (e) {
