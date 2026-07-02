@@ -36,8 +36,8 @@
                     <button
                         @click="toggleTag(tag.id)"
                         :class="selectedTagIds.includes(tag.id)
-                            ? 'bg-emerald-500 text-white border-emerald-500'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400'"
+                            ? getSimpleNotepadTagColor(tag.id).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag.id).selectedBorder
+                            : getSimpleNotepadTagColor(tag.id).bg + ' ' + getSimpleNotepadTagColor(tag.id).text + ' ' + getSimpleNotepadTagColor(tag.id).border + ' ' + getSimpleNotepadTagColor(tag.id).hover"
                         class="px-3 py-1 text-sm rounded-full border transition-all"
                         x-text="tag.name"
                     ></button>
@@ -69,7 +69,11 @@
                     <!-- タグ表示 -->
                     <div x-show="item.tags && item.tags.length > 0" class="flex flex-wrap gap-1 mt-2">
                         <template x-for="tag in item.tags" :key="tag.id">
-                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-sky-100 text-sky-700" x-text="tag.name"></span>
+                            <span
+                                class="inline-block px-2 py-0.5 rounded text-xs"
+                                :class="getSimpleNotepadTagColor(tag.id).bg + ' ' + getSimpleNotepadTagColor(tag.id).text"
+                                x-text="tag.name"
+                            ></span>
                         </template>
                     </div>
                     <div class="mt-2">
@@ -204,6 +208,10 @@ function simpleNotepadListApp() {
                 this.selectedTagIds.splice(index, 1);
             }
             this.search();
+        },
+
+        getSimpleNotepadTagColor(tagId) {
+            return getSimpleNotepadTagColor(tagId);
         },
 
         async clearSearch() {

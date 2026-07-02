@@ -108,8 +108,11 @@
                                 title="クリックして編集"
                             >
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <x-icon name="tag" class="w-5 h-5 text-emerald-600" />
+                                    <div
+                                        class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                        :class="getSimpleNotepadTagColor(tag.id).iconBg + ' ' + getSimpleNotepadTagColor(tag.id).iconText"
+                                    >
+                                        <x-icon name="tag" class="w-5 h-5" />
                                     </div>
                                     <div class="min-w-0">
                                         <p class="text-gray-800 break-words overflow-wrap-anywhere font-medium" x-text="tag.name"></p>
@@ -157,6 +160,10 @@ function simpleNotepadTagApp() {
         async loadTags() {
             const res = await apiFetch('/api/simple-notepad-tags');
             this.tags = await res.json();
+        },
+
+        getSimpleNotepadTagColor(tagId) {
+            return getSimpleNotepadTagColor(tagId);
         },
 
         async createTag() {
