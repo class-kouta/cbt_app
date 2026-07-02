@@ -9,7 +9,7 @@ return [
             'icon' => 'user',
         ],
         [
-            'label' => 'ワークページ',
+            'label' => 'ワークトップ',
             'href' => '/',
             'active' => ['route' => 'home'],
             'icon' => 'home',
