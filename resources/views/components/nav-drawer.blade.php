@@ -80,7 +80,7 @@
                             @click="toggleSection('{{ $section['id'] }}')"
                             class="flex items-center justify-between w-full px-3 py-2.5 text-left text-gray-700 hover:bg-white/40 transition-colors rounded-lg"
                         >
-                            <span class="text-xs font-bold tracking-wide text-gray-600">{{ $section['title'] }}</span>
+                            <span class="text-sm font-medium text-gray-700">{{ $section['title'] }}</span>
                             <svg
                                 class="w-4 h-4 flex-shrink-0 text-gray-500 transition-transform duration-200"
                                 :class="sections['{{ $section['id'] }}'] ? 'rotate-180' : ''"
