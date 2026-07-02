@@ -76,40 +76,17 @@ final class Navigation
         return false;
     }
 
-    public static function selfWorkIsActive(?Request $request = null): bool
-    {
-        $request ??= request();
-
-        if ($request->routeIs('home')) {
-            return true;
-        }
-
-        foreach (config('navigation.sections', []) as $section) {
-            if (self::sectionIsActive($section['items'], $request)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
-     * @return array{selfWork: bool, sections: array<string, bool>, items: array<string, bool>}
+     * @return array{sections: array<string, bool>, items: array<string, bool>}
      */
     public static function initialOpenState(?Request $request = null): array
     {
         $request ??= request();
         $sections = [];
         $items = [];
-        $selfWorkOpen = false;
 
         foreach (config('navigation.sections', []) as $section) {
-            $sectionActive = self::sectionIsActive($section['items'], $request);
-            $sections[$section['id']] = $sectionActive;
-
-            if ($sectionActive) {
-                $selfWorkOpen = true;
-            }
+            $sections[$section['id']] = self::sectionIsActive($section['items'], $request);
 
             foreach ($section['items'] as $item) {
                 if (! isset($item['id'])) {
@@ -121,7 +98,6 @@ final class Navigation
         }
 
         return [
-            'selfWork' => $selfWorkOpen,
             'sections' => $sections,
             'items' => $items,
         ];

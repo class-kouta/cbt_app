@@ -8,13 +8,12 @@ return [
             'active' => ['route' => 'mypage'],
             'icon' => 'user',
         ],
-    ],
-
-    'selfWork' => [
-        'id' => 'selfWork',
-        'label' => 'セルフワーク',
-        'href' => '/',
-        'active' => ['route' => 'home'],
+        [
+            'label' => 'ワークページ',
+            'href' => '/',
+            'active' => ['route' => 'home'],
+            'icon' => 'home',
+        ],
     ],
 
     'sections' => [
