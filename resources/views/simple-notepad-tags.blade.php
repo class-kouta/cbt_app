@@ -34,17 +34,17 @@
 
                     <div>
                         <p class="text-sm font-medium text-gray-700 mb-2">色</p>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="grid grid-cols-10 w-full">
                             <template x-for="colorKey in colorKeys" :key="'new-' + colorKey">
                                 <button
                                     type="button"
                                     @click="newTag.color = colorKey"
-                                    class="w-9 h-9 rounded-full border-2 transition-all"
+                                    class="w-5 h-5 mx-auto rounded-full border transition-all"
                                     :class="[
                                         getSimpleNotepadTagColor(colorKey).selectedBg,
                                         newTag.color === colorKey
-                                            ? 'border-gray-800 ring-2 ring-offset-1 ring-gray-400 scale-110'
-                                            : 'border-transparent opacity-80 hover:opacity-100'
+                                            ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                            : 'border-transparent opacity-75 hover:opacity-100'
                                     ]"
                                     :title="colorKey"
                                 ></button>
@@ -96,17 +96,17 @@
                                 <div class="text-xs text-gray-400 text-right mt-1" x-text="editName.length + '/10'"></div>
                                 <div class="mt-3">
                                     <p class="text-sm font-medium text-gray-700 mb-2">色</p>
-                                    <div class="flex flex-wrap gap-2">
+                                    <div class="grid grid-cols-10 w-full">
                                         <template x-for="colorKey in colorKeys" :key="'edit-' + tag.id + '-' + colorKey">
                                             <button
                                                 type="button"
                                                 @click="editColor = colorKey"
-                                                class="w-9 h-9 rounded-full border-2 transition-all"
+                                                class="w-5 h-5 mx-auto rounded-full border transition-all"
                                                 :class="[
                                                     getSimpleNotepadTagColor(colorKey).selectedBg,
                                                     editColor === colorKey
-                                                        ? 'border-gray-800 ring-2 ring-offset-1 ring-gray-400 scale-110'
-                                                        : 'border-transparent opacity-80 hover:opacity-100'
+                                                        ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                                        : 'border-transparent opacity-75 hover:opacity-100'
                                                 ]"
                                                 :title="colorKey"
                                             ></button>
