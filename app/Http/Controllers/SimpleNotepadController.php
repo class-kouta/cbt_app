@@ -41,6 +41,7 @@ class SimpleNotepadController extends Controller
             'tags' => $simpleNotepad->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
+                'color' => $tag->color,
             ])->toArray(),
             'tag_ids' => $simpleNotepad->tags->pluck('id')->toArray(),
             'created_at' => $simpleNotepad->created_at->format(DATE_ATOM),

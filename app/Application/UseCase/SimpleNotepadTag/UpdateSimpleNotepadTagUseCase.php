@@ -5,6 +5,7 @@ namespace App\Application\UseCase\SimpleNotepadTag;
 use App\Application\DTO\SimpleNotepadTagData;
 use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
+use App\Enums\SimpleNotepadTagColor;
 use DomainException;
 
 class UpdateSimpleNotepadTagUseCase
@@ -21,7 +22,11 @@ class UpdateSimpleNotepadTagUseCase
             throw new DomainException('タグが見つかりません');
         }
 
-        $updatedTag = $tag->updateName($data->name);
+        $color = $data->color !== null
+            ? SimpleNotepadTagColor::fromString($data->color)
+            : $tag->getColor();
+
+        $updatedTag = $tag->update($data->name, $color);
 
         return $this->simpleNotepadTagRepository->saveForMember($updatedTag, $memberId);
     }

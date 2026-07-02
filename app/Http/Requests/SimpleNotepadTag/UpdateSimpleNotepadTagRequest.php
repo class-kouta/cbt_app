@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\SimpleNotepadTag;
 
+use App\Enums\SimpleNotepadTagColor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -26,6 +27,11 @@ class UpdateSimpleNotepadTagRequest extends FormRequest
                     ->where('member_id', Auth::id())
                     ->ignore($tagId),
             ],
+            'color' => [
+                'nullable',
+                'string',
+                Rule::in(SimpleNotepadTagColor::values()),
+            ],
         ];
     }
 
@@ -35,6 +41,7 @@ class UpdateSimpleNotepadTagRequest extends FormRequest
             'name.required' => 'タグ名を入力してください',
             'name.max' => 'タグ名は10文字以内で入力してください',
             'name.unique' => '同じ名前のタグが既に存在します',
+            'color.in' => '選択できない色です',
         ];
     }
 }

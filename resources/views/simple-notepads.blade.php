@@ -68,27 +68,6 @@
             >
                 <x-icon name="trash" class="w-5 h-5" />
             </button>
-            <!-- 編集トグルボタン（編集モード時のみ） -->
-            <button
-                x-show="isEditMode"
-                type="button"
-                @click="isEditing ? saveAndStopEditing() : startEditing()"
-                :disabled="isEditing && saving"
-                class="inline-flex items-center justify-center p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                :class="isEditing
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'"
-                :title="isEditing ? (saving ? '保存中...' : '保存して編集をやめる') : '編集する'"
-            >
-                <span x-show="!isEditing"><x-icon name="pencil-square" class="w-5 h-5" /></span>
-                <span x-show="isEditing && !saving"><x-icon name="check-circle" class="w-5 h-5" /></span>
-                <span x-show="isEditing && saving">
-                    <svg class="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </span>
-            </button>
         </div>
     </div>
 
@@ -100,11 +79,7 @@
             <textarea
                 x-model="formData.content"
                 rows="18"
-                :disabled="isEditMode && !isEditing"
-                class="w-full border rounded-lg px-4 py-3 text-base transition-all resize-y"
-                :class="(isEditMode && !isEditing)
-                    ? 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
-                    : 'border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'"
+                class="w-full border rounded-lg px-4 py-3 text-base transition-all resize-y border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
                 placeholder="なんでも自由に書いてください..."
                 maxlength="10000"
             ></textarea>
@@ -127,11 +102,10 @@
                     <button
                         type="button"
                         @click="toggleTag(tag.id)"
-                        :disabled="isEditMode && !isEditing"
-                        class="px-3 py-1.5 text-sm rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-3 py-1.5 text-sm rounded-full border-2 transition-all"
                         :class="isTagSelected(tag.id)
-                            ? 'bg-emerald-500 text-white border-emerald-500'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50'"
+                            ? getSimpleNotepadTagColor(tag).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag).selectedBorder
+                            : getSimpleNotepadTagColor(tag).unselected"
                         x-text="tag.name"
                     ></button>
                 </template>
@@ -142,9 +116,8 @@
                 タグがありません
             </div>
 
-            <!-- 新規作成ページのみ：タグ追加フォーム -->
-            <template x-if="!isEditMode">
-                <div class="border-t border-gray-200 pt-3 mt-1">
+            <!-- タグ追加フォーム -->
+            <div class="border-t border-gray-200 pt-3 mt-1">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-xs text-gray-500">新しいタグを追加</p>
                         <button
@@ -181,13 +154,29 @@
                             </button>
                         </div>
                         <div class="text-xs text-gray-400 text-right mt-1" x-text="newTagName.length + '/10'"></div>
+                        <div class="grid grid-cols-10 w-full mt-2">
+                            <template x-for="colorKey in colorKeys" :key="'new-tag-' + colorKey">
+                                <button
+                                    type="button"
+                                    @click="newTagColor = colorKey"
+                                    class="w-5 h-5 mx-auto rounded-full border transition-all"
+                                    :class="[
+                                        getSimpleNotepadTagColor(colorKey).selectedBg,
+                                        newTagColor === colorKey
+                                            ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                            : 'border-transparent opacity-75 hover:opacity-100'
+                                    ]"
+                                    :disabled="availableTags.length >= 10 || addingTag"
+                                    :title="colorKey"
+                                ></button>
+                            </template>
+                        </div>
                         <div x-show="tagError" class="text-red-500 text-xs mt-2" x-text="tagError"></div>
                     </div>
                     <div x-show="availableTags.length >= 10" class="text-amber-600 text-xs mt-2">
                         タグは10個までしか作成できません。新しく作成する場合は<a href="/simple-notepad-tags" class="underline text-emerald-600 hover:text-emerald-700">タグ管理</a>から既存のタグを削除するかタグ名を変更してください。
                     </div>
-                </div>
-            </template>
+            </div>
         </div>
 
         <!-- エラーメッセージ -->
@@ -218,7 +207,7 @@
 
     <!-- フローティング保存ボタン（編集モード時のみ） -->
     <button
-        x-show="isEditMode && isEditing"
+        x-show="isEditMode"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
@@ -250,13 +239,14 @@ function simpleNotepadApp(itemId) {
     return {
         itemId: itemId,
         isEditMode: itemId !== null,
-        isEditing: false,
         formData: {
             content: '',
             tag_ids: []
         },
         availableTags: [],
+        colorKeys: SIMPLE_NOTEPAD_TAG_COLOR_KEYS,
         newTagName: '',
+        newTagColor: defaultSimpleNotepadTagColor(0),
         showNewTagForm: false,
         addingTag: false,
         tagError: '',
@@ -285,15 +275,18 @@ function simpleNotepadApp(itemId) {
                 const res = await apiFetch('/api/simple-notepad-tags');
                 if (res.ok) {
                     this.availableTags = await res.json();
+                    this.resetNewTagColor();
                 }
             } catch (error) {
                 console.error('タグの取得に失敗しました:', error);
             }
         },
 
-        toggleTag(tagId) {
-            if (this.isEditMode && !this.isEditing) return;
+        resetNewTagColor() {
+            this.newTagColor = defaultSimpleNotepadTagColor(this.availableTags.length);
+        },
 
+        toggleTag(tagId) {
             const index = this.formData.tag_ids.indexOf(tagId);
             if (index > -1) {
                 this.formData.tag_ids.splice(index, 1);
@@ -308,6 +301,10 @@ function simpleNotepadApp(itemId) {
 
         isTagSelected(tagId) {
             return this.formData.tag_ids.includes(tagId);
+        },
+
+        getSimpleNotepadTagColor(tag) {
+            return getSimpleNotepadTagColor(tag);
         },
 
         async addNewTag() {
@@ -330,12 +327,15 @@ function simpleNotepadApp(itemId) {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name: this.newTagName.trim() })
+                    body: JSON.stringify({
+                        name: this.newTagName.trim(),
+                        color: this.newTagColor,
+                    })
                 });
 
                 if (!res.ok) {
                     const data = await res.json();
-                    throw new Error(data.message || (data.errors?.name?.[0]) || 'エラーが発生しました');
+                    throw new Error(data.message || (data.errors?.name?.[0]) || (data.errors?.color?.[0]) || 'エラーが発生しました');
                 }
 
                 const newTag = await res.json();
@@ -365,21 +365,6 @@ function simpleNotepadApp(itemId) {
             } catch (error) {
                 console.error(error);
             }
-        },
-
-        startEditing() {
-            this.isEditing = true;
-        },
-
-        async saveAndStopEditing() {
-            const success = await this.performSave();
-            if (success) {
-                this.stopEditing();
-            }
-        },
-
-        stopEditing() {
-            this.isEditing = false;
         },
 
         async performSave() {

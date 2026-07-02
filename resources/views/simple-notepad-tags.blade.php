@@ -32,6 +32,25 @@
                         <div class="text-xs text-gray-400 text-right" x-text="newTag.name.length + '/10'"></div>
                     </div>
 
+                    <div>
+                        <div class="grid grid-cols-10 w-full">
+                            <template x-for="colorKey in colorKeys" :key="'new-' + colorKey">
+                                <button
+                                    type="button"
+                                    @click="newTag.color = colorKey"
+                                    class="w-5 h-5 mx-auto rounded-full border transition-all"
+                                    :class="[
+                                        getSimpleNotepadTagColor(colorKey).selectedBg,
+                                        newTag.color === colorKey
+                                            ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                            : 'border-transparent opacity-75 hover:opacity-100'
+                                    ]"
+                                    :title="colorKey"
+                                ></button>
+                            </template>
+                        </div>
+                    </div>
+
                     <div x-show="tags.length >= 10" class="text-amber-600 text-sm">
                         タグの作成は10個までです。新しく作成したい場合は既存のタグを削除するか、タグ名を変更してください。
                     </div>
@@ -74,6 +93,24 @@
                                     maxlength="10"
                                 >
                                 <div class="text-xs text-gray-400 text-right mt-1" x-text="editName.length + '/10'"></div>
+                                <div class="mt-3">
+                                    <div class="grid grid-cols-10 w-full">
+                                        <template x-for="colorKey in colorKeys" :key="'edit-' + tag.id + '-' + colorKey">
+                                            <button
+                                                type="button"
+                                                @click="editColor = colorKey"
+                                                class="w-5 h-5 mx-auto rounded-full border transition-all"
+                                                :class="[
+                                                    getSimpleNotepadTagColor(colorKey).selectedBg,
+                                                    editColor === colorKey
+                                                        ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                                        : 'border-transparent opacity-75 hover:opacity-100'
+                                                ]"
+                                                :title="colorKey"
+                                            ></button>
+                                        </template>
+                                    </div>
+                                </div>
                                 <div class="flex items-center gap-2 mt-2">
                                     <button
                                         type="button"
@@ -108,8 +145,11 @@
                                 title="クリックして編集"
                             >
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <x-icon name="tag" class="w-5 h-5 text-emerald-600" />
+                                    <div
+                                        class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                        :class="getSimpleNotepadTagColor(tag).iconBg + ' ' + getSimpleNotepadTagColor(tag).iconText"
+                                    >
+                                        <x-icon name="tag" class="w-5 h-5" />
                                     </div>
                                     <div class="min-w-0">
                                         <p class="text-gray-800 break-words overflow-wrap-anywhere font-medium" x-text="tag.name"></p>
@@ -136,11 +176,13 @@
 function simpleNotepadTagApp() {
     return {
         tags: [],
+        colorKeys: SIMPLE_NOTEPAD_TAG_COLOR_KEYS,
         newTag: {
-            name: ''
+            name: '',
         },
         editingId: null,
         editName: '',
+        editColor: 'emerald',
         loading: false,
         pageLoading: true,
         error: '',
@@ -149,14 +191,23 @@ function simpleNotepadTagApp() {
             this.pageLoading = true;
             try {
                 await this.loadTags();
+                this.resetNewTagColor();
             } finally {
                 this.pageLoading = false;
             }
         },
 
+        resetNewTagColor() {
+            this.newTag.color = defaultSimpleNotepadTagColor(this.tags.length);
+        },
+
         async loadTags() {
             const res = await apiFetch('/api/simple-notepad-tags');
             this.tags = await res.json();
+        },
+
+        getSimpleNotepadTagColor(tag) {
+            return getSimpleNotepadTagColor(tag);
         },
 
         async createTag() {
@@ -179,17 +230,21 @@ function simpleNotepadTagApp() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.newTag)
+                    body: JSON.stringify({
+                        name: this.newTag.name.trim(),
+                        color: this.newTag.color,
+                    })
                 });
 
                 if (!res.ok) {
                     const data = await res.json();
-                    const message = data.message || (data.errors?.name?.[0]) || 'エラーが発生しました';
+                    const message = data.message || (data.errors?.name?.[0]) || (data.errors?.color?.[0]) || 'エラーが発生しました';
                     throw new Error(message);
                 }
 
-                this.newTag = { name: '' };
+                this.newTag.name = '';
                 await this.loadTags();
+                this.resetNewTagColor();
             } catch (e) {
                 this.error = e.message;
             } finally {
@@ -200,11 +255,13 @@ function simpleNotepadTagApp() {
         startEdit(tag) {
             this.editingId = tag.id;
             this.editName = tag.name;
+            this.editColor = tag.color || defaultSimpleNotepadTagColor(tag.id);
         },
 
         cancelEdit() {
             this.editingId = null;
             this.editName = '';
+            this.editColor = 'emerald';
         },
 
         confirmInUseAction(tag, actionLabel) {
@@ -226,7 +283,7 @@ function simpleNotepadTagApp() {
                 return;
             }
 
-            if (trimmedName === tag.name) {
+            if (trimmedName === tag.name && this.editColor === (tag.color || defaultSimpleNotepadTagColor(tag.id))) {
                 this.cancelEdit();
                 return;
             }
@@ -242,13 +299,14 @@ function simpleNotepadTagApp() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        name: trimmedName
+                        name: trimmedName,
+                        color: this.editColor,
                     })
                 });
 
                 if (!res.ok) {
                     const data = await res.json();
-                    const message = data.message || (data.errors?.name?.[0]) || 'エラーが発生しました';
+                    const message = data.message || (data.errors?.name?.[0]) || (data.errors?.color?.[0]) || 'エラーが発生しました';
                     alert(message);
                     return;
                 }

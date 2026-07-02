@@ -155,6 +155,43 @@
             
             return pages;
         }
+
+        const SIMPLE_NOTEPAD_TAG_COLORS = {
+            rose: { bg: 'bg-rose-100', text: 'text-rose-700', border: 'border-rose-400', selectedBg: 'bg-rose-500', selectedBorder: 'border-rose-500', unselected: 'bg-transparent border-rose-400 text-rose-600 hover:border-rose-500', hover: 'hover:border-rose-400 hover:bg-rose-50', iconBg: 'bg-rose-100', iconText: 'text-rose-600' },
+            amber: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-400', selectedBg: 'bg-amber-500', selectedBorder: 'border-amber-500', unselected: 'bg-transparent border-amber-400 text-amber-600 hover:border-amber-500', hover: 'hover:border-amber-400 hover:bg-amber-50', iconBg: 'bg-amber-100', iconText: 'text-amber-600' },
+            emerald: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-400', selectedBg: 'bg-emerald-500', selectedBorder: 'border-emerald-500', unselected: 'bg-transparent border-emerald-400 text-emerald-600 hover:border-emerald-500', hover: 'hover:border-emerald-400 hover:bg-emerald-50', iconBg: 'bg-emerald-100', iconText: 'text-emerald-600' },
+            sky: { bg: 'bg-sky-100', text: 'text-sky-700', border: 'border-sky-400', selectedBg: 'bg-sky-500', selectedBorder: 'border-sky-500', unselected: 'bg-transparent border-sky-400 text-sky-600 hover:border-sky-500', hover: 'hover:border-sky-400 hover:bg-sky-50', iconBg: 'bg-sky-100', iconText: 'text-sky-600' },
+            violet: { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-400', selectedBg: 'bg-violet-500', selectedBorder: 'border-violet-500', unselected: 'bg-transparent border-violet-400 text-violet-600 hover:border-violet-500', hover: 'hover:border-violet-400 hover:bg-violet-50', iconBg: 'bg-violet-100', iconText: 'text-violet-600' },
+            pink: { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-400', selectedBg: 'bg-pink-500', selectedBorder: 'border-pink-500', unselected: 'bg-transparent border-pink-400 text-pink-600 hover:border-pink-500', hover: 'hover:border-pink-400 hover:bg-pink-50', iconBg: 'bg-pink-100', iconText: 'text-pink-600' },
+            teal: { bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-400', selectedBg: 'bg-teal-500', selectedBorder: 'border-teal-500', unselected: 'bg-transparent border-teal-400 text-teal-600 hover:border-teal-500', hover: 'hover:border-teal-400 hover:bg-teal-50', iconBg: 'bg-teal-100', iconText: 'text-teal-600' },
+            orange: { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-400', selectedBg: 'bg-orange-500', selectedBorder: 'border-orange-500', unselected: 'bg-transparent border-orange-400 text-orange-600 hover:border-orange-500', hover: 'hover:border-orange-400 hover:bg-orange-50', iconBg: 'bg-orange-100', iconText: 'text-orange-600' },
+            indigo: { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-400', selectedBg: 'bg-indigo-500', selectedBorder: 'border-indigo-500', unselected: 'bg-transparent border-indigo-400 text-indigo-600 hover:border-indigo-500', hover: 'hover:border-indigo-400 hover:bg-indigo-50', iconBg: 'bg-indigo-100', iconText: 'text-indigo-600' },
+            lime: { bg: 'bg-lime-100', text: 'text-lime-700', border: 'border-lime-400', selectedBg: 'bg-lime-500', selectedBorder: 'border-lime-500', unselected: 'bg-transparent border-lime-400 text-lime-600 hover:border-lime-500', hover: 'hover:border-lime-400 hover:bg-lime-50', iconBg: 'bg-lime-100', iconText: 'text-lime-600' },
+        };
+
+        const SIMPLE_NOTEPAD_TAG_COLOR_KEYS = Object.keys(SIMPLE_NOTEPAD_TAG_COLORS);
+
+        function getSimpleNotepadTagColor(tagOrColor) {
+            let colorKey = 'emerald';
+
+            if (typeof tagOrColor === 'string') {
+                colorKey = tagOrColor;
+            } else if (tagOrColor && typeof tagOrColor === 'object') {
+                if (tagOrColor.color && SIMPLE_NOTEPAD_TAG_COLORS[tagOrColor.color]) {
+                    colorKey = tagOrColor.color;
+                } else if (tagOrColor.id != null) {
+                    colorKey = SIMPLE_NOTEPAD_TAG_COLOR_KEYS[Math.abs(Number(tagOrColor.id)) % SIMPLE_NOTEPAD_TAG_COLOR_KEYS.length];
+                }
+            } else if (typeof tagOrColor === 'number') {
+                colorKey = SIMPLE_NOTEPAD_TAG_COLOR_KEYS[Math.abs(tagOrColor) % SIMPLE_NOTEPAD_TAG_COLOR_KEYS.length];
+            }
+
+            return SIMPLE_NOTEPAD_TAG_COLORS[colorKey] || SIMPLE_NOTEPAD_TAG_COLORS.emerald;
+        }
+
+        function defaultSimpleNotepadTagColor(tagCount = 0) {
+            return SIMPLE_NOTEPAD_TAG_COLOR_KEYS[tagCount % SIMPLE_NOTEPAD_TAG_COLOR_KEYS.length];
+        }
     </script>
 </head>
 <body class="@yield('body-class', 'bg-gray-100') min-h-screen flex flex-col">
