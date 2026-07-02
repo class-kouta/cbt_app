@@ -33,7 +33,6 @@
                     </div>
 
                     <div>
-                        <p class="text-sm font-medium text-gray-700 mb-2">色</p>
                         <div class="grid grid-cols-10 w-full">
                             <template x-for="colorKey in colorKeys" :key="'new-' + colorKey">
                                 <button
@@ -95,7 +94,6 @@
                                 >
                                 <div class="text-xs text-gray-400 text-right mt-1" x-text="editName.length + '/10'"></div>
                                 <div class="mt-3">
-                                    <p class="text-sm font-medium text-gray-700 mb-2">色</p>
                                     <div class="grid grid-cols-10 w-full">
                                         <template x-for="colorKey in colorKeys" :key="'edit-' + tag.id + '-' + colorKey">
                                             <button
