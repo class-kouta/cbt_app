@@ -4,6 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
+use App\Enums\SimpleNotepadTagColor;
 use App\Infrastructure\Database\Models\SimpleNotepadTag as SimpleNotepadTagModel;
 use Carbon\Carbon;
 use DateTimeImmutable;
@@ -31,6 +32,7 @@ class EloquentSimpleNotepadTagRepository implements SimpleNotepadTagRepositoryIn
             ->map(fn ($model) => SimpleNotepadTagEntity::reconstitute(
                 id: (int) $model->id,
                 name: (string) $model->name,
+                color: (string) $model->color,
                 createdAt: $this->toDateTimeImmutable($model->created_at),
                 updatedAt: $this->toDateTimeImmutable($model->updated_at),
             ))
@@ -46,6 +48,7 @@ class EloquentSimpleNotepadTagRepository implements SimpleNotepadTagRepositoryIn
             ->map(fn ($model) => [
                 'id' => (int) $model->id,
                 'name' => (string) $model->name,
+                'color' => SimpleNotepadTagColor::fromString((string) $model->color)->value,
                 'usage_count' => (int) $model->simple_notepads_count,
                 'created_at' => $this->toDateTimeImmutable($model->created_at)->format(DATE_ATOM),
                 'updated_at' => $this->toDateTimeImmutable($model->updated_at)->format(DATE_ATOM),
@@ -64,17 +67,20 @@ class EloquentSimpleNotepadTagRepository implements SimpleNotepadTagRepositoryIn
             $model = SimpleNotepadTagModel::where('member_id', $memberId)
                 ->findOrFail($tag->getId());
             $model->name = $tag->getName();
+            $model->color = $tag->getColor()->value;
             $model->save();
         } else {
             $model = new SimpleNotepadTagModel();
             $model->member_id = $memberId;
             $model->name = $tag->getName();
+            $model->color = $tag->getColor()->value;
             $model->save();
         }
 
         return SimpleNotepadTagEntity::reconstitute(
             id: (int) $model->getKey(),
             name: (string) $model->name,
+            color: (string) $model->color,
             createdAt: $this->toDateTimeImmutable($model->created_at),
             updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );
@@ -91,6 +97,7 @@ class EloquentSimpleNotepadTagRepository implements SimpleNotepadTagRepositoryIn
         return SimpleNotepadTagEntity::reconstitute(
             id: (int) $model->id,
             name: (string) $model->name,
+            color: (string) $model->color,
             createdAt: $this->toDateTimeImmutable($model->created_at),
             updatedAt: $this->toDateTimeImmutable($model->updated_at),
         );

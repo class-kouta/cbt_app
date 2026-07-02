@@ -186,6 +186,7 @@ class EloquentSimpleNotepadRepository implements SimpleNotepadRepositoryInterfac
             'tags' => $model->tags->map(fn ($tag) => [
                 'id' => $tag->id,
                 'name' => $tag->name,
+                'color' => $tag->color,
             ])->values()->toArray(),
             'tag_ids' => $model->tags->pluck('id')->values()->toArray(),
             'created_at' => $simpleNotepad->getCreatedAt()->format(DATE_ATOM),

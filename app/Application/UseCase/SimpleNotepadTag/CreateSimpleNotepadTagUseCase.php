@@ -5,6 +5,7 @@ namespace App\Application\UseCase\SimpleNotepadTag;
 use App\Application\DTO\SimpleNotepadTagData;
 use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Domain\Repository\SimpleNotepadTagRepositoryInterface;
+use App\Enums\SimpleNotepadTagColor;
 use DomainException;
 
 class CreateSimpleNotepadTagUseCase
@@ -21,7 +22,11 @@ class CreateSimpleNotepadTagUseCase
             throw new DomainException('タグは10個まで作成できます');
         }
 
-        $tag = SimpleNotepadTagEntity::createNew($data->name);
+        $color = $data->color !== null
+            ? SimpleNotepadTagColor::fromString($data->color)
+            : SimpleNotepadTagColor::defaultForIndex($this->simpleNotepadTagRepository->countForMember($memberId));
+
+        $tag = SimpleNotepadTagEntity::createNew($data->name, $color);
 
         return $this->simpleNotepadTagRepository->saveForMember($tag, $memberId);
     }

@@ -36,8 +36,8 @@
                     <button
                         @click="toggleTag(tag.id)"
                         :class="selectedTagIds.includes(tag.id)
-                            ? getSimpleNotepadTagColor(tag.id).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag.id).selectedBorder
-                            : getSimpleNotepadTagColor(tag.id).bg + ' ' + getSimpleNotepadTagColor(tag.id).text + ' ' + getSimpleNotepadTagColor(tag.id).border + ' ' + getSimpleNotepadTagColor(tag.id).hover"
+                            ? getSimpleNotepadTagColor(tag).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag).selectedBorder
+                            : getSimpleNotepadTagColor(tag).bg + ' ' + getSimpleNotepadTagColor(tag).text + ' ' + getSimpleNotepadTagColor(tag).border + ' ' + getSimpleNotepadTagColor(tag).hover"
                         class="px-3 py-1 text-sm rounded-full border transition-all"
                         x-text="tag.name"
                     ></button>
@@ -71,7 +71,7 @@
                         <template x-for="tag in item.tags" :key="tag.id">
                             <span
                                 class="inline-block px-2 py-0.5 rounded text-xs"
-                                :class="getSimpleNotepadTagColor(tag.id).bg + ' ' + getSimpleNotepadTagColor(tag.id).text"
+                                :class="getSimpleNotepadTagColor(tag).bg + ' ' + getSimpleNotepadTagColor(tag).text"
                                 x-text="tag.name"
                             ></span>
                         </template>
@@ -210,8 +210,8 @@ function simpleNotepadListApp() {
             this.search();
         },
 
-        getSimpleNotepadTagColor(tagId) {
-            return getSimpleNotepadTagColor(tagId);
+        getSimpleNotepadTagColor(tag) {
+            return getSimpleNotepadTagColor(tag);
         },
 
         async clearSearch() {

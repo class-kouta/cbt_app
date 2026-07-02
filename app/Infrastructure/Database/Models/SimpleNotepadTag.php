@@ -17,6 +17,7 @@ class SimpleNotepadTag extends Model
     protected $fillable = [
         'member_id',
         'name',
+        'color',
     ];
 
     public function member(): BelongsTo

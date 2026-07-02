@@ -102,10 +102,10 @@
                     <button
                         type="button"
                         @click="toggleTag(tag.id)"
-                        class="px-3 py-1.5 text-sm rounded-full border transition-all"
+                        class="px-3 py-1.5 text-sm rounded-full border-2 transition-all"
                         :class="isTagSelected(tag.id)
-                            ? getSimpleNotepadTagColor(tag.id).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag.id).selectedBorder
-                            : getSimpleNotepadTagColor(tag.id).bg + ' ' + getSimpleNotepadTagColor(tag.id).text + ' ' + getSimpleNotepadTagColor(tag.id).border + ' ' + getSimpleNotepadTagColor(tag.id).hover"
+                            ? getSimpleNotepadTagColor(tag).selectedBg + ' text-white ' + getSimpleNotepadTagColor(tag).selectedBorder
+                            : getSimpleNotepadTagColor(tag).unselected"
                         x-text="tag.name"
                     ></button>
                 </template>
@@ -279,8 +279,8 @@ function simpleNotepadApp(itemId) {
             return this.formData.tag_ids.includes(tagId);
         },
 
-        getSimpleNotepadTagColor(tagId) {
-            return getSimpleNotepadTagColor(tagId);
+        getSimpleNotepadTagColor(tag) {
+            return getSimpleNotepadTagColor(tag);
         },
 
         async addNewTag() {

@@ -7,6 +7,7 @@ use App\Application\UseCase\SimpleNotepadTag\CreateSimpleNotepadTagUseCase;
 use App\Application\UseCase\SimpleNotepadTag\DeleteSimpleNotepadTagUseCase;
 use App\Application\UseCase\SimpleNotepadTag\ListSimpleNotepadTagsUseCase;
 use App\Application\UseCase\SimpleNotepadTag\UpdateSimpleNotepadTagUseCase;
+use App\Domain\Entity\SimpleNotepadTag as SimpleNotepadTagEntity;
 use App\Http\Requests\SimpleNotepadTag\CreateSimpleNotepadTagRequest;
 use App\Http\Requests\SimpleNotepadTag\UpdateSimpleNotepadTagRequest;
 use App\Infrastructure\Database\Models\SimpleNotepadTag;
@@ -33,17 +34,13 @@ class SimpleNotepadTagController extends Controller
     ): JsonResponse {
         try {
             $data = new SimpleNotepadTagData(
-                name: (string) $request->string('name')
+                name: (string) $request->string('name'),
+                color: $request->input('color'),
             );
 
             $tag = $createSimpleNotepadTag->handle($data, (int) Auth::id());
 
-            return response()->json([
-                'id' => $tag->getId(),
-                'name' => $tag->getName(),
-                'created_at' => $tag->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $tag->getUpdatedAt()->format(DATE_ATOM),
-            ], 201);
+            return response()->json($this->formatTag($tag), 201);
         } catch (DomainException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
@@ -59,17 +56,13 @@ class SimpleNotepadTagController extends Controller
     ): JsonResponse {
         try {
             $data = new SimpleNotepadTagData(
-                name: (string) $request->string('name')
+                name: (string) $request->string('name'),
+                color: (string) $request->string('color'),
             );
 
             $updatedTag = $updateSimpleNotepadTag->handle($simpleNotepadTag->id, $data, (int) Auth::id());
 
-            return response()->json([
-                'id' => $updatedTag->getId(),
-                'name' => $updatedTag->getName(),
-                'created_at' => $updatedTag->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $updatedTag->getUpdatedAt()->format(DATE_ATOM),
-            ]);
+            return response()->json($this->formatTag($updatedTag));
         } catch (DomainException $e) {
             return $this->domainExceptionResponse($e);
         }
@@ -96,5 +89,19 @@ class SimpleNotepadTagController extends Controller
         $status = $e->getMessage() === 'タグが見つかりません' ? 404 : 422;
 
         return response()->json(['message' => $e->getMessage()], $status);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function formatTag(SimpleNotepadTagEntity $tag): array
+    {
+        return [
+            'id' => $tag->getId(),
+            'name' => $tag->getName(),
+            'color' => $tag->getColor()->value,
+            'created_at' => $tag->getCreatedAt()->format(DATE_ATOM),
+            'updated_at' => $tag->getUpdatedAt()->format(DATE_ATOM),
+        ];
     }
 }
