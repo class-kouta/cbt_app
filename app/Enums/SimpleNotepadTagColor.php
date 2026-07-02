@@ -32,6 +32,6 @@ enum SimpleNotepadTagColor: string
     {
         $cases = self::cases();
 
-        return $cases[$index % count($cases)];
+        return $cases[abs($index) % count($cases)];
     }
 }

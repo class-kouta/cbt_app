@@ -57,7 +57,7 @@ class SimpleNotepadTagController extends Controller
         try {
             $data = new SimpleNotepadTagData(
                 name: (string) $request->string('name'),
-                color: (string) $request->string('color'),
+                color: $request->input('color'),
             );
 
             $updatedTag = $updateSimpleNotepadTag->handle($simpleNotepadTag->id, $data, (int) Auth::id());

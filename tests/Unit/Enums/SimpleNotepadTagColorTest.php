@@ -20,4 +20,11 @@ class SimpleNotepadTagColorTest extends TestCase
         $this->assertSame($colors[1], SimpleNotepadTagColor::defaultForIndex(1));
         $this->assertSame($colors[0], SimpleNotepadTagColor::defaultForIndex(count($colors)));
     }
+
+    public function test_default_for_index_handles_negative_index(): void
+    {
+        $colors = SimpleNotepadTagColor::cases();
+
+        $this->assertSame($colors[1], SimpleNotepadTagColor::defaultForIndex(-1));
+    }
 }

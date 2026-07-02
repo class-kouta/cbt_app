@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\SimpleNotepadTagColor;
-use App\Infrastructure\Database\Models\SimpleNotepadTag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,10 +17,14 @@ return new class extends Migration
             $table->string('color', 20)->default(SimpleNotepadTagColor::Emerald->value)->after('name');
         });
 
-        SimpleNotepadTag::query()->orderBy('id')->each(function (SimpleNotepadTag $tag): void {
-            $tag->update([
-                'color' => SimpleNotepadTagColor::defaultForIndex((int) $tag->id)->value,
-            ]);
+        DB::table('simple_notepad_tags')->orderBy('id')->chunk(100, function ($tags): void {
+            foreach ($tags as $tag) {
+                DB::table('simple_notepad_tags')
+                    ->where('id', $tag->id)
+                    ->update([
+                        'color' => SimpleNotepadTagColor::defaultForIndex((int) $tag->id)->value,
+                    ]);
+            }
         });
     }
 
