@@ -154,6 +154,23 @@
                             </button>
                         </div>
                         <div class="text-xs text-gray-400 text-right mt-1" x-text="newTagName.length + '/10'"></div>
+                        <div class="grid grid-cols-10 w-full mt-2">
+                            <template x-for="colorKey in colorKeys" :key="'new-tag-' + colorKey">
+                                <button
+                                    type="button"
+                                    @click="newTagColor = colorKey"
+                                    class="w-5 h-5 mx-auto rounded-full border transition-all"
+                                    :class="[
+                                        getSimpleNotepadTagColor(colorKey).selectedBg,
+                                        newTagColor === colorKey
+                                            ? 'border-gray-700 ring-1 ring-offset-1 ring-gray-400'
+                                            : 'border-transparent opacity-75 hover:opacity-100'
+                                    ]"
+                                    :disabled="availableTags.length >= 10 || addingTag"
+                                    :title="colorKey"
+                                ></button>
+                            </template>
+                        </div>
                         <div x-show="tagError" class="text-red-500 text-xs mt-2" x-text="tagError"></div>
                     </div>
                     <div x-show="availableTags.length >= 10" class="text-amber-600 text-xs mt-2">
@@ -227,7 +244,9 @@ function simpleNotepadApp(itemId) {
             tag_ids: []
         },
         availableTags: [],
+        colorKeys: SIMPLE_NOTEPAD_TAG_COLOR_KEYS,
         newTagName: '',
+        newTagColor: defaultSimpleNotepadTagColor(0),
         showNewTagForm: false,
         addingTag: false,
         tagError: '',
@@ -256,10 +275,15 @@ function simpleNotepadApp(itemId) {
                 const res = await apiFetch('/api/simple-notepad-tags');
                 if (res.ok) {
                     this.availableTags = await res.json();
+                    this.resetNewTagColor();
                 }
             } catch (error) {
                 console.error('タグの取得に失敗しました:', error);
             }
+        },
+
+        resetNewTagColor() {
+            this.newTagColor = defaultSimpleNotepadTagColor(this.availableTags.length);
         },
 
         toggleTag(tagId) {
@@ -303,12 +327,15 @@ function simpleNotepadApp(itemId) {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name: this.newTagName.trim() })
+                    body: JSON.stringify({
+                        name: this.newTagName.trim(),
+                        color: this.newTagColor,
+                    })
                 });
 
                 if (!res.ok) {
                     const data = await res.json();
-                    throw new Error(data.message || (data.errors?.name?.[0]) || 'エラーが発生しました');
+                    throw new Error(data.message || (data.errors?.name?.[0]) || (data.errors?.color?.[0]) || 'エラーが発生しました');
                 }
 
                 const newTag = await res.json();
